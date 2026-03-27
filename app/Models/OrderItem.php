@@ -24,7 +24,6 @@ use Illuminate\Support\Carbon;
  * @property-read Order $order
  * @property-read Product|null $product
  * @property-read ProductVariant $variant
- *
  * @method static \Database\Factories\OrderItemFactory factory($count = null, $state = [])
  * @method static \Illuminate\Database\Eloquent\Builder<static>|OrderItem newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|OrderItem newQuery()
@@ -40,7 +39,6 @@ use Illuminate\Support\Carbon;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|OrderItem whereUnitPriceSnapshot($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|OrderItem whereUnitSnapshot($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|OrderItem whereUpdatedAt($value)
- *
  * @mixin \Eloquent
  */
 #[Fillable(['order_id', 'product_id', 'product_variant_id', 'product_name_snapshot', 'unit_snapshot', 'unit_price_snapshot', 'quantity', 'subtotal'])]

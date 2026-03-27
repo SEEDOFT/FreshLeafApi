@@ -20,7 +20,6 @@ use Illuminate\Support\Carbon;
  * @property Carbon|null $updated_at
  * @property-read Product|null $product
  * @property-read Unit $unit
- *
  * @method static \Database\Factories\ProductVariantFactory factory($count = null, $state = [])
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ProductVariant newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ProductVariant newQuery()
@@ -33,7 +32,6 @@ use Illuminate\Support\Carbon;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ProductVariant whereQuantityInUnit($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ProductVariant whereUnitId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ProductVariant whereUpdatedAt($value)
- *
  * @mixin \Eloquent
  */
 #[Fillable(['product_id', 'unit_id', 'name', 'quantity_in_unit', 'price'])]

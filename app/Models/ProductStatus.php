@@ -18,7 +18,6 @@ use Illuminate\Support\Carbon;
  * @property Carbon|null $updated_at
  * @property-read Collection<int, Product> $products
  * @property-read int|null $products_count
- *
  * @method static \Database\Factories\ProductStatusFactory factory($count = null, $state = [])
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ProductStatus newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ProductStatus newQuery()
@@ -28,7 +27,6 @@ use Illuminate\Support\Carbon;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ProductStatus whereId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ProductStatus whereName($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ProductStatus whereUpdatedAt($value)
- *
  * @mixin \Eloquent
  */
 #[Fillable(['code', 'name'])]

@@ -22,7 +22,6 @@ use Illuminate\Support\Carbon;
  * @property-read BehaviorEventType $type
  * @property-read User|null $user
  * @property-read ProductVariant|null $variant
- *
  * @method static \Database\Factories\UserBehaviorEventFactory factory($count = null, $state = [])
  * @method static \Illuminate\Database\Eloquent\Builder<static>|UserBehaviorEvent newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|UserBehaviorEvent newQuery()
@@ -35,7 +34,6 @@ use Illuminate\Support\Carbon;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|UserBehaviorEvent whereProductVariantId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|UserBehaviorEvent whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|UserBehaviorEvent whereUserId($value)
- *
  * @mixin \Eloquent
  */
 #[Fillable(['user_id', 'behavior_event_type_id', 'product_id', 'product_variant_id', 'metadata'])]

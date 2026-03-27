@@ -16,7 +16,7 @@ class UserController extends Controller
      */
     public function show(Request $request): JsonResponse
     {
-        $user = $request->user()->append('image');
+        $user = $request->user();
 
         return $this->successResponse(new UserResource($user));
     }
@@ -33,7 +33,7 @@ class UserController extends Controller
         $user->fill($request->validated());
         $user->save();
 
-        $user->refresh()->append('image');
+        $user->refresh();
 
         return $this->successResponse(new UserResource($user), 'User updated successfully');
     }
@@ -49,6 +49,6 @@ class UserController extends Controller
 
         $user->delete();
 
-        return $this->successResponse([], 'User deleted successfully');
+        return $this->successResponse(message: 'User deleted successfully');
     }
 }

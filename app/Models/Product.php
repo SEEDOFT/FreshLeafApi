@@ -34,7 +34,6 @@ use Illuminate\Support\Carbon;
  * @property-read ProductType $type
  * @property-read Collection<int, ProductVariant> $variants
  * @property-read int|null $variants_count
- *
  * @method static \Database\Factories\ProductFactory factory($count = null, $state = [])
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Product newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Product newQuery()
@@ -55,7 +54,6 @@ use Illuminate\Support\Carbon;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Product whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Product withTrashed(bool $withTrashed = true)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Product withoutTrashed()
- *
  * @mixin \Eloquent
  */
 #[Fillable(['category_id', 'product_type_id', 'default_unit_id', 'product_status_id', 'name', 'slug', 'description', 'nutrition_data', 'shelf_life_days'])]

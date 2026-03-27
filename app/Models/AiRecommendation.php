@@ -26,7 +26,6 @@ use Illuminate\Support\Carbon;
  * @property-read AiRecommendationStatus $status
  * @property-read AiRecommendationType $type
  * @property-read User|null $user
- *
  * @method static \Database\Factories\AiRecommendationFactory factory($count = null, $state = [])
  * @method static \Illuminate\Database\Eloquent\Builder<static>|AiRecommendation newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|AiRecommendation newQuery()
@@ -40,7 +39,6 @@ use Illuminate\Support\Carbon;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|AiRecommendation whereTitle($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|AiRecommendation whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|AiRecommendation whereUserId($value)
- *
  * @mixin \Eloquent
  */
 #[Fillable(['user_id', 'ai_recommendation_type_id', 'ai_recommendation_status_id', 'title', 'payload', 'score'])]

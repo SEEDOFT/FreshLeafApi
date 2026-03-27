@@ -70,7 +70,7 @@ use Laravel\Sanctum\PersonalAccessToken;
  * @mixin \Eloquent
  */
 #[Appends(['image'])]
-#[Fillable(['first_name', 'last_name', 'email', 'phone_number', 'password', 'user_type_id', 'user_status_id', 'image'])]
+#[Fillable(['first_name', 'last_name', 'email', 'image', 'phone_number', 'password', 'user_type_id', 'user_status_id', 'image'])]
 #[Hidden(['password', 'remember_token'])]
 class User extends Authenticatable
 {

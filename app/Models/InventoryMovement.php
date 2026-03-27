@@ -23,7 +23,6 @@ use Illuminate\Support\Carbon;
  * @property-read InventoryBatch $batch
  * @property-read User|null $creator
  * @property-read InventoryMovementType $type
- *
  * @method static \Database\Factories\InventoryMovementFactory factory($count = null, $state = [])
  * @method static \Illuminate\Database\Eloquent\Builder<static>|InventoryMovement newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|InventoryMovement newQuery()
@@ -38,7 +37,6 @@ use Illuminate\Support\Carbon;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|InventoryMovement whereReferenceId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|InventoryMovement whereReferenceType($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|InventoryMovement whereUpdatedAt($value)
- *
  * @mixin \Eloquent
  */
 #[Fillable(['inventory_batch_id', 'inventory_movement_type_id', 'quantity', 'reference_type', 'reference_id', 'note', 'created_by'])]

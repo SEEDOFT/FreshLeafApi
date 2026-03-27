@@ -18,7 +18,6 @@ use Illuminate\Support\Carbon;
  * @property Carbon|null $updated_at
  * @property-read Collection<int, InventoryMovement> $inventoryMovements
  * @property-read int|null $inventory_movements_count
- *
  * @method static \Database\Factories\InventoryMovementTypeFactory factory($count = null, $state = [])
  * @method static \Illuminate\Database\Eloquent\Builder<static>|InventoryMovementType newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|InventoryMovementType newQuery()
@@ -28,7 +27,6 @@ use Illuminate\Support\Carbon;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|InventoryMovementType whereId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|InventoryMovementType whereName($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|InventoryMovementType whereUpdatedAt($value)
- *
  * @mixin \Eloquent
  */
 #[Fillable(['code', 'name'])]

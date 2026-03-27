@@ -22,7 +22,6 @@ use Illuminate\Support\Carbon;
  * @property-read Cart $cart
  * @property-read Product|null $product
  * @property-read ProductVariant $variant
- *
  * @method static \Database\Factories\CartItemFactory factory($count = null, $state = [])
  * @method static \Illuminate\Database\Eloquent\Builder<static>|CartItem newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|CartItem newQuery()
@@ -36,7 +35,6 @@ use Illuminate\Support\Carbon;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|CartItem whereSubtotal($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|CartItem whereUnitPrice($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|CartItem whereUpdatedAt($value)
- *
  * @mixin \Eloquent
  */
 #[Fillable(['cart_id', 'product_id', 'product_variant_id', 'quantity', 'unit_price', 'subtotal'])]

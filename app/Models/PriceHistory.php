@@ -22,7 +22,6 @@ use Illuminate\Support\Carbon;
  * @property-read User|null $changer
  * @property-read Product|null $product
  * @property-read ProductVariant $variant
- *
  * @method static \Database\Factories\PriceHistoryFactory factory($count = null, $state = [])
  * @method static \Illuminate\Database\Eloquent\Builder<static>|PriceHistory newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|PriceHistory newQuery()
@@ -36,7 +35,6 @@ use Illuminate\Support\Carbon;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|PriceHistory whereProductId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|PriceHistory whereProductVariantId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|PriceHistory whereUpdatedAt($value)
- *
  * @mixin \Eloquent
  */
 #[Fillable(['product_id', 'product_variant_id', 'old_price', 'new_price', 'changed_by', 'changed_at'])]

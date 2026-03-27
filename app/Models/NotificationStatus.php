@@ -18,7 +18,6 @@ use Illuminate\Support\Carbon;
  * @property Carbon|null $updated_at
  * @property-read Collection<int, Notification> $notifications
  * @property-read int|null $notifications_count
- *
  * @method static \Database\Factories\NotificationStatusFactory factory($count = null, $state = [])
  * @method static \Illuminate\Database\Eloquent\Builder<static>|NotificationStatus newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|NotificationStatus newQuery()
@@ -28,7 +27,6 @@ use Illuminate\Support\Carbon;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|NotificationStatus whereId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|NotificationStatus whereName($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|NotificationStatus whereUpdatedAt($value)
- *
  * @mixin \Eloquent
  */
 #[Fillable(['code', 'name'])]

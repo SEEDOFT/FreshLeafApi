@@ -2,18 +2,17 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\User\ReplaceUserRequest;
 use App\Http\Requests\User\UpdateUserRequest;
 use App\Http\Resources\UserResource;
-use App\Models\User;
+use App\Models\UserStatus;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 
 class UserController extends Controller
 {
-    /**
-     * Display the authenticated user's information.
-     */
     public function show(Request $request): JsonResponse
     {
         $user = $request->user();
@@ -21,33 +20,36 @@ class UserController extends Controller
         return $this->successResponse(new UserResource($user));
     }
 
-    /**
-     * Update the authenticated user's information.
-     */
-    public function update(UpdateUserRequest $request, User $user): JsonResponse
+    public function update(UpdateUserRequest $request): JsonResponse
     {
-        if ($user->id !== Auth::id()) {
-            return $this->errorResponse('User not found', 404);
+        $user = Auth::user();
+        $data = $request->validated();
+
+        if (isset($data['password'])) {
+            $data['password'] = Hash::make($data['password']);
         }
 
-        $user->fill($request->validated());
-        $user->save();
-
-        $user->refresh();
+        $user->update($data);
 
         return $this->successResponse(new UserResource($user), 'User updated successfully');
     }
 
-    /**
-     * Soft delete the authenticated user's account.
-     */
-    public function destroy(User $user): JsonResponse
+    public function replace(ReplaceUserRequest $request): JsonResponse
     {
-        if ($user->id !== Auth::id()) {
-            return $this->errorResponse('User not found', 404);
-        }
+        $user = Auth::user();
+        $data = $request->validated();
 
-        $user->delete();
+        $data['password'] = Hash::make($data['password']);
+
+        $user->update($data);
+
+        return $this->successResponse(new UserResource($user), 'User replaced successfully');
+    }
+
+    public function destroy(): JsonResponse
+    {
+        $user = Auth::user();
+        $user->update(['user_status_id' => UserStatus::DELETED]);
 
         return $this->successResponse(message: 'User deleted successfully');
     }

@@ -21,8 +21,7 @@ class UserResource extends JsonResource
             'email' => $this->email,
             'phone_number' => $this->phone_number,
             'image' => $this->image,
-            'user_type_id' => $this->user_type_id,
-            'user_status_id' => $this->user_status_id,
+            'set_pin' => (bool) $this->pin,
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
         ];

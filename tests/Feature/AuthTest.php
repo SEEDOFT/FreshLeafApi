@@ -3,12 +3,31 @@
 namespace Tests\Feature;
 
 use App\Models\User;
-use Illuminate\Foundation\Testing\RefreshDatabase;
+use App\Models\UserStatus;
+use App\Models\UserType;
+use Illuminate\Foundation\Testing\LazilyRefreshDatabase;
 use Tests\TestCase;
 
 class AuthTest extends TestCase
 {
-    use RefreshDatabase;
+    use LazilyRefreshDatabase;
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        UserStatus::insert([
+            ['id' => UserStatus::ACTIVE, 'code' => 'active', 'name' => 'Active'],
+            ['id' => UserStatus::INACTIVE, 'code' => 'inactive', 'name' => 'Inactive'],
+            ['id' => UserStatus::DELETED, 'code' => 'deleted', 'name' => 'Deleted'],
+        ]);
+
+        UserType::insert([
+            ['id' => UserType::CONSUMER, 'code' => 'consumer', 'name' => 'Consumer'],
+            ['id' => UserType::OPERATION, 'code' => 'operation', 'name' => 'Operation'],
+            ['id' => UserType::ADMIN, 'code' => 'admin', 'name' => 'Admin'],
+        ]);
+    }
 
     /**
      * Test user registration.
@@ -24,6 +43,13 @@ class AuthTest extends TestCase
         ]);
 
         $response->assertStatus(201)
+            ->assertJson([
+                'status' => [
+                    'code' => '201',
+                    'success' => true,
+                    'message' => 'User registered successfully',
+                ],
+            ])
             ->assertJsonStructure([
                 'status' => ['code', 'success', 'message'],
                 'data' => [
@@ -55,6 +81,8 @@ class AuthTest extends TestCase
         $user = User::factory()->create([
             'phone_number' => '1234567890',
             'password' => bcrypt('password123'),
+            'user_status_id' => UserStatus::ACTIVE,
+            'user_type_id' => UserType::CONSUMER,
         ]);
 
         $response = $this->postJson('/api/v1/auth/login', [
@@ -63,8 +91,15 @@ class AuthTest extends TestCase
         ]);
 
         $response->assertStatus(200)
+            ->assertJson([
+                'status' => [
+                    'code' => '200',
+                    'success' => true,
+                    'message' => 'Login success',
+                ],
+            ])
             ->assertJsonStructure([
-                'status' => ['code', 'success', 'message'],
+                'status',
                 'data' => [
                     'access_token',
                     'token_type',
@@ -81,6 +116,8 @@ class AuthTest extends TestCase
         User::factory()->create([
             'phone_number' => '1234567890',
             'password' => bcrypt('password123'),
+            'user_status_id' => UserStatus::ACTIVE,
+            'user_type_id' => UserType::CONSUMER,
         ]);
 
         $response = $this->postJson('/api/v1/auth/login', [
@@ -95,7 +132,6 @@ class AuthTest extends TestCase
                     'success' => false,
                     'message' => 'Invalid login details',
                 ],
-                'data' => [],
             ]);
     }
 
@@ -117,7 +153,6 @@ class AuthTest extends TestCase
                     'success' => true,
                     'message' => 'Tokens Revoked',
                 ],
-                'data' => [],
             ]);
 
         $this->assertCount(0, $user->tokens);

@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Models\Product;
 use App\Models\ProductSubstitution;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
@@ -18,7 +19,10 @@ class ProductSubstitutionFactory extends Factory
     public function definition(): array
     {
         return [
-            //
+            'product_id' => Product::factory(),
+            'substitute_product_id' => Product::factory(),
+            'priority' => $this->faker->numberBetween(1, 10),
+            'reason' => $this->faker->sentence(),
         ];
     }
 }

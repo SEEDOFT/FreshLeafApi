@@ -31,6 +31,9 @@ class StoreAddressRequest extends FormRequest
             'city' => ['required', 'string', 'max:255'],
             'province' => ['required', 'string', 'max:255'],
             'postal_code' => ['required', 'string', 'max:20'],
+            'lat' => ['nullable', 'numeric'],
+            'long' => ['nullable', 'numeric'],
+            'address_map' => ['nullable', 'string', 'max:255'],
         ];
     }
 }

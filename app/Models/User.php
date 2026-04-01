@@ -19,6 +19,7 @@ use Illuminate\Notifications\DatabaseNotificationCollection;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 use Laravel\Sanctum\HasApiTokens;
 use Laravel\Sanctum\PersonalAccessToken;
 
@@ -66,11 +67,27 @@ use Laravel\Sanctum\PersonalAccessToken;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|User whereUserTypeId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|User withTrashed(bool $withTrashed = true)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|User withoutTrashed()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|User whereImage($value)
+ *
+ * @property string|null $pin
+ *
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|User wherePin($value)
  *
  * @mixin \Eloquent
  */
 #[Appends(['image'])]
-#[Fillable(['first_name', 'last_name', 'email', 'image', 'phone_number', 'password', 'user_type_id', 'user_status_id', 'image'])]
+#[Fillable([
+    'first_name',
+    'last_name',
+    'email',
+    'image',
+    'phone_number',
+    'password',
+    'user_type_id',
+    'user_status_id',
+    'image',
+    'pin',
+])]
 #[Hidden(['password', 'remember_token'])]
 class User extends Authenticatable
 {
@@ -100,6 +117,9 @@ class User extends Authenticatable
             get: function (?string $value): ?string {
                 if (! $value) {
                     return null;
+                }
+                if (Str::startsWith($value, ['http://', 'https://'])) {
+                    return $value;
                 }
 
                 $path = "users/{$value}";

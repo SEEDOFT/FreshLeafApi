@@ -31,6 +31,9 @@ class UpdateAddressRequest extends FormRequest
             'city' => ['sometimes', 'string', 'max:255'],
             'province' => ['sometimes', 'string', 'max:255'],
             'postal_code' => ['sometimes', 'string', 'max:20'],
+            'lat' => ['sometimes', 'nullable', 'numeric'],
+            'long' => ['sometimes', 'nullable', 'numeric'],
+            'address_map' => ['sometimes', 'nullable', 'string', 'max:255'],
         ];
     }
 }

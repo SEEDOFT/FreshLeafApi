@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\UserStatus;
 use Illuminate\Database\Seeder;
 
 class UserStatusSeeder extends Seeder
@@ -11,6 +12,17 @@ class UserStatusSeeder extends Seeder
      */
     public function run(): void
     {
-        //
+        $statuses = [
+            ['id' => UserStatus::ACTIVE, 'code' => 'active', 'name' => 'Active'],
+            ['id' => UserStatus::INACTIVE, 'code' => 'inactive', 'name' => 'Inactive'],
+            ['id' => UserStatus::DELETED, 'code' => 'deleted', 'name' => 'Deleted'],
+        ];
+
+        foreach ($statuses as $status) {
+            UserStatus::updateOrCreate(
+                ['id' => $status['id']],
+                ['code' => $status['code'], 'name' => $status['name']]
+            );
+        }
     }
 }

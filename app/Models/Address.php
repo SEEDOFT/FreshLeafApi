@@ -24,6 +24,7 @@ use Illuminate\Support\Carbon;
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  * @property-read User|null $user
+ *
  * @method static \Database\Factories\AddressFactory factory($count = null, $state = [])
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Address newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Address newQuery()
@@ -40,14 +41,38 @@ use Illuminate\Support\Carbon;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Address whereRecipientName($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Address whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Address whereUserId($value)
+ *
  * @property Carbon|null $deleted_at
+ *
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Address onlyTrashed()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Address whereDeletedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Address withTrashed(bool $withTrashed = true)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Address withoutTrashed()
+ *
+ * @property numeric|null $lat
+ * @property numeric|null $long
+ * @property string|null $address_map
+ *
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Address whereAddressMap($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Address whereLat($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Address whereLong($value)
+ *
  * @mixin \Eloquent
  */
-#[Fillable(['user_id', 'label', 'recipient_name', 'phone', 'address_line_1', 'address_line_2', 'city', 'province', 'postal_code'])]
+#[Fillable([
+    'user_id',
+    'label',
+    'recipient_name',
+    'phone',
+    'address_line_1',
+    'address_line_2',
+    'city',
+    'province',
+    'postal_code',
+    'lat',
+    'long',
+    'address_map',
+])]
 class Address extends Model
 {
     /** @use HasFactory<AddressFactory> */

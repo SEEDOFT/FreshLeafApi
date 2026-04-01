@@ -17,8 +17,11 @@ class ProductStatusFactory extends Factory
      */
     public function definition(): array
     {
+        $code = $this->faker->unique()->word();
+
         return [
-            //
+            'code' => $code,
+            'name' => ucfirst($code),
         ];
     }
 }

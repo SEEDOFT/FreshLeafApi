@@ -2,28 +2,21 @@
 
 namespace App\Http\Requests\User;
 
-use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\Rule;
 
 class UpdateUserRequest extends FormRequest
 {
-    /**
-     * Determine if the user is authorized to make this request.
-     */
     public function authorize(): bool
     {
         return true;
     }
 
-    /**
-     * Get the validation rules that apply to the request.
-     *
-     * @return array<string, ValidationRule|array<mixed>|string>
-     */
     public function rules(): array
     {
-        $userId = $this->route('user')?->id;
+        $user = $this->route('user') ?? Auth::user();
+        $userId = $user?->id;
 
         return [
             'first_name' => ['sometimes', 'string', 'max:255'],
@@ -33,15 +26,15 @@ class UpdateUserRequest extends FormRequest
                 'nullable',
                 'email',
                 'max:255',
-                Rule::unique('users', 'email')->ignore($userId)->whereNull('deleted_at'),
+                Rule::unique('users', 'email')->ignore($userId),
             ],
             'phone_number' => [
                 'sometimes',
                 'string',
                 'max:20',
-                Rule::unique('users', 'phone_number')->ignore($userId)->whereNull('deleted_at'),
+                Rule::unique('users', 'phone_number')->ignore($userId),
             ],
-            'image' => ['sometimes', 'nullable', 'string', 'max:255'],
+            'password' => ['sometimes', 'string', 'min:8', 'confirmed'],
         ];
     }
 }

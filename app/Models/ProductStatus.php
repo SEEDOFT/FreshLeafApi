@@ -18,6 +18,7 @@ use Illuminate\Support\Carbon;
  * @property Carbon|null $updated_at
  * @property-read Collection<int, Product> $products
  * @property-read int|null $products_count
+ *
  * @method static \Database\Factories\ProductStatusFactory factory($count = null, $state = [])
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ProductStatus newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ProductStatus newQuery()
@@ -27,6 +28,7 @@ use Illuminate\Support\Carbon;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ProductStatus whereId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ProductStatus whereName($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ProductStatus whereUpdatedAt($value)
+ *
  * @mixin \Eloquent
  */
 #[Fillable(['code', 'name'])]
@@ -34,6 +36,12 @@ class ProductStatus extends Model
 {
     /** @use HasFactory<ProductStatusFactory> */
     use HasFactory;
+
+    public const ACTIVE = 1;
+
+    public const INACTIVE = 2;
+
+    public const DRAFT = 3;
 
     /**
      * Get the products for the product status.

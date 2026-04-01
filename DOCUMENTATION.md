@@ -73,6 +73,15 @@ This documentation outlines the initial database schema implementation for the F
     - Renamed `status_id` to `user_status_id` to emphasize domain belonging.
     - Made `email` nullable to support phone-only registration.
 
+### 1.10 API Documentation (Swagger)
+- **Tool:** L5-Swagger (OpenAPI 3.0).
+- **Access URL:** `/api/documentation` (e.g., `http://localhost:8000/api/documentation`).
+- **Features:**
+    - Interactive testing of all endpoints.
+    - Token-based authentication support (Authorize button).
+    - Clear visibility of request/response schemas.
+- **Maintenance:** Run `php artisan l5-swagger:generate` to update documentation after annotation/attribute changes.
+
 ---
 
 ## 2. Technical Standards Applied

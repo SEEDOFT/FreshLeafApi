@@ -40,6 +40,7 @@ use Illuminate\Support\Carbon;
  * @property-read int|null $status_histories_count
  * @property-read OrderType $type
  * @property-read User|null $user
+ *
  * @method static \Database\Factories\OrderFactory factory($count = null, $state = [])
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Order newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Order newQuery()
@@ -61,9 +62,25 @@ use Illuminate\Support\Carbon;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Order whereTotalAmount($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Order whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Order whereUserId($value)
+ *
  * @mixin \Eloquent
  */
-#[Fillable(['user_id', 'address_id', 'order_type_id', 'order_status_id', 'payment_status_id', 'order_number', 'delivery_date', 'delivery_slot', 'subtotal', 'discount_amount', 'delivery_fee', 'tax_amount', 'total_amount', 'notes'])]
+#[Fillable([
+    'user_id',
+    'address_id',
+    'order_type_id',
+    'order_status_id',
+    'payment_status_id',
+    'order_number',
+    'delivery_date',
+    'delivery_slot',
+    'subtotal',
+    'discount_amount',
+    'delivery_fee',
+    'tax_amount',
+    'total_amount',
+    'notes',
+])]
 class Order extends Model
 {
     /** @use HasFactory<OrderFactory> */

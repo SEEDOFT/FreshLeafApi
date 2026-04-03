@@ -14,8 +14,8 @@ return new class extends Migration
         Schema::create('payment_methods', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('user_id');
-            $table->unsignedBigInteger('payment_type_id');
-            $table->unsignedBigInteger('payment_status_id');
+            $table->unsignedBigInteger('payment_method_type_id');
+            $table->unsignedBigInteger('payment_method_status_id');
             $table->string('label');
             $table->string('card_holder_name');
             $table->string('card_number');

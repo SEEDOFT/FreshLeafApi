@@ -3,8 +3,8 @@
 namespace Database\Factories;
 
 use App\Models\PaymentMethod;
-use App\Models\PaymentStatus;
-use App\Models\PaymentType;
+use App\Models\PaymentMethodStatus;
+use App\Models\PaymentMethodType;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
@@ -22,8 +22,8 @@ class PaymentMethodFactory extends Factory
     {
         return [
             'user_id' => User::factory(),
-            'payment_type_id' => PaymentType::factory(),
-            'payment_status_id' => PaymentStatus::factory(),
+            'payment_method_type_id' => PaymentMethodType::factory(),
+            'payment_method_status_id' => PaymentMethodStatus::factory(),
             'label' => $this->faker->words(2, true),
             'card_holder_name' => $this->faker->name(),
             'card_number' => $this->faker->creditCardNumber(),

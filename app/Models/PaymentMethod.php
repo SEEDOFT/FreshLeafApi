@@ -12,8 +12,8 @@ use Illuminate\Support\Carbon;
 /**
  * @property int $id
  * @property int $user_id
- * @property int $payment_type_id
- * @property int $payment_status_id
+ * @property int $payment_method_type_id
+ * @property int $payment_method_status_id
  * @property string $label
  * @property string $card_holder_name
  * @property string $card_number
@@ -24,8 +24,8 @@ use Illuminate\Support\Carbon;
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  * @property-read User $user
- * @property-read PaymentType $type
- * @property-read PaymentStatus $status
+ * @property-read PaymentMethodType $type
+ * @property-read PaymentMethodStatus $status
  *
  * @method static \Database\Factories\PaymentMethodFactory factory($count = null, $state = [])
  * @method static \Illuminate\Database\Eloquent\Builder<static>|PaymentMethod newModelQuery()
@@ -36,8 +36,8 @@ use Illuminate\Support\Carbon;
  */
 #[Fillable([
     'user_id',
-    'payment_type_id',
-    'payment_status_id',
+    'payment_method_type_id',
+    'payment_method_status_id',
     'label',
     'card_holder_name',
     'card_number',
@@ -85,18 +85,18 @@ class PaymentMethod extends Model
     }
 
     /**
-     * Get the payment type of the payment method.
+     * Get the payment method type of the payment method.
      */
     public function type(): BelongsTo
     {
-        return $this->belongsTo(PaymentType::class, 'payment_type_id');
+        return $this->belongsTo(PaymentMethodType::class, 'payment_method_type_id');
     }
 
     /**
-     * Get the payment status of the payment method.
+     * Get the payment method status of the payment method.
      */
     public function status(): BelongsTo
     {
-        return $this->belongsTo(PaymentStatus::class, 'payment_status_id');
+        return $this->belongsTo(PaymentMethodStatus::class, 'payment_method_status_id');
     }
 }

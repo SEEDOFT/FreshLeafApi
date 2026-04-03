@@ -3,8 +3,6 @@
 namespace Tests\Feature;
 
 use App\Models\PaymentMethod;
-use App\Models\PaymentStatus;
-use App\Models\PaymentType;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
@@ -15,17 +13,17 @@ class PaymentMethodTest extends TestCase
 
     private User $user;
 
-    private PaymentType $paymentType;
+    private PaymentMethodType $paymentMethodType;
 
-    private PaymentStatus $paymentStatus;
+    private PaymentMethodStatus $paymentMethodStatus;
 
     protected function setUp(): void
     {
         parent::setUp();
 
         $this->user = User::factory()->create();
-        $this->paymentType = PaymentType::factory()->create(['code' => 'credit_card', 'name' => 'Credit Card']);
-        $this->paymentStatus = PaymentStatus::factory()->create(['code' => 'active', 'name' => 'Active']);
+        $this->paymentMethodType = PaymentMethodType::factory()->create(['code' => 'credit_card', 'name' => 'Credit Card']);
+        $this->paymentMethodStatus = PaymentMethodStatus::factory()->create(['code' => 'active', 'name' => 'Active']);
     }
 
     public function test_user_can_list_their_payment_methods(): void
@@ -43,8 +41,8 @@ class PaymentMethodTest extends TestCase
     public function test_user_can_create_payment_method(): void
     {
         $data = [
-            'payment_type_id' => $this->paymentType->id,
-            'payment_status_id' => $this->paymentStatus->id,
+            'payment_method_type_id' => $this->paymentMethodType->id,
+            'payment_method_status_id' => $this->paymentMethodStatus->id,
             'label' => 'Personal Visa',
             'card_holder_name' => 'John Doe',
             'card_number' => '1234567890123456',
@@ -128,8 +126,8 @@ class PaymentMethodTest extends TestCase
         $paymentMethod = PaymentMethod::factory()->create(['user_id' => $this->user->id, 'label' => 'Old Label']);
 
         $data = [
-            'payment_type_id' => $this->paymentType->id,
-            'payment_status_id' => $this->paymentStatus->id,
+            'payment_method_type_id' => $this->paymentMethodType->id,
+            'payment_method_status_id' => $this->paymentMethodStatus->id,
             'label' => 'Full Replace via PUT',
             'card_holder_name' => 'Jane Doe',
             'card_number' => '9876543210987654',

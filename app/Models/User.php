@@ -46,6 +46,8 @@ use Laravel\Sanctum\PersonalAccessToken;
  * @property-read Collection<int, PersonalAccessToken> $tokens
  * @property-read int|null $tokens_count
  * @property-read UserType|null $type
+ * @property-read Collection<int, PaymentMethod> $paymentMethods
+ * @property-read int|null $paymentMethods_count
  *
  * @method static \Database\Factories\UserFactory factory($count = null, $state = [])
  * @method static \Illuminate\Database\Eloquent\Builder<static>|User newModelQuery()
@@ -72,6 +74,8 @@ use Laravel\Sanctum\PersonalAccessToken;
  * @property string|null $pin
  *
  * @method static \Illuminate\Database\Eloquent\Builder<static>|User wherePin($value)
+ *
+ * @property-read int|null $payment_methods_count
  *
  * @mixin \Eloquent
  */
@@ -152,5 +156,13 @@ class User extends Authenticatable
     public function addresses(): HasMany
     {
         return $this->hasMany(Address::class);
+    }
+
+    /**
+     * Get the payment methods for the user.
+     */
+    public function paymentMethods(): HasMany
+    {
+        return $this->hasMany(PaymentMethod::class);
     }
 }

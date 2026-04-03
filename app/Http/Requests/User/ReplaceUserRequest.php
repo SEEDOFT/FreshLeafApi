@@ -27,6 +27,7 @@ class ReplaceUserRequest extends FormRequest
                 'max:255',
                 Rule::unique('users', 'email')->ignore($userId),
             ],
+            'image' => ['required', 'file', 'mimes:png,jpg', 'max:204800000'],
             'phone_number' => [
                 'required',
                 'string',

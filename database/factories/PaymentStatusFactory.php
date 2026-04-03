@@ -18,7 +18,8 @@ class PaymentStatusFactory extends Factory
     public function definition(): array
     {
         return [
-            //
+            'code' => $this->faker->unique()->slug(),
+            'name' => $this->faker->words(2, true),
         ];
     }
 }

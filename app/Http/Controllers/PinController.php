@@ -50,4 +50,13 @@ class PinController extends Controller
 
         return $this->successResponse(message: 'PIN verified');
     }
+
+    public function resetPin(SetPinRequest $request): JsonResponse
+    {
+        $user = auth()->user();
+
+        $user->update(['pin' => Hash::make($request->pin)]);
+
+        return $this->successResponse(message: 'PIN reset successfully');
+    }
 }

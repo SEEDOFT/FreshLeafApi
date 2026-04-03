@@ -6,7 +6,6 @@ use App\Http\Requests\Auth\LoginRequest;
 use App\Http\Requests\Auth\RegisterRequest;
 use App\Http\Requests\Auth\UpdatePasswordRequest;
 use App\Http\Requests\Auth\VerifyPasswordRequest;
-use App\Http\Resources\UserResource;
 use App\Models\User;
 use App\Models\UserStatus;
 use App\Models\UserType;
@@ -32,7 +31,6 @@ class AuthController extends Controller
         return $this->successResponse([
             'access_token' => $token,
             'token_type' => 'Bearer',
-            'user' => new UserResource($user),
         ], 'User registered successfully', 201);
     }
 
@@ -57,7 +55,6 @@ class AuthController extends Controller
         return $this->successResponse([
             'access_token' => $token,
             'token_type' => 'Bearer',
-            'user' => new UserResource($user),
         ], 'Login success');
     }
 

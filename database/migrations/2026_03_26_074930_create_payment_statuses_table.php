@@ -12,11 +12,29 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('payment_statuses', function (Blueprint $table) {
-            $table->id();
+            $table->unsignedBigInteger('id');
             $table->string('code')->unique();
             $table->string('name');
             $table->timestamps();
         });
+
+        DB::table('payment_statuses')->insert([
+            [
+                'id' => 1,
+                'code' => 'ACTIVE',
+                'name' => 'ACTIVE',
+            ],
+            [
+                'id' => 2,
+                'code' => 'INACTIVE',
+                'name' => 'INACTIVE',
+            ],
+            [
+                'id' => 3,
+                'code' => 'DELETE',
+                'name' => 'DELETE',
+            ],
+        ]);
     }
 
     /**

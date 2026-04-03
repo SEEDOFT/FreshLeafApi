@@ -12,11 +12,29 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('user_types', function (Blueprint $table) {
-            $table->id();
+            $table->unsignedBigInteger('id');
             $table->string('code')->unique();
             $table->string('name');
             $table->timestamps();
         });
+
+        DB::table('user_types')->insert([
+            [
+                'id' => 1,
+                'code' => 'CONSUMER',
+                'name' => 'CONSUMER',
+            ],
+            [
+                'id' => 2,
+                'code' => 'OPERATION',
+                'name' => 'OPERATION',
+            ],
+            [
+                'id' => 3,
+                'code' => 'ADMIN',
+                'name' => 'ADMIN',
+            ],
+        ]);
     }
 
     /**

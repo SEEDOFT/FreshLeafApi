@@ -18,6 +18,9 @@ use Illuminate\Support\Carbon;
  * @property Carbon|null $updated_at
  * @property-read Collection<int, Payment> $payments
  * @property-read int|null $payments_count
+ * @property-read Collection<int, PaymentMethod> $paymentMethods
+ * @property-read int|null $paymentMethods_count
+ *
  * @method static \Database\Factories\PaymentTypeFactory factory($count = null, $state = [])
  * @method static \Illuminate\Database\Eloquent\Builder<static>|PaymentType newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|PaymentType newQuery()
@@ -27,6 +30,9 @@ use Illuminate\Support\Carbon;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|PaymentType whereId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|PaymentType whereName($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|PaymentType whereUpdatedAt($value)
+ *
+ * @property-read int|null $payment_methods_count
+ *
  * @mixin \Eloquent
  */
 #[Fillable(['code', 'name'])]
@@ -35,11 +41,25 @@ class PaymentType extends Model
     /** @use HasFactory<PaymentTypeFactory> */
     use HasFactory;
 
+    public const VISA = 1;
+
+    public const MASTER_CARD = 2;
+
+    public const UNION_PAY = 3;
+
     /**
      * Get the payments for the type.
      */
     public function payments(): HasMany
     {
         return $this->hasMany(Payment::class);
+    }
+
+    /**
+     * Get the payment methods for the type.
+     */
+    public function paymentMethods(): HasMany
+    {
+        return $this->hasMany(PaymentMethod::class);
     }
 }

@@ -69,6 +69,17 @@ use Illuminate\Support\Str;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Product withTrashed(bool $withTrashed = true)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Product withoutTrashed()
  *
+ * @property-read int|null $ai_recommendation_items_count
+ * @property-read int|null $cart_items_count
+ * @property-read int|null $inventory_batches_count
+ * @property-read int|null $inventory_movements_count
+ * @property-read int|null $order_items_count
+ * @property-read int|null $price_histories_count
+ * @property-read int|null $purchase_order_items_count
+ * @property-read Collection<int, ProductSubstitution> $substitutionsFor
+ * @property-read int|null $substitutions_for_count
+ * @property-read int|null $user_behavior_events_count
+ *
  * @mixin \Eloquent
  */
 #[Fillable([

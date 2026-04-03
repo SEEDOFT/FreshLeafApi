@@ -25,6 +25,7 @@ use Illuminate\Support\Carbon;
  * @property-read int|null $items_count
  * @property-read PurchaseOrderStatus $status
  * @property-read Supplier $supplier
+ *
  * @method static \Database\Factories\PurchaseOrderFactory factory($count = null, $state = [])
  * @method static \Illuminate\Database\Eloquent\Builder<static>|PurchaseOrder newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|PurchaseOrder newQuery()
@@ -38,6 +39,7 @@ use Illuminate\Support\Carbon;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|PurchaseOrder whereSupplierId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|PurchaseOrder whereTotalCost($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|PurchaseOrder whereUpdatedAt($value)
+ *
  * @mixin \Eloquent
  */
 #[Fillable(['supplier_id', 'purchase_order_status_id', 'po_number', 'ordered_at', 'received_at', 'total_cost'])]

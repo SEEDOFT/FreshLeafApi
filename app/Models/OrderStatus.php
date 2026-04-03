@@ -20,6 +20,7 @@ use Illuminate\Support\Carbon;
  * @property Carbon|null $updated_at
  * @property-read Collection<int, Order> $orders
  * @property-read int|null $orders_count
+ *
  * @method static \Database\Factories\OrderStatusFactory factory($count = null, $state = [])
  * @method static \Illuminate\Database\Eloquent\Builder<static>|OrderStatus newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|OrderStatus newQuery()
@@ -31,6 +32,7 @@ use Illuminate\Support\Carbon;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|OrderStatus whereName($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|OrderStatus whereSortOrder($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|OrderStatus whereUpdatedAt($value)
+ *
  * @mixin \Eloquent
  */
 #[Fillable(['code', 'name', 'sort_order', 'color'])]

@@ -23,6 +23,7 @@ use Illuminate\Support\Carbon;
  * @property-read NotificationStatus $status
  * @property-read NotificationType $type
  * @property-read User|null $user
+ *
  * @method static \Database\Factories\NotificationFactory factory($count = null, $state = [])
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Notification newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Notification newQuery()
@@ -37,6 +38,7 @@ use Illuminate\Support\Carbon;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Notification whereTitle($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Notification whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Notification whereUserId($value)
+ *
  * @mixin \Eloquent
  */
 #[Fillable(['user_id', 'notification_type_id', 'notification_status_id', 'title', 'message', 'data', 'read_at'])]

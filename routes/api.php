@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AddressController;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\PaymentMethodController;
 use App\Http\Controllers\PinController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
@@ -21,6 +22,7 @@ Route::prefix('v1')->group(
 
                         Route::post('/pin/set', [PinController::class, 'setPin']);
                         Route::post('/pin/update', [PinController::class, 'updatePin']);
+                        Route::post('/pin/reset', [PinController::class, 'resetPin']);
                         Route::post('/pin/verify', [PinController::class, 'verifyPin']);
                     }
                 );
@@ -30,6 +32,10 @@ Route::prefix('v1')->group(
             static function () {
                 Route::put('addresses/{address}', [AddressController::class, 'replace']);
                 Route::apiResource('addresses', AddressController::class);
+
+                Route::patch('payment-methods/{payment_method}', [PaymentMethodController::class, 'update']);
+                Route::put('payment-methods/{payment_method}', [PaymentMethodController::class, 'replace']);
+                Route::apiResource('payment-methods', PaymentMethodController::class);
 
                 Route::get('/profile', [UserController::class, 'show']);
                 Route::patch('/profile', [UserController::class, 'update']);

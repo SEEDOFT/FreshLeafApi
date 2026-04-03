@@ -22,6 +22,7 @@ use Illuminate\Support\Carbon;
  * @property-read OrderStatus $fromStatus
  * @property-read Order $order
  * @property-read OrderStatus $toStatus
+ *
  * @method static \Database\Factories\OrderStatusHistoryFactory factory($count = null, $state = [])
  * @method static \Illuminate\Database\Eloquent\Builder<static>|OrderStatusHistory newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|OrderStatusHistory newQuery()
@@ -34,6 +35,7 @@ use Illuminate\Support\Carbon;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|OrderStatusHistory whereOrderId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|OrderStatusHistory whereToOrderStatusId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|OrderStatusHistory whereUpdatedAt($value)
+ *
  * @mixin \Eloquent
  */
 #[Fillable(['order_id', 'from_order_status_id', 'to_order_status_id', 'changed_by', 'note'])]

@@ -20,6 +20,9 @@ use Illuminate\Support\Carbon;
  * @property-read int|null $orders_count
  * @property-read Collection<int, Payment> $payments
  * @property-read int|null $payments_count
+ * @property-read Collection<int, PaymentMethod> $paymentMethods
+ * @property-read int|null $paymentMethods_count
+ *
  * @method static \Database\Factories\PaymentStatusFactory factory($count = null, $state = [])
  * @method static \Illuminate\Database\Eloquent\Builder<static>|PaymentStatus newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|PaymentStatus newQuery()
@@ -29,6 +32,9 @@ use Illuminate\Support\Carbon;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|PaymentStatus whereId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|PaymentStatus whereName($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|PaymentStatus whereUpdatedAt($value)
+ *
+ * @property-read int|null $payment_methods_count
+ *
  * @mixin \Eloquent
  */
 #[Fillable(['code', 'name'])]
@@ -36,6 +42,12 @@ class PaymentStatus extends Model
 {
     /** @use HasFactory<PaymentStatusFactory> */
     use HasFactory;
+
+    public const ACTIVE = 1;
+
+    public const INACTIVE = 2;
+
+    public const DELETE = 3;
 
     /**
      * Get the orders for the payment status.
@@ -51,5 +63,13 @@ class PaymentStatus extends Model
     public function payments(): HasMany
     {
         return $this->hasMany(Payment::class);
+    }
+
+    /**
+     * Get the payment methods for the status.
+     */
+    public function paymentMethods(): HasMany
+    {
+        return $this->hasMany(PaymentMethod::class);
     }
 }

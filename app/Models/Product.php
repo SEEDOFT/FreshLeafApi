@@ -45,7 +45,6 @@ use Illuminate\Support\Str;
  * @property-read Collection<int, PurchaseOrderItem> $purchaseOrderItems
  * @property-read Collection<int, AiRecommendationItem> $aiRecommendationItems
  * @property-read Collection<int, UserBehaviorEvent> $userBehaviorEvents
- *
  * @method static \Database\Factories\ProductFactory factory($count = null, $state = [])
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Product active()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Product byCategory(int|Category $category)
@@ -68,7 +67,6 @@ use Illuminate\Support\Str;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Product whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Product withTrashed(bool $withTrashed = true)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Product withoutTrashed()
- *
  * @property-read int|null $ai_recommendation_items_count
  * @property-read int|null $cart_items_count
  * @property-read int|null $inventory_batches_count
@@ -79,7 +77,6 @@ use Illuminate\Support\Str;
  * @property-read Collection<int, ProductSubstitution> $substitutionsFor
  * @property-read int|null $substitutions_for_count
  * @property-read int|null $user_behavior_events_count
- *
  * @mixin \Eloquent
  */
 #[Fillable([

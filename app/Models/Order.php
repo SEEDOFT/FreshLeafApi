@@ -40,7 +40,6 @@ use Illuminate\Support\Carbon;
  * @property-read int|null $status_histories_count
  * @property-read OrderType $type
  * @property-read User|null $user
- *
  * @method static \Database\Factories\OrderFactory factory($count = null, $state = [])
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Order newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Order newQuery()
@@ -62,7 +61,6 @@ use Illuminate\Support\Carbon;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Order whereTotalAmount($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Order whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Order whereUserId($value)
- *
  * @mixin \Eloquent
  */
 #[Fillable([

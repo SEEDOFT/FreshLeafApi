@@ -18,7 +18,6 @@ use Illuminate\Support\Carbon;
  * @property Carbon|null $updated_at
  * @property-read Collection<int, PaymentMethod> $paymentMethods
  * @property-read int|null $paymentMethods_count
- *
  * @method static \Database\Factories\PaymentMethodStatusFactory factory($count = null, $state = [])
  * @method static \Illuminate\Database\Eloquent\Builder<static>|PaymentMethodStatus newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|PaymentMethodStatus newQuery()
@@ -28,7 +27,7 @@ use Illuminate\Support\Carbon;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|PaymentMethodStatus whereId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|PaymentMethodStatus whereName($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|PaymentMethodStatus whereUpdatedAt($value)
- *
+ * @property-read int|null $payment_methods_count
  * @mixin \Eloquent
  */
 #[Fillable(['code', 'name'])]

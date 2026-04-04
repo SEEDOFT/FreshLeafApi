@@ -22,7 +22,6 @@ use Illuminate\Support\Carbon;
  * @property-read Product|null $product
  * @property-read AiRecommendation $recommendation
  * @property-read ProductVariant $variant
- *
  * @method static \Database\Factories\AiRecommendationItemFactory factory($count = null, $state = [])
  * @method static \Illuminate\Database\Eloquent\Builder<static>|AiRecommendationItem newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|AiRecommendationItem newQuery()
@@ -36,7 +35,6 @@ use Illuminate\Support\Carbon;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|AiRecommendationItem whereReason($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|AiRecommendationItem whereSuggestedQty($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|AiRecommendationItem whereUpdatedAt($value)
- *
  * @mixin \Eloquent
  */
 #[Fillable(['ai_recommendation_id', 'product_id', 'product_variant_id', 'suggested_qty', 'reason', 'estimated_price'])]

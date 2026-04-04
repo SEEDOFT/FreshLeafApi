@@ -26,12 +26,33 @@ use Illuminate\Support\Carbon;
  * @property-read User $user
  * @property-read PaymentMethodType $type
  * @property-read PaymentMethodStatus $status
- *
  * @method static \Database\Factories\PaymentMethodFactory factory($count = null, $state = [])
  * @method static \Illuminate\Database\Eloquent\Builder<static>|PaymentMethod newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|PaymentMethod newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|PaymentMethod query()
- *
+ * @property int $payment_type_id
+ * @property int $payment_status_id
+ * @property string|null $billing_address
+ * @property string|null $billing_city
+ * @property string|null $billing_state
+ * @property string|null $billing_zip_code
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PaymentMethod whereBillingAddress($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PaymentMethod whereBillingCity($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PaymentMethod whereBillingState($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PaymentMethod whereBillingZipCode($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PaymentMethod whereCardHolderName($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PaymentMethod whereCardNumber($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PaymentMethod whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PaymentMethod whereCvv($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PaymentMethod whereExpiryMonth($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PaymentMethod whereExpiryYear($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PaymentMethod whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PaymentMethod whereIsDefault($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PaymentMethod whereLabel($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PaymentMethod wherePaymentStatusId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PaymentMethod wherePaymentTypeId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PaymentMethod whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PaymentMethod whereUserId($value)
  * @mixin \Eloquent
  */
 #[Fillable([

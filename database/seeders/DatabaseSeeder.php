@@ -18,6 +18,8 @@ class DatabaseSeeder extends Seeder
         $this->call([
             UserStatusSeeder::class,
             UserTypeSeeder::class,
+            PaymentMethodTypeSeeder::class,
+            PaymentMethodStatusSeeder::class,
         ]);
 
         User::factory()->create([

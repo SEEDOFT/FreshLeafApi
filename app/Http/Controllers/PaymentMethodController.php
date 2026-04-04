@@ -7,6 +7,7 @@ use App\Http\Requests\PaymentMethod\StorePaymentMethodRequest;
 use App\Http\Requests\PaymentMethod\UpdatePaymentMethodRequest;
 use App\Http\Resources\PaymentMethodResource;
 use App\Models\PaymentMethod;
+use App\Models\PaymentMethodStatus;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -24,7 +25,7 @@ class PaymentMethodController extends Controller
             ->orderBy('created_at', 'desc')
             ->simplePaginate($request->integer('per_page', 10));
 
-        return $this->successResponse(PaymentMethodResource::collection($paymentMethods));
+        return $this->successResponse(PaymentMethodResource::collection($paymentMethods), message: 'Payment methods retrieved successfully');
     }
 
     /**
@@ -55,7 +56,10 @@ class PaymentMethodController extends Controller
      */
     public function show(PaymentMethod $paymentMethod): JsonResponse
     {
-        if ($paymentMethod->user_id !== Auth::id() || $paymentMethod->payment_method_status_id !== PaymentMethodStatus::ACTIVE) {
+        if (
+            $paymentMethod->user_id !== Auth::id() ||
+            $paymentMethod->payment_method_status_id !== PaymentMethodStatus::ACTIVE
+        ) {
             return $this->errorResponse('Payment method not found', 404);
         }
 
@@ -67,14 +71,19 @@ class PaymentMethodController extends Controller
      */
     public function update(UpdatePaymentMethodRequest $request, PaymentMethod $paymentMethod): JsonResponse
     {
-        if ($paymentMethod->user_id !== Auth::id() || $paymentMethod->payment_method_status_id !== PaymentMethodStatus::ACTIVE) {
+        if (
+            $paymentMethod->user_id !== Auth::id() ||
+            $paymentMethod->payment_method_status_id !== PaymentMethodStatus::ACTIVE
+        ) {
             return $this->errorResponse('Payment method not found', 404);
         }
 
         $data = $request->validated();
 
         if ($data['is_default'] ?? false) {
-            Auth::user()->paymentMethods()->where('id', '!=', $paymentMethod->id)->update(['is_default' => false]);
+            Auth::user()->paymentMethods()
+                ->where('id', '!=', $paymentMethod->id)
+                ->update(['is_default' => false]);
         }
 
         $paymentMethod->update($data);
@@ -90,14 +99,19 @@ class PaymentMethodController extends Controller
      */
     public function replace(ReplacePaymentMethodRequest $request, PaymentMethod $paymentMethod): JsonResponse
     {
-        if ($paymentMethod->user_id !== Auth::id() || $paymentMethod->payment_method_status_id !== PaymentMethodStatus::ACTIVE) {
+        if (
+            $paymentMethod->user_id !== Auth::id() ||
+            $paymentMethod->payment_method_status_id !== PaymentMethodStatus::ACTIVE
+        ) {
             return $this->errorResponse('Payment method not found', 404);
         }
 
         $data = $request->validated();
 
         if ($data['is_default'] ?? false) {
-            Auth::user()->paymentMethods()->where('id', '!=', $paymentMethod->id)->update(['is_default' => false]);
+            Auth::user()->paymentMethods()
+                ->where('id', '!=', $paymentMethod->id)
+                ->update(['is_default' => false]);
         }
 
         $paymentMethod->update($data);
@@ -113,7 +127,10 @@ class PaymentMethodController extends Controller
      */
     public function destroy(PaymentMethod $paymentMethod): JsonResponse
     {
-        if ($paymentMethod->user_id !== Auth::id() || $paymentMethod->payment_method_status_id !== PaymentMethodStatus::ACTIVE) {
+        if (
+            $paymentMethod->user_id !== Auth::id() ||
+            $paymentMethod->payment_method_status_id !== PaymentMethodStatus::ACTIVE
+        ) {
             return $this->errorResponse('Payment method not found', 404);
         }
 

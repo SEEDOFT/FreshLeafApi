@@ -2,9 +2,13 @@
 
 namespace App\Http\Resources;
 
+use App\Models\PaymentMethod;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
+/**
+ * @mixin PaymentMethod
+ */
 class PaymentMethodResource extends JsonResource
 {
     /**
@@ -17,8 +21,8 @@ class PaymentMethodResource extends JsonResource
         return [
             'id' => $this->id,
             'user_id' => $this->user_id,
-            'payment_type_id' => $this->payment_type_id,
-            'payment_status_id' => $this->payment_status_id,
+            'payment_method_type_id' => $this->payment_method_type_id,
+            'payment_method_status_id' => $this->payment_method_status_id,
             'label' => $this->label,
             'card_holder_name' => $this->card_holder_name,
             'card_number' => $this->maskCardNumber($this->card_number),

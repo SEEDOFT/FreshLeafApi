@@ -13,7 +13,9 @@
         "laravel/framework": "^13.0",
         "laravel/sanctum": "^4.0",
         "laravel/telescope": "^5.19",
-        "laravel/tinker": "^3.0"
+        "laravel/tinker": "^3.0",
+        "paypal/paypal-server-sdk": "2.2.0",
+        "stripe/stripe-php": "*"
     },
     "require-dev": {
         "barryvdh/laravel-ide-helper": "^3.7",

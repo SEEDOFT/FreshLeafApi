@@ -48,7 +48,6 @@ use Laravel\Sanctum\PersonalAccessToken;
  * @property-read UserType|null $type
  * @property-read Collection<int, PaymentMethod> $paymentMethods
  * @property-read int|null $paymentMethods_count
- *
  * @method static \Database\Factories\UserFactory factory($count = null, $state = [])
  * @method static \Illuminate\Database\Eloquent\Builder<static>|User newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|User newQuery()
@@ -70,13 +69,9 @@ use Laravel\Sanctum\PersonalAccessToken;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|User withTrashed(bool $withTrashed = true)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|User withoutTrashed()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|User whereImage($value)
- *
  * @property string|null $pin
- *
  * @method static \Illuminate\Database\Eloquent\Builder<static>|User wherePin($value)
- *
  * @property-read int|null $payment_methods_count
- *
  * @mixin \Eloquent
  */
 #[Appends(['image'])]

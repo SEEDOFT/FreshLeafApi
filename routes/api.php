@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AddressController;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\PaymentMethodController;
 use App\Http\Controllers\PinController;
 use App\Http\Controllers\UserController;
@@ -37,11 +38,24 @@ Route::prefix('v1')->group(
                 Route::put('payment-methods/{payment_method}', [PaymentMethodController::class, 'replace']);
                 Route::apiResource('payment-methods', PaymentMethodController::class);
 
+                Route::post('payments/intent', [PaymentController::class, 'createPaymentIntent']);
+                Route::post('payments/confirm', [PaymentController::class, 'confirmPayment']);
+                Route::post('payments/refund', [PaymentController::class, 'refund']);
+                Route::get('payments/status', [PaymentController::class, 'status']);
+
+                Route::post('payments/paypal/order', [PaymentController::class, 'createPayPalOrder']);
+                Route::post('payments/paypal/capture', [PaymentController::class, 'capturePayPalOrder']);
+                Route::get('payments/paypal/status', [PaymentController::class, 'getPayPalOrderStatus']);
+                Route::post('payments/paypal/refund', [PaymentController::class, 'refundPayPal']);
+
                 Route::get('/profile', [UserController::class, 'show']);
                 Route::patch('/profile', [UserController::class, 'update']);
                 Route::put('/profile', [UserController::class, 'replace']);
                 Route::delete('/profile', [UserController::class, 'destroy']);
             }
         );
+
+        Route::post('webhooks/stripe', [PaymentController::class, 'handleWebhook']);
+        Route::post('webhooks/paypal', [PaymentController::class, 'handlePayPalWebhook']);
     }
 );

@@ -18,7 +18,6 @@ use Illuminate\Support\Carbon;
  * @property Carbon|null $updated_at
  * @property-read Collection<int, PaymentMethod> $paymentMethods
  * @property-read int|null $paymentMethods_count
- *
  * @method static \Database\Factories\PaymentMethodTypeFactory factory($count = null, $state = [])
  * @method static \Illuminate\Database\Eloquent\Builder<static>|PaymentMethodType newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|PaymentMethodType newQuery()
@@ -28,7 +27,7 @@ use Illuminate\Support\Carbon;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|PaymentMethodType whereId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|PaymentMethodType whereName($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|PaymentMethodType whereUpdatedAt($value)
- *
+ * @property-read int|null $payment_methods_count
  * @mixin \Eloquent
  */
 #[Fillable(['code', 'name'])]
@@ -42,6 +41,18 @@ class PaymentMethodType extends Model
     public const MASTER_CARD = 2;
 
     public const UNION_PAY = 3;
+
+    public const AMERICAN_EXPRESS = 4;
+
+    public const DISCOVER = 5;
+
+    public const JCB = 6;
+
+    public const DINERS_CLUB = 7;
+
+    public const PAYPAL = 8;
+
+    public const STRIPE = 9;
 
     /**
      * Get the payment methods for the type.

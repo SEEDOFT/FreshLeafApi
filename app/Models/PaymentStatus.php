@@ -20,7 +20,6 @@ use Illuminate\Support\Carbon;
  * @property-read int|null $orders_count
  * @property-read Collection<int, Payment> $payments
  * @property-read int|null $payments_count
- *
  * @method static \Database\Factories\PaymentStatusFactory factory($count = null, $state = [])
  * @method static \Illuminate\Database\Eloquent\Builder<static>|PaymentStatus newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|PaymentStatus newQuery()
@@ -30,7 +29,6 @@ use Illuminate\Support\Carbon;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|PaymentStatus whereId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|PaymentStatus whereName($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|PaymentStatus whereUpdatedAt($value)
- *
  * @mixin \Eloquent
  */
 #[Fillable(['code', 'name'])]

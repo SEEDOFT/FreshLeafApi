@@ -18,7 +18,6 @@ use Illuminate\Support\Carbon;
  * @property Carbon|null $updated_at
  * @property-read Collection<int, AiRecommendation> $recommendations
  * @property-read int|null $recommendations_count
- *
  * @method static \Database\Factories\AiRecommendationStatusFactory factory($count = null, $state = [])
  * @method static \Illuminate\Database\Eloquent\Builder<static>|AiRecommendationStatus newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|AiRecommendationStatus newQuery()
@@ -28,7 +27,6 @@ use Illuminate\Support\Carbon;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|AiRecommendationStatus whereId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|AiRecommendationStatus whereName($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|AiRecommendationStatus whereUpdatedAt($value)
- *
  * @mixin \Eloquent
  */
 #[Fillable(['code', 'name'])]

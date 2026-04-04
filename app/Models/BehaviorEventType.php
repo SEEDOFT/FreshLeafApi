@@ -18,7 +18,6 @@ use Illuminate\Support\Carbon;
  * @property Carbon|null $updated_at
  * @property-read Collection<int, UserBehaviorEvent> $events
  * @property-read int|null $events_count
- *
  * @method static \Database\Factories\BehaviorEventTypeFactory factory($count = null, $state = [])
  * @method static \Illuminate\Database\Eloquent\Builder<static>|BehaviorEventType newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|BehaviorEventType newQuery()
@@ -28,7 +27,6 @@ use Illuminate\Support\Carbon;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|BehaviorEventType whereId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|BehaviorEventType whereName($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|BehaviorEventType whereUpdatedAt($value)
- *
  * @mixin \Eloquent
  */
 #[Fillable(['code', 'name'])]

@@ -19,7 +19,6 @@ use Illuminate\Support\Carbon;
  * @property Carbon|null $updated_at
  * @property-read Product|null $product
  * @property-read Product|null $substituteProduct
- *
  * @method static \Database\Factories\ProductSubstitutionFactory factory($count = null, $state = [])
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ProductSubstitution newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ProductSubstitution newQuery()
@@ -31,7 +30,6 @@ use Illuminate\Support\Carbon;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ProductSubstitution whereReason($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ProductSubstitution whereSubstituteProductId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ProductSubstitution whereUpdatedAt($value)
- *
  * @mixin \Eloquent
  */
 #[Fillable(['product_id', 'substitute_product_id', 'priority', 'reason'])]

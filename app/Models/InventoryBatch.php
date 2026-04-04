@@ -34,7 +34,6 @@ use Illuminate\Support\Carbon;
  * @property-read InventoryBatchStatus $status
  * @property-read Supplier $supplier
  * @property-read ProductVariant $variant
- *
  * @method static \Database\Factories\InventoryBatchFactory factory($count = null, $state = [])
  * @method static \Illuminate\Database\Eloquent\Builder<static>|InventoryBatch newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|InventoryBatch newQuery()
@@ -55,7 +54,6 @@ use Illuminate\Support\Carbon;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|InventoryBatch whereSoldQty($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|InventoryBatch whereSupplierId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|InventoryBatch whereUpdatedAt($value)
- *
  * @mixin \Eloquent
  */
 #[Fillable(['product_id', 'product_variant_id', 'supplier_id', 'inventory_batch_status_id', 'batch_code', 'received_qty', 'reserved_qty', 'sold_qty', 'damaged_qty', 'expired_qty', 'cost_per_unit', 'expiry_date', 'received_at'])]

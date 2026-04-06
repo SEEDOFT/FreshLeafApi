@@ -10,20 +10,23 @@ use App\Models\User;
 use App\Models\UserStatus;
 use App\Models\UserType;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 
 class AuthController extends Controller
 {
     public function register(RegisterRequest $request): JsonResponse
     {
+        $validatedData = $request->validated();
+
         $user = User::create([
-            'first_name' => $request->first_name,
-            'last_name' => $request->last_name,
-            'phone_number' => $request->phone_number,
+            'first_name' => $validatedData['first_name'],
+            'last_name' => $validatedData['last_name'],
+            'phone_number' => $validatedData['phone_number'],
             'image' => 'user.png',
             'user_status_id' => UserStatus::ACTIVE,
             'user_type_id' => UserType::CONSUMER,
-            'password' => Hash::make($request->password),
+            'password' => Hash::make($validatedData['password']),
         ]);
 
         $token = $user->createToken('auth_token')->plainTextToken;
@@ -36,9 +39,13 @@ class AuthController extends Controller
 
     public function login(LoginRequest $request): JsonResponse
     {
-        $user = User::where('phone_number', $request->phone_number)->first();
+        $validatedData = $request->validated();
+        $user = User::where('phone_number', $validatedData['phone_number'])
+            ->where('user_type_id', UserType::CONSUMER)
+            ->where('user_status_id', UserStatus::ACTIVE)
+            ->first();
 
-        if (! $user || ! Hash::check($request->password, $user->password)) {
+        if (! $user || ! Hash::check($validatedData['password'], $user->password)) {
             return $this->errorResponse('Invalid login details', 401);
         }
 
@@ -60,16 +67,17 @@ class AuthController extends Controller
 
     public function logout(): JsonResponse
     {
-        auth()->user()->tokens()->delete();
+        Auth::user()->tokens()->delete();
 
         return $this->successResponse(message: 'Tokens Revoked');
     }
 
     public function verifyPassword(VerifyPasswordRequest $request): JsonResponse
     {
-        $user = auth()->user();
+        $validatedData = $request->validated();
+        $user = Auth::user();
 
-        if (! Hash::check($request->password, $user->password)) {
+        if (! Hash::check($validatedData['password'], $user->password)) {
             return $this->errorResponse('Invalid password', 401);
         }
 
@@ -78,10 +86,11 @@ class AuthController extends Controller
 
     public function updatePassword(UpdatePasswordRequest $request): JsonResponse
     {
-        $user = auth()->user();
+        $validatedData = $request->validated();
+        $user = Auth::user();
 
         $user->update([
-            'password' => Hash::make($request->password),
+            'password' => Hash::make($validatedData['password']),
         ]);
 
         return $this->successResponse(message: 'Password updated');

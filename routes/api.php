@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AddressController;
+use App\Http\Controllers\AiChatController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\PaymentMethodController;
@@ -52,6 +53,14 @@ Route::prefix('v1')->group(
                 Route::patch('/profile', [UserController::class, 'update']);
                 Route::put('/profile', [UserController::class, 'replace']);
                 Route::delete('/profile', [UserController::class, 'destroy']);
+            }
+        );
+
+        Route::controller(AiChatController::class)->prefix('ai/chat')->middleware('auth:sanctum')->group(
+            static function () {
+                Route::post('/sessions', 'createSession')->name('ai.chat.sessions.create');
+                Route::post('/messages', 'storeMessage')->name('ai.chat.messages.store');
+                Route::post('/history', 'history')->name('ai.chat.history');
             }
         );
 

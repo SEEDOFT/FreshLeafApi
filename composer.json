@@ -10,7 +10,9 @@
     "license": "MIT",
     "require": {
         "php": "^8.3",
+        "google/cloud-ai-platform": "*",
         "laravel/framework": "^13.0",
+        "laravel/reverb": "^1.0",
         "laravel/sanctum": "^4.0",
         "laravel/telescope": "^5.19",
         "laravel/tinker": "^3.0",
@@ -50,7 +52,7 @@
         ],
         "dev": [
             "Composer\\Config::disableProcessTimeout",
-            "npx concurrently -c \"#93c5fd,#c4b5fd,#fb7185,#fdba74\" \"php artisan serve\" \"php artisan queue:listen --tries=1 --timeout=0\" \"php artisan pail --timeout=0\" \"npm run dev\" --names=server,queue,logs,vite --kill-others"
+            "npx concurrently -c \"#93c5fd,#c4b5fd,#fdba74,#4ade80\" \"php artisan serve @additional_args\" \"php artisan queue:listen --queue=ai-stream,default --tries=1 --timeout=0\" \"php artisan reverb:start\" \"npm run dev\" --names=server,queue,reverb,vite --kill-others"
         ],
         "test": [
             "@php artisan config:clear --ansi",

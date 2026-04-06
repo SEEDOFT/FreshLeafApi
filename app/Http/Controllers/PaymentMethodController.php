@@ -25,7 +25,10 @@ class PaymentMethodController extends Controller
             ->orderBy('created_at', 'desc')
             ->simplePaginate($request->integer('per_page', 10));
 
-        return $this->successResponse(PaymentMethodResource::collection($paymentMethods), message: 'Payment methods retrieved successfully');
+        return $this->successResponse(
+            PaymentMethodResource::collection($paymentMethods),
+            message: 'Payment methods retrieved successfully'
+        );
     }
 
     /**

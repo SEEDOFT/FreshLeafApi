@@ -14,8 +14,8 @@ return new class extends Migration
         Schema::create('payment_methods', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('user_id');
-            $table->unsignedBigInteger('payment_method_type_id');
-            $table->unsignedBigInteger('payment_method_status_id');
+            $table->unsignedBigInteger('payment_method_type_id')->nullable();
+            $table->unsignedBigInteger('payment_method_status_id')->nullable();
             $table->string('label');
             $table->string('card_holder_name');
             $table->string('card_number');
@@ -23,7 +23,12 @@ return new class extends Migration
             $table->unsignedSmallInteger('expiry_year');
             $table->string('cvv');
             $table->boolean('is_default')->default(false);
+            $table->string('billing_address')->nullable();
+            $table->string('billing_city')->nullable();
+            $table->string('billing_state')->nullable();
+            $table->string('billing_zip_code')->nullable();
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 

@@ -28,7 +28,7 @@ class StorePaymentMethodRequest extends FormRequest
             'card_holder_name' => ['required', 'string', 'max:255'],
             'card_number' => ['required', 'string', 'min:12', 'max:19'],
             'expiry_month' => ['required', 'integer', 'min:1', 'max:12'],
-            'expiry_year' => ['required', 'integer', 'min:'.date('Y'), 'max:'.(date('Y') + 20)],
+            'expiry_year' => ['required', 'integer', 'min:'.date('Y'), 'max:'.date('Y') + 20],
             'cvv' => ['required', 'string', 'min:3', 'max:4'],
             'is_default' => ['sometimes', 'boolean'],
             'billing_address' => ['sometimes', 'string', 'max:255'],

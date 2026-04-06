@@ -1,7 +1,7 @@
 # Project Documentation - FreshLeaf API
 
 ## Overview
-This documentation outlines the implementation status of the FreshLeaf API, covering database schema, API endpoints, payment integrations, and the roadmap for future development. All models are built using PHP 8.3 features, including Attributes for property definitions (`Fillable`, `Hidden`) and explicit return types.
+This documentation outlines the implementation status of the FreshLeaf API, covering database schema, API endpoints, payment integrations, AI/Chat features, and the roadmap for future development. All models are built using PHP 8.3 features, including Attributes for property definitions (`Fillable`, `Hidden`) and explicit return types.
 
 ---
 
@@ -54,13 +54,73 @@ This documentation outlines the implementation status of the FreshLeaf API, cove
 - **Form Requests:** `CreatePayPalOrderRequest`, `CapturePayPalOrderRequest`.
 - **Configuration:** `.env` keys (`PAYPAL_CLIENT_ID`, `PAYPAL_SECRET`, `PAYPAL_MODE`, `PAYPAL_WEBHOOK_ID`) and `config/services.php` paypal section.
 
-### 4. Database Seeders
+### 4. Gemini AI Integration
+- **Provider-agnostic AI service:** `AiService` routes requests to configured provider.
+- **Gemini provider:**
+  - `generateContent()` — Single prompt generation
+  - `generateContentWithHistory()` — Conversation history support
+  - Uses Google AI Studio Gemini REST API via Laravel HTTP client
+- **Zen provider:** OpenCode Zen API key support with OpenAI-compatible chat completion payload.
+- **Ollama provider (local/free):** Supports local model usage (default `qwen2.5:1.5b`).
+- **Backend-owned provider calls:** Flutter no longer needs direct Gemini API calls.
+- **Configuration:** `.env` keys (`AI_PROVIDER`, `AI_FALLBACK_PROVIDERS`, `GEMINI_API_KEY`, `GEMINI_MODEL`, `ZEN_API_KEY`, `ZEN_BASE_URL`, `ZEN_MODEL`, `OLLAMA_BASE_URL`, `OLLAMA_MODEL`).
+
+### 5. Laravel Reverb WebSocket Integration
+- **Package:** `laravel/reverb` v1.10.0 installed.
+- **Chat Endpoints:**
+  - `POST /api/v1/ai/chat/sessions` — create/reuse chat session
+  - `POST /api/v1/ai/chat/messages` — submit user message, queue AI processing
+  - `POST /api/v1/ai/chat/history` — hydrate session history
+- **Broadcast Auth:** `POST /broadcasting/auth` protected by `auth:sanctum`.
+- **Private Channel:** `private-ai-chat.{userId}.{sessionId}`.
+- **Queued Processing:** `ProcessAiChatMessageJob` on `ai-stream` queue.
+- **Broadcast Events:**
+  - `AiMessageStarted`
+  - `AiMessageChunk`
+  - `AiMessageCompleted`
+  - `AiMessageFailed`
+- **Event payload contract:** `session_id`, `message_id`, `role`, `timestamp`, `sequence`, plus `text_chunk` (chunk only) or `full_text` (completed only).
+- **Reverb Configuration:** `config/reverb.php` with app credentials and server settings.
+- **Composer Script:** Updated `composer run dev` to start all services including WebSocket.
+
+### 6. Database Seeders
 - **PaymentMethodTypeSeeder:** Seeds all 9 payment method types using model constants.
 - **PaymentMethodStatusSeeder:** Seeds all 3 payment method statuses using model constants.
 - **DatabaseSeeder:** Updated to call both seeders.
 
-### 5. Migrations
+### 7. Migrations
 - `2026_04_04_025456_add_additional_payment_method_types` — Seeds Amex, Discover, JCB, Diners Club, PayPal, Stripe types.
+
+---
+
+## 🚀 Quick Start
+
+### Development Server
+```bash
+# Start all services (server, queue, reverb, vite)
+composer run dev
+
+# Or with custom Laravel server host/port
+composer run dev -- --host=192.168.0.108 --port=9000
+```
+
+### Environment Variables
+```env
+# Reverb server runtime bind
+REVERB_SERVER_HOST=0.0.0.0
+REVERB_SERVER_PORT=8080
+
+# Reverb public host/port for clients
+REVERB_HOST=127.0.0.1
+REVERB_PORT=8080
+```
+
+### Running Individual Services (Optional)
+```bash
+php artisan serve --host=192.168.0.108 --port=8000  # HTTP server
+php artisan reverb:start --host=0.0.0.0 --port=8080  # WebSocket server
+php artisan queue:work --queue=ai-stream  # AI queue worker
+```
 
 ---
 
@@ -131,6 +191,38 @@ This documentation outlines the implementation status of the FreshLeaf API, cove
 - **Payment Encryption:** Sensitive card data encrypted at rest using Laravel's `encrypted` cast.
 - **Service Layer:** Payment processing abstracted into dedicated service classes (`StripeService`, `PayPalService`).
 - **Webhook Security:** Both Stripe and PayPal webhooks verify signatures before processing.
+- **WebSocket:** Laravel Reverb for real-time AI streaming via private channels.
+- **Async Processing:** Queued jobs for AI processing on dedicated `ai-stream` queue.
+- **Dev Scripts:** `composer run dev` with configurable Laravel server host/port via `--host` and `--port` arguments.
+
+---
+
+## 🔌 Flutter Integration Guide
+
+### WebSocket Connection
+```dart
+// 1) Authorize via POST /broadcasting/auth (Bearer token)
+// 2) Subscribe to private-ai-chat.<USER_ID>.<SESSION_ID>
+// 3) Listen for AiMessageStarted, AiMessageChunk, AiMessageCompleted, AiMessageFailed
+```
+
+### API Endpoints
+```dart
+// POST /api/v1/ai/chat/sessions  -> ensure session
+// POST /api/v1/ai/chat/messages  -> send prompt (optimistic user message)
+// POST /api/v1/ai/chat/history   -> hydrate on cold start / reload
+```
+
+### Environment Configuration
+| Variable | Default | Description |
+|----------|---------|-------------|
+| `REVERB_WS_HOST` | - | Flutter runtime WebSocket host |
+| `REVERB_WS_PORT` | - | Flutter runtime WebSocket port |
+| `REVERB_WS_SCHEME` | `ws` | Flutter runtime WebSocket scheme |
+| `REVERB_APP_KEY` | - | Reverb app key used by Flutter socket client |
+| `REVERB_AUTH_ENDPOINT` | `/broadcasting/auth` | Optional auth endpoint override |
+| `REVERB_HOST` | 127.0.0.1 | WebSocket server host |
+| `REVERB_PORT` | 8080 | WebSocket server port |
 
 ---
 

@@ -7,51 +7,169 @@
 <a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
 </p>
 
-## About Laravel
+# FreshLeaf API
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+A Laravel 13 REST API with payment integrations (Stripe, PayPal) and backend-driven AI chat streaming through Laravel Reverb (REST + private WebSocket channels).
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## Features
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+- **Payment Processing**: Stripe & PayPal sandbox integration
+- **AI Chat**: Session-based AI chat over REST + Reverb private channels
+- **Authentication**: Laravel Sanctum for API token auth
+- **API Versioning**: `/api/v1/` prefix with RESTful endpoints
 
-## Learning Laravel
-
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
-
-In addition, [Laracasts](https://laracasts.com) contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
-
-You can also watch bite-sized lessons with real-world projects on [Laravel Learn](https://laravel.com/learn), where you will be guided through building a Laravel application from scratch while learning PHP fundamentals.
-
-## Agentic Development
-
-Laravel's predictable structure and conventions make it ideal for AI coding agents like Claude Code, Cursor, and GitHub Copilot. Install [Laravel Boost](https://laravel.com/docs/ai) to supercharge your AI workflow:
+## Quick Start
 
 ```bash
-composer require laravel/boost --dev
+# Install dependencies
+composer install
 
-php artisan boost:install
+# Setup environment
+# macOS / Linux
+cp .env.example .env
+
+# Windows (PowerShell)
+copy .env.example .env
+
+php artisan key:generate
+php artisan migrate
+
+# Start development (all services)
+composer run dev
+
+# Or with custom Laravel server host/port
+composer run dev -- --host=192.168.0.108 --port=9000
 ```
 
-Boost provides your agent 15+ tools and skills that help agents build Laravel applications while following best practices.
+## AI Chat Flow (Flutter)
 
-## Contributing
+1. `POST /api/v1/ai/chat/sessions` to create / reuse a session.
+2. Subscribe to `private-ai-chat.{userId}.{sessionId}`.
+3. `POST /api/v1/ai/chat/messages` to send user prompt.
+4. Stream UI updates from: `AiMessageStarted`, `AiMessageChunk`, `AiMessageCompleted`, `AiMessageFailed`.
+5. Hydrate on cold start with `POST /api/v1/ai/chat/history`.
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+## Environment Variables
 
-## Code of Conduct
+```env
+# Reverb server runtime bind
+REVERB_SERVER_HOST=0.0.0.0
+REVERB_SERVER_PORT=8080
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+# Reverb public host/port for clients
+REVERB_HOST=127.0.0.1
+REVERB_PORT=8080
 
-## Security Vulnerabilities
+# Flutter runtime keys (dart-define)
+REVERB_APP_KEY=your_reverb_app_key
+REVERB_WS_SCHEME=ws
+REVERB_WS_HOST=127.0.0.1
+REVERB_WS_PORT=8080
+REVERB_AUTH_ENDPOINT=/broadcasting/auth
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+# Stripe
+STRIPE_KEY=pk_test_...
+STRIPE_SECRET=sk_test_...
+STRIPE_WEBHOOK_SECRET=whsec_...
+
+# PayPal
+PAYPAL_CLIENT_ID=...
+PAYPAL_SECRET=...
+PAYPAL_MODE=sandbox
+
+# Gemini AI
+GEMINI_API_KEY=...
+GEMINI_MODEL=gemini-2.0-flash
+
+# AI provider selection
+AI_PROVIDER=gemini
+AI_FALLBACK_PROVIDERS=zen,ollama
+
+# OpenCode Zen (free tier)
+ZEN_API_KEY=...
+ZEN_BASE_URL=https://opencode.ai/zen/v1
+ZEN_MODEL=minimax-m2.5-free
+ZEN_TIMEOUT=40
+
+# Ollama (local AI)
+OLLAMA_BASE_URL=http://127.0.0.1:11434
+OLLAMA_MODEL=qwen2.5:1.5b
+OLLAMA_TIMEOUT=60
+```
+
+AI uses Google AI Studio API key mode (Gemini REST API) on the backend. No Vertex ADC / service account is required.
+
+## Lightweight Local AI (Free)
+
+Recommended lightweight local model: `qwen2.5:1.5b`.
+
+```bash
+# Install Ollama, then pull a lightweight model
+ollama pull qwen2.5:1.5b
+
+# Run local Ollama server (default http://127.0.0.1:11434)
+ollama serve
+```
+
+To switch backend provider to local AI:
+
+```env
+AI_PROVIDER=ollama
+AI_FALLBACK_PROVIDERS=gemini
+```
+
+To use OpenCode Zen free tier first:
+
+```env
+AI_PROVIDER=zen
+AI_FALLBACK_PROVIDERS=gemini,ollama
+ZEN_API_KEY=your_zen_api_key
+ZEN_MODEL=minimax-m2.5-free
+```
+
+## API Endpoints
+
+### Authentication
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| POST | `/api/v1/auth/register` | Register user |
+| POST | `/api/v1/auth/login` | Login (get token) |
+| POST | `/api/v1/auth/logout` | Logout (require auth) |
+
+### Payments (require auth)
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| POST | `/api/v1/users/payments/intent` | Create Stripe payment intent |
+| POST | `/api/v1/users/payments/confirm` | Confirm Stripe payment |
+| POST | `/api/v1/users/payments/paypal/order` | Create PayPal order |
+| POST | `/api/v1/users/payments/paypal/capture` | Capture PayPal payment |
+
+### AI Chat (require auth)
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| POST | `/api/v1/ai/chat/sessions` | Create / reuse chat session |
+| POST | `/api/v1/ai/chat/messages` | Submit user message (queues AI job) |
+| POST | `/api/v1/ai/chat/history` | Load message history |
+
+### Broadcast Auth (require auth)
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| POST | `/broadcasting/auth` | Authorize private channel subscription |
+
+The auth request must include your Bearer token and Pusher-compatible payload (`socket_id`, `channel_name`).
+
+### WebSocket Events
+- Subscribe to: `private-ai-chat.{userId}.{sessionId}`
+- Listen for: `AiMessageStarted`, `AiMessageChunk`, `AiMessageCompleted`, `AiMessageFailed`
+
+## Services Running
+
+| Service | Default | Description |
+|---------|---------|-------------|
+| Laravel Server | 127.0.0.1:8000 | HTTP API |
+| Queue Worker | - | Async job processing |
+| Reverb | 127.0.0.1:8080 | WebSocket server |
+| Vite | localhost:5173 | Frontend dev server |
 
 ## License
 

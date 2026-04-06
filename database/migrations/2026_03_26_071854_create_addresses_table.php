@@ -22,7 +22,11 @@ return new class extends Migration
             $table->string('city');
             $table->string('province');
             $table->string('postal_code');
+            $table->decimal('lat', 10, 8);
+            $table->decimal('long', 11, 8);
+            $table->string('address_map')->nullable();
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 

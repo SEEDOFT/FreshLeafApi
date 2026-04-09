@@ -18,6 +18,7 @@ class PaymentMethodTypeFactory extends Factory
     public function definition(): array
     {
         return [
+            'id' => $this->faker->unique()->numberBetween(1000, 999999),
             'code' => $this->faker->unique()->slug(),
             'name' => $this->faker->words(2, true),
         ];

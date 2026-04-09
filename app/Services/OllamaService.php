@@ -60,6 +60,59 @@ class OllamaService implements AiProviderContract
         return $this->requestChat($messages, $options);
     }
 
+    public function generateContentWithSystemPrompt(
+        string $systemPrompt,
+        string $prompt,
+        array $options = [],
+    ): string {
+        $messages = [
+            [
+                'role' => 'system',
+                'content' => $systemPrompt,
+            ],
+            [
+                'role' => 'user',
+                'content' => $prompt,
+            ],
+        ];
+
+        return $this->requestChat($messages, $options);
+    }
+
+    public function generateContentWithSystemPromptAndHistory(
+        string $systemPrompt,
+        array $history,
+        string $prompt,
+        array $options = [],
+    ): string {
+        $messages = [
+            [
+                'role' => 'system',
+                'content' => $systemPrompt,
+            ],
+        ];
+
+        foreach ($history as $message) {
+            $content = (string) ($message['content'] ?? '');
+
+            if ($content === '') {
+                continue;
+            }
+
+            $messages[] = [
+                'role' => ($message['role'] ?? 'user') === 'assistant' ? 'assistant' : 'user',
+                'content' => $content,
+            ];
+        }
+
+        $messages[] = [
+            'role' => 'user',
+            'content' => $prompt,
+        ];
+
+        return $this->requestChat($messages, $options);
+    }
+
     private function requestChat(array $messages, array $options): string
     {
         $payload = [
@@ -68,7 +121,7 @@ class OllamaService implements AiProviderContract
             'stream' => false,
             'options' => [
                 'temperature' => $options['temperature'] ?? 0.7,
-                'num_predict' => $options['maxOutputTokens'] ?? 1024,
+                'num_predict' => $options['maxOutputTokens'] ?? 4096,
             ],
         ];
 

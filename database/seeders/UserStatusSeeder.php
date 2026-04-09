@@ -13,15 +13,16 @@ class UserStatusSeeder extends Seeder
     public function run(): void
     {
         $statuses = [
-            ['id' => UserStatus::ACTIVE, 'code' => 'active', 'name' => 'Active'],
-            ['id' => UserStatus::INACTIVE, 'code' => 'inactive', 'name' => 'Inactive'],
-            ['id' => UserStatus::DELETED, 'code' => 'deleted', 'name' => 'Deleted'],
+            ['id' => UserStatus::ACTIVE, 'name' => 'Active'],
+            ['id' => UserStatus::INACTIVE, 'name' => 'Inactive'],
+            ['id' => UserStatus::DELETED, 'name' => 'Deleted'],
+            ['id' => UserStatus::PENDING, 'name' => 'Pending'],
         ];
 
         foreach ($statuses as $status) {
             UserStatus::updateOrCreate(
                 ['id' => $status['id']],
-                ['code' => $status['code'], 'name' => $status['name']]
+                ['name' => $status['name']]
             );
         }
     }

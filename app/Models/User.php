@@ -7,11 +7,15 @@ use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Attributes\Appends;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Hidden;
+use Illuminate\Database\Eloquent\Attributes\Table;
+use Illuminate\Database\Eloquent\Attributes\UseFactory;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\DatabaseNotification;
@@ -38,7 +42,7 @@ use Laravel\Sanctum\PersonalAccessToken;
  * @property Carbon|null $deleted_at
  * @property string $last_name
  * @property string|null $image
- * @property-read Collection<int, Address> $addresses
+ * @property-read Collection<int, UserAddress> $addresses
  * @property-read int|null $addresses_count
  * @property-read DatabaseNotificationCollection<int, DatabaseNotification> $notifications
  * @property-read int|null $notifications_count
@@ -46,8 +50,12 @@ use Laravel\Sanctum\PersonalAccessToken;
  * @property-read Collection<int, PersonalAccessToken> $tokens
  * @property-read int|null $tokens_count
  * @property-read UserType|null $type
- * @property-read Collection<int, PaymentMethod> $paymentMethods
+ * @property-read Collection<int, UserPaymentMethod> $paymentMethods
  * @property-read int|null $paymentMethods_count
+ * @property-read VendorProfile|null $vendorProfile
+ * @property-read AdminProfile|null $adminProfile
+ * @property-read ConsumerProfile|null $consumerProfile
+ *
  * @method static \Database\Factories\UserFactory factory($count = null, $state = [])
  * @method static \Illuminate\Database\Eloquent\Builder<static>|User newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|User newQuery()
@@ -69,11 +77,20 @@ use Laravel\Sanctum\PersonalAccessToken;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|User withTrashed(bool $withTrashed = true)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|User withoutTrashed()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|User whereImage($value)
- * @property string|null $pin
- * @method static \Illuminate\Database\Eloquent\Builder<static>|User wherePin($value)
+ *
  * @property-read int|null $payment_methods_count
+ * @property string|null $pin
+ *
+ * @method static Builder<static>|User active()
+ * @method static Builder<static>|User ofType(int $userTypeId)
+ * @method static Builder<static>|User wherePin($value)
+ * @method static Builder<static>|User withStatus(int $userStatusId)
+ *
+ * @property-read VendorProfile|null $vendorProfile
+ *
  * @mixin \Eloquent
  */
+#[Table('users', key: 'id')]
 #[Appends(['image'])]
 #[Fillable([
     'first_name',
@@ -84,13 +101,11 @@ use Laravel\Sanctum\PersonalAccessToken;
     'password',
     'user_type_id',
     'user_status_id',
-    'image',
-    'pin',
 ])]
 #[Hidden(['password', 'remember_token'])]
+#[UseFactory(UserFactory::class)]
 class User extends Authenticatable
 {
-    /** @use HasFactory<UserFactory> */
     use HasApiTokens, HasFactory, Notifiable, SoftDeletes;
 
     /**
@@ -150,7 +165,7 @@ class User extends Authenticatable
      */
     public function addresses(): HasMany
     {
-        return $this->hasMany(Address::class);
+        return $this->hasMany(UserAddress::class);
     }
 
     /**
@@ -158,6 +173,70 @@ class User extends Authenticatable
      */
     public function paymentMethods(): HasMany
     {
-        return $this->hasMany(PaymentMethod::class);
+        return $this->hasMany(UserPaymentMethod::class);
+    }
+
+    /**
+     * Get the vendor profile for the user.
+     */
+    public function vendorProfile(): HasOne
+    {
+        return $this->hasOne(VendorProfile::class);
+    }
+
+    /**
+     * Get the admin profile for the user.
+     */
+    public function adminProfile(): HasOne
+    {
+        return $this->hasOne(AdminProfile::class);
+    }
+
+    /**
+     * Get the consumer profile for the user.
+     */
+    public function consumerProfile(): HasOne
+    {
+        return $this->hasOne(ConsumerProfile::class);
+    }
+
+    /**
+     * Scope a query to a specific user type.
+     */
+    public function scopeOfType(Builder $query, int $userTypeId): Builder
+    {
+        return $query->where('user_type_id', $userTypeId);
+    }
+
+    /**
+     * Scope a query to a specific user status.
+     */
+    public function scopeWithStatus(Builder $query, int $userStatusId): Builder
+    {
+        return $query->where('user_status_id', $userStatusId);
+    }
+
+    /**
+     * Scope a query to active users.
+     */
+    public function scopeActive(Builder $query): Builder
+    {
+        return $query->withStatus(UserStatus::ACTIVE);
+    }
+
+    /**
+     * Determine whether the user has the given type.
+     */
+    public function isType(int $userTypeId): bool
+    {
+        return (int) $this->user_type_id === $userTypeId;
+    }
+
+    /**
+     * Determine whether the user is active.
+     */
+    public function isActive(): bool
+    {
+        return (int) $this->user_status_id === UserStatus::ACTIVE;
     }
 }

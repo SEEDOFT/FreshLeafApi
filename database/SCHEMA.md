@@ -61,14 +61,14 @@ User delivery addresses.
 
 ## 2. Product Domain
 
-### `categories`
+### `product_categories`
 - `id` (PK)
 - `name` (string)
 - `slug` (string, unique, index)
 
 ### `products`
 - `id` (PK)
-- `category_id` (FK: `categories`)
+- `product_category_id` (FK: `product_categories`)
 - `product_type_id` (FK: `product_types`)
 - `default_unit_id` (FK: `units`)
 - `product_status_id` (FK: `product_statuses`)

@@ -30,7 +30,7 @@ use Illuminate\Support\Carbon;
  * @property-read Collection<int, CartItem> $cartItems
  * @property-read Collection<int, PurchaseOrderItem> $purchaseOrderItems
  * @property-read Collection<int, AiRecommendationItem> $aiRecommendationItems
- * @property-read Collection<int, UserBehaviorEvent> $userBehaviorEvents
+ *
  * @method static \Database\Factories\ProductVariantFactory factory($count = null, $state = [])
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ProductVariant newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ProductVariant newQuery()
@@ -43,6 +43,7 @@ use Illuminate\Support\Carbon;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ProductVariant whereQuantityInUnit($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ProductVariant whereUnitId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ProductVariant whereUpdatedAt($value)
+ *
  * @property-read int|null $ai_recommendation_items_count
  * @property-read int|null $cart_items_count
  * @property-read int|null $inventory_batches_count
@@ -51,6 +52,7 @@ use Illuminate\Support\Carbon;
  * @property-read int|null $price_histories_count
  * @property-read int|null $purchase_order_items_count
  * @property-read int|null $user_behavior_events_count
+ *
  * @mixin \Eloquent
  */
 #[Fillable(['product_id', 'unit_id', 'name', 'quantity_in_unit', 'price'])]
@@ -129,13 +131,5 @@ class ProductVariant extends Model
     public function aiRecommendationItems(): HasMany
     {
         return $this->hasMany(AiRecommendationItem::class);
-    }
-
-    /**
-     * Get the user behavior events for the product variant.
-     */
-    public function userBehaviorEvents(): HasMany
-    {
-        return $this->hasMany(UserBehaviorEvent::class);
     }
 }

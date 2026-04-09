@@ -29,17 +29,17 @@ use Illuminate\Support\Carbon;
  * @property string|null $notes
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
- * @property-read Address $address
+ * @property-read UserAddress $address
  * @property-read Collection<int, OrderItem> $items
  * @property-read int|null $items_count
  * @property-read PaymentStatus $paymentStatus
  * @property-read Collection<int, Payment> $payments
  * @property-read int|null $payments_count
  * @property-read OrderStatus $status
- * @property-read Collection<int, OrderStatusHistory> $statusHistories
  * @property-read int|null $status_histories_count
  * @property-read OrderType $type
  * @property-read User|null $user
+ *
  * @method static \Database\Factories\OrderFactory factory($count = null, $state = [])
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Order newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Order newQuery()
@@ -61,6 +61,7 @@ use Illuminate\Support\Carbon;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Order whereTotalAmount($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Order whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Order whereUserId($value)
+ *
  * @mixin \Eloquent
  */
 #[Fillable([
@@ -109,7 +110,7 @@ class Order extends Model
      */
     public function address(): BelongsTo
     {
-        return $this->belongsTo(Address::class);
+        return $this->belongsTo(UserAddress::class);
     }
 
     /**
@@ -150,13 +151,5 @@ class Order extends Model
     public function payments(): HasMany
     {
         return $this->hasMany(Payment::class);
-    }
-
-    /**
-     * Get the status history for the order.
-     */
-    public function statusHistories(): HasMany
-    {
-        return $this->hasMany(OrderStatusHistory::class);
     }
 }

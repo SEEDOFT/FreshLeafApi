@@ -18,12 +18,23 @@ class DatabaseSeeder extends Seeder
         $this->call([
             UserStatusSeeder::class,
             UserTypeSeeder::class,
+            DefaultSuperAdminSeeder::class,
             PaymentMethodTypeSeeder::class,
             PaymentMethodStatusSeeder::class,
+            OperationUserSeeder::class,
+            SupplierSeeder::class,
+            ProductStatusSeeder::class,
+            ProductTypeSeeder::class,
+            UnitSeeder::class,
+            CategorySeeder::class,
+            ProductSeeder::class,
+            ProductSampleSeeder::class,
+            ProductVariantSeeder::class,
         ]);
 
         User::factory()->create([
-            'name' => 'Test User',
+            'first_name' => 'Test',
+            'last_name' => 'User',
             'email' => 'test@example.com',
         ]);
     }

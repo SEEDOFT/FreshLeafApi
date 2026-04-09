@@ -17,7 +17,7 @@ use Illuminate\Support\Str;
 
 /**
  * @property int $id
- * @property int $category_id
+ * @property int $product_category_id
  * @property int $product_type_id
  * @property int $default_unit_id
  * @property int $product_status_id
@@ -29,7 +29,8 @@ use Illuminate\Support\Str;
  * @property Carbon|null $deleted_at
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
- * @property-read Category $category
+ * @property-read ProductCategory $category
+ * @property-read ProductCategory $productCategory
  * @property-read Unit $defaultUnit
  * @property-read ProductStatus $status
  * @property-read Collection<int, ProductSubstitution> $substitutions
@@ -44,15 +45,15 @@ use Illuminate\Support\Str;
  * @property-read Collection<int, CartItem> $cartItems
  * @property-read Collection<int, PurchaseOrderItem> $purchaseOrderItems
  * @property-read Collection<int, AiRecommendationItem> $aiRecommendationItems
- * @property-read Collection<int, UserBehaviorEvent> $userBehaviorEvents
+ *
  * @method static \Database\Factories\ProductFactory factory($count = null, $state = [])
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Product active()
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Product byCategory(int|Category $category)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Product byCategory(int|ProductCategory $category)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Product newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Product newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Product onlyTrashed()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Product query()
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Product whereCategoryId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Product whereProductCategoryId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Product whereCreatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Product whereDefaultUnitId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Product whereDeletedAt($value)
@@ -67,6 +68,7 @@ use Illuminate\Support\Str;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Product whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Product withTrashed(bool $withTrashed = true)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Product withoutTrashed()
+ *
  * @property-read int|null $ai_recommendation_items_count
  * @property-read int|null $cart_items_count
  * @property-read int|null $inventory_batches_count
@@ -77,10 +79,11 @@ use Illuminate\Support\Str;
  * @property-read Collection<int, ProductSubstitution> $substitutionsFor
  * @property-read int|null $substitutions_for_count
  * @property-read int|null $user_behavior_events_count
+ *
  * @mixin \Eloquent
  */
 #[Fillable([
-    'category_id',
+    'product_category_id',
     'product_type_id',
     'default_unit_id',
     'product_status_id',
@@ -127,7 +130,15 @@ class Product extends Model
      */
     public function category(): BelongsTo
     {
-        return $this->belongsTo(Category::class);
+        return $this->belongsTo(ProductCategory::class, 'product_category_id');
+    }
+
+    /**
+     * Get the product category that owns the product.
+     */
+    public function productCategory(): BelongsTo
+    {
+        return $this->belongsTo(ProductCategory::class, 'product_category_id');
     }
 
     /**
@@ -234,14 +245,6 @@ class Product extends Model
         return $this->hasMany(AiRecommendationItem::class);
     }
 
-    /**
-     * Get the user behavior events for the product.
-     */
-    public function userBehaviorEvents(): HasMany
-    {
-        return $this->hasMany(UserBehaviorEvent::class);
-    }
-
     // Scopes
 
     /**
@@ -255,10 +258,12 @@ class Product extends Model
     /**
      * Scope a query to filter products by category.
      */
-    public function scopeByCategory(Builder $query, int|Category $category): Builder
+    public function scopeByCategory(Builder $query, int|ProductCategory $category): Builder
     {
-        $categoryId = $category instanceof Category ? $category->id : $category;
+        $categoryId = $category instanceof ProductCategory
+            ? $category->id
+            : $category;
 
-        return $query->where('category_id', $categoryId);
+        return $query->where('product_category_id', $categoryId);
     }
 }

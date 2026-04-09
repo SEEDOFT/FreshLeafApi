@@ -17,15 +17,16 @@ class AuthTest extends TestCase
         parent::setUp();
 
         UserStatus::insert([
-            ['id' => UserStatus::ACTIVE, 'code' => 'active', 'name' => 'Active'],
-            ['id' => UserStatus::INACTIVE, 'code' => 'inactive', 'name' => 'Inactive'],
-            ['id' => UserStatus::DELETED, 'code' => 'deleted', 'name' => 'Deleted'],
+            ['id' => UserStatus::ACTIVE, 'name' => 'Active'],
+            ['id' => UserStatus::INACTIVE, 'name' => 'Inactive'],
+            ['id' => UserStatus::DELETED, 'name' => 'Deleted'],
+            ['id' => UserStatus::PENDING, 'name' => 'Pending'],
         ]);
 
         UserType::insert([
-            ['id' => UserType::CONSUMER, 'code' => 'consumer', 'name' => 'Consumer'],
-            ['id' => UserType::OPERATION, 'code' => 'operation', 'name' => 'Operation'],
-            ['id' => UserType::ADMIN, 'code' => 'admin', 'name' => 'Admin'],
+            ['id' => UserType::CONSUMER, 'name' => 'Consumer'],
+            ['id' => UserType::OPERATION, 'name' => 'Operation'],
+            ['id' => UserType::ADMIN, 'name' => 'Admin'],
         ]);
     }
 
@@ -55,14 +56,6 @@ class AuthTest extends TestCase
                 'data' => [
                     'access_token',
                     'token_type',
-                    'user' => [
-                        'id',
-                        'first_name',
-                        'last_name',
-                        'phone_number',
-                        'created_at',
-                        'updated_at',
-                    ],
                 ],
             ]);
 
@@ -103,7 +96,6 @@ class AuthTest extends TestCase
                 'data' => [
                     'access_token',
                     'token_type',
-                    'user',
                 ],
             ]);
     }
@@ -156,5 +148,51 @@ class AuthTest extends TestCase
             ]);
 
         $this->assertCount(0, $user->tokens);
+    }
+
+    public function test_vendor_registration_is_pending_until_super_admin_approval(): void
+    {
+        $registerResponse = $this->postJson('/api/v1/vendor/auth/register', [
+            'first_name' => 'Vendor',
+            'last_name' => 'User',
+            'email' => 'vendor.pending@example.com',
+            'phone_number' => '85510000111',
+            'password' => 'password123',
+            'password_confirmation' => 'password123',
+            'business_name' => 'FreshLeaf Vendor Co',
+            'city' => 'Phnom Penh',
+            'province' => 'Phnom Penh',
+            'address' => 'Street 271',
+        ]);
+
+        $registerResponse->assertStatus(201)
+            ->assertJsonPath('status.success', true)
+            ->assertJsonPath('status.message', 'Vendor registration submitted. Waiting for super admin approval.');
+
+        $this->assertDatabaseHas('users', [
+            'phone_number' => '85510000111',
+            'user_type_id' => UserType::VENDOR,
+            'user_status_id' => UserStatus::PENDING,
+        ]);
+
+        $loginResponse = $this->postJson('/api/v1/vendor/auth/login', [
+            'phone_number' => '85510000111',
+            'password' => 'password123',
+        ]);
+
+        $loginResponse->assertStatus(401)
+            ->assertJsonPath('status.success', false)
+            ->assertJsonPath('status.message', 'Invalid login details');
+    }
+
+    public function test_admin_registration_endpoint_is_not_available(): void
+    {
+        $this->postJson('/api/v1/admin/auth/register', [
+            'first_name' => 'Admin',
+            'last_name' => 'User',
+            'phone_number' => '85510000112',
+            'password' => 'password123',
+            'password_confirmation' => 'password123',
+        ])->assertNotFound();
     }
 }

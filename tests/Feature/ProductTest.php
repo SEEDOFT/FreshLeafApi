@@ -2,8 +2,8 @@
 
 namespace Tests\Feature;
 
-use App\Models\Category;
 use App\Models\Product;
+use App\Models\ProductCategory;
 use App\Models\ProductStatus;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
@@ -72,11 +72,11 @@ class ProductTest extends TestCase
      */
     public function test_product_by_category_scope(): void
     {
-        $category1 = Category::factory()->create();
-        $category2 = Category::factory()->create();
+        $category1 = ProductCategory::factory()->create();
+        $category2 = ProductCategory::factory()->create();
 
-        Product::factory()->count(2)->create(['category_id' => $category1->id]);
-        Product::factory()->count(3)->create(['category_id' => $category2->id]);
+        Product::factory()->count(2)->create(['product_category_id' => $category1->id]);
+        Product::factory()->count(3)->create(['product_category_id' => $category2->id]);
 
         $this->assertCount(2, Product::byCategory($category1)->get());
         $this->assertCount(3, Product::byCategory($category2->id)->get());

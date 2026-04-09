@@ -13,28 +13,9 @@ return new class extends Migration
     {
         Schema::create('user_statuses', function (Blueprint $table) {
             $table->unsignedBigInteger('id');
-            $table->string('code')->unique();
             $table->string('name');
             $table->timestamps();
         });
-
-        DB::table('user_statuses')->insert([
-            [
-                'id' => 1,
-                'code' => 'ACTIVE',
-                'name' => 'ACTIVE',
-            ],
-            [
-                'id' => 2,
-                'code' => 'INACTIVE',
-                'name' => 'INACTIVE',
-            ],
-            [
-                'id' => 3,
-                'code' => 'DELETE',
-                'name' => 'DELETE',
-            ],
-        ]);
     }
 
     /**

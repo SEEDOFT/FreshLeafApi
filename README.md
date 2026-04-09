@@ -65,7 +65,7 @@ REVERB_APP_KEY=your_reverb_app_key
 REVERB_WS_SCHEME=ws
 REVERB_WS_HOST=127.0.0.1
 REVERB_WS_PORT=8080
-REVERB_AUTH_ENDPOINT=/broadcasting/auth
+REVERB_AUTH_ENDPOINT=/api/v1/broadcasting/auth
 
 # Stripe
 STRIPE_KEY=pk_test_...
@@ -154,7 +154,7 @@ ZEN_MODEL=minimax-m2.5-free
 ### Broadcast Auth (require auth)
 | Method | Endpoint | Description |
 |--------|----------|-------------|
-| POST | `/broadcasting/auth` | Authorize private channel subscription |
+| POST | `/api/v1/broadcasting/auth` | Authorize private channel subscription |
 
 The auth request must include your Bearer token and Pusher-compatible payload (`socket_id`, `channel_name`).
 

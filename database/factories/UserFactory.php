@@ -34,8 +34,8 @@ class UserFactory extends Factory
             'phone_number' => fake()->unique()->phoneNumber(),
             'password' => static::$password ??= Hash::make('password'),
             'remember_token' => Str::random(10),
-            'user_type_id' => UserType::factory(),
-            'user_status_id' => UserStatus::factory(),
+            'user_type_id' => UserType::CONSUMER,
+            'user_status_id' => UserStatus::ACTIVE,
         ];
     }
 

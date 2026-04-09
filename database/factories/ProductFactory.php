@@ -2,8 +2,8 @@
 
 namespace Database\Factories;
 
-use App\Models\Category;
 use App\Models\Product;
+use App\Models\ProductCategory;
 use App\Models\ProductStatus;
 use App\Models\ProductType;
 use App\Models\Unit;
@@ -25,7 +25,7 @@ class ProductFactory extends Factory
         $name = $this->faker->words(3, true);
 
         return [
-            'category_id' => Category::factory(),
+            'product_category_id' => ProductCategory::factory(),
             'product_type_id' => ProductType::factory(),
             'default_unit_id' => Unit::factory(),
             'product_status_id' => ProductStatus::factory(),

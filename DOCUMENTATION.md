@@ -71,7 +71,7 @@ This documentation outlines the implementation status of the FreshLeaf API, cove
   - `POST /api/v1/ai/chat/sessions` — create/reuse chat session
   - `POST /api/v1/ai/chat/messages` — submit user message, queue AI processing
   - `POST /api/v1/ai/chat/history` — hydrate session history
-- **Broadcast Auth:** `POST /broadcasting/auth` protected by `auth:sanctum`.
+- **Broadcast Auth:** `POST /api/v1/broadcasting/auth` protected by `auth:sanctum`.
 - **Private Channel:** `private-ai-chat.{userId}.{sessionId}`.
 - **Queued Processing:** `ProcessAiChatMessageJob` on `ai-stream` queue.
 - **Broadcast Events:**
@@ -201,7 +201,7 @@ php artisan queue:work --queue=ai-stream  # AI queue worker
 
 ### WebSocket Connection
 ```dart
-// 1) Authorize via POST /broadcasting/auth (Bearer token)
+// 1) Authorize via POST /api/v1/broadcasting/auth (Bearer token)
 // 2) Subscribe to private-ai-chat.<USER_ID>.<SESSION_ID>
 // 3) Listen for AiMessageStarted, AiMessageChunk, AiMessageCompleted, AiMessageFailed
 ```
@@ -220,7 +220,7 @@ php artisan queue:work --queue=ai-stream  # AI queue worker
 | `REVERB_WS_PORT` | - | Flutter runtime WebSocket port |
 | `REVERB_WS_SCHEME` | `ws` | Flutter runtime WebSocket scheme |
 | `REVERB_APP_KEY` | - | Reverb app key used by Flutter socket client |
-| `REVERB_AUTH_ENDPOINT` | `/broadcasting/auth` | Optional auth endpoint override |
+| `REVERB_AUTH_ENDPOINT` | `/api/v1/broadcasting/auth` | Optional auth endpoint override |
 | `REVERB_HOST` | 127.0.0.1 | WebSocket server host |
 | `REVERB_PORT` | 8080 | WebSocket server port |
 

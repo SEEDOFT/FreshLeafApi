@@ -18,8 +18,8 @@ class UserStatusFactory extends Factory
     public function definition(): array
     {
         return [
-            'code' => $code = fake()->unique()->word(),
-            'name' => ucfirst($code),
+            'id' => fake()->unique()->numberBetween(1000, 999999),
+            'name' => fake()->unique()->word(),
         ];
     }
 }

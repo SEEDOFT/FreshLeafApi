@@ -46,6 +46,45 @@ class AiService
         throw $lastException ?? new Exception('No AI provider available');
     }
 
+    public function generateContentWithSystemPrompt(
+        string $systemPrompt,
+        string $prompt,
+        array $options = [],
+    ): string {
+        $providers = $this->resolveProviders();
+        $lastException = null;
+
+        foreach ($providers as $providerName => $provider) {
+            try {
+                return $provider->generateContentWithSystemPrompt($systemPrompt, $prompt, $options);
+            } catch (Throwable $exception) {
+                $lastException = new Exception($providerName.': '.$exception->getMessage(), previous: $exception);
+            }
+        }
+
+        throw $lastException ?? new Exception('No AI provider available');
+    }
+
+    public function generateContentWithSystemPromptAndHistory(
+        string $systemPrompt,
+        array $history,
+        string $prompt,
+        array $options = [],
+    ): string {
+        $providers = $this->resolveProviders();
+        $lastException = null;
+
+        foreach ($providers as $providerName => $provider) {
+            try {
+                return $provider->generateContentWithSystemPromptAndHistory($systemPrompt, $history, $prompt, $options);
+            } catch (Throwable $exception) {
+                $lastException = new Exception($providerName.': '.$exception->getMessage(), previous: $exception);
+            }
+        }
+
+        throw $lastException ?? new Exception('No AI provider available');
+    }
+
     /**
      * @return array<string, AiProviderContract>
      */

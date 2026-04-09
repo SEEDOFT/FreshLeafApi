@@ -35,4 +35,19 @@ trait ApiResponse
             'data' => $data,
         ], $code);
     }
+
+    /**
+     * Return a forbidden JSON response (403).
+     */
+    protected static function forbidden(?string $message = null, int $code = 403, mixed $data = []): JsonResponse
+    {
+        return response()->json([
+            'status' => [
+                'code' => (string) $code,
+                'success' => false,
+                'message' => $message,
+            ],
+            'data' => $data,
+        ], $code);
+    }
 }

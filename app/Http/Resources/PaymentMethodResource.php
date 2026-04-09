@@ -2,12 +2,12 @@
 
 namespace App\Http\Resources;
 
-use App\Models\PaymentMethod;
+use App\Models\UserPaymentMethod;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 /**
- * @mixin PaymentMethod
+ * @mixin UserPaymentMethod
  */
 class PaymentMethodResource extends JsonResource
 {

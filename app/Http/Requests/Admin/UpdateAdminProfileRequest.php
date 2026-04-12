@@ -24,9 +24,7 @@ class UpdateAdminProfileRequest extends FormRequest
         return [
             'department' => ['sometimes', 'nullable', 'string', 'max:120'],
             'job_title' => ['sometimes', 'nullable', 'string', 'max:120'],
-            'office_phone' => ['sometimes', 'nullable', 'string', 'max:50'],
-            'super_admin' => ['sometimes', 'boolean'],
-            'permissions' => ['sometimes', 'nullable', 'array'],
+            'office_phone' => ['sometimes', 'nullable', 'string', 'max:40'],
         ];
     }
 }

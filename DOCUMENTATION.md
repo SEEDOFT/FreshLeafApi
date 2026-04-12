@@ -91,13 +91,72 @@ This documentation outlines the implementation status of the FreshLeaf API, cove
 ### 7. Migrations
 - `2026_04_04_025456_add_additional_payment_method_types` — Seeds Amex, Discover, JCB, Diners Club, PayPal, Stripe types.
 
+### 8. API-Only Migration (User + Admin + Vendor)
+- **Runtime is API-only:** Removed web route runtime from `bootstrap/app.php` and decommissioned `routes/web.php`.
+- **Web UI removed:** Removed `app/Http/Controllers/Web/**`, `resources/views/**`, and web-only middleware (`AuthenticatePanel`, `EnsureCorrectGuard`, `SetPanelPreferences`).
+- **New admin API namespace (`/api/v1/admin/*`):**
+  - `POST /api/v1/admin/auth/login`
+  - `POST /api/v1/admin/auth/logout`
+  - `GET /api/v1/admin/dashboard`
+  - `GET /api/v1/admin/dashboard/{module}`
+  - `GET /api/v1/admin/profile`
+  - `PATCH /api/v1/admin/profile`
+  - `GET /api/v1/admin/preferences`
+  - `PATCH /api/v1/admin/preferences`
+  - `GET /api/v1/admin/vendors/pending`
+  - `GET /api/v1/admin/vendors/pending/{vendor}`
+  - `PATCH /api/v1/admin/vendors/{vendor}` (`action=approve|reject`, super-admin only)
+- **New vendor API namespace (`/api/v1/vendor/*`):**
+  - `POST /api/v1/vendor/auth/register`
+  - `POST /api/v1/vendor/auth/login`
+  - `POST /api/v1/vendor/auth/logout`
+  - `GET /api/v1/vendor/dashboard`
+  - `GET /api/v1/vendor/products`
+  - `GET /api/v1/vendor/orders`
+  - `GET /api/v1/vendor/payments`
+  - `GET /api/v1/vendor/store-profile`
+  - `GET /api/v1/vendor/notifications`
+  - `GET /api/v1/vendor/help`
+  - `GET /api/v1/vendor/profile`
+  - `PATCH /api/v1/vendor/profile`
+  - `GET /api/v1/vendor/preferences`
+  - `PATCH /api/v1/vendor/preferences`
+- **Token auth foundation:**
+  - `Admin` and `Vendor` models now use `HasApiTokens` (Sanctum lifecycle).
+  - API middleware enforces role/status via `role:*` and `active.status:*`.
+- **Shared API patterns:**
+  - Added `PanelDashboardService` to keep admin/vendor dashboard controllers thin and consistent.
+  - Added API resources for profile, pending vendors, dashboard cards, and preferences:
+    - `AdminProfileResource`
+    - `VendorProfileResource`
+    - `PendingVendorResource`
+    - `DashboardCardResource`
+    - `PreferenceResource`
+- **Code organization by actor:**
+  - Controllers grouped under `Api/User`, `Api/Admin`, `Api/Vendor`.
+  - Requests grouped under `Requests/User`, `Requests/Admin`, `Requests/Vendor`.
+  - Resources grouped under `Resources/User`, `Resources/Admin`, `Resources/Vendor` (plus shared resources where needed).
+- **DB-backed preferences:** Added `panel_preferences` table and morph relation for user/admin/vendor locale/theme persistence.
+- **Existing consumer APIs preserved:** `/api/v1/auth/*` and `/api/v1/users/*` remain unchanged.
+
+#### API-Only Change Log
+
+| Date | Change | Impacted Files |
+|------|--------|----------------|
+| 2026-04-11 | Removed web runtime registration and web-only middleware aliases. | `bootstrap/app.php` |
+| 2026-04-11 | Removed web routes/controllers/views (API-only runtime). | `routes/web.php`, `app/Http/Controllers/Web/**`, `resources/views/**` |
+| 2026-04-11 | Added role APIs for admin and vendor auth/domain workflows. | `routes/api.php`, `app/Http/Controllers/Api/Admin/**`, `app/Http/Controllers/Api/Vendor/**`, `app/Http/Controllers/Api/PreferenceController.php` |
+| 2026-04-11 | Added shared dashboard payload service and API resources. | `app/Services/PanelDashboardService.php`, `app/Http/Resources/*` |
+| 2026-04-11 | Added persistent locale/theme preferences for all account types. | `database/migrations/2026_04_10_165434_create_panel_preferences_table.php`, `app/Models/PanelPreference.php` |
+| 2026-04-11 | Converted web panel feature coverage to API feature coverage. | `tests/Feature/PanelAccessTest.php`, `tests/Feature/PanelRegistrationTest.php`, `tests/Feature/AdminVendorReviewWebTest.php` |
+
 ---
 
 ## 🚀 Quick Start
 
 ### Development Server
 ```bash
-# Start all services (server, queue, reverb, vite)
+# Start core backend services
 composer run dev
 
 # Or with custom Laravel server host/port

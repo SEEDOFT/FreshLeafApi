@@ -48,6 +48,9 @@ return [
         'no_pending_vendors' => 'No pending vendor registrations.',
         'vendor_approved' => 'Vendor account approved and activated.',
         'vendor_rejected' => 'Vendor registration rejected.',
+        'profile_title' => 'Admin Profile',
+        'profile_meta' => 'Update contact and role details used by internal operations.',
+        'profile_updated' => 'Profile updated successfully.',
         'modules' => [
             'dashboard' => 'Dashboard',
             'vendors' => 'Vendors',
@@ -74,6 +77,8 @@ return [
     'preferences' => [
         'locale' => 'Language',
         'theme_toggle' => 'Toggle Theme',
+        'navigation_toggle' => 'Toggle navigation',
+        'close_navigation' => 'Close navigation',
         'apply' => 'Apply',
         'locale_updated' => 'Language preference updated.',
         'theme_updated' => 'Theme preference updated.',

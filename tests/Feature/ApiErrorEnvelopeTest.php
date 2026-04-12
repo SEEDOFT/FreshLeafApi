@@ -26,7 +26,7 @@ class ApiErrorEnvelopeTest extends TestCase
 
         UserType::insert([
             ['id' => UserType::CONSUMER, 'name' => 'Consumer'],
-            ['id' => UserType::OPERATION, 'name' => 'Operation'],
+            ['id' => UserType::VENDOR, 'name' => 'Vendor'],
             ['id' => UserType::ADMIN, 'name' => 'Admin'],
         ]);
 

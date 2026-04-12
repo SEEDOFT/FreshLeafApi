@@ -24,6 +24,7 @@ use Illuminate\Support\Carbon;
  * @property-read Product|null $product
  * @property-read PurchaseOrder $purchaseOrder
  * @property-read ProductVariant $variant
+ *
  * @method static \Database\Factories\PurchaseOrderItemFactory factory($count = null, $state = [])
  * @method static \Illuminate\Database\Eloquent\Builder<static>|PurchaseOrderItem newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|PurchaseOrderItem newQuery()
@@ -39,6 +40,7 @@ use Illuminate\Support\Carbon;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|PurchaseOrderItem whereQtyOrdered($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|PurchaseOrderItem whereQtyReceived($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|PurchaseOrderItem whereUpdatedAt($value)
+ *
  * @mixin \Eloquent
  */
 #[Fillable(['purchase_order_id', 'product_id', 'product_variant_id', 'qty_ordered', 'qty_received', 'cost_per_unit', 'expiry_date', 'batch_code'])]

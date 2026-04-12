@@ -1,9 +1,9 @@
 <?php
 
+use App\Http\Middleware\EnsureActiveStatus;
 use App\Http\Middleware\EnsureActiveUserType;
 use App\Http\Middleware\EnsurePanelRole;
 use App\Http\Middleware\SetLocaleFromAcceptLanguage;
-use App\Http\Middleware\SetPanelPreferences;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Auth\AuthenticationException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
@@ -17,35 +17,30 @@ use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
-        web: __DIR__.'/../routes/web.php',
         api: __DIR__.'/../routes/api.php',
         channels: __DIR__.'/../routes/channels.php',
-        apiPrefix: 'api',
         commands: __DIR__.'/../routes/console.php',
         health: '/up',
     )
-    ->withMiddleware(function (Middleware $middleware): void {
+    ->withMiddleware(static function (Middleware $middleware): void {
         $middleware->alias([
             'active.type' => EnsureActiveUserType::class,
+            'active.status' => EnsureActiveStatus::class,
             'role' => EnsurePanelRole::class,
-        ]);
-
-        $middleware->web(append: [
-            SetPanelPreferences::class,
         ]);
 
         $middleware->api(prepend: [
             SetLocaleFromAcceptLanguage::class,
         ]);
     })
-    ->withExceptions(function (Exceptions $exceptions): void {
-        $exceptions->shouldRenderJsonWhen(function (Request $request): bool {
+    ->withExceptions(static function (Exceptions $exceptions): void {
+        $exceptions->shouldRenderJsonWhen(static function (Request $request): bool {
             return $request->expectsJson()
                 || $request->is('api/*')
                 || $request->is('broadcasting/*');
         });
 
-        $exceptions->render(function (ValidationException $exception, Request $request) {
+        $exceptions->render(static function (ValidationException $exception, Request $request) {
             if (! $request->expectsJson() && ! $request->is('api/*') && ! $request->is('broadcasting/*')) {
                 return null;
             }
@@ -64,7 +59,7 @@ return Application::configure(basePath: dirname(__DIR__))
             ], $code);
         });
 
-        $exceptions->render(function (AuthenticationException $exception, Request $request) {
+        $exceptions->render(static function (AuthenticationException $exception, Request $request) {
             if (! $request->expectsJson() && ! $request->is('api/*') && ! $request->is('broadcasting/*')) {
                 return null;
             }
@@ -81,7 +76,7 @@ return Application::configure(basePath: dirname(__DIR__))
             ], $code);
         });
 
-        $exceptions->render(function (AuthorizationException $exception, Request $request) {
+        $exceptions->render(static function (AuthorizationException $exception, Request $request) {
             if (! $request->expectsJson() && ! $request->is('api/*') && ! $request->is('broadcasting/*')) {
                 return null;
             }
@@ -98,7 +93,7 @@ return Application::configure(basePath: dirname(__DIR__))
             ], $code);
         });
 
-        $exceptions->render(function (ModelNotFoundException $exception, Request $request) {
+        $exceptions->render(static function (ModelNotFoundException $exception, Request $request) {
             if (! $request->expectsJson() && ! $request->is('api/*') && ! $request->is('broadcasting/*')) {
                 return null;
             }
@@ -115,7 +110,7 @@ return Application::configure(basePath: dirname(__DIR__))
             ], $code);
         });
 
-        $exceptions->render(function (HttpExceptionInterface $exception, Request $request) {
+        $exceptions->render(static function (HttpExceptionInterface $exception, Request $request) {
             if (! $request->expectsJson() && ! $request->is('api/*') && ! $request->is('broadcasting/*')) {
                 return null;
             }
@@ -132,7 +127,7 @@ return Application::configure(basePath: dirname(__DIR__))
             ], $code);
         });
 
-        $exceptions->render(function (Throwable $exception, Request $request) {
+        $exceptions->render(static function (Throwable $exception, Request $request) {
             if (! $request->expectsJson() && ! $request->is('api/*') && ! $request->is('broadcasting/*')) {
                 return null;
             }

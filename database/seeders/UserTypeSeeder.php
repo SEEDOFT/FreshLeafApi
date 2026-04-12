@@ -14,7 +14,7 @@ class UserTypeSeeder extends Seeder
     {
         $types = [
             ['id' => UserType::CONSUMER, 'name' => 'Consumer'],
-            ['id' => UserType::OPERATION, 'name' => 'Operation'],
+            ['id' => UserType::VENDOR, 'name' => 'Vendor'],
             ['id' => UserType::ADMIN, 'name' => 'Admin'],
         ];
 

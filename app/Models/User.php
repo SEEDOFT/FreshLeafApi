@@ -16,6 +16,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Database\Eloquent\Relations\MorphOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\DatabaseNotification;
@@ -177,6 +178,22 @@ class User extends Authenticatable
     }
 
     /**
+     * Get the vendor account for the user.
+     */
+    public function vendor(): HasOne
+    {
+        return $this->hasOne(Vendor::class);
+    }
+
+    /**
+     * Get the admin account for the user.
+     */
+    public function admin(): HasOne
+    {
+        return $this->hasOne(Admin::class);
+    }
+
+    /**
      * Get the vendor profile for the user.
      */
     public function vendorProfile(): HasOne
@@ -198,6 +215,14 @@ class User extends Authenticatable
     public function consumerProfile(): HasOne
     {
         return $this->hasOne(ConsumerProfile::class);
+    }
+
+    /**
+     * Get persisted panel preferences for the user.
+     */
+    public function preference(): MorphOne
+    {
+        return $this->morphOne(PanelPreference::class, 'account');
     }
 
     /**

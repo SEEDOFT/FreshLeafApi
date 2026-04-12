@@ -10,10 +10,10 @@ class ExampleTest extends TestCase
     /**
      * A basic test example.
      */
-    public function test_the_application_returns_a_successful_response(): void
+    public function test_the_application_root_route_is_not_available_in_api_only_mode(): void
     {
         $response = $this->get('/');
 
-        $response->assertStatus(200);
+        $response->assertStatus(404);
     }
 }

@@ -21,6 +21,7 @@ use Illuminate\Support\Carbon;
  * @property-read int|null $items_count
  * @property-read CartStatus $status
  * @property-read User|null $user
+ *
  * @method static \Database\Factories\CartFactory factory($count = null, $state = [])
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Cart newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Cart newQuery()
@@ -30,6 +31,7 @@ use Illuminate\Support\Carbon;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Cart whereId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Cart whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Cart whereUserId($value)
+ *
  * @mixin \Eloquent
  */
 #[Fillable(['user_id', 'cart_status_id'])]

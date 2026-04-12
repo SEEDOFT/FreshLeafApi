@@ -2,11 +2,12 @@
 
 namespace Tests\Feature;
 
-use App\Models\AdminProfile;
-use App\Models\User;
-use App\Models\UserStatus;
-use App\Models\UserType;
-use App\Models\VendorProfile;
+use App\Models\Admin;
+use App\Models\AdminStatus;
+use App\Models\AdminType;
+use App\Models\Vendor;
+use App\Models\VendorStatus;
+use App\Models\VendorType;
 use Illuminate\Foundation\Testing\LazilyRefreshDatabase;
 use Tests\TestCase;
 
@@ -14,128 +15,98 @@ class AdminVendorReviewWebTest extends TestCase
 {
     use LazilyRefreshDatabase;
 
-    protected function setUp(): void
+    public function test_super_admin_can_review_and_approve_pending_vendor_via_api(): void
     {
-        parent::setUp();
-
-        UserStatus::insert([
-            ['id' => UserStatus::ACTIVE, 'name' => 'Active'],
-            ['id' => UserStatus::INACTIVE, 'name' => 'Inactive'],
-            ['id' => UserStatus::DELETED, 'name' => 'Deleted'],
-            ['id' => UserStatus::PENDING, 'name' => 'Pending'],
-        ]);
-
-        UserType::insert([
-            ['id' => UserType::CONSUMER, 'name' => 'Consumer'],
-            ['id' => UserType::OPERATION, 'name' => 'Operation'],
-            ['id' => UserType::ADMIN, 'name' => 'Admin'],
-        ]);
-    }
-
-    public function test_super_admin_can_open_pending_vendor_pages_and_approve_vendor(): void
-    {
-        $admin = User::factory()->create([
-            'user_type_id' => UserType::ADMIN,
-            'user_status_id' => UserStatus::ACTIVE,
-        ]);
-
-        AdminProfile::query()->create([
-            'user_id' => $admin->id,
+        Admin::query()->create([
+            'name' => 'Super Admin',
+            'email' => 'superadmin-review@test.local',
+            'password' => bcrypt('password123'),
+            'type_id' => AdminType::SUPER_ADMIN,
+            'status_id' => AdminStatus::ACTIVE,
             'super_admin' => true,
         ]);
 
-        $vendor = User::factory()->create([
-            'user_type_id' => UserType::VENDOR,
-            'user_status_id' => UserStatus::PENDING,
-        ]);
-
-        VendorProfile::query()->create([
-            'user_id' => $vendor->id,
-            'business_name' => 'Pending Web Vendor',
-            'contact_phone' => $vendor->phone_number,
+        $vendor = Vendor::query()->create([
+            'name' => 'Pending Vendor',
+            'email' => 'pending-review@test.local',
+            'password' => bcrypt('password123'),
+            'type_id' => VendorType::STANDART,
+            'status_id' => VendorStatus::PENDING,
+            'business_name' => 'Pending Review Store',
+            'contact_phone' => '+85510000114',
             'city' => 'Phnom Penh',
             'province' => 'Phnom Penh',
-            'address' => 'Street 123',
+            'address' => 'Street 12',
             'is_verified' => false,
         ]);
 
-        $this->actingAs($admin)
-            ->get(route('admin.web.vendors.pending'))
+        $token = (string) $this->postJson('/api/v1/admin/auth/login', [
+            'email' => 'superadmin-review@test.local',
+            'password' => 'password123',
+        ])->json('data.access_token');
+
+        $this->withHeader('Authorization', 'Bearer '.$token)
+            ->getJson('/api/v1/admin/vendors/pending')
             ->assertOk()
-            ->assertSee('Pending Web Vendor');
+            ->assertJsonPath('status.success', true);
 
-        $this->actingAs($admin)
-            ->get(route('admin.web.vendors.pending.show', $vendor))
+        $this->withHeader('Authorization', 'Bearer '.$token)
+            ->getJson('/api/v1/admin/vendors/pending/'.$vendor->id)
             ->assertOk()
-            ->assertSee('Pending Web Vendor');
+            ->assertJsonPath('data.id', $vendor->id);
 
-        $this->actingAs($admin)
-            ->post(route('admin.web.vendors.pending.approve', $vendor))
-            ->assertRedirect(route('admin.web.vendors.pending'));
+        $this->withHeader('Authorization', 'Bearer '.$token)
+            ->patchJson('/api/v1/admin/vendors/'.$vendor->id, [
+                'action' => 'approve',
+            ])
+            ->assertOk()
+            ->assertJsonPath('data.status', 'active');
 
-        $this->assertDatabaseHas('users', [
+        $this->assertDatabaseHas('vendors', [
             'id' => $vendor->id,
-            'user_status_id' => UserStatus::ACTIVE,
-        ]);
-
-        $this->assertDatabaseHas('vendor_profiles', [
-            'user_id' => $vendor->id,
+            'status_id' => VendorStatus::ACTIVE,
             'is_verified' => true,
         ]);
     }
 
-    public function test_non_super_admin_is_forbidden_from_pending_vendor_web_routes(): void
+    public function test_non_super_admin_is_forbidden_from_pending_vendor_review_endpoints(): void
     {
-        $admin = User::factory()->create([
-            'user_type_id' => UserType::ADMIN,
-            'user_status_id' => UserStatus::ACTIVE,
-        ]);
-
-        AdminProfile::query()->create([
-            'user_id' => $admin->id,
+        Admin::query()->create([
+            'name' => 'Operation Admin',
+            'email' => 'operation-review@test.local',
+            'password' => bcrypt('password123'),
+            'type_id' => AdminType::OPERATION,
+            'status_id' => AdminStatus::ACTIVE,
             'super_admin' => false,
         ]);
 
-        $this->actingAs($admin)
-            ->get(route('admin.web.vendors.pending'))
+        $vendor = Vendor::query()->create([
+            'name' => 'Pending Vendor',
+            'email' => 'pending-review-deny@test.local',
+            'password' => bcrypt('password123'),
+            'type_id' => VendorType::STANDART,
+            'status_id' => VendorStatus::PENDING,
+            'business_name' => 'Denied Store',
+            'contact_phone' => '+85510000115',
+            'city' => 'Phnom Penh',
+            'province' => 'Phnom Penh',
+            'address' => 'Street 13',
+            'is_verified' => false,
+        ]);
+
+        $token = (string) $this->postJson('/api/v1/admin/auth/login', [
+            'email' => 'operation-review@test.local',
+            'password' => 'password123',
+        ])->json('data.access_token');
+
+        $this->withHeader('Authorization', 'Bearer '.$token)
+            ->getJson('/api/v1/admin/vendors/pending')
             ->assertForbidden();
-    }
 
-    public function test_super_admin_can_reject_pending_vendor(): void
-    {
-        $admin = User::factory()->create([
-            'user_type_id' => UserType::ADMIN,
-            'user_status_id' => UserStatus::ACTIVE,
-        ]);
-
-        AdminProfile::query()->create([
-            'user_id' => $admin->id,
-            'super_admin' => true,
-        ]);
-
-        $vendor = User::factory()->create([
-            'user_type_id' => UserType::VENDOR,
-            'user_status_id' => UserStatus::PENDING,
-        ]);
-
-        VendorProfile::query()->create([
-            'user_id' => $vendor->id,
-            'business_name' => 'Reject Vendor',
-            'is_verified' => false,
-        ]);
-
-        $this->actingAs($admin)
-            ->post(route('admin.web.vendors.pending.reject', $vendor))
-            ->assertRedirect(route('admin.web.vendors.pending'));
-
-        $this->assertDatabaseHas('users', [
-            'id' => $vendor->id,
-            'user_status_id' => UserStatus::INACTIVE,
-        ]);
-
-        $this->assertDatabaseHas('vendor_profiles', [
-            'user_id' => $vendor->id,
-            'is_verified' => false,
-        ]);
+        $this->withHeader('Authorization', 'Bearer '.$token)
+            ->patchJson('/api/v1/admin/vendors/'.$vendor->id, [
+                'action' => 'reject',
+            ])
+            ->assertForbidden();
     }
 }

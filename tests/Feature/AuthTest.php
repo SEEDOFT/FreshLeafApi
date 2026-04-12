@@ -25,7 +25,7 @@ class AuthTest extends TestCase
 
         UserType::insert([
             ['id' => UserType::CONSUMER, 'name' => 'Consumer'],
-            ['id' => UserType::OPERATION, 'name' => 'Operation'],
+            ['id' => UserType::VENDOR, 'name' => 'Vendor'],
             ['id' => UserType::ADMIN, 'name' => 'Admin'],
         ]);
     }
@@ -148,41 +148,6 @@ class AuthTest extends TestCase
             ]);
 
         $this->assertCount(0, $user->tokens);
-    }
-
-    public function test_vendor_registration_is_pending_until_super_admin_approval(): void
-    {
-        $registerResponse = $this->postJson('/api/v1/vendor/auth/register', [
-            'first_name' => 'Vendor',
-            'last_name' => 'User',
-            'email' => 'vendor.pending@example.com',
-            'phone_number' => '85510000111',
-            'password' => 'password123',
-            'password_confirmation' => 'password123',
-            'business_name' => 'FreshLeaf Vendor Co',
-            'city' => 'Phnom Penh',
-            'province' => 'Phnom Penh',
-            'address' => 'Street 271',
-        ]);
-
-        $registerResponse->assertStatus(201)
-            ->assertJsonPath('status.success', true)
-            ->assertJsonPath('status.message', 'Vendor registration submitted. Waiting for super admin approval.');
-
-        $this->assertDatabaseHas('users', [
-            'phone_number' => '85510000111',
-            'user_type_id' => UserType::VENDOR,
-            'user_status_id' => UserStatus::PENDING,
-        ]);
-
-        $loginResponse = $this->postJson('/api/v1/vendor/auth/login', [
-            'phone_number' => '85510000111',
-            'password' => 'password123',
-        ]);
-
-        $loginResponse->assertStatus(401)
-            ->assertJsonPath('status.success', false)
-            ->assertJsonPath('status.message', 'Invalid login details');
     }
 
     public function test_admin_registration_endpoint_is_not_available(): void

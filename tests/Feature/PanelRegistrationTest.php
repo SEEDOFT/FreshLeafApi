@@ -2,9 +2,9 @@
 
 namespace Tests\Feature;
 
-use App\Models\User;
-use App\Models\UserStatus;
-use App\Models\UserType;
+use App\Models\Vendor;
+use App\Models\VendorStatus;
+use App\Models\VendorType;
 use Illuminate\Foundation\Testing\LazilyRefreshDatabase;
 use Tests\TestCase;
 
@@ -12,38 +12,12 @@ class PanelRegistrationTest extends TestCase
 {
     use LazilyRefreshDatabase;
 
-    protected function setUp(): void
+    public function test_vendor_registration_creates_pending_vendor_via_api(): void
     {
-        parent::setUp();
-
-        UserStatus::insert([
-            ['id' => UserStatus::ACTIVE, 'name' => 'Active'],
-            ['id' => UserStatus::INACTIVE, 'name' => 'Inactive'],
-            ['id' => UserStatus::DELETED, 'name' => 'Deleted'],
-            ['id' => UserStatus::PENDING, 'name' => 'Pending'],
-        ]);
-
-        UserType::insert([
-            ['id' => UserType::CONSUMER, 'name' => 'Consumer'],
-            ['id' => UserType::OPERATION, 'name' => 'Operation'],
-            ['id' => UserType::ADMIN, 'name' => 'Admin'],
-        ]);
-    }
-
-    public function test_guest_can_view_register_page(): void
-    {
-        $this->get(route('register'))
-            ->assertOk()
-            ->assertSee(__('panels.auth.register'));
-    }
-
-    public function test_vendor_registration_creates_pending_vendor_profile_and_redirects_to_login_with_notice(): void
-    {
-        $response = $this->post(route('register.store'), [
-            'first_name' => 'Sok',
-            'last_name' => 'Dara',
-            'email' => 'vendor.panel@example.test',
-            'phone_number' => '+85512999111',
+        $response = $this->postJson('/api/v1/vendor/auth/register', [
+            'name' => 'Sok Dara',
+            'email' => 'vendor.api@example.test',
+            'contact_phone' => '+85512999111',
             'password' => 'password123',
             'password_confirmation' => 'password123',
             'business_name' => 'FreshLeaf Organic Vendor',
@@ -52,15 +26,61 @@ class PanelRegistrationTest extends TestCase
             'address' => 'Street 271',
         ]);
 
-        $response->assertRedirect(route('login'));
-        $response->assertSessionHas('status');
+        $response->assertStatus(201)
+            ->assertJsonPath('status.success', true)
+            ->assertJsonPath('data.status', 'pending');
 
-        $user = User::query()->where('email', 'vendor.panel@example.test')->first();
+        $vendor = Vendor::query()->where('email', 'vendor.api@example.test')->first();
 
-        $this->assertNotNull($user);
-        $this->assertSame(UserType::VENDOR, (int) $user->user_type_id);
-        $this->assertSame(UserStatus::PENDING, (int) $user->user_status_id);
-        $this->assertNotNull($user->vendorProfile);
-        $this->assertSame('FreshLeaf Organic Vendor', $user->vendorProfile?->business_name);
+        $this->assertNotNull($vendor);
+        $this->assertSame(VendorType::STANDART, (int) $vendor->type_id);
+        $this->assertSame(VendorStatus::PENDING, (int) $vendor->status_id);
+        $this->assertFalse((bool) $vendor->is_verified);
+    }
+
+    public function test_pending_vendor_cannot_login_and_active_vendor_can_login(): void
+    {
+        Vendor::query()->create([
+            'name' => 'Pending Vendor',
+            'email' => 'pending-login@test.local',
+            'password' => bcrypt('password123'),
+            'type_id' => VendorType::STANDART,
+            'status_id' => VendorStatus::PENDING,
+            'business_name' => 'Pending Shop',
+            'contact_phone' => '+85510000112',
+            'city' => 'Phnom Penh',
+            'province' => 'Phnom Penh',
+            'address' => 'Street 10',
+            'is_verified' => false,
+        ]);
+
+        Vendor::query()->create([
+            'name' => 'Active Vendor',
+            'email' => 'active-login@test.local',
+            'password' => bcrypt('password123'),
+            'type_id' => VendorType::STANDART,
+            'status_id' => VendorStatus::ACTIVE,
+            'business_name' => 'Active Shop',
+            'contact_phone' => '+85510000113',
+            'city' => 'Phnom Penh',
+            'province' => 'Phnom Penh',
+            'address' => 'Street 11',
+            'is_verified' => true,
+        ]);
+
+        $this->postJson('/api/v1/vendor/auth/login', [
+            'email' => 'pending-login@test.local',
+            'password' => 'password123',
+        ])
+            ->assertForbidden()
+            ->assertJsonPath('status.message', 'Your account is pending approval');
+
+        $this->postJson('/api/v1/vendor/auth/login', [
+            'email' => 'active-login@test.local',
+            'password' => 'password123',
+        ])
+            ->assertOk()
+            ->assertJsonPath('status.success', true)
+            ->assertJsonPath('data.token_type', 'Bearer');
     }
 }

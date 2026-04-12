@@ -48,6 +48,9 @@ return [
         'no_pending_vendors' => 'មិនមាន Vendor កំពុងរង់ចាំទេ។',
         'vendor_approved' => 'គណនី Vendor ត្រូវបានអនុម័ត និងសកម្មរួចរាល់។',
         'vendor_rejected' => 'សំណើ Vendor ត្រូវបានបដិសេធ។',
+        'profile_title' => 'ប្រវត្តិ Admin',
+        'profile_meta' => 'ធ្វើបច្ចុប្បន្នភាពព័ត៌មានទំនាក់ទំនង និងតួនាទីសម្រាប់ប្រតិបត្តិការ។',
+        'profile_updated' => 'បានធ្វើបច្ចុប្បន្នភាពប្រវត្តិរួចរាល់។',
         'modules' => [
             'dashboard' => 'ទិដ្ឋភាពទូទៅ',
             'vendors' => 'អ្នកផ្គត់ផ្គង់',
@@ -74,6 +77,8 @@ return [
     'preferences' => [
         'locale' => 'ភាសា',
         'theme_toggle' => 'ប្ដូរ Theme',
+        'navigation_toggle' => 'ប្ដូរបិទបើកម៉ឺនុយ',
+        'close_navigation' => 'បិទម៉ឺនុយ',
         'apply' => 'អនុវត្ត',
         'locale_updated' => 'បានធ្វើបច្ចុប្បន្នភាពភាសារួចរាល់។',
         'theme_updated' => 'បានធ្វើបច្ចុប្បន្នភាព Theme រួចរាល់។',

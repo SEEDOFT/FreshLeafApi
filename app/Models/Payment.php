@@ -22,6 +22,7 @@ use Illuminate\Support\Carbon;
  * @property-read Order $order
  * @property-read PaymentStatus $status
  * @property-read PaymentType $type
+ *
  * @method static \Database\Factories\PaymentFactory factory($count = null, $state = [])
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Payment newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Payment newQuery()
@@ -35,6 +36,7 @@ use Illuminate\Support\Carbon;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Payment wherePaymentTypeId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Payment whereTransactionReference($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Payment whereUpdatedAt($value)
+ *
  * @mixin \Eloquent
  */
 #[Fillable([

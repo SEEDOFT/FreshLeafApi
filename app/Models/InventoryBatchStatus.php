@@ -18,6 +18,7 @@ use Illuminate\Support\Carbon;
  * @property Carbon|null $updated_at
  * @property-read Collection<int, InventoryBatch> $inventoryBatches
  * @property-read int|null $inventory_batches_count
+ *
  * @method static \Database\Factories\InventoryBatchStatusFactory factory($count = null, $state = [])
  * @method static \Illuminate\Database\Eloquent\Builder<static>|InventoryBatchStatus newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|InventoryBatchStatus newQuery()
@@ -27,6 +28,7 @@ use Illuminate\Support\Carbon;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|InventoryBatchStatus whereId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|InventoryBatchStatus whereName($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|InventoryBatchStatus whereUpdatedAt($value)
+ *
  * @mixin \Eloquent
  */
 #[Fillable(['code', 'name'])]

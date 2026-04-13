@@ -4,6 +4,8 @@ namespace App\Models;
 
 use Database\Factories\CategoryFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
+use Illuminate\Database\Eloquent\Attributes\Table;
+use Illuminate\Database\Eloquent\Attributes\UseFactory;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -23,20 +25,12 @@ use Illuminate\Support\Carbon;
  * @property Carbon|null $updated_at
  * @property-read Collection<int, Product> $products
  * @property-read int|null $products_count
- *
- * @method static \Database\Factories\CategoryFactory factory($count = null, $state = [])
- * @method static \Illuminate\Database\Eloquent\Builder<static>|ProductCategory whereCreatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|ProductCategory whereId($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|ProductCategory whereName($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|ProductCategory whereSlug($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|ProductCategory whereUpdatedAt($value)
- *
- * @mixin \Eloquent
  */
+#[Table('product_categories', key: 'id')]
 #[Fillable(['name', 'slug'])]
+#[UseFactory(CategoryFactory::class)]
 class ProductCategory extends Model
 {
-    /** @use HasFactory<CategoryFactory> */
     use HasFactory;
 
     /**

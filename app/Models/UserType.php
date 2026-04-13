@@ -17,20 +17,6 @@ use Illuminate\Support\Carbon;
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  * @property-read Collection<int, User> $users
- * @property-read int|null $users
- *
- * @method static \Database\Factories\UserTypeFactory factory($count = null, $state = [])
- * @method static \Illuminate\Database\Eloquent\Builder<static>|UserType newModelQuery()
- * @method static \Illuminate\Database\Eloquent\Builder<static>|UserType newQuery()
- * @method static \Illuminate\Database\Eloquent\Builder<static>|UserType query()
- * @method static \Illuminate\Database\Eloquent\Builder<static>|UserType whereCreatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|UserType whereId($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|UserType whereName($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|UserType whereUpdatedAt($value)
- *
- * @property-read int|null $users_count
- *
- * @mixin \Eloquent
  */
 #[Table('user_types', key: 'id')]
 #[Fillable(['name'])]

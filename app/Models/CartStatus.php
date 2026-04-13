@@ -4,6 +4,8 @@ namespace App\Models;
 
 use Database\Factories\CartStatusFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
+use Illuminate\Database\Eloquent\Attributes\Table;
+use Illuminate\Database\Eloquent\Attributes\UseFactory;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -18,23 +20,12 @@ use Illuminate\Support\Carbon;
  * @property Carbon|null $updated_at
  * @property-read Collection<int, Cart> $carts
  * @property-read int|null $carts_count
- *
- * @method static \Database\Factories\CartStatusFactory factory($count = null, $state = [])
- * @method static \Illuminate\Database\Eloquent\Builder<static>|CartStatus newModelQuery()
- * @method static \Illuminate\Database\Eloquent\Builder<static>|CartStatus newQuery()
- * @method static \Illuminate\Database\Eloquent\Builder<static>|CartStatus query()
- * @method static \Illuminate\Database\Eloquent\Builder<static>|CartStatus whereCode($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|CartStatus whereCreatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|CartStatus whereId($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|CartStatus whereName($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|CartStatus whereUpdatedAt($value)
- *
- * @mixin \Eloquent
  */
-#[Fillable(['code', 'name'])]
+#[Table('cart_statuses', key: 'id')]
+#[Fillable(['name'])]
+#[UseFactory(CartStatusFactory::class)]
 class CartStatus extends Model
 {
-    /** @use HasFactory<CartStatusFactory> */
     use HasFactory;
 
     /**

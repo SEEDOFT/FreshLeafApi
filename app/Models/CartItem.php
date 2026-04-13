@@ -4,6 +4,8 @@ namespace App\Models;
 
 use Database\Factories\CartItemFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
+use Illuminate\Database\Eloquent\Attributes\Table;
+use Illuminate\Database\Eloquent\Attributes\UseFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -22,27 +24,19 @@ use Illuminate\Support\Carbon;
  * @property-read Cart $cart
  * @property-read Product|null $product
  * @property-read ProductVariant $variant
- *
- * @method static \Database\Factories\CartItemFactory factory($count = null, $state = [])
- * @method static \Illuminate\Database\Eloquent\Builder<static>|CartItem newModelQuery()
- * @method static \Illuminate\Database\Eloquent\Builder<static>|CartItem newQuery()
- * @method static \Illuminate\Database\Eloquent\Builder<static>|CartItem query()
- * @method static \Illuminate\Database\Eloquent\Builder<static>|CartItem whereCartId($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|CartItem whereCreatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|CartItem whereId($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|CartItem whereProductId($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|CartItem whereProductVariantId($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|CartItem whereQuantity($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|CartItem whereSubtotal($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|CartItem whereUnitPrice($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|CartItem whereUpdatedAt($value)
- *
- * @mixin \Eloquent
  */
-#[Fillable(['cart_id', 'product_id', 'product_variant_id', 'quantity', 'unit_price', 'subtotal'])]
+#[Table('cart_items', key: 'id')]
+#[Fillable([
+    'cart_id',
+    'product_id',
+    'product_variant_id',
+    'quantity',
+    'unit_price',
+    'subtotal',
+])]
+#[UseFactory(CartItemFactory::class)]
 class CartItem extends Model
 {
-    /** @use HasFactory<CartItemFactory> */
     use HasFactory;
 
     /**

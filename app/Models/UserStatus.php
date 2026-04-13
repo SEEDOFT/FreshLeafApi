@@ -18,25 +18,12 @@ use Illuminate\Support\Carbon;
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  * @property-read Collection<int, User> $users
- * @property-read int|null $users_count
- *
- * @method static \Database\Factories\UserStatusFactory factory($count = null, $state = [])
- * @method static \Illuminate\Database\Eloquent\Builder<static>|UserStatus newModelQuery()
- * @method static \Illuminate\Database\Eloquent\Builder<static>|UserStatus newQuery()
- * @method static \Illuminate\Database\Eloquent\Builder<static>|UserStatus query()
- * @method static \Illuminate\Database\Eloquent\Builder<static>|UserStatus whereCreatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|UserStatus whereId($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|UserStatus whereName($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|UserStatus whereUpdatedAt($value)
- *
- * @mixin \Eloquent
  */
 #[Table('user_statuses', key: 'id')]
 #[Fillable(['name'])]
 #[UseFactory(UserStatusFactory::class)]
 class UserStatus extends Model
 {
-    /** @use HasFactory<UserStatusFactory> */
     use HasFactory;
 
     public const ACTIVE = 1;

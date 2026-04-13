@@ -14,8 +14,14 @@ return new class extends Migration
         Schema::create('user_types', function (Blueprint $table) {
             $table->unsignedBigInteger('id');
             $table->string('name');
-            $table->timestamps();
+            $table->timestamp('created_at')->useCurrent();
+            $table->timestamp('updated_at')->useCurrent()->useCurrentOnUpdate();
         });
+
+        DB::table('user_types')->insert([
+            ['id' => 1, 'name' => 'Consumer'],
+            ['id' => 2, 'name' => 'Premium Consumer'],
+        ]);
     }
 
     /**

@@ -4,6 +4,9 @@ namespace App\Models;
 
 use Database\Factories\ProductFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
+use Illuminate\Database\Eloquent\Attributes\Scope;
+use Illuminate\Database\Eloquent\Attributes\Table;
+use Illuminate\Database\Eloquent\Attributes\UseFactory;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -44,31 +47,6 @@ use Illuminate\Support\Str;
  * @property-read Collection<int, OrderItem> $orderItems
  * @property-read Collection<int, CartItem> $cartItems
  * @property-read Collection<int, PurchaseOrderItem> $purchaseOrderItems
- * @property-read Collection<int, AiRecommendationItem> $aiRecommendationItems
- *
- * @method static \Database\Factories\ProductFactory factory($count = null, $state = [])
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Product active()
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Product byCategory(int|ProductCategory $category)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Product newModelQuery()
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Product newQuery()
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Product onlyTrashed()
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Product query()
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Product whereProductCategoryId($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Product whereCreatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Product whereDefaultUnitId($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Product whereDeletedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Product whereDescription($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Product whereId($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Product whereName($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Product whereNutritionData($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Product whereProductStatusId($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Product whereProductTypeId($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Product whereShelfLifeDays($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Product whereSlug($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Product whereUpdatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Product withTrashed(bool $withTrashed = true)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Product withoutTrashed()
- *
  * @property-read int|null $ai_recommendation_items_count
  * @property-read int|null $cart_items_count
  * @property-read int|null $inventory_batches_count
@@ -79,9 +57,9 @@ use Illuminate\Support\Str;
  * @property-read Collection<int, ProductSubstitution> $substitutionsFor
  * @property-read int|null $substitutions_for_count
  * @property-read int|null $user_behavior_events_count
- *
- * @mixin \Eloquent
+ * @property int $category_id
  */
+#[Table('products', key: 'id')]
 #[Fillable([
     'product_category_id',
     'product_type_id',
@@ -93,9 +71,9 @@ use Illuminate\Support\Str;
     'nutrition_data',
     'shelf_life_days',
 ])]
+#[UseFactory(ProductFactory::class)]
 class Product extends Model
 {
-    /** @use HasFactory<ProductFactory> */
     use HasFactory, SoftDeletes;
 
     /**
@@ -237,28 +215,28 @@ class Product extends Model
         return $this->hasMany(PurchaseOrderItem::class);
     }
 
-    /**
-     * Get the AI recommendation items for the product.
-     */
-    public function aiRecommendationItems(): HasMany
-    {
-        return $this->hasMany(AiRecommendationItem::class);
-    }
-
     // Scopes
 
     /**
      * Scope a query to only include active products.
+     *
+     * @param  Builder<self>  $query
+     * @return Builder<self>
      */
-    public function scopeActive(Builder $query): Builder
+    #[Scope]
+    public function active(Builder $query): Builder
     {
         return $query->where('product_status_id', ProductStatus::ACTIVE);
     }
 
     /**
      * Scope a query to filter products by category.
+     *
+     * @param  Builder<self>  $query
+     * @return Builder<self>
      */
-    public function scopeByCategory(Builder $query, int|ProductCategory $category): Builder
+    #[Scope]
+    public function byCategory(Builder $query, int|ProductCategory $category): Builder
     {
         $categoryId = $category instanceof ProductCategory
             ? $category->id

@@ -18,7 +18,6 @@ use Illuminate\Support\Carbon;
  * @property Carbon|null $updated_at
  * @property-read Collection<int, Vendor> $vendors
  * @property-read int|null $vendors_count
- *
  * @method static \Database\Factories\VendorStatusFactory factory($count = null, $state = [])
  * @method static \Illuminate\Database\Eloquent\Builder<VendorStatus>|VendorStatus newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<VendorStatus>|VendorStatus newQuery()
@@ -27,7 +26,6 @@ use Illuminate\Support\Carbon;
  * @method static \Illuminate\Database\Eloquent\Builder<VendorStatus>|VendorStatus whereId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<VendorStatus>|VendorStatus whereName($value)
  * @method static \Illuminate\Database\Eloquent\Builder<VendorStatus>|VendorStatus whereUpdatedAt($value)
- *
  * @mixin \Eloquent
  */
 #[Table('vendor_statuses', key: 'id')]

@@ -4,6 +4,8 @@ namespace App\Models;
 
 use Database\Factories\UserPaymentMethodFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
+use Illuminate\Database\Eloquent\Attributes\Table;
+use Illuminate\Database\Eloquent\Attributes\UseFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -27,48 +29,8 @@ use Illuminate\Support\Carbon;
  * @property-read User $user
  * @property-read PaymentMethodType $type
  * @property-read PaymentMethodStatus $status
- *
- * @method static \Database\Factories\UserPaymentMethodFactory factory($count = null, $state = [])
- * @method static \Illuminate\Database\Eloquent\Builder<static>|UserPaymentMethod newModelQuery()
- * @method static \Illuminate\Database\Eloquent\Builder<static>|UserPaymentMethod newQuery()
- * @method static \Illuminate\Database\Eloquent\Builder<static>|UserPaymentMethod query()
- *
- * @property int $payment_type_id
- * @property int $payment_status_id
- * @property string|null $billing_address
- * @property string|null $billing_city
- * @property string|null $billing_state
- * @property string|null $billing_zip_code
- *
- * @method static \Illuminate\Database\Eloquent\Builder<static>|UserPaymentMethod whereBillingAddress($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|UserPaymentMethod whereBillingCity($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|UserPaymentMethod whereBillingState($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|UserPaymentMethod whereBillingZipCode($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|UserPaymentMethod whereCardHolderName($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|UserPaymentMethod whereCardNumber($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|UserPaymentMethod whereCreatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|UserPaymentMethod whereCvv($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|UserPaymentMethod whereExpiryMonth($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|UserPaymentMethod whereExpiryYear($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|UserPaymentMethod whereId($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|UserPaymentMethod whereIsDefault($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|UserPaymentMethod whereLabel($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|UserPaymentMethod wherePaymentStatusId($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|UserPaymentMethod wherePaymentTypeId($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|UserPaymentMethod whereUpdatedAt($value)
- *
- * @property Carbon|null $deleted_at
- *
- * @method static \Illuminate\Database\Eloquent\Builder<static>|UserPaymentMethod onlyTrashed()
- * @method static \Illuminate\Database\Eloquent\Builder<static>|UserPaymentMethod whereDeletedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|UserPaymentMethod wherePaymentMethodStatusId($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|UserPaymentMethod wherePaymentMethodTypeId($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|UserPaymentMethod whereUserId($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|UserPaymentMethod withTrashed(bool $withTrashed = true)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|UserPaymentMethod withoutTrashed()
- *
- * @mixin \Eloquent
  */
+#[Table('user_payment_methods', key: 'id')]
 #[Fillable([
     'user_id',
     'payment_method_type_id',
@@ -85,9 +47,9 @@ use Illuminate\Support\Carbon;
     'billing_state',
     'billing_zip_code',
 ])]
+#[UseFactory(UserPaymentMethodFactory::class)]
 class UserPaymentMethod extends Model
 {
-    /** @use HasFactory<UserPaymentMethodFactory> */
     use HasFactory, SoftDeletes;
 
     /**

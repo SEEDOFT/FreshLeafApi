@@ -4,6 +4,8 @@ namespace App\Models;
 
 use Database\Factories\OrderItemFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
+use Illuminate\Database\Eloquent\Attributes\Table;
+use Illuminate\Database\Eloquent\Attributes\UseFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -24,25 +26,8 @@ use Illuminate\Support\Carbon;
  * @property-read Order $order
  * @property-read Product|null $product
  * @property-read ProductVariant $variant
- *
- * @method static \Database\Factories\OrderItemFactory factory($count = null, $state = [])
- * @method static \Illuminate\Database\Eloquent\Builder<static>|OrderItem newModelQuery()
- * @method static \Illuminate\Database\Eloquent\Builder<static>|OrderItem newQuery()
- * @method static \Illuminate\Database\Eloquent\Builder<static>|OrderItem query()
- * @method static \Illuminate\Database\Eloquent\Builder<static>|OrderItem whereCreatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|OrderItem whereId($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|OrderItem whereOrderId($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|OrderItem whereProductId($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|OrderItem whereProductNameSnapshot($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|OrderItem whereProductVariantId($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|OrderItem whereQuantity($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|OrderItem whereSubtotal($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|OrderItem whereUnitPriceSnapshot($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|OrderItem whereUnitSnapshot($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|OrderItem whereUpdatedAt($value)
- *
- * @mixin \Eloquent
  */
+#[Table('order_items', key: 'id')]
 #[Fillable([
     'order_id',
     'product_id',
@@ -53,9 +38,9 @@ use Illuminate\Support\Carbon;
     'quantity',
     'subtotal',
 ])]
+#[UseFactory(OrderItemFactory::class)]
 class OrderItem extends Model
 {
-    /** @use HasFactory<OrderItemFactory> */
     use HasFactory;
 
     /**

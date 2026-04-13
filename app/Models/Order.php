@@ -4,6 +4,8 @@ namespace App\Models;
 
 use Database\Factories\OrderFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
+use Illuminate\Database\Eloquent\Attributes\Table;
+use Illuminate\Database\Eloquent\Attributes\UseFactory;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -39,31 +41,8 @@ use Illuminate\Support\Carbon;
  * @property-read int|null $status_histories_count
  * @property-read OrderType $type
  * @property-read User|null $user
- *
- * @method static \Database\Factories\OrderFactory factory($count = null, $state = [])
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Order newModelQuery()
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Order newQuery()
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Order query()
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Order whereAddressId($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Order whereCreatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Order whereDeliveryDate($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Order whereDeliveryFee($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Order whereDeliverySlot($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Order whereDiscountAmount($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Order whereId($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Order whereNotes($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Order whereOrderNumber($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Order whereOrderStatusId($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Order whereOrderTypeId($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Order wherePaymentStatusId($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Order whereSubtotal($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Order whereTaxAmount($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Order whereTotalAmount($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Order whereUpdatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Order whereUserId($value)
- *
- * @mixin \Eloquent
  */
+#[Table('orders', key: 'id')]
 #[Fillable([
     'user_id',
     'address_id',
@@ -80,9 +59,9 @@ use Illuminate\Support\Carbon;
     'total_amount',
     'notes',
 ])]
+#[UseFactory(OrderFactory::class)]
 class Order extends Model
 {
-    /** @use HasFactory<OrderFactory> */
     use HasFactory;
 
     /**

@@ -4,6 +4,8 @@ namespace App\Models;
 
 use Database\Factories\InventoryBatchStatusFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
+use Illuminate\Database\Eloquent\Attributes\Table;
+use Illuminate\Database\Eloquent\Attributes\UseFactory;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -18,23 +20,12 @@ use Illuminate\Support\Carbon;
  * @property Carbon|null $updated_at
  * @property-read Collection<int, InventoryBatch> $inventoryBatches
  * @property-read int|null $inventory_batches_count
- *
- * @method static \Database\Factories\InventoryBatchStatusFactory factory($count = null, $state = [])
- * @method static \Illuminate\Database\Eloquent\Builder<static>|InventoryBatchStatus newModelQuery()
- * @method static \Illuminate\Database\Eloquent\Builder<static>|InventoryBatchStatus newQuery()
- * @method static \Illuminate\Database\Eloquent\Builder<static>|InventoryBatchStatus query()
- * @method static \Illuminate\Database\Eloquent\Builder<static>|InventoryBatchStatus whereCode($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|InventoryBatchStatus whereCreatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|InventoryBatchStatus whereId($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|InventoryBatchStatus whereName($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|InventoryBatchStatus whereUpdatedAt($value)
- *
- * @mixin \Eloquent
  */
-#[Fillable(['code', 'name'])]
+#[Table('inventory_batch_statuses', key: 'id')]
+#[Fillable(['name'])]
+#[UseFactory(InventoryBatchStatusFactory::class)]
 class InventoryBatchStatus extends Model
 {
-    /** @use HasFactory<InventoryBatchStatusFactory> */
     use HasFactory;
 
     /**

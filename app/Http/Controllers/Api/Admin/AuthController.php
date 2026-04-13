@@ -12,19 +12,26 @@ use Illuminate\Support\Facades\Hash;
 
 class AuthController extends Controller
 {
+    /**
+     * Admin Login
+     */
     public function login(LoginAdminRequest $request): JsonResponse
     {
-        $validated = $request->validated();
+        $validatedData = $request->validated();
 
-        $admin = Admin::query()
-            ->where('email', $validated['email'])
+        /** @var Admin|null $admin */
+        $admin = Admin::where('phone_number', $validatedData['phone_number'])
             ->first();
 
-        if (! $admin || ! Hash::check($validated['password'], $admin->password)) {
+        if (! $admin) {
+            return $this->errorResponse('Admin not found', 404);
+        }
+
+        if (! Hash::check($validatedData['password'], $admin->password)) {
             return $this->errorResponse('Invalid login details', 401);
         }
 
-        if ((int) $admin->status_id !== AdminStatus::ACTIVE) {
+        if ($admin->admin_status_id !== AdminStatus::ACTIVE) {
             return $this->errorResponse('Your account is not active', 403);
         }
 
@@ -36,6 +43,9 @@ class AuthController extends Controller
         ], 'Admin login success');
     }
 
+    /**
+     * Admin Logout
+     */
     public function logout(Request $request): JsonResponse
     {
         $request->user()?->currentAccessToken()?->delete();

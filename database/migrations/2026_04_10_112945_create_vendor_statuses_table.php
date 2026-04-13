@@ -12,26 +12,19 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('vendor_statuses', function (Blueprint $table) {
-            $table->id();
+        Schema::create('vendor_statuses', static function (Blueprint $table) {
+            $table->unsignedBigInteger('id')->primary();
             $table->string('name', 80)->unique();
             $table->timestamps();
         });
 
-        $vendorStatuses = [
+        DB::table('vendor_statuses')->insert([
             ['id' => 1, 'name' => 'Active'],
             ['id' => 2, 'name' => 'Inactive'],
             ['id' => 3, 'name' => 'Pending'],
             ['id' => 4, 'name' => 'Suspended'],
             ['id' => 5, 'name' => 'Rejected'],
-        ];
-
-        foreach ($vendorStatuses as $status) {
-            DB::table('vendor_statuses')->updateOrInsert(
-                ['id' => $status['id']],
-                $status + ['created_at' => now(), 'updated_at' => now()]
-            );
-        }
+        ]);
     }
 
     /**

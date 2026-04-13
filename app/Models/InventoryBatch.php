@@ -4,6 +4,8 @@ namespace App\Models;
 
 use Database\Factories\InventoryBatchFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
+use Illuminate\Database\Eloquent\Attributes\Table;
+use Illuminate\Database\Eloquent\Attributes\UseFactory;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -34,34 +36,26 @@ use Illuminate\Support\Carbon;
  * @property-read InventoryBatchStatus $status
  * @property-read Supplier $supplier
  * @property-read ProductVariant $variant
- *
- * @method static \Database\Factories\InventoryBatchFactory factory($count = null, $state = [])
- * @method static \Illuminate\Database\Eloquent\Builder<static>|InventoryBatch newModelQuery()
- * @method static \Illuminate\Database\Eloquent\Builder<static>|InventoryBatch newQuery()
- * @method static \Illuminate\Database\Eloquent\Builder<static>|InventoryBatch query()
- * @method static \Illuminate\Database\Eloquent\Builder<static>|InventoryBatch whereBatchCode($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|InventoryBatch whereCostPerUnit($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|InventoryBatch whereCreatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|InventoryBatch whereDamagedQty($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|InventoryBatch whereExpiredQty($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|InventoryBatch whereExpiryDate($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|InventoryBatch whereId($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|InventoryBatch whereInventoryBatchStatusId($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|InventoryBatch whereProductId($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|InventoryBatch whereProductVariantId($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|InventoryBatch whereReceivedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|InventoryBatch whereReceivedQty($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|InventoryBatch whereReservedQty($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|InventoryBatch whereSoldQty($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|InventoryBatch whereSupplierId($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|InventoryBatch whereUpdatedAt($value)
- *
- * @mixin \Eloquent
  */
-#[Fillable(['product_id', 'product_variant_id', 'supplier_id', 'inventory_batch_status_id', 'batch_code', 'received_qty', 'reserved_qty', 'sold_qty', 'damaged_qty', 'expired_qty', 'cost_per_unit', 'expiry_date', 'received_at'])]
+#[Table('inventory_batches', key: 'id')]
+#[Fillable([
+    'product_id',
+    'product_variant_id',
+    'supplier_id',
+    'inventory_batch_status_id',
+    'batch_code',
+    'received_qty',
+    'reserved_qty',
+    'sold_qty',
+    'damaged_qty',
+    'expired_qty',
+    'cost_per_unit',
+    'expiry_date',
+    'received_at',
+])]
+#[UseFactory(InventoryBatchFactory::class)]
 class InventoryBatch extends Model
 {
-    /** @use HasFactory<InventoryBatchFactory> */
     use HasFactory;
 
     /**

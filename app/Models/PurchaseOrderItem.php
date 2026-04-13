@@ -4,6 +4,8 @@ namespace App\Models;
 
 use Database\Factories\PurchaseOrderItemFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
+use Illuminate\Database\Eloquent\Attributes\Table;
+use Illuminate\Database\Eloquent\Attributes\UseFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -24,29 +26,21 @@ use Illuminate\Support\Carbon;
  * @property-read Product|null $product
  * @property-read PurchaseOrder $purchaseOrder
  * @property-read ProductVariant $variant
- *
- * @method static \Database\Factories\PurchaseOrderItemFactory factory($count = null, $state = [])
- * @method static \Illuminate\Database\Eloquent\Builder<static>|PurchaseOrderItem newModelQuery()
- * @method static \Illuminate\Database\Eloquent\Builder<static>|PurchaseOrderItem newQuery()
- * @method static \Illuminate\Database\Eloquent\Builder<static>|PurchaseOrderItem query()
- * @method static \Illuminate\Database\Eloquent\Builder<static>|PurchaseOrderItem whereBatchCode($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|PurchaseOrderItem whereCostPerUnit($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|PurchaseOrderItem whereCreatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|PurchaseOrderItem whereExpiryDate($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|PurchaseOrderItem whereId($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|PurchaseOrderItem whereProductId($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|PurchaseOrderItem whereProductVariantId($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|PurchaseOrderItem wherePurchaseOrderId($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|PurchaseOrderItem whereQtyOrdered($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|PurchaseOrderItem whereQtyReceived($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|PurchaseOrderItem whereUpdatedAt($value)
- *
- * @mixin \Eloquent
  */
-#[Fillable(['purchase_order_id', 'product_id', 'product_variant_id', 'qty_ordered', 'qty_received', 'cost_per_unit', 'expiry_date', 'batch_code'])]
+#[Table('purchase_order_items', key: 'id')]
+#[Fillable([
+    'purchase_order_id',
+    'product_id',
+    'product_variant_id',
+    'qty_ordered',
+    'qty_received',
+    'cost_per_unit',
+    'expiry_date',
+    'batch_code',
+])]
+#[UseFactory(PurchaseOrderItemFactory::class)]
 class PurchaseOrderItem extends Model
 {
-    /** @use HasFactory<PurchaseOrderItemFactory> */
     use HasFactory;
 
     /**

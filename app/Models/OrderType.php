@@ -4,6 +4,8 @@ namespace App\Models;
 
 use Database\Factories\OrderTypeFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
+use Illuminate\Database\Eloquent\Attributes\Table;
+use Illuminate\Database\Eloquent\Attributes\UseFactory;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -18,23 +20,12 @@ use Illuminate\Support\Carbon;
  * @property Carbon|null $updated_at
  * @property-read Collection<int, Order> $orders
  * @property-read int|null $orders_count
- *
- * @method static \Database\Factories\OrderTypeFactory factory($count = null, $state = [])
- * @method static \Illuminate\Database\Eloquent\Builder<static>|OrderType newModelQuery()
- * @method static \Illuminate\Database\Eloquent\Builder<static>|OrderType newQuery()
- * @method static \Illuminate\Database\Eloquent\Builder<static>|OrderType query()
- * @method static \Illuminate\Database\Eloquent\Builder<static>|OrderType whereCode($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|OrderType whereCreatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|OrderType whereId($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|OrderType whereName($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|OrderType whereUpdatedAt($value)
- *
- * @mixin \Eloquent
  */
-#[Fillable(['code', 'name'])]
+#[Table('order_types', key: 'id')]
+#[Fillable(['name'])]
+#[UseFactory(OrderTypeFactory::class)]
 class OrderType extends Model
 {
-    /** @use HasFactory<OrderTypeFactory> */
     use HasFactory;
 
     /**

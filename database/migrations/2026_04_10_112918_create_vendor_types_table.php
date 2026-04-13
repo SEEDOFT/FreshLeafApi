@@ -12,24 +12,17 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('vendor_types', function (Blueprint $table) {
-            $table->id();
+        Schema::create('vendor_types', static function (Blueprint $table) {
+            $table->unsignedBigInteger('id')->primary();
             $table->string('name', 80)->unique();
             $table->timestamps();
         });
 
-        $vendorTypes = [
+        DB::table('vendor_types')->insert([
             ['id' => 1, 'name' => 'Standart'],
             ['id' => 2, 'name' => 'Premium'],
             ['id' => 3, 'name' => 'Enterprise'],
-        ];
-
-        foreach ($vendorTypes as $type) {
-            DB::table('vendor_types')->updateOrInsert(
-                ['id' => $type['id']],
-                $type + ['created_at' => now(), 'updated_at' => now()]
-            );
-        }
+        ]);
     }
 
     /**

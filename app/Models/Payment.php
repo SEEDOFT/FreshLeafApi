@@ -4,6 +4,8 @@ namespace App\Models;
 
 use Database\Factories\PaymentFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
+use Illuminate\Database\Eloquent\Attributes\Table;
+use Illuminate\Database\Eloquent\Attributes\UseFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -22,23 +24,8 @@ use Illuminate\Support\Carbon;
  * @property-read Order $order
  * @property-read PaymentStatus $status
  * @property-read PaymentType $type
- *
- * @method static \Database\Factories\PaymentFactory factory($count = null, $state = [])
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Payment newModelQuery()
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Payment newQuery()
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Payment query()
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Payment whereAmount($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Payment whereCreatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Payment whereId($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Payment whereOrderId($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Payment wherePaidAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Payment wherePaymentStatusId($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Payment wherePaymentTypeId($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Payment whereTransactionReference($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Payment whereUpdatedAt($value)
- *
- * @mixin \Eloquent
  */
+#[Table('payments', key: 'id')]
 #[Fillable([
     'order_id',
     'payment_type_id',
@@ -47,9 +34,9 @@ use Illuminate\Support\Carbon;
     'transaction_reference',
     'paid_at',
 ])]
+#[UseFactory(PaymentFactory::class)]
 class Payment extends Model
 {
-    /** @use HasFactory<PaymentFactory> */
     use HasFactory;
 
     /**

@@ -4,6 +4,8 @@ namespace App\Models;
 
 use Database\Factories\PriceHistoryFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
+use Illuminate\Database\Eloquent\Attributes\Table;
+use Illuminate\Database\Eloquent\Attributes\UseFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -22,27 +24,19 @@ use Illuminate\Support\Carbon;
  * @property-read User|null $changer
  * @property-read Product|null $product
  * @property-read ProductVariant $variant
- *
- * @method static \Database\Factories\PriceHistoryFactory factory($count = null, $state = [])
- * @method static \Illuminate\Database\Eloquent\Builder<static>|PriceHistory newModelQuery()
- * @method static \Illuminate\Database\Eloquent\Builder<static>|PriceHistory newQuery()
- * @method static \Illuminate\Database\Eloquent\Builder<static>|PriceHistory query()
- * @method static \Illuminate\Database\Eloquent\Builder<static>|PriceHistory whereChangedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|PriceHistory whereChangedBy($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|PriceHistory whereCreatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|PriceHistory whereId($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|PriceHistory whereNewPrice($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|PriceHistory whereOldPrice($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|PriceHistory whereProductId($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|PriceHistory whereProductVariantId($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|PriceHistory whereUpdatedAt($value)
- *
- * @mixin \Eloquent
  */
-#[Fillable(['product_id', 'product_variant_id', 'old_price', 'new_price', 'changed_by', 'changed_at'])]
+#[Table('price_histories', key: 'id')]
+#[Fillable([
+    'product_id',
+    'product_variant_id',
+    'old_price',
+    'new_price',
+    'changed_by',
+    'changed_at',
+])]
+#[UseFactory(PriceHistoryFactory::class)]
 class PriceHistory extends Model
 {
-    /** @use HasFactory<PriceHistoryFactory> */
     use HasFactory;
 
     /**

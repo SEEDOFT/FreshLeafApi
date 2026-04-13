@@ -4,6 +4,8 @@ namespace App\Models;
 
 use Database\Factories\InventoryMovementFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
+use Illuminate\Database\Eloquent\Attributes\Table;
+use Illuminate\Database\Eloquent\Attributes\UseFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -23,28 +25,20 @@ use Illuminate\Support\Carbon;
  * @property-read InventoryBatch $batch
  * @property-read User|null $creator
  * @property-read InventoryMovementType $type
- *
- * @method static \Database\Factories\InventoryMovementFactory factory($count = null, $state = [])
- * @method static \Illuminate\Database\Eloquent\Builder<static>|InventoryMovement newModelQuery()
- * @method static \Illuminate\Database\Eloquent\Builder<static>|InventoryMovement newQuery()
- * @method static \Illuminate\Database\Eloquent\Builder<static>|InventoryMovement query()
- * @method static \Illuminate\Database\Eloquent\Builder<static>|InventoryMovement whereCreatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|InventoryMovement whereCreatedBy($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|InventoryMovement whereId($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|InventoryMovement whereInventoryBatchId($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|InventoryMovement whereInventoryMovementTypeId($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|InventoryMovement whereNote($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|InventoryMovement whereQuantity($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|InventoryMovement whereReferenceId($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|InventoryMovement whereReferenceType($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|InventoryMovement whereUpdatedAt($value)
- *
- * @mixin \Eloquent
  */
-#[Fillable(['inventory_batch_id', 'inventory_movement_type_id', 'quantity', 'reference_type', 'reference_id', 'note', 'created_by'])]
+#[Table('inventory_movements', key: 'id')]
+#[Fillable([
+    'inventory_batch_id',
+    'inventory_movement_type_id',
+    'quantity',
+    'reference_type',
+    'reference_id',
+    'note',
+    'created_by',
+])]
+#[UseFactory(InventoryMovementFactory::class)]
 class InventoryMovement extends Model
 {
-    /** @use HasFactory<InventoryMovementFactory> */
     use HasFactory;
 
     /**

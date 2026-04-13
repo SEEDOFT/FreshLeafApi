@@ -4,6 +4,8 @@ namespace App\Models;
 
 use Database\Factories\ProductVariantFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
+use Illuminate\Database\Eloquent\Attributes\Table;
+use Illuminate\Database\Eloquent\Attributes\UseFactory;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -29,21 +31,6 @@ use Illuminate\Support\Carbon;
  * @property-read Collection<int, OrderItem> $orderItems
  * @property-read Collection<int, CartItem> $cartItems
  * @property-read Collection<int, PurchaseOrderItem> $purchaseOrderItems
- * @property-read Collection<int, AiRecommendationItem> $aiRecommendationItems
- *
- * @method static \Database\Factories\ProductVariantFactory factory($count = null, $state = [])
- * @method static \Illuminate\Database\Eloquent\Builder<static>|ProductVariant newModelQuery()
- * @method static \Illuminate\Database\Eloquent\Builder<static>|ProductVariant newQuery()
- * @method static \Illuminate\Database\Eloquent\Builder<static>|ProductVariant query()
- * @method static \Illuminate\Database\Eloquent\Builder<static>|ProductVariant whereCreatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|ProductVariant whereId($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|ProductVariant whereName($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|ProductVariant wherePrice($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|ProductVariant whereProductId($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|ProductVariant whereQuantityInUnit($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|ProductVariant whereUnitId($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|ProductVariant whereUpdatedAt($value)
- *
  * @property-read int|null $ai_recommendation_items_count
  * @property-read int|null $cart_items_count
  * @property-read int|null $inventory_batches_count
@@ -52,13 +39,18 @@ use Illuminate\Support\Carbon;
  * @property-read int|null $price_histories_count
  * @property-read int|null $purchase_order_items_count
  * @property-read int|null $user_behavior_events_count
- *
- * @mixin \Eloquent
  */
-#[Fillable(['product_id', 'unit_id', 'name', 'quantity_in_unit', 'price'])]
+#[Table('product_variants', key: 'id')]
+#[Fillable([
+    'product_id',
+    'unit_id',
+    'name',
+    'quantity_in_unit',
+    'price',
+])]
+#[UseFactory(ProductVariantFactory::class)]
 class ProductVariant extends Model
 {
-    /** @use HasFactory<ProductVariantFactory> */
     use HasFactory;
 
     /**
@@ -123,13 +115,5 @@ class ProductVariant extends Model
     public function purchaseOrderItems(): HasMany
     {
         return $this->hasMany(PurchaseOrderItem::class);
-    }
-
-    /**
-     * Get the AI recommendation items for the product variant.
-     */
-    public function aiRecommendationItems(): HasMany
-    {
-        return $this->hasMany(AiRecommendationItem::class);
     }
 }

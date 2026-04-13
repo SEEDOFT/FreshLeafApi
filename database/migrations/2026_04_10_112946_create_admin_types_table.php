@@ -12,24 +12,17 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('admin_types', function (Blueprint $table) {
-            $table->id();
+        Schema::create('admin_types', static function (Blueprint $table) {
+            $table->unsignedBigInteger('id')->primary();
             $table->string('name', 80)->unique();
             $table->timestamps();
         });
 
-        $adminTypes = [
+        DB::table('admin_types')->insert([
             ['id' => 1, 'name' => 'Super Admin'],
-            ['id' => 2, 'name' => 'Operation'],
+            ['id' => 2, 'name' => 'Manager'],
             ['id' => 3, 'name' => 'Support'],
-        ];
-
-        foreach ($adminTypes as $type) {
-            DB::table('admin_types')->updateOrInsert(
-                ['id' => $type['id']],
-                $type + ['created_at' => now(), 'updated_at' => now()]
-            );
-        }
+        ]);
     }
 
     /**

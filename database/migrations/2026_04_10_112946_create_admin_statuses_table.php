@@ -12,25 +12,19 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('admin_statuses', function (Blueprint $table) {
-            $table->id();
+        Schema::create('admin_statuses', static function (Blueprint $table) {
+            $table->unsignedBigInteger('id')->primary();
             $table->string('name', 80)->unique();
             $table->timestamps();
         });
 
-        $adminStatuses = [
+        DB::table('admin_statuses')->insert([
             ['id' => 1, 'name' => 'Active'],
             ['id' => 2, 'name' => 'Inactive'],
             ['id' => 3, 'name' => 'Pending'],
             ['id' => 4, 'name' => 'Suspended'],
-        ];
-
-        foreach ($adminStatuses as $status) {
-            DB::table('admin_statuses')->updateOrInsert(
-                ['id' => $status['id']],
-                $status + ['created_at' => now(), 'updated_at' => now()]
-            );
-        }
+            ['id' => 5, 'name' => 'Rejected'],
+        ]);
     }
 
     /**

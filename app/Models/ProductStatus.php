@@ -4,6 +4,8 @@ namespace App\Models;
 
 use Database\Factories\ProductStatusFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
+use Illuminate\Database\Eloquent\Attributes\Table;
+use Illuminate\Database\Eloquent\Attributes\UseFactory;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -18,30 +20,19 @@ use Illuminate\Support\Carbon;
  * @property Carbon|null $updated_at
  * @property-read Collection<int, Product> $products
  * @property-read int|null $products_count
- *
- * @method static \Database\Factories\ProductStatusFactory factory($count = null, $state = [])
- * @method static \Illuminate\Database\Eloquent\Builder<static>|ProductStatus newModelQuery()
- * @method static \Illuminate\Database\Eloquent\Builder<static>|ProductStatus newQuery()
- * @method static \Illuminate\Database\Eloquent\Builder<static>|ProductStatus query()
- * @method static \Illuminate\Database\Eloquent\Builder<static>|ProductStatus whereCode($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|ProductStatus whereCreatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|ProductStatus whereId($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|ProductStatus whereName($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|ProductStatus whereUpdatedAt($value)
- *
- * @mixin \Eloquent
  */
-#[Fillable(['code', 'name'])]
+#[Table('product_statuses', key: 'id')]
+#[Fillable(['name'])]
+#[UseFactory(ProductStatusFactory::class)]
 class ProductStatus extends Model
 {
-    /** @use HasFactory<ProductStatusFactory> */
     use HasFactory;
 
-    public const ACTIVE = 1;
+    public const int ACTIVE = 1;
 
-    public const INACTIVE = 2;
+    public const int INACTIVE = 2;
 
-    public const DRAFT = 3;
+    public const int DRAFT = 3;
 
     /**
      * Get the products for the product status.

@@ -11,11 +11,20 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('user_statuses', function (Blueprint $table) {
-            $table->unsignedBigInteger('id');
+        Schema::create('user_statuses', static function (Blueprint $table) {
+            $table->unsignedBigInteger('id')->primary();
             $table->string('name');
-            $table->timestamps();
+            $table->timestamp('created_at')->useCurrent();
+            $table->timestamp('updated_at')->useCurrent()->useCurrentOnUpdate();
         });
+
+        DB::table('user_statuses')->insert([
+            ['id' => 1, 'name' => 'Active'],
+            ['id' => 2, 'name' => 'Inactive'],
+            ['id' => 3, 'name' => 'Pending'],
+            ['id' => 4, 'name' => 'Suspended'],
+            ['id' => 5, 'name' => 'Deleted'],
+        ]);
     }
 
     /**

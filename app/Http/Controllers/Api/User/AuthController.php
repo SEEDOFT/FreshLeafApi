@@ -11,7 +11,6 @@ use App\Models\User;
 use App\Models\UserStatus;
 use App\Models\UserType;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 
 class AuthController extends Controller
@@ -22,26 +21,28 @@ class AuthController extends Controller
     public function login(LoginRequest $request): JsonResponse
     {
         $validatedData = $request->validated();
+
+        /** @var User|null $user */
         $user = User::where('phone_number', $validatedData['phone_number'])
             ->ofType(UserType::CONSUMER)
             ->active()
             ->first();
 
         if (! $user || ! Hash::check($validatedData['password'], $user->password)) {
-            return $this->errorResponse('Invalid login details', 401);
+            return static::errorResponse('Invalid login details', 401);
         }
 
         if (! $user->isActive()) {
-            return $this->errorResponse('Your account is not active', 403);
+            return static::errorResponse('Your account is not active', 403);
         }
 
         if (! $user->isType(UserType::CONSUMER)) {
-            return $this->errorResponse('Only consumers can login here', 403);
+            return static::errorResponse('Only consumers can login here', 403);
         }
 
-        $token = $user->createToken('auth_token')->plainTextToken;
+        $token = $user->createToken('user_auth_token')->plainTextToken;
 
-        return $this->successResponse([
+        return static::successResponse([
             'access_token' => $token,
             'token_type' => 'Bearer',
         ], 'Login success');
@@ -64,9 +65,9 @@ class AuthController extends Controller
             'password' => Hash::make($validatedData['password']),
         ]);
 
-        $token = $user->createToken('auth_token')->plainTextToken;
+        $token = $user->createToken('user_auth_token')->plainTextToken;
 
-        return $this->successResponse([
+        return static::successResponse([
             'access_token' => $token,
             'token_type' => 'Bearer',
         ], 'User registered successfully', 201);
@@ -77,32 +78,36 @@ class AuthController extends Controller
      */
     public function logout(): JsonResponse
     {
-        Auth::user()->tokens()->delete();
+        auth()->user()->tokens()->delete();
 
-        return $this->successResponse(message: 'Tokens Revoked');
+        return static::successResponse(message: 'Tokens Revoked');
     }
 
+    /**
+     * Verify user's current password
+     */
     public function verifyPassword(VerifyPasswordRequest $request): JsonResponse
     {
         $validatedData = $request->validated();
-        $user = Auth::user();
 
-        if (! Hash::check($validatedData['password'], $user->password)) {
-            return $this->errorResponse('Invalid password', 401);
+        if (! Hash::check($validatedData['password'], $this->user()->password)) {
+            return static::errorResponse('Invalid password', 401);
         }
 
-        return $this->successResponse(message: 'Password verified');
+        return static::successResponse(message: 'Password verified');
     }
 
+    /**
+     * Update user's password
+     */
     public function updatePassword(UpdatePasswordRequest $request): JsonResponse
     {
         $validatedData = $request->validated();
-        $user = Auth::user();
 
-        $user->update([
+        $this->user()->update([
             'password' => Hash::make($validatedData['password']),
         ]);
 
-        return $this->successResponse(message: 'Password updated');
+        return static::successResponse(message: 'Password updated');
     }
 }

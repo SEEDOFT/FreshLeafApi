@@ -4,6 +4,8 @@ namespace App\Models;
 
 use Database\Factories\NotificationFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
+use Illuminate\Database\Eloquent\Attributes\Table;
+use Illuminate\Database\Eloquent\Attributes\UseFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -23,28 +25,20 @@ use Illuminate\Support\Carbon;
  * @property-read NotificationStatus $status
  * @property-read NotificationType $type
  * @property-read User|null $user
- *
- * @method static \Database\Factories\NotificationFactory factory($count = null, $state = [])
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Notification newModelQuery()
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Notification newQuery()
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Notification query()
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Notification whereCreatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Notification whereData($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Notification whereId($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Notification whereMessage($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Notification whereNotificationStatusId($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Notification whereNotificationTypeId($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Notification whereReadAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Notification whereTitle($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Notification whereUpdatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Notification whereUserId($value)
- *
- * @mixin \Eloquent
  */
-#[Fillable(['user_id', 'notification_type_id', 'notification_status_id', 'title', 'message', 'data', 'read_at'])]
+#[Table('notifications', key: 'id')]
+#[Fillable([
+    'user_id',
+    'notification_type_id',
+    'notification_status_id',
+    'title',
+    'message',
+    'data',
+    'read_at',
+])]
+#[UseFactory(NotificationFactory::class)]
 class Notification extends Model
 {
-    /** @use HasFactory<NotificationFactory> */
     use HasFactory;
 
     /**

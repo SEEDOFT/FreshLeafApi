@@ -21,9 +21,7 @@ return new class extends Migration
         DB::table('user_statuses')->insert([
             ['id' => 1, 'name' => 'Active'],
             ['id' => 2, 'name' => 'Inactive'],
-            ['id' => 3, 'name' => 'Pending'],
-            ['id' => 4, 'name' => 'Suspended'],
-            ['id' => 5, 'name' => 'Deleted'],
+            ['id' => 3, 'name' => 'Deleted'],
         ]);
     }
 

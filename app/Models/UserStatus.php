@@ -26,13 +26,11 @@ class UserStatus extends Model
 {
     use HasFactory;
 
-    public const ACTIVE = 1;
+    public const int ACTIVE = 1;
 
-    public const INACTIVE = 2;
+    public const int INACTIVE = 2;
 
-    public const DELETED = 3;
-
-    public const PENDING = 4;
+    public const int DELETED = 3;
 
     /**
      * Get the users for the user status.

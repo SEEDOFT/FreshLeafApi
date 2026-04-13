@@ -14,59 +14,68 @@ use Illuminate\Support\Facades\Hash;
 
 class AuthController extends Controller
 {
+    /**
+     * Vendor registration
+     */
     public function register(RegisterVendorRequest $request): JsonResponse
     {
-        $validated = $request->validated();
+        $validatedData = $request->validated();
 
-        $vendor = Vendor::query()->create([
-            'name' => $validated['name'],
-            'email' => $validated['email'],
-            'password' => Hash::make($validated['password']),
+        $vendor = Vendor::create([
+            'name' => $validatedData['name'],
+            'email' => $validatedData['email'],
+            'password' => Hash::make($validatedData['password']),
             'type_id' => VendorType::STANDART,
             'status_id' => VendorStatus::PENDING,
-            'business_name' => $validated['business_name'],
-            'contact_phone' => $validated['contact_phone'],
-            'city' => $validated['city'],
-            'province' => $validated['province'],
-            'address' => $validated['address'],
+            'business_name' => $validatedData['business_name'],
+            'contact_phone' => $validatedData['contact_phone'],
+            'city' => $validatedData['city'],
+            'province' => $validatedData['province'],
+            'address' => $validatedData['address'],
             'is_verified' => false,
             'meta' => null,
         ]);
 
-        return $this->successResponse([
+        return static::successResponse([
             'vendor_id' => $vendor->id,
             'status' => 'pending',
         ], 'Vendor registration submitted. Waiting for super admin approval.', 201);
     }
 
+    /**
+     * Vendor Login
+     */
     public function login(LoginVendorRequest $request): JsonResponse
     {
-        $validated = $request->validated();
+        $validatedData = $request->validated();
 
-        $vendor = Vendor::query()
-            ->where('email', $validated['email'])
+        /** @var Vendor|null $vendor */
+        $vendor = Vendor::where('phone_number', $validatedData['phone_number'])
             ->first();
 
-        if (! $vendor || ! Hash::check($validated['password'], $vendor->password)) {
-            return $this->errorResponse('Invalid login details', 401);
+        if (! $vendor || ! Hash::check($validatedData['password'], $vendor->password)) {
+            return static::errorResponse('Invalid login details', 401);
         }
 
-        if ((int) $vendor->status_id !== VendorStatus::ACTIVE) {
-            return $this->errorResponse('Your account is pending approval', 403);
+        if ($vendor->vendor_status_id !== VendorStatus::ACTIVE) {
+            return static::errorResponse('Your account is pending approval', 403);
         }
 
         $token = $vendor->createToken('vendor_auth_token')->plainTextToken;
 
-        return $this->successResponse([
+        return static::successResponse([
             'access_token' => $token,
             'token_type' => 'Bearer',
         ], 'Vendor login success');
     }
 
+    /**
+     * Vendor logout
+     */
     public function logout(Request $request): JsonResponse
     {
         $request->user()?->currentAccessToken()?->delete();
 
-        return $this->successResponse(message: 'Tokens Revoked');
+        return static::successResponse(message: 'Tokens Revoked');
     }
 }

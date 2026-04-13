@@ -21,8 +21,8 @@ use Laravel\Sanctum\HasApiTokens;
  * @property string $last_name
  * @property string $email
  * @property string $password
- * @property int $type_id
- * @property int $status_id
+ * @property int $vendor_type_id
+ * @property int $vendor_status_id
  * @property string|null $business_name
  * @property string|null $contact_phone
  * @property string|null $city
@@ -41,10 +41,10 @@ use Laravel\Sanctum\HasApiTokens;
     'last_name',
     'email',
     'password',
-    'type_id',
-    'status_id',
+    'vendor_type_id',
+    'vendor_status_id',
     'business_name',
-    'contact_phone',
+    'phone_number',
     'city',
     'province',
     'address',
@@ -68,12 +68,12 @@ class Vendor extends Authenticatable
 
     public function type(): BelongsTo
     {
-        return $this->belongsTo(VendorType::class, 'type_id');
+        return $this->belongsTo(VendorType::class, 'vendor_type_id');
     }
 
     public function status(): BelongsTo
     {
-        return $this->belongsTo(VendorStatus::class, 'status_id');
+        return $this->belongsTo(VendorStatus::class, 'vendor_status_id');
     }
 
     public function preference(): MorphOne

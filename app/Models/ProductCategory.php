@@ -7,17 +7,12 @@ use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Table;
 use Illuminate\Database\Eloquent\Attributes\UseFactory;
 use Illuminate\Database\Eloquent\Collection;
-use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Carbon;
 
 /**
- * @method static \Illuminate\Database\Eloquent\Builder<static>|ProductCategory newModelQuery()
- * @method static \Illuminate\Database\Eloquent\Builder<static>|ProductCategory newQuery()
- * @method static \Illuminate\Database\Eloquent\Builder<static>|ProductCategory query()
- *
  * @property int $id
  * @property string $name
  * @property string $slug
@@ -32,14 +27,6 @@ use Illuminate\Support\Carbon;
 class ProductCategory extends Model
 {
     use HasFactory;
-
-    /**
-     * @return Factory<CategoryFactory>
-     */
-    protected static function newFactory(): Factory
-    {
-        return CategoryFactory::new();
-    }
 
     /**
      * Get the products for the category.

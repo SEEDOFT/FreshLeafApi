@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Models;
 
 use Database\Factories\PaymentFactory;
@@ -56,7 +58,7 @@ class Payment extends Model
      */
     public function order(): BelongsTo
     {
-        return $this->belongsTo(Order::class);
+        return $this->belongsTo(Order::class, 'order_id', 'id');
     }
 
     /**
@@ -64,7 +66,7 @@ class Payment extends Model
      */
     public function type(): BelongsTo
     {
-        return $this->belongsTo(PaymentType::class, 'payment_type_id');
+        return $this->belongsTo(PaymentType::class, 'payment_type_id', 'id');
     }
 
     /**
@@ -72,6 +74,6 @@ class Payment extends Model
      */
     public function status(): BelongsTo
     {
-        return $this->belongsTo(PaymentStatus::class, 'payment_status_id');
+        return $this->belongsTo(PaymentStatus::class, 'payment_status_id', 'id');
     }
 }

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Models;
 
 use Database\Factories\UserStatusFactory;
@@ -32,11 +34,13 @@ class UserStatus extends Model
 
     public const int DELETED = 3;
 
+    public const int PENDING = 4;
+
     /**
      * Get the users for the user status.
      */
     public function users(): HasMany
     {
-        return $this->hasMany(User::class);
+        return $this->hasMany(User::class, 'user_status_id', 'id');
     }
 }

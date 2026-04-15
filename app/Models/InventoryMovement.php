@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Models;
 
 use Database\Factories\InventoryMovementFactory;
@@ -46,7 +48,7 @@ class InventoryMovement extends Model
      */
     public function batch(): BelongsTo
     {
-        return $this->belongsTo(InventoryBatch::class, 'inventory_batch_id');
+        return $this->belongsTo(InventoryBatch::class, 'inventory_batch_id', 'id');
     }
 
     /**
@@ -54,7 +56,7 @@ class InventoryMovement extends Model
      */
     public function type(): BelongsTo
     {
-        return $this->belongsTo(InventoryMovementType::class, 'inventory_movement_type_id');
+        return $this->belongsTo(InventoryMovementType::class, 'inventory_movement_type_id', 'id');
     }
 
     /**
@@ -62,6 +64,6 @@ class InventoryMovement extends Model
      */
     public function creator(): BelongsTo
     {
-        return $this->belongsTo(User::class, 'created_by');
+        return $this->belongsTo(User::class, 'created_by', 'id');
     }
 }

@@ -1,11 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Controllers\Api\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\LoginAdminRequest;
-use App\Models\Admin;
-use App\Models\AdminStatus;
+use App\Models\User;
+use App\Models\UserType;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -19,8 +21,10 @@ class AuthController extends Controller
     {
         $validatedData = $request->validated();
 
-        /** @var Admin|null $admin */
-        $admin = Admin::where('phone_number', $validatedData['phone_number'])
+        /** @var User|null $admin */
+        $admin = User::query()
+            ->ofType(UserType::ADMIN)
+            ->where('phone_number', $validatedData['phone_number'])
             ->first();
 
         if (! $admin) {
@@ -29,10 +33,6 @@ class AuthController extends Controller
 
         if (! Hash::check($validatedData['password'], $admin->password)) {
             return $this->errorResponse('Invalid login details', 401);
-        }
-
-        if ($admin->admin_status_id !== AdminStatus::ACTIVE) {
-            return $this->errorResponse('Your account is not active', 403);
         }
 
         $token = $admin->createToken('admin_auth_token')->plainTextToken;

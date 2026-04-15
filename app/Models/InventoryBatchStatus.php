@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Models;
 
 use Database\Factories\InventoryBatchStatusFactory;
@@ -33,6 +35,6 @@ class InventoryBatchStatus extends Model
      */
     public function inventoryBatches(): HasMany
     {
-        return $this->hasMany(InventoryBatch::class);
+        return $this->hasMany(InventoryBatch::class, 'inventory_batch_status_id', 'id');
     }
 }

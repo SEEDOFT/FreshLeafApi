@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Models;
 
 use Database\Factories\ProductVariantFactory;
@@ -58,7 +60,7 @@ class ProductVariant extends Model
      */
     public function product(): BelongsTo
     {
-        return $this->belongsTo(Product::class);
+        return $this->belongsTo(Product::class, 'product_id', 'id');
     }
 
     /**
@@ -66,7 +68,7 @@ class ProductVariant extends Model
      */
     public function unit(): BelongsTo
     {
-        return $this->belongsTo(Unit::class);
+        return $this->belongsTo(Unit::class, 'unit_id', 'id');
     }
 
     /**
@@ -74,7 +76,7 @@ class ProductVariant extends Model
      */
     public function priceHistories(): HasMany
     {
-        return $this->hasMany(PriceHistory::class);
+        return $this->hasMany(PriceHistory::class, 'product_variant_id', 'id');
     }
 
     /**
@@ -82,7 +84,7 @@ class ProductVariant extends Model
      */
     public function inventoryBatches(): HasMany
     {
-        return $this->hasMany(InventoryBatch::class);
+        return $this->hasMany(InventoryBatch::class, 'product_variant_id', 'id');
     }
 
     /**
@@ -90,7 +92,7 @@ class ProductVariant extends Model
      */
     public function inventoryMovements(): HasManyThrough
     {
-        return $this->hasManyThrough(InventoryMovement::class, InventoryBatch::class);
+        return $this->hasManyThrough(InventoryMovement::class, InventoryBatch::class, 'product_variant_id', 'inventory_batch_id', 'id', 'id');
     }
 
     /**
@@ -98,7 +100,7 @@ class ProductVariant extends Model
      */
     public function orderItems(): HasMany
     {
-        return $this->hasMany(OrderItem::class);
+        return $this->hasMany(OrderItem::class, 'product_variant_id', 'id');
     }
 
     /**
@@ -106,7 +108,7 @@ class ProductVariant extends Model
      */
     public function cartItems(): HasMany
     {
-        return $this->hasMany(CartItem::class);
+        return $this->hasMany(CartItem::class, 'product_variant_id', 'id');
     }
 
     /**
@@ -114,6 +116,6 @@ class ProductVariant extends Model
      */
     public function purchaseOrderItems(): HasMany
     {
-        return $this->hasMany(PurchaseOrderItem::class);
+        return $this->hasMany(PurchaseOrderItem::class, 'product_variant_id', 'id');
     }
 }

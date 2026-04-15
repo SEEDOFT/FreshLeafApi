@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Controllers\Api\User;
 
 use App\Http\Controllers\Controller;
@@ -24,7 +26,7 @@ class AuthController extends Controller
 
         /** @var User|null $user */
         $user = User::where('phone_number', $validatedData['phone_number'])
-            ->ofType(UserType::CONSUMER)
+            ->ofType(UserType::USER)
             ->active()
             ->first();
 
@@ -36,8 +38,8 @@ class AuthController extends Controller
             return static::errorResponse('Your account is not active', 403);
         }
 
-        if (! $user->isType(UserType::CONSUMER)) {
-            return static::errorResponse('Only consumers can login here', 403);
+        if (! $user->isType(UserType::USER)) {
+            return static::errorResponse('Only users can login here', 403);
         }
 
         $token = $user->createToken('user_auth_token')->plainTextToken;
@@ -61,8 +63,12 @@ class AuthController extends Controller
             'phone_number' => $validatedData['phone_number'],
             'image' => 'user.png',
             'user_status_id' => UserStatus::ACTIVE,
-            'user_type_id' => UserType::CONSUMER,
+            'user_type_id' => UserType::USER,
             'password' => Hash::make($validatedData['password']),
+        ]);
+
+        $user->userProfile()->create([
+            'preferred_language' => 'en',
         ]);
 
         $token = $user->createToken('user_auth_token')->plainTextToken;

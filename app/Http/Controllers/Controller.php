@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Controllers;
 
 use App\Models\User;
@@ -9,6 +11,13 @@ use Illuminate\Http\Exceptions\HttpResponseException;
 abstract class Controller
 {
     use ApiResponse;
+
+    protected User $user;
+
+    public function __construct()
+    {
+        $this->user = $this->user();
+    }
 
     /**
      * Get the authenticated user.
@@ -21,12 +30,6 @@ abstract class Controller
         if (! $user) {
             throw new HttpResponseException(
                 static::errorResponse('Unauthenticated', 401),
-            );
-        }
-
-        if (! $user->isActive()) {
-            throw new HttpResponseException(
-                static::errorResponse('Your account is not active', 403),
             );
         }
 

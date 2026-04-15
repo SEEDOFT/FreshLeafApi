@@ -1,7 +1,10 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Middleware;
 
+use App\Models\User;
 use App\Models\UserType;
 use App\Traits\ApiResponse;
 use Closure;
@@ -12,8 +15,12 @@ class EnsureActiveUserType
 {
     use ApiResponse;
 
+    /**
+     * Handle Middleware
+     */
     public function handle(Request $request, Closure $next, string $type): Response
     {
+        /** @var User|null $user */
         $user = $request->user();
 
         if (! $user) {
@@ -24,28 +31,26 @@ class EnsureActiveUserType
             return static::forbidden('Your account is not active.');
         }
 
-        $requiredType = $this->resolveType($type);
-
-        if ($requiredType === null) {
-            return static::forbidden('Invalid user type constraint.');
-        }
-
-        if (! $user->isType($requiredType)) {
+        if (! $user->isType(self::resolveType($type))) {
             return static::forbidden('You are not authorized for this resource.');
         }
 
         return $next($request);
     }
 
-    private static function resolveType(string $type): ?int
+    /**
+     * Resolve Autheticated User Type
+     */
+    private static function resolveType(string $type): int
     {
+        /** @var lowercase-string $normalized */
         $normalized = \mb_strtolower(\trim($type));
 
         return match ($normalized) {
-            'consumer' => UserType::CONSUMER,
             'vendor' => UserType::VENDOR,
             'admin' => UserType::ADMIN,
-            default => \is_numeric($normalized) ? (int) $normalized : null,
+            'user', => UserType::USER,
+            default => 0
         };
     }
 }

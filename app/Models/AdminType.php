@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Models;
 
 use Database\Factories\AdminTypeFactory;
@@ -33,6 +35,6 @@ class AdminType extends Model
 
     public function admins(): HasMany
     {
-        return $this->hasMany(Admin::class, 'admin_type_id');
+        return $this->hasMany(Admin::class, 'admin_type_id', 'id');
     }
 }

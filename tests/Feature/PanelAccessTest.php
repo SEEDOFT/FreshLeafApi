@@ -1,14 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Feature;
 
-use App\Models\Admin;
-use App\Models\AdminStatus;
-use App\Models\AdminType;
 use App\Models\PanelPreference;
-use App\Models\Vendor;
-use App\Models\VendorStatus;
-use App\Models\VendorType;
+use App\Models\User;
+use App\Models\UserStatus;
+use App\Models\UserType;
 use Illuminate\Foundation\Testing\LazilyRefreshDatabase;
 use Laravel\Sanctum\PersonalAccessToken;
 use Tests\TestCase;
@@ -19,14 +18,16 @@ class PanelAccessTest extends TestCase
 
     public function test_admin_login_logout_and_dashboard_access_work_via_api(): void
     {
-        Admin::query()->create([
-            'name' => 'Super Admin',
+        $admin = User::query()->create([
+            'first_name' => 'Super',
+            'last_name' => 'Admin',
+            'phone_number' => '+85510000091',
             'email' => 'admin-access@test.local',
             'password' => bcrypt('password123'),
-            'type_id' => AdminType::SUPER_ADMIN,
-            'status_id' => AdminStatus::ACTIVE,
-            'super_admin' => true,
+            'user_type_id' => UserType::ADMIN,
+            'user_status_id' => UserStatus::ACTIVE,
         ]);
+        $admin->adminProfile()->create(['super_admin' => true]);
 
         $loginResponse = $this->postJson('/api/v1/admin/auth/login', [
             'email' => 'admin-access@test.local',
@@ -53,21 +54,27 @@ class PanelAccessTest extends TestCase
 
     public function test_admin_token_cannot_access_vendor_routes(): void
     {
-        Admin::query()->create([
-            'name' => 'Super Admin',
+        $admin = User::query()->create([
+            'first_name' => 'Super',
+            'last_name' => 'Admin',
+            'phone_number' => '+85510000092',
             'email' => 'admin-isolation@test.local',
             'password' => bcrypt('password123'),
-            'type_id' => AdminType::SUPER_ADMIN,
-            'status_id' => AdminStatus::ACTIVE,
-            'super_admin' => true,
+            'user_type_id' => UserType::ADMIN,
+            'user_status_id' => UserStatus::ACTIVE,
         ]);
+        $admin->adminProfile()->create(['super_admin' => true]);
 
-        Vendor::query()->create([
-            'name' => 'Active Vendor',
+        $vendor = User::query()->create([
+            'first_name' => 'Active',
+            'last_name' => 'Vendor',
+            'phone_number' => '+85510000111',
             'email' => 'vendor-isolation@test.local',
             'password' => bcrypt('password123'),
-            'type_id' => VendorType::STANDART,
-            'status_id' => VendorStatus::ACTIVE,
+            'user_type_id' => UserType::VENDOR,
+            'user_status_id' => UserStatus::ACTIVE,
+        ]);
+        $vendor->vendorProfile()->create([
             'business_name' => 'Isolation Vendor',
             'contact_phone' => '+85510000111',
             'city' => 'Phnom Penh',
@@ -84,7 +91,7 @@ class PanelAccessTest extends TestCase
         $this->assertNotSame('', $adminToken);
 
         $adminTokenId = (int) explode('|', $adminToken)[0];
-        $this->assertSame(Admin::class, PersonalAccessToken::query()->findOrFail($adminTokenId)->tokenable_type);
+        $this->assertSame(User::class, PersonalAccessToken::query()->findOrFail($adminTokenId)->tokenable_type);
 
         $this->withToken($adminToken)
             ->getJson('/api/v1/vendor/dashboard')
@@ -93,21 +100,27 @@ class PanelAccessTest extends TestCase
 
     public function test_vendor_token_cannot_access_admin_routes(): void
     {
-        Admin::query()->create([
-            'name' => 'Super Admin',
+        $admin = User::query()->create([
+            'first_name' => 'Super',
+            'last_name' => 'Admin',
+            'phone_number' => '+85510000093',
             'email' => 'admin-isolation-two@test.local',
             'password' => bcrypt('password123'),
-            'type_id' => AdminType::SUPER_ADMIN,
-            'status_id' => AdminStatus::ACTIVE,
-            'super_admin' => true,
+            'user_type_id' => UserType::ADMIN,
+            'user_status_id' => UserStatus::ACTIVE,
         ]);
+        $admin->adminProfile()->create(['super_admin' => true]);
 
-        Vendor::query()->create([
-            'name' => 'Active Vendor',
+        $vendor = User::query()->create([
+            'first_name' => 'Active',
+            'last_name' => 'Vendor',
+            'phone_number' => '+85510000121',
             'email' => 'vendor-isolation-two@test.local',
             'password' => bcrypt('password123'),
-            'type_id' => VendorType::STANDART,
-            'status_id' => VendorStatus::ACTIVE,
+            'user_type_id' => UserType::VENDOR,
+            'user_status_id' => UserStatus::ACTIVE,
+        ]);
+        $vendor->vendorProfile()->create([
             'business_name' => 'Isolation Vendor',
             'contact_phone' => '+85510000121',
             'city' => 'Phnom Penh',
@@ -124,7 +137,7 @@ class PanelAccessTest extends TestCase
         $this->assertNotSame('', $vendorToken);
 
         $vendorTokenId = (int) explode('|', $vendorToken)[0];
-        $this->assertSame(Vendor::class, PersonalAccessToken::query()->findOrFail($vendorTokenId)->tokenable_type);
+        $this->assertSame(User::class, PersonalAccessToken::query()->findOrFail($vendorTokenId)->tokenable_type);
 
         $this->withToken($vendorToken)
             ->getJson('/api/v1/admin/dashboard')
@@ -133,14 +146,16 @@ class PanelAccessTest extends TestCase
 
     public function test_admin_preferences_can_be_saved_and_loaded(): void
     {
-        Admin::query()->create([
-            'name' => 'Admin Preferences',
+        $admin = User::query()->create([
+            'first_name' => 'Admin',
+            'last_name' => 'Preferences',
+            'phone_number' => '+85510000094',
             'email' => 'admin-preferences@test.local',
             'password' => bcrypt('password123'),
-            'type_id' => AdminType::SUPER_ADMIN,
-            'status_id' => AdminStatus::ACTIVE,
-            'super_admin' => true,
+            'user_type_id' => UserType::ADMIN,
+            'user_status_id' => UserStatus::ACTIVE,
         ]);
+        $admin->adminProfile()->create(['super_admin' => true]);
 
         $token = (string) $this->postJson('/api/v1/admin/auth/login', [
             'email' => 'admin-preferences@test.local',

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Models;
 
 use Database\Factories\PriceHistoryFactory;
@@ -56,7 +58,7 @@ class PriceHistory extends Model
      */
     public function product(): BelongsTo
     {
-        return $this->belongsTo(Product::class);
+        return $this->belongsTo(Product::class, 'product_id', 'id');
     }
 
     /**
@@ -64,7 +66,7 @@ class PriceHistory extends Model
      */
     public function variant(): BelongsTo
     {
-        return $this->belongsTo(ProductVariant::class, 'product_variant_id');
+        return $this->belongsTo(ProductVariant::class, 'product_variant_id', 'id');
     }
 
     /**
@@ -72,6 +74,6 @@ class PriceHistory extends Model
      */
     public function changer(): BelongsTo
     {
-        return $this->belongsTo(User::class, 'changed_by');
+        return $this->belongsTo(User::class, 'changed_by', 'id');
     }
 }

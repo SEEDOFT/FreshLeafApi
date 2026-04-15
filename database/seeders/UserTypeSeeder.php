@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Database\Seeders;
 
 use App\Models\UserType;
@@ -13,7 +15,7 @@ class UserTypeSeeder extends Seeder
     public function run(): void
     {
         $types = [
-            ['id' => UserType::CONSUMER, 'name' => 'Consumer'],
+            ['id' => UserType::USER, 'name' => 'User'],
             ['id' => UserType::VENDOR, 'name' => 'Vendor'],
             ['id' => UserType::ADMIN, 'name' => 'Admin'],
         ];

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Models;
 
 use Database\Factories\InventoryBatchFactory;
@@ -76,7 +78,7 @@ class InventoryBatch extends Model
      */
     public function product(): BelongsTo
     {
-        return $this->belongsTo(Product::class);
+        return $this->belongsTo(Product::class, 'product_id', 'id');
     }
 
     /**
@@ -84,7 +86,7 @@ class InventoryBatch extends Model
      */
     public function variant(): BelongsTo
     {
-        return $this->belongsTo(ProductVariant::class, 'product_variant_id');
+        return $this->belongsTo(ProductVariant::class, 'product_variant_id', 'id');
     }
 
     /**
@@ -92,7 +94,7 @@ class InventoryBatch extends Model
      */
     public function supplier(): BelongsTo
     {
-        return $this->belongsTo(Supplier::class);
+        return $this->belongsTo(Supplier::class, 'supplier_id', 'id');
     }
 
     /**
@@ -100,7 +102,7 @@ class InventoryBatch extends Model
      */
     public function status(): BelongsTo
     {
-        return $this->belongsTo(InventoryBatchStatus::class, 'inventory_batch_status_id');
+        return $this->belongsTo(InventoryBatchStatus::class, 'inventory_batch_status_id', 'id');
     }
 
     /**
@@ -108,6 +110,6 @@ class InventoryBatch extends Model
      */
     public function movements(): HasMany
     {
-        return $this->hasMany(InventoryMovement::class);
+        return $this->hasMany(InventoryMovement::class, 'inventory_batch_id', 'id');
     }
 }

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Models;
 
 use Database\Factories\NotificationTypeFactory;
@@ -33,6 +35,6 @@ class NotificationType extends Model
      */
     public function notifications(): HasMany
     {
-        return $this->hasMany(Notification::class);
+        return $this->hasMany(Notification::class, 'notification_type_id', 'id');
     }
 }

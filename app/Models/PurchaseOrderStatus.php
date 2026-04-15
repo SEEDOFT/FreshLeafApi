@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Models;
 
 use Database\Factories\PurchaseOrderStatusFactory;
@@ -32,6 +34,6 @@ class PurchaseOrderStatus extends Model
      */
     public function purchaseOrders(): HasMany
     {
-        return $this->hasMany(PurchaseOrder::class);
+        return $this->hasMany(PurchaseOrder::class, 'purchase_order_status_id', 'id');
     }
 }

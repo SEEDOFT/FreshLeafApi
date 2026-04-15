@@ -1,10 +1,12 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Database\Seeders;
 
-use App\Models\Vendor;
-use App\Models\VendorStatus;
-use App\Models\VendorType;
+use App\Models\User;
+use App\Models\UserStatus;
+use App\Models\UserType;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
 
@@ -34,13 +36,25 @@ class OperationUserSeeder extends Seeder
         ];
 
         foreach ($vendors as $vendor) {
-            Vendor::query()->updateOrCreate(
+            $names = preg_split('/\s+/', trim($vendor['name'])) ?: [];
+            $firstName = $names[0] ?? $vendor['name'];
+            $lastName = count($names) > 1 ? implode(' ', array_slice($names, 1)) : 'Vendor';
+
+            $user = User::query()->updateOrCreate(
                 ['email' => $vendor['email']],
                 [
-                    'name' => $vendor['name'],
+                    'first_name' => $firstName,
+                    'last_name' => $lastName,
+                    'phone_number' => $vendor['phone'],
                     'password' => Hash::make('password'),
-                    'type_id' => VendorType::STANDART,
-                    'status_id' => VendorStatus::ACTIVE,
+                    'user_type_id' => UserType::VENDOR,
+                    'user_status_id' => UserStatus::ACTIVE,
+                ]
+            );
+
+            $user->vendorProfile()->updateOrCreate(
+                ['user_id' => $user->id],
+                [
                     'business_name' => $vendor['name'].' Organic Store',
                     'contact_phone' => $vendor['phone'],
                     'city' => 'Phnom Penh',

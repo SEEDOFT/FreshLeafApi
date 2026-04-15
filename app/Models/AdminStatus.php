@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Models;
 
 use Database\Factories\AdminStatusFactory;
@@ -35,6 +37,6 @@ class AdminStatus extends Model
 
     public function admins(): HasMany
     {
-        return $this->hasMany(Admin::class, 'admin_status_id');
+        return $this->hasMany(Admin::class, 'admin_status_id', 'id');
     }
 }

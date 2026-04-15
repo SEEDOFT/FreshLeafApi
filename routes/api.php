@@ -1,202 +1,203 @@
 <?php
 
+declare(strict_types=1);
+
 use App\Http\Controllers\Api\Admin as AdminController;
 use App\Http\Controllers\Api\AiChatController;
 use App\Http\Controllers\Api\PaymentController;
-use App\Http\Controllers\Api\PreferenceController;
 use App\Http\Controllers\Api\ProductController;
 use App\Http\Controllers\Api\User;
 use App\Http\Controllers\Api\Vendor as VendorController;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Broadcast;
 use Illuminate\Support\Facades\Route;
 
-Route::prefix('v1')
-    ->group(function () {
+Route::prefix('v1')->name('v1.')->group(static function () {
+    // User Auth Routes (Public)
+    Route::prefix('users')
+        ->name('users.')
+        ->controller(User\AuthController::class)
+        ->group(static function () {
+            Route::post('register', 'register')->name('register');
+            Route::post('login', 'login')->name('login');
+        });
 
-        // Public Auth Routes (Rate limited)
-        Route::controller(User\AuthController::class)
-            ->prefix('auth')
-            ->middleware('throttle:60,1')
+    // Webhooks (No rate limiting - must receive external requests)
+    Route::prefix('webhooks')
+        ->name('webhooks.')
+        ->group(static function () {
+            Route::post('stripe', [PaymentController::class, 'handleWebhook'])->name('stripe');
+            Route::post('paypal', [PaymentController::class, 'handlePayPalWebhook'])->name('paypal');
+        });
+
+    // Authenticated user routes
+    Route::middleware(['auth:sanctum', 'active.type:user'])->group(static function () {
+        Route::prefix('users')
+            ->name('users.')
+            ->controller(User\AuthController::class)
             ->group(static function () {
-                Route::post('register', 'register');
-                Route::post('login', 'login');
+                Route::post('password/verify', 'verifyPassword')->name('password.verify');
+                Route::post('password/update', 'updatePassword')->name('password.update');
+                Route::post('logout', 'logout')->name('logout');
             });
 
-        // Protected User Auth Routes
-        Route::controller(User\AuthController::class)
-            ->prefix('auth')
-            ->middleware(['auth:sanctum', 'active.type:consumer'])
-            ->group(function () {
-                Route::post('password/verify', 'verifyPassword');
-                Route::post('password/update', 'updatePassword');
-                Route::post('logout', 'logout');
+        Route::prefix('pin')
+            ->name('pin.')
+            ->controller(User\UserPinController::class)
+            ->group(static function () {
+                Route::post('set', 'setPin')->name('set');
+                Route::post('update', 'updatePin')->name('update');
+                Route::post('reset', 'resetPin')->name('reset');
+                Route::post('verify', 'verifyPin')->name('verify');
             });
 
-        // User PIN Routes
-        Route::controller(User\UserPinController::class)->prefix('pin')
-            ->middleware(['auth:sanctum', 'active.type:consumer'])
-            ->group(function () {
-                Route::post('set', 'setPin');
-                Route::post('update', 'updatePin');
-                Route::post('reset', 'resetPin');
-                Route::post('verify', 'verifyPin');
+        Route::prefix('users')
+            ->name('users.')
+            ->group(static function () {
+                Route::prefix('profile')
+                    ->name('profile.')
+                    ->controller(User\ProfileController::class)
+                    ->group(static function () {
+                        Route::get('/', 'show')->name('show');
+                        Route::put('/', 'replace')->name('replace');
+                        Route::patch('/', 'update')->name('update');
+                        Route::delete('/', 'destroy')->name('delete');
+                    });
+
+                Route::prefix('products')
+                    ->name('products.')
+                    ->controller(ProductController::class)
+                    ->group(static function () {
+                        Route::get('/', 'userIndex')->name('index');
+                        Route::get('{product}', 'userShow')->name('show');
+                    });
+
+                Route::prefix('addresses')
+                    ->name('addresses.')
+                    ->controller(User\UserAddressController::class)
+                    ->group(static function () {
+                        Route::get('/', 'index')->name('index');
+                        Route::get('{address}', 'show')->name('show');
+                        Route::post('/', 'store')->name('store');
+                        Route::put('{address}', 'replace')->name('replace');
+                        Route::patch('{address}', 'update')->name('update');
+                        Route::delete('{address}', 'destroy')->name('delete');
+                    });
+
+                Route::prefix('payment-methods')
+                    ->name('payment-methods.')
+                    ->controller(User\UserPaymentMethodController::class)
+                    ->group(static function () {
+                        Route::get('/', 'index')->name('index');
+                        Route::post('/', 'store')->name('store');
+                        Route::put('{paymentMethod}', 'replace')->name('replace');
+                        Route::patch('{paymentMethod}', 'update')->name('update');
+                        Route::delete('{paymentMethod}', 'destroy')->name('delete');
+                    });
+
+                Route::prefix('payments')
+                    ->name('payments.')
+                    ->controller(PaymentController::class)
+                    ->group(static function () {
+                        Route::post('intent', 'createPaymentIntent')->name('intent');
+                        Route::post('confirm', 'confirmPayment')->name('confirm');
+                        Route::post('refund', 'refund')->name('refund');
+                        Route::get('status', 'status')->name('status');
+                        Route::prefix('paypal')
+                            ->name('paypal.')
+                            ->group(static function () {
+                                Route::post('order', 'createPayPalOrder')->name('order');
+                                Route::post('capture', 'capturePayPalOrder')->name('capture');
+                                Route::get('status', 'getPayPalOrderStatus')->name('status');
+                                Route::post('refund', 'refundPayPal')->name('refund');
+                            });
+                    });
             });
 
-        // User Addresses Routes
-        Route::controller(User\UserAddressController::class)->prefix('users/addresses')
-            ->middleware(['auth:sanctum', 'active.type:consumer'])
-            ->group(function () {
-                Route::get('/', 'index')->name('users.addresses.index');
-                Route::get('{address}', 'show')->name('users.addresses.show');
-                Route::post('/', 'store')->name('users.addresses.store');
-                Route::put('{address}', 'replace')->name('users.addresses.update');
-                Route::patch('{address}', 'update')->name('users.addresses.update');
-                Route::delete('{address}', 'destroy')->name('users.addresses.delete');
+        Route::prefix('ai/chat')
+            ->name('ai.chat.')
+            ->controller(AiChatController::class)
+            ->group(static function () {
+                Route::post('sessions', 'createSession')->name('sessions.create');
+                Route::post('messages', 'storeMessage')->name('messages.store');
+                Route::post('history', 'history')->name('history');
             });
-
-        // User Payment Methods Routes
-        Route::controller(User\UserPaymentMethodController::class)->prefix('users/payment-methods')
-            ->middleware(['auth:sanctum', 'active.type:consumer'])
-            ->group(function () {
-                Route::get('/', 'index')->name('users.payment-methods.index');
-                Route::post('/', 'store')->name('users.payment-methods.store');
-                Route::put('{paymentMethod}', 'replace')->name('users.payment-methods.update');
-                Route::patch('{paymentMethod}', 'update')->name('users.payment-methods.update');
-                Route::delete('{paymentMethod}', 'destroy')->name('users.payment-methods.delete');
-            });
-
-        // User Payments Routes (Stripe)
-        Route::controller(PaymentController::class)->prefix('users/payments')
-            ->middleware(['auth:sanctum', 'active.type:consumer'])
-            ->group(function () {
-                Route::post('intent', 'createPaymentIntent');
-                Route::post('confirm', 'confirmPayment');
-                Route::post('refund', 'refund');
-                Route::get('status', 'status');
-                Route::post('paypal/order', 'createPayPalOrder');
-                Route::post('paypal/capture', 'capturePayPalOrder');
-                Route::get('paypal/status', 'getPayPalOrderStatus');
-                Route::post('paypal/refund', 'refundPayPal');
-            });
-
-        // User Profile Routes
-        Route::controller(User\UserController::class)->prefix('users/profile')
-            ->middleware(['auth:sanctum', 'active.type:consumer'])
-            ->group(function () {
-                Route::get('/', 'show')->name('users.profile.show');
-                Route::put('/', 'replace')->name('users.profile.update');
-                Route::patch('/', 'update')->name('users.profile.update');
-                Route::delete('/', 'destroy')->name('users.profile.delete');
-            });
-
-        // AI Chat Routes
-        Route::controller(AiChatController::class)->prefix('ai/chat')
-            ->middleware(['auth:sanctum', 'active.type:consumer'])
-            ->group(function () {
-                Route::post('sessions', 'createSession')->name('ai.chat.sessions.create');
-                Route::post('messages', 'storeMessage')->name('ai.chat.messages.store');
-                Route::post('history', 'history')->name('ai.chat.history');
-            });
-
-        // Product Routes (Public)
-        Route::controller(ProductController::class)->prefix('products')
-            ->group(function () {
-                Route::get('/', 'index')->name('products.index');
-                Route::get('{product}', 'show')->name('products.show');
-            });
-
-        // Broadcasting Auth
-        Route::post('broadcasting/auth', function (Request $request) {
-            return Broadcast::auth($request);
-        })->middleware('auth:sanctum');
-
-        // Webhooks (No rate limiting - must receive external requests)
-        Route::post('webhooks/stripe', [PaymentController::class, 'handleWebhook']);
-        Route::post('webhooks/paypal', [PaymentController::class, 'handlePayPalWebhook']);
-
-        // Admin Auth Routes (Rate limited)
-        Route::controller(AdminController\AuthController::class)->prefix('admin/auth')
-            ->middleware('throttle:60,1')
-            ->group(function () {
-                Route::post('login', 'login');
-            });
-
-        // Admin Protected Routes
-        Route::controller(AdminController\DashboardController::class)->prefix('admin')
-            ->middleware(['auth:sanctum', 'role:admin', 'active.status:admin'])
-            ->group(function () {
-                Route::post('auth/logout', 'logout');
-                Route::get('dashboard', 'index');
-                Route::get('dashboard/{module}', 'show')->where('module', 'dashboard|vendors|catalog|orders|payments|users|help-center|settings');
-            });
-
-        Route::controller(AdminController\ProfileController::class)->prefix('admin/profile')
-            ->middleware(['auth:sanctum', 'role:admin', 'active.status:admin'])
-            ->group(function () {
-                Route::get('/', 'show');
-                Route::patch('/', 'update');
-            });
-
-        Route::controller(PreferenceController::class)->prefix('admin/preferences')
-            ->middleware(['auth:sanctum', 'role:admin', 'active.status:admin'])
-            ->group(function () {
-                Route::get('/', 'show');
-                Route::patch('/', 'update');
-            });
-
-        // Super Admin Only Routes
-        Route::controller(AdminController\PendingVendorController::class)->prefix('admin/vendors')
-            ->middleware(['auth:sanctum', 'role:super_admin', 'active.status:admin'])
-            ->group(function () {
-                Route::get('pending', 'index');
-                Route::get('pending/{vendor}', 'show');
-                Route::patch('{vendor}', 'update');
-            });
-
-        // Vendor Auth Routes (Rate limited)
-        Route::controller(VendorController\AuthController::class)->prefix('vendor/auth')
-            ->middleware('throttle:60,1')
-            ->group(function () {
-                Route::post('register', 'register');
-                Route::post('login', 'login');
-            });
-
-        // Vendor Protected Routes
-        Route::controller(VendorController\DashboardController::class)->prefix('vendor')
-            ->middleware(['auth:sanctum', 'role:vendor', 'active.status:vendor'])
-            ->group(function () {
-                Route::post('auth/logout', 'logout');
-                Route::get('dashboard', 'index');
-                Route::get('products', 'products');
-                Route::get('orders', 'orders');
-                Route::get('payments', 'payments');
-                Route::get('store-profile', 'storeProfile');
-                Route::get('notifications', 'notifications');
-                Route::get('help', 'help');
-            });
-
-        Route::controller(VendorController\ProfileController::class)->prefix('vendor/profile')
-            ->middleware(['auth:sanctum', 'role:vendor', 'active.status:vendor'])
-            ->group(function () {
-                Route::get('/', 'show');
-                Route::patch('/', 'update');
-            });
-
-        Route::controller(PreferenceController::class)->prefix('vendor/preferences')
-            ->middleware(['auth:sanctum', 'role:vendor', 'active.status:vendor'])
-            ->group(function () {
-                Route::get('/', 'show');
-                Route::patch('/', 'update');
-            });
-
-        // Fallback Route - 404
-        Route::fallback(
-            static fn (): JsonResponse => response()->json([
-                'success' => false,
-                'message' => 'Endpoint not found',
-                'errors' => [],
-            ], 404)
-        );
     });
+
+    // Authenticated (any sanctum) routes
+    Route::post('broadcasting/auth', [Broadcast::class, 'auth'])
+        ->middleware('auth:sanctum')
+        ->name('broadcasting.auth');
+
+    // Admin routes
+    Route::prefix('admin')
+        ->name('admin.')
+        ->group(static function () {
+            Route::prefix('auth')
+                ->name('auth.')
+                ->controller(AdminController\AuthController::class)
+                ->middleware('throttle:60,1')
+                ->group(static function () {
+                    Route::post('login', 'login')->name('login');
+                });
+
+            Route::prefix('profile')
+                ->name('profile.')
+                ->controller(AdminController\ProfileController::class)
+                ->middleware(['auth:sanctum', 'active.type:admin'])
+                ->group(static function () {
+                    Route::get('/', 'show')->name('show');
+                    Route::patch('/', 'update')->name('update');
+                });
+
+            Route::prefix('products')
+                ->name('products.')
+                ->controller(ProductController::class)
+                ->middleware(['auth:sanctum', 'active.type:admin'])
+                ->group(static function () {
+                    Route::get('/', 'adminIndex')->name('index');
+                    Route::get('{product}', 'adminShow')->name('show');
+                });
+        });
+
+    // Vendor routes
+    Route::prefix('vendor')
+        ->name('vendor.')
+        ->group(static function () {
+            Route::prefix('auth')
+                ->name('auth.')
+                ->controller(VendorController\AuthController::class)
+                ->middleware('throttle:60,1')
+                ->group(static function () {
+                    Route::post('register', 'register')->name('register');
+                    Route::post('login', 'login')->name('login');
+                });
+
+            Route::prefix('profile')
+                ->name('profile.')
+                ->controller(VendorController\ProfileController::class)
+                ->middleware(['auth:sanctum', 'active.type:vendor'])
+                ->group(static function () {
+                    Route::get('/', 'show')->name('show');
+                    Route::patch('/', 'update')->name('update');
+                });
+
+            Route::prefix('products')
+                ->name('products.')
+                ->controller(ProductController::class)
+                ->middleware(['auth:sanctum', 'active.type:vendor'])
+                ->group(static function () {
+                    Route::get('/', 'vendorIndex')->name('index');
+                    Route::get('{product}', 'vendorShow')->name('show');
+                });
+        });
+
+    // Fallback Route - 404
+    Route::fallback(
+        static fn (): JsonResponse => response()->json([
+            'success' => false,
+            'message' => 'Endpoint not found',
+            'errors' => [],
+        ], 404)
+    )->name('fallback');
+});

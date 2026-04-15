@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Feature;
 
 use App\Models\User;
@@ -24,7 +26,7 @@ class AuthTest extends TestCase
         ]);
 
         UserType::insert([
-            ['id' => UserType::CONSUMER, 'name' => 'Consumer'],
+            ['id' => UserType::USER, 'name' => 'User'],
             ['id' => UserType::VENDOR, 'name' => 'Vendor'],
             ['id' => UserType::ADMIN, 'name' => 'Admin'],
         ]);
@@ -75,7 +77,7 @@ class AuthTest extends TestCase
             'phone_number' => '1234567890',
             'password' => bcrypt('password123'),
             'user_status_id' => UserStatus::ACTIVE,
-            'user_type_id' => UserType::CONSUMER,
+            'user_type_id' => UserType::USER,
         ]);
 
         $response = $this->postJson('/api/v1/auth/login', [
@@ -109,7 +111,7 @@ class AuthTest extends TestCase
             'phone_number' => '1234567890',
             'password' => bcrypt('password123'),
             'user_status_id' => UserStatus::ACTIVE,
-            'user_type_id' => UserType::CONSUMER,
+            'user_type_id' => UserType::USER,
         ]);
 
         $response = $this->postJson('/api/v1/auth/login', [

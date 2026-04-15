@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Database\Factories;
 
 use App\Models\User;
@@ -34,7 +36,7 @@ class UserFactory extends Factory
             'phone_number' => fake()->unique()->phoneNumber(),
             'password' => static::$password ??= Hash::make('password'),
             'remember_token' => Str::random(10),
-            'user_type_id' => UserType::CONSUMER,
+            'user_type_id' => UserType::USER,
             'user_status_id' => UserStatus::ACTIVE,
         ];
     }

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Attributes\Fillable;
@@ -16,6 +18,6 @@ class PanelPreference extends Model
 {
     public function account(): MorphTo
     {
-        return $this->morphTo();
+        return $this->morphTo('account', 'account_type', 'account_id');
     }
 }

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Models;
 
 use Database\Factories\OrderStatusFactory;
@@ -35,6 +37,6 @@ class OrderStatus extends Model
      */
     public function orders(): HasMany
     {
-        return $this->hasMany(Order::class);
+        return $this->hasMany(Order::class, 'order_status_id', 'id');
     }
 }

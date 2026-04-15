@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Models;
 
 use Database\Factories\ProductTypeFactory;
@@ -32,6 +34,6 @@ class ProductType extends Model
      */
     public function products(): HasMany
     {
-        return $this->hasMany(Product::class);
+        return $this->hasMany(Product::class, 'product_type_id', 'id');
     }
 }

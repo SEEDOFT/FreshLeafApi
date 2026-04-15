@@ -1,13 +1,12 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Feature;
 
-use App\Models\Admin;
-use App\Models\AdminStatus;
-use App\Models\AdminType;
-use App\Models\Vendor;
-use App\Models\VendorStatus;
-use App\Models\VendorType;
+use App\Models\User;
+use App\Models\UserStatus;
+use App\Models\UserType;
 use Illuminate\Foundation\Testing\LazilyRefreshDatabase;
 use Tests\TestCase;
 
@@ -17,21 +16,27 @@ class AdminVendorReviewWebTest extends TestCase
 
     public function test_super_admin_can_review_and_approve_pending_vendor_via_api(): void
     {
-        Admin::query()->create([
-            'name' => 'Super Admin',
+        $admin = User::query()->create([
+            'first_name' => 'Super',
+            'last_name' => 'Admin',
+            'phone_number' => '+85510000095',
             'email' => 'superadmin-review@test.local',
             'password' => bcrypt('password123'),
-            'type_id' => AdminType::SUPER_ADMIN,
-            'status_id' => AdminStatus::ACTIVE,
-            'super_admin' => true,
+            'user_type_id' => UserType::ADMIN,
+            'user_status_id' => UserStatus::ACTIVE,
         ]);
+        $admin->adminProfile()->create(['super_admin' => true]);
 
-        $vendor = Vendor::query()->create([
-            'name' => 'Pending Vendor',
+        $vendor = User::query()->create([
+            'first_name' => 'Pending',
+            'last_name' => 'Vendor',
+            'phone_number' => '+85510000114',
             'email' => 'pending-review@test.local',
             'password' => bcrypt('password123'),
-            'type_id' => VendorType::STANDART,
-            'status_id' => VendorStatus::PENDING,
+            'user_type_id' => UserType::VENDOR,
+            'user_status_id' => UserStatus::PENDING,
+        ]);
+        $vendor->vendorProfile()->create([
             'business_name' => 'Pending Review Store',
             'contact_phone' => '+85510000114',
             'city' => 'Phnom Penh',
@@ -62,30 +67,39 @@ class AdminVendorReviewWebTest extends TestCase
             ->assertOk()
             ->assertJsonPath('data.status', 'active');
 
-        $this->assertDatabaseHas('vendors', [
+        $this->assertDatabaseHas('users', [
             'id' => $vendor->id,
-            'status_id' => VendorStatus::ACTIVE,
+            'user_status_id' => UserStatus::ACTIVE,
+        ]);
+        $this->assertDatabaseHas('vendor_profiles', [
+            'user_id' => $vendor->id,
             'is_verified' => true,
         ]);
     }
 
     public function test_non_super_admin_is_forbidden_from_pending_vendor_review_endpoints(): void
     {
-        Admin::query()->create([
-            'name' => 'Operation Admin',
+        $admin = User::query()->create([
+            'first_name' => 'Operation',
+            'last_name' => 'Admin',
+            'phone_number' => '+85510000096',
             'email' => 'operation-review@test.local',
             'password' => bcrypt('password123'),
-            'type_id' => AdminType::OPERATION,
-            'status_id' => AdminStatus::ACTIVE,
-            'super_admin' => false,
+            'user_type_id' => UserType::ADMIN,
+            'user_status_id' => UserStatus::ACTIVE,
         ]);
+        $admin->adminProfile()->create(['super_admin' => false]);
 
-        $vendor = Vendor::query()->create([
-            'name' => 'Pending Vendor',
+        $vendor = User::query()->create([
+            'first_name' => 'Pending',
+            'last_name' => 'Vendor',
+            'phone_number' => '+85510000115',
             'email' => 'pending-review-deny@test.local',
             'password' => bcrypt('password123'),
-            'type_id' => VendorType::STANDART,
-            'status_id' => VendorStatus::PENDING,
+            'user_type_id' => UserType::VENDOR,
+            'user_status_id' => UserStatus::PENDING,
+        ]);
+        $vendor->vendorProfile()->create([
             'business_name' => 'Denied Store',
             'contact_phone' => '+85510000115',
             'city' => 'Phnom Penh',

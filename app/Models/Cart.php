@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Models;
 
 use Database\Factories\CartFactory;
@@ -36,7 +38,7 @@ class Cart extends Model
      */
     public function user(): BelongsTo
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(User::class, 'user_id', 'id');
     }
 
     /**
@@ -44,7 +46,7 @@ class Cart extends Model
      */
     public function status(): BelongsTo
     {
-        return $this->belongsTo(CartStatus::class, 'cart_status_id');
+        return $this->belongsTo(CartStatus::class, 'cart_status_id', 'id');
     }
 
     /**
@@ -52,6 +54,6 @@ class Cart extends Model
      */
     public function items(): HasMany
     {
-        return $this->hasMany(CartItem::class);
+        return $this->hasMany(CartItem::class, 'cart_id', 'id');
     }
 }

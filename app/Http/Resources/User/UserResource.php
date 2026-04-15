@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Resources\User;
 
 use Illuminate\Http\Request;
@@ -21,7 +23,7 @@ class UserResource extends JsonResource
             'email' => $this->email,
             'phone_number' => $this->phone_number,
             'image' => $this->image,
-            'set_pin' => (bool) optional($this->consumerProfile)->pin,
+            'set_pin' => (bool) optional($this->userProfile)->pin,
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
         ];

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Models;
 
 use Database\Factories\UserTypeFactory;
@@ -23,7 +25,7 @@ use Illuminate\Support\Carbon;
 #[UseFactory(UserTypeFactory::class)]
 class UserType extends Model
 {
-    public const int CONSUMER = 1;
+    public const int USER = 1;
 
     public const int VENDOR = 2;
 
@@ -34,6 +36,6 @@ class UserType extends Model
      */
     public function users(): HasMany
     {
-        return $this->hasMany(User::class);
+        return $this->hasMany(User::class, 'user_type_id', 'id');
     }
 }

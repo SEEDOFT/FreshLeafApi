@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 return [
     'auth' => [
         'login' => 'ចូលប្រើផ្ទាំងគ្រប់គ្រង',

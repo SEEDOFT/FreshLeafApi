@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Models;
 
 use Database\Factories\SupplierFactory;
@@ -36,6 +38,6 @@ class Supplier extends Model
      */
     public function purchaseOrders(): HasMany
     {
-        return $this->hasMany(PurchaseOrder::class);
+        return $this->hasMany(PurchaseOrder::class, 'supplier_id', 'id');
     }
 }

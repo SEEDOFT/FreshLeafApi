@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Models;
 
 use Database\Factories\UserPaymentMethodFactory;
@@ -86,7 +88,7 @@ class UserPaymentMethod extends Model
      */
     public function user(): BelongsTo
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(User::class, 'user_id', 'id');
     }
 
     /**
@@ -94,7 +96,7 @@ class UserPaymentMethod extends Model
      */
     public function type(): BelongsTo
     {
-        return $this->belongsTo(PaymentMethodType::class, 'payment_method_type_id');
+        return $this->belongsTo(PaymentMethodType::class, 'payment_method_type_id', 'id');
     }
 
     /**
@@ -102,6 +104,6 @@ class UserPaymentMethod extends Model
      */
     public function status(): BelongsTo
     {
-        return $this->belongsTo(PaymentMethodStatus::class, 'payment_method_status_id');
+        return $this->belongsTo(PaymentMethodStatus::class, 'payment_method_status_id', 'id');
     }
 }

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Models;
 
 use Database\Factories\OrderFactory;
@@ -81,7 +83,7 @@ class Order extends Model
      */
     public function user(): BelongsTo
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(User::class, 'user_id', 'id');
     }
 
     /**
@@ -89,7 +91,7 @@ class Order extends Model
      */
     public function address(): BelongsTo
     {
-        return $this->belongsTo(UserAddress::class);
+        return $this->belongsTo(UserAddress::class, 'address_id', 'id');
     }
 
     /**
@@ -97,7 +99,7 @@ class Order extends Model
      */
     public function type(): BelongsTo
     {
-        return $this->belongsTo(OrderType::class, 'order_type_id');
+        return $this->belongsTo(OrderType::class, 'order_type_id', 'id');
     }
 
     /**
@@ -105,7 +107,7 @@ class Order extends Model
      */
     public function status(): BelongsTo
     {
-        return $this->belongsTo(OrderStatus::class, 'order_status_id');
+        return $this->belongsTo(OrderStatus::class, 'order_status_id', 'id');
     }
 
     /**
@@ -113,7 +115,7 @@ class Order extends Model
      */
     public function paymentStatus(): BelongsTo
     {
-        return $this->belongsTo(PaymentStatus::class, 'payment_status_id');
+        return $this->belongsTo(PaymentStatus::class, 'payment_status_id', 'id');
     }
 
     /**
@@ -121,7 +123,7 @@ class Order extends Model
      */
     public function items(): HasMany
     {
-        return $this->hasMany(OrderItem::class);
+        return $this->hasMany(OrderItem::class, 'order_id', 'id');
     }
 
     /**
@@ -129,6 +131,6 @@ class Order extends Model
      */
     public function payments(): HasMany
     {
-        return $this->hasMany(Payment::class);
+        return $this->hasMany(Payment::class, 'order_id', 'id');
     }
 }

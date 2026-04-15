@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Models;
 
 use Database\Factories\InventoryMovementTypeFactory;
@@ -33,6 +35,6 @@ class InventoryMovementType extends Model
      */
     public function inventoryMovements(): HasMany
     {
-        return $this->hasMany(InventoryMovement::class);
+        return $this->hasMany(InventoryMovement::class, 'inventory_movement_type_id', 'id');
     }
 }

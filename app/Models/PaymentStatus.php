@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Models;
 
 use Database\Factories\PaymentStatusFactory;
@@ -41,7 +43,7 @@ class PaymentStatus extends Model
      */
     public function orders(): HasMany
     {
-        return $this->hasMany(Order::class);
+        return $this->hasMany(Order::class, 'payment_status_id', 'id');
     }
 
     /**
@@ -49,6 +51,6 @@ class PaymentStatus extends Model
      */
     public function payments(): HasMany
     {
-        return $this->hasMany(Payment::class);
+        return $this->hasMany(Payment::class, 'payment_status_id', 'id');
     }
 }

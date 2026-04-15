@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Controllers\Api\User;
 
 use App\Http\Controllers\Controller;
@@ -12,14 +14,14 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
-class UserController extends Controller
+class ProfileController extends Controller
 {
     /**
      * Show authenticate user's information
      */
     public function show(): JsonResponse
     {
-        return static::successResponse(new UserResource($this->user()));
+        return static::successResponse(new UserResource($this->user));
     }
 
     /**
@@ -28,23 +30,26 @@ class UserController extends Controller
     public function update(UpdateUserRequest $request): JsonResponse
     {
         $validatedData = $request->validated();
-        $user = $this->user();
 
         if (isset($validatedData['password'])) {
             $validatedData['password'] = Hash::make($validatedData['password']);
         }
 
         if ($request->hasFile('image')) {
-            if ($user->image) {
-                Storage::disk(config('filesystems.default'))->delete("users/$user->image");
+            if ($this->user->image) {
+                Storage::disk(config('filesystems.default'))
+                    ->delete("users/$this->user->image");
             }
 
             $validatedData['image'] = self::storeUserImage($request->file('image'));
         }
 
-        $user->update($validatedData);
+        $this->user->update($validatedData);
 
-        return static::successResponse(new UserResource($user), 'User updated successfully');
+        return static::successResponse(
+            new UserResource($this->user),
+            'User updated successfully'
+        );
     }
 
     /**
@@ -53,21 +58,24 @@ class UserController extends Controller
     public function replace(ReplaceUserRequest $request): JsonResponse
     {
         $validatedData = $request->validated();
-        $user = $this->user();
 
         $validatedData['password'] = Hash::make($validatedData['password']);
 
         if ($request->hasFile('image')) {
-            if ($user->image) {
-                Storage::disk(config('filesystems.default'))->delete("users/$user->image");
+            if ($this->user->image) {
+                Storage::disk(config('filesystems.default'))
+                    ->delete("users/$this->user->image");
             }
 
             $validatedData['image'] = self::storeUserImage($request->file('image'));
         }
 
-        $user->update($validatedData);
+        $this->user->update($validatedData);
 
-        return static::successResponse(new UserResource($user), 'User replaced successfully');
+        return static::successResponse(
+            new UserResource($this->user),
+            'User replaced successfully'
+        );
     }
 
     /**

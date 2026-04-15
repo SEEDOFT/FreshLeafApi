@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Models;
 
 use Database\Factories\CartStatusFactory;
@@ -33,6 +35,6 @@ class CartStatus extends Model
      */
     public function carts(): HasMany
     {
-        return $this->hasMany(Cart::class);
+        return $this->hasMany(Cart::class, 'cart_status_id', 'id');
     }
 }

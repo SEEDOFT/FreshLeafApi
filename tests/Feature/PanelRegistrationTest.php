@@ -1,10 +1,12 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Feature;
 
-use App\Models\Vendor;
-use App\Models\VendorStatus;
-use App\Models\VendorType;
+use App\Models\User;
+use App\Models\UserStatus;
+use App\Models\UserType;
 use Illuminate\Foundation\Testing\LazilyRefreshDatabase;
 use Tests\TestCase;
 
@@ -30,22 +32,26 @@ class PanelRegistrationTest extends TestCase
             ->assertJsonPath('status.success', true)
             ->assertJsonPath('data.status', 'pending');
 
-        $vendor = Vendor::query()->where('email', 'vendor.api@example.test')->first();
+        $vendor = User::query()->where('email', 'vendor.api@example.test')->first();
 
         $this->assertNotNull($vendor);
-        $this->assertSame(VendorType::STANDART, (int) $vendor->type_id);
-        $this->assertSame(VendorStatus::PENDING, (int) $vendor->status_id);
-        $this->assertFalse((bool) $vendor->is_verified);
+        $this->assertSame(UserType::VENDOR, (int) $vendor->user_type_id);
+        $this->assertSame(UserStatus::PENDING, (int) $vendor->user_status_id);
+        $this->assertFalse((bool) $vendor->vendorProfile?->is_verified);
     }
 
     public function test_pending_vendor_cannot_login_and_active_vendor_can_login(): void
     {
-        Vendor::query()->create([
-            'name' => 'Pending Vendor',
+        $pendingVendor = User::query()->create([
+            'first_name' => 'Pending',
+            'last_name' => 'Vendor',
+            'phone_number' => '+85510000112',
             'email' => 'pending-login@test.local',
             'password' => bcrypt('password123'),
-            'type_id' => VendorType::STANDART,
-            'status_id' => VendorStatus::PENDING,
+            'user_type_id' => UserType::VENDOR,
+            'user_status_id' => UserStatus::PENDING,
+        ]);
+        $pendingVendor->vendorProfile()->create([
             'business_name' => 'Pending Shop',
             'contact_phone' => '+85510000112',
             'city' => 'Phnom Penh',
@@ -54,12 +60,16 @@ class PanelRegistrationTest extends TestCase
             'is_verified' => false,
         ]);
 
-        Vendor::query()->create([
-            'name' => 'Active Vendor',
+        $activeVendor = User::query()->create([
+            'first_name' => 'Active',
+            'last_name' => 'Vendor',
+            'phone_number' => '+85510000113',
             'email' => 'active-login@test.local',
             'password' => bcrypt('password123'),
-            'type_id' => VendorType::STANDART,
-            'status_id' => VendorStatus::ACTIVE,
+            'user_type_id' => UserType::VENDOR,
+            'user_status_id' => UserStatus::ACTIVE,
+        ]);
+        $activeVendor->vendorProfile()->create([
             'business_name' => 'Active Shop',
             'contact_phone' => '+85510000113',
             'city' => 'Phnom Penh',

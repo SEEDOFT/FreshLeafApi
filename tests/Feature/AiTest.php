@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Feature;
 
 use App\Jobs\ProcessAiChatMessageJob;
@@ -26,7 +28,7 @@ class AiTest extends TestCase
         ]);
 
         UserType::insert([
-            ['id' => UserType::CONSUMER, 'name' => 'Consumer'],
+            ['id' => UserType::USER, 'name' => 'User'],
             ['id' => UserType::VENDOR, 'name' => 'Vendor'],
             ['id' => UserType::ADMIN, 'name' => 'Admin'],
         ]);
@@ -36,7 +38,7 @@ class AiTest extends TestCase
     {
         $user = User::factory()->create([
             'user_status_id' => UserStatus::ACTIVE,
-            'user_type_id' => UserType::CONSUMER,
+            'user_type_id' => UserType::USER,
         ]);
 
         $token = $user->createToken('ai_session')->plainTextToken;
@@ -65,7 +67,7 @@ class AiTest extends TestCase
 
         $user = User::factory()->create([
             'user_status_id' => UserStatus::ACTIVE,
-            'user_type_id' => UserType::CONSUMER,
+            'user_type_id' => UserType::USER,
         ]);
 
         $session = AiChatSession::query()->create([

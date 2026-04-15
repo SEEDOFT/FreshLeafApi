@@ -1,13 +1,15 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Controllers\Api\Vendor;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Vendor\LoginVendorRequest;
 use App\Http\Requests\Vendor\RegisterVendorRequest;
-use App\Models\Vendor;
-use App\Models\VendorStatus;
-use App\Models\VendorType;
+use App\Models\User;
+use App\Models\UserStatus;
+use App\Models\UserType;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -20,13 +22,21 @@ class AuthController extends Controller
     public function register(RegisterVendorRequest $request): JsonResponse
     {
         $validatedData = $request->validated();
+        $nameParts = preg_split('/\s+/', trim($validatedData['name'])) ?: [];
+        $firstName = $nameParts[0] ?? $validatedData['name'];
+        $lastName = count($nameParts) > 1 ? implode(' ', array_slice($nameParts, 1)) : 'Vendor';
 
-        $vendor = Vendor::create([
-            'name' => $validatedData['name'],
+        $vendor = User::create([
+            'first_name' => $firstName,
+            'last_name' => $lastName,
+            'phone_number' => $validatedData['contact_phone'],
             'email' => $validatedData['email'],
             'password' => Hash::make($validatedData['password']),
-            'type_id' => VendorType::STANDART,
-            'status_id' => VendorStatus::PENDING,
+            'user_type_id' => UserType::VENDOR,
+            'user_status_id' => UserStatus::PENDING,
+        ]);
+
+        $vendor->vendorProfile()->create([
             'business_name' => $validatedData['business_name'],
             'contact_phone' => $validatedData['contact_phone'],
             'city' => $validatedData['city'],
@@ -48,16 +58,22 @@ class AuthController extends Controller
     public function login(LoginVendorRequest $request): JsonResponse
     {
         $validatedData = $request->validated();
+        $lookup = $validatedData['email'] ?? $validatedData['phone_number'];
 
-        /** @var Vendor|null $vendor */
-        $vendor = Vendor::where('phone_number', $validatedData['phone_number'])
+        /** @var User|null $vendor */
+        $vendor = User::query()
+            ->ofType(UserType::VENDOR)
+            ->where(
+                filter_var($lookup, FILTER_VALIDATE_EMAIL) ? 'email' : 'phone_number',
+                $lookup
+            )
             ->first();
 
         if (! $vendor || ! Hash::check($validatedData['password'], $vendor->password)) {
             return static::errorResponse('Invalid login details', 401);
         }
 
-        if ($vendor->vendor_status_id !== VendorStatus::ACTIVE) {
+        if ($vendor->user_status_id !== UserStatus::ACTIVE) {
             return static::errorResponse('Your account is pending approval', 403);
         }
 

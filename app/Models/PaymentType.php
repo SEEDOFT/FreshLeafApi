@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Models;
 
 use Database\Factories\PaymentTypeFactory;
@@ -39,6 +41,6 @@ class PaymentType extends Model
      */
     public function payments(): HasMany
     {
-        return $this->hasMany(Payment::class);
+        return $this->hasMany(Payment::class, 'payment_type_id', 'id');
     }
 }

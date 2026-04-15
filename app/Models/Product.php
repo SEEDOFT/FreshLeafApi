@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Models;
 
 use Database\Factories\ProductFactory;
@@ -24,6 +26,7 @@ use Illuminate\Support\Str;
  * @property int $product_type_id
  * @property int $default_unit_id
  * @property int $product_status_id
+ * @property int|null $vendor_user_id
  * @property string $name
  * @property string $slug
  * @property string|null $description
@@ -36,6 +39,7 @@ use Illuminate\Support\Str;
  * @property-read ProductCategory $productCategory
  * @property-read Unit $defaultUnit
  * @property-read ProductStatus $status
+ * @property-read User|null $vendor
  * @property-read Collection<int, ProductSubstitution> $substitutions
  * @property-read int|null $substitutions_count
  * @property-read ProductType $type
@@ -65,6 +69,7 @@ use Illuminate\Support\Str;
     'product_type_id',
     'default_unit_id',
     'product_status_id',
+    'vendor_user_id',
     'name',
     'slug',
     'description',
@@ -108,7 +113,7 @@ class Product extends Model
      */
     public function category(): BelongsTo
     {
-        return $this->belongsTo(ProductCategory::class, 'product_category_id');
+        return $this->belongsTo(ProductCategory::class, 'product_category_id', 'id');
     }
 
     /**
@@ -116,7 +121,7 @@ class Product extends Model
      */
     public function productCategory(): BelongsTo
     {
-        return $this->belongsTo(ProductCategory::class, 'product_category_id');
+        return $this->belongsTo(ProductCategory::class, 'product_category_id', 'id');
     }
 
     /**
@@ -124,7 +129,7 @@ class Product extends Model
      */
     public function type(): BelongsTo
     {
-        return $this->belongsTo(ProductType::class, 'product_type_id');
+        return $this->belongsTo(ProductType::class, 'product_type_id', 'id');
     }
 
     /**
@@ -132,7 +137,7 @@ class Product extends Model
      */
     public function defaultUnit(): BelongsTo
     {
-        return $this->belongsTo(Unit::class, 'default_unit_id');
+        return $this->belongsTo(Unit::class, 'default_unit_id', 'id');
     }
 
     /**
@@ -140,7 +145,15 @@ class Product extends Model
      */
     public function status(): BelongsTo
     {
-        return $this->belongsTo(ProductStatus::class, 'product_status_id');
+        return $this->belongsTo(ProductStatus::class, 'product_status_id', 'id');
+    }
+
+    /**
+     * Get the vendor owner for the product.
+     */
+    public function vendor(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'vendor_user_id', 'id');
     }
 
     /**
@@ -148,7 +161,7 @@ class Product extends Model
      */
     public function variants(): HasMany
     {
-        return $this->hasMany(ProductVariant::class);
+        return $this->hasMany(ProductVariant::class, 'product_id', 'id');
     }
 
     /**
@@ -156,7 +169,7 @@ class Product extends Model
      */
     public function substitutions(): HasMany
     {
-        return $this->hasMany(ProductSubstitution::class, 'product_id');
+        return $this->hasMany(ProductSubstitution::class, 'product_id', 'id');
     }
 
     /**
@@ -164,7 +177,7 @@ class Product extends Model
      */
     public function substitutionsFor(): HasMany
     {
-        return $this->hasMany(ProductSubstitution::class, 'substitute_product_id');
+        return $this->hasMany(ProductSubstitution::class, 'substitute_product_id', 'id');
     }
 
     /**
@@ -172,7 +185,7 @@ class Product extends Model
      */
     public function priceHistories(): HasMany
     {
-        return $this->hasMany(PriceHistory::class);
+        return $this->hasMany(PriceHistory::class, 'product_id', 'id');
     }
 
     /**
@@ -180,7 +193,7 @@ class Product extends Model
      */
     public function inventoryBatches(): HasMany
     {
-        return $this->hasMany(InventoryBatch::class);
+        return $this->hasMany(InventoryBatch::class, 'product_id', 'id');
     }
 
     /**
@@ -188,7 +201,7 @@ class Product extends Model
      */
     public function inventoryMovements(): HasManyThrough
     {
-        return $this->hasManyThrough(InventoryMovement::class, InventoryBatch::class);
+        return $this->hasManyThrough(InventoryMovement::class, InventoryBatch::class, 'product_id', 'inventory_batch_id', 'id', 'id');
     }
 
     /**
@@ -196,7 +209,7 @@ class Product extends Model
      */
     public function orderItems(): HasMany
     {
-        return $this->hasMany(OrderItem::class);
+        return $this->hasMany(OrderItem::class, 'product_id', 'id');
     }
 
     /**
@@ -204,7 +217,7 @@ class Product extends Model
      */
     public function cartItems(): HasMany
     {
-        return $this->hasMany(CartItem::class);
+        return $this->hasMany(CartItem::class, 'product_id', 'id');
     }
 
     /**
@@ -212,7 +225,7 @@ class Product extends Model
      */
     public function purchaseOrderItems(): HasMany
     {
-        return $this->hasMany(PurchaseOrderItem::class);
+        return $this->hasMany(PurchaseOrderItem::class, 'product_id', 'id');
     }
 
     // Scopes
@@ -243,5 +256,17 @@ class Product extends Model
             : $category;
 
         return $query->where('product_category_id', $categoryId);
+    }
+
+    /**
+     * Scope a query by vendor owner.
+     *
+     * @param  Builder<self>  $query
+     * @return Builder<self>
+     */
+    #[Scope]
+    public function byVendor(Builder $query, int $vendorUserId): Builder
+    {
+        return $query->where('vendor_user_id', $vendorUserId);
     }
 }

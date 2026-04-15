@@ -1,32 +1,41 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Controllers\Api\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\UpdateAdminProfileRequest;
 use App\Http\Resources\Admin\AdminProfileResource;
-use App\Models\Admin;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
 
 class ProfileController extends Controller
 {
-    public function show(Request $request): JsonResponse
+    /**
+     * Show Admin Profile Info
+     */
+    public function show(): JsonResponse
     {
-        /** @var Admin $admin */
-        $admin = $request->user();
-
-        return $this->successResponse(new AdminProfileResource($admin), 'Admin profile loaded');
+        return static::successResponse(
+            new AdminProfileResource($this->user()->loadMissing('adminProfile')),
+            'Admin profile loaded'
+        );
     }
 
+    /**
+     * Partial Update Admin Profile
+     */
     public function update(UpdateAdminProfileRequest $request): JsonResponse
     {
-        /** @var Admin $admin */
-        $admin = $request->user();
-        $validated = $request->safe()->only(['department', 'job_title', 'office_phone']);
+        $validatedData = $request->validated();
+        $admin = $this->user();
 
-        $admin->update($validated);
+        $profile = $admin->adminProfile()->firstOrCreate(['user_id' => $admin->id]);
+        $profile->update($validatedData);
 
-        return $this->successResponse(new AdminProfileResource($admin->fresh()), 'Admin profile updated');
+        return static::successResponse(
+            new AdminProfileResource($admin->fresh()->load('adminProfile')),
+            'Admin profile updated'
+        );
     }
 }

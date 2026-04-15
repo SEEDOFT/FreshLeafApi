@@ -1,43 +1,27 @@
 <?php
 
-use App\Models\Admin;
+declare(strict_types=1);
+
 use App\Models\User;
-use App\Models\Vendor;
 
 return [
 
     'defaults' => [
-        'guard' => env('AUTH_GUARD', 'web'),
-        'passwords' => env('AUTH_PASSWORD_BROKER', 'users'),
+        'guard' => 'api',
+        'passwords' => 'users',
     ],
 
     'guards' => [
-        'web' => [
-            'driver' => 'session',
+        'api' => [
+            'driver' => 'sanctum',
             'provider' => 'users',
-        ],
-        'vendor' => [
-            'driver' => 'session',
-            'provider' => 'vendors',
-        ],
-        'admin' => [
-            'driver' => 'session',
-            'provider' => 'admins',
         ],
     ],
 
     'providers' => [
         'users' => [
             'driver' => 'eloquent',
-            'model' => env('AUTH_MODEL', User::class),
-        ],
-        'vendors' => [
-            'driver' => 'eloquent',
-            'model' => env('AUTH_VENDOR_MODEL', Vendor::class),
-        ],
-        'admins' => [
-            'driver' => 'eloquent',
-            'model' => env('AUTH_ADMIN_MODEL', Admin::class),
+            'model' => User::class,
         ],
     ],
 

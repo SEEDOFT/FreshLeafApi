@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Models;
 
 use Database\Factories\ProductStatusFactory;
@@ -39,6 +41,6 @@ class ProductStatus extends Model
      */
     public function products(): HasMany
     {
-        return $this->hasMany(Product::class);
+        return $this->hasMany(Product::class, 'product_status_id', 'id');
     }
 }

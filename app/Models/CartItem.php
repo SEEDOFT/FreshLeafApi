@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Models;
 
 use Database\Factories\CartItemFactory;
@@ -44,7 +46,7 @@ class CartItem extends Model
      */
     public function cart(): BelongsTo
     {
-        return $this->belongsTo(Cart::class);
+        return $this->belongsTo(Cart::class, 'cart_id', 'id');
     }
 
     /**
@@ -52,7 +54,7 @@ class CartItem extends Model
      */
     public function product(): BelongsTo
     {
-        return $this->belongsTo(Product::class);
+        return $this->belongsTo(Product::class, 'product_id', 'id');
     }
 
     /**
@@ -60,6 +62,6 @@ class CartItem extends Model
      */
     public function variant(): BelongsTo
     {
-        return $this->belongsTo(ProductVariant::class, 'product_variant_id');
+        return $this->belongsTo(ProductVariant::class, 'product_variant_id', 'id');
     }
 }

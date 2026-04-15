@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Models;
 
 use Database\Factories\ProductSubstitutionFactory;
@@ -34,7 +36,7 @@ class ProductSubstitution extends Model
      */
     public function product(): BelongsTo
     {
-        return $this->belongsTo(Product::class, 'product_id');
+        return $this->belongsTo(Product::class, 'product_id', 'id');
     }
 
     /**
@@ -42,6 +44,6 @@ class ProductSubstitution extends Model
      */
     public function substituteProduct(): BelongsTo
     {
-        return $this->belongsTo(Product::class, 'substitute_product_id');
+        return $this->belongsTo(Product::class, 'substitute_product_id', 'id');
     }
 }

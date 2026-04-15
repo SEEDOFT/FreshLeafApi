@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Models;
 
 use Database\Factories\PurchaseOrderFactory;
@@ -60,7 +62,7 @@ class PurchaseOrder extends Model
      */
     public function supplier(): BelongsTo
     {
-        return $this->belongsTo(Supplier::class);
+        return $this->belongsTo(Supplier::class, 'supplier_id', 'id');
     }
 
     /**
@@ -68,7 +70,7 @@ class PurchaseOrder extends Model
      */
     public function status(): BelongsTo
     {
-        return $this->belongsTo(PurchaseOrderStatus::class, 'purchase_order_status_id');
+        return $this->belongsTo(PurchaseOrderStatus::class, 'purchase_order_status_id', 'id');
     }
 
     /**
@@ -76,6 +78,6 @@ class PurchaseOrder extends Model
      */
     public function items(): HasMany
     {
-        return $this->hasMany(PurchaseOrderItem::class);
+        return $this->hasMany(PurchaseOrderItem::class, 'purchase_order_id', 'id');
     }
 }

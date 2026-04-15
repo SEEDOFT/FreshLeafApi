@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
@@ -10,16 +12,14 @@ use Illuminate\Database\Eloquent\Attributes\Scope;
 use Illuminate\Database\Eloquent\Attributes\Table;
 use Illuminate\Database\Eloquent\Attributes\UseFactory;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Carbon;
-use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Str;
 use Laravel\Sanctum\HasApiTokens;
 
 /**
@@ -32,14 +32,15 @@ use Laravel\Sanctum\HasApiTokens;
  * @property string $password
  * @property int $user_type_id
  * @property int $user_status_id
- * @property string|null $pin
- * @property string|null $preferred_language
  * @property Carbon|null $email_verified_at
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  * @property Carbon|null $deleted_at
  * @property-read UserType $userType
  * @property-read UserStatus $userStatus
+ * @property-read UserProfile|null $userProfile
+ * @property-read VendorProfile|null $vendorProfile
+ * @property-read AdminProfile|null $adminProfile
  * @property-read UserAddress[]|HasMany $addresses
  * @property-read UserPaymentMethod[]|HasMany $paymentMethods
  *
@@ -57,8 +58,6 @@ use Laravel\Sanctum\HasApiTokens;
     'password',
     'user_type_id',
     'user_status_id',
-    'pin',
-    'preferred_language',
 ])]
 #[Hidden(['password', 'remember_token'])]
 #[UseFactory(UserFactory::class)]
@@ -76,32 +75,8 @@ class User extends Authenticatable
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
-            'pin' => 'hashed',
-            'preferred_language' => 'string',
             'deleted_at' => 'datetime',
         ];
-    }
-
-    /**
-     * Get the public profile image URL for the user, if available.
-     */
-    protected function image(): Attribute
-    {
-        return Attribute::make(
-            get: function (?string $value): ?string {
-                if (! $value) {
-                    return null;
-                }
-                if (Str::startsWith($value, ['http://', 'https://'])) {
-                    return $value;
-                }
-
-                $path = "users/{$value}";
-
-                return Storage::disk('public')->url($path);
-            },
-            set: fn (?string $value) => $value,
-        );
     }
 
     /**
@@ -109,7 +84,7 @@ class User extends Authenticatable
      */
     public function type(): BelongsTo
     {
-        return $this->belongsTo(UserType::class, 'user_type_id');
+        return $this->belongsTo(UserType::class, 'user_type_id', 'id');
     }
 
     /**
@@ -117,7 +92,7 @@ class User extends Authenticatable
      */
     public function status(): BelongsTo
     {
-        return $this->belongsTo(UserStatus::class, 'user_status_id');
+        return $this->belongsTo(UserStatus::class, 'user_status_id', 'id');
     }
 
     /**
@@ -125,7 +100,31 @@ class User extends Authenticatable
      */
     public function addresses(): HasMany
     {
-        return $this->hasMany(UserAddress::class);
+        return $this->hasMany(UserAddress::class, 'user_id', 'id');
+    }
+
+    /**
+     * Get the end-user profile.
+     */
+    public function userProfile(): HasOne
+    {
+        return $this->hasOne(UserProfile::class, 'user_id', 'id');
+    }
+
+    /**
+     * Get the vendor profile.
+     */
+    public function vendorProfile(): HasOne
+    {
+        return $this->hasOne(VendorProfile::class, 'user_id', 'id');
+    }
+
+    /**
+     * Get the admin profile.
+     */
+    public function adminProfile(): HasOne
+    {
+        return $this->hasOne(AdminProfile::class, 'user_id', 'id');
     }
 
     /**
@@ -133,19 +132,7 @@ class User extends Authenticatable
      */
     public function paymentMethods(): HasMany
     {
-        return $this->hasMany(UserPaymentMethod::class);
-    }
-
-    /**
-     * Scope a query to a specific user type.
-     *
-     * @param  Builder<self>  $query
-     * @return Builder<self>
-     */
-    #[Scope]
-    public function ofType(Builder $query, int $userTypeId): Builder
-    {
-        return $query->where('user_type_id', $userTypeId);
+        return $this->hasMany(UserPaymentMethod::class, 'user_id', 'id');
     }
 
     /**
@@ -158,6 +145,18 @@ class User extends Authenticatable
     public function withStatus(Builder $query, int $userStatusId): Builder
     {
         return $query->where('user_status_id', $userStatusId);
+    }
+
+    /**
+     * Scope a query to a specific user type.
+     *
+     * @param  Builder<self>  $query
+     * @return Builder<self>
+     */
+    #[Scope]
+    public function ofType(Builder $query, int $userTypeId): Builder
+    {
+        return $query->where('user_type_id', $userTypeId);
     }
 
     /**

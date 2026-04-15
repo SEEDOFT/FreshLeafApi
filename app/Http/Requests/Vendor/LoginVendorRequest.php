@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Requests\Vendor;
 
 use Illuminate\Contracts\Validation\ValidationRule;
@@ -18,7 +20,8 @@ class LoginVendorRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'email' => ['required', 'string', 'email', 'max:255'],
+            'email' => ['sometimes', 'required_without:phone_number', 'string', 'email', 'max:255'],
+            'phone_number' => ['sometimes', 'required_without:email', 'string', 'max:40'],
             'password' => ['required', 'string'],
         ];
     }

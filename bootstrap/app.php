@@ -1,8 +1,8 @@
 <?php
 
-use App\Http\Middleware\EnsureActiveStatus;
+declare(strict_types=1);
+
 use App\Http\Middleware\EnsureActiveUserType;
-use App\Http\Middleware\EnsurePanelRole;
 use App\Http\Middleware\SetLocaleFromAcceptLanguage;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Auth\AuthenticationException;
@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
 use Symfony\Component\HttpFoundation\Response as SymfonyResponse;
@@ -25,8 +26,6 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withMiddleware(static function (Middleware $middleware): void {
         $middleware->alias([
             'active.type' => EnsureActiveUserType::class,
-            'active.status' => EnsureActiveStatus::class,
-            'role' => EnsurePanelRole::class,
         ]);
 
         $middleware->api(prepend: [
@@ -34,64 +33,87 @@ return Application::configure(basePath: dirname(__DIR__))
         ]);
     })
     ->withExceptions(static function (Exceptions $exceptions): void {
-        $exceptions->shouldRenderJsonWhen(static function (Request $request): bool {
-            return $request->expectsJson()
-                || $request->is('api/*')
-                || $request->is('broadcasting/*');
-        });
+        $exceptions->shouldRenderJsonWhen(
+            static fn (Request $request): bool => $request->expectsJson()
+                || $request->is('api/*') || $request->is('broadcasting/*')
+        );
 
-        $exceptions->render(static function (ValidationException $exception, Request $request) {
-            if (! $request->expectsJson() && ! $request->is('api/*') && ! $request->is('broadcasting/*')) {
-                return null;
-            }
+        $exceptions->render(
+            static function (
+                ValidationException $exception,
+                Request $request
+            ): ?JsonResponse {
+                if (
+                    ! $request->expectsJson()
+                    && ! $request->is('api/*')
+                    && ! $request->is('broadcasting/*')
+                ) {
+                    return null;
+                }
 
-            $code = $exception->status;
+                $code = $exception->status;
 
-            return response()->json([
-                'status' => [
-                    'code' => (string) $code,
-                    'success' => false,
-                    'message' => $exception->getMessage(),
-                ],
-                'data' => [
-                    'errors' => $exception->errors(),
-                ],
-            ], $code);
-        });
+                return response()->json([
+                    'status' => [
+                        'code' => (string) $code,
+                        'success' => false,
+                        'message' => $exception->getMessage(),
+                    ],
+                    'data' => [
+                        'errors' => $exception->errors(),
+                    ],
+                ], $code);
+            });
 
-        $exceptions->render(static function (AuthenticationException $exception, Request $request) {
-            if (! $request->expectsJson() && ! $request->is('api/*') && ! $request->is('broadcasting/*')) {
-                return null;
-            }
+        $exceptions->render(
+            static function (
+                AuthenticationException $exception,
+                Request $request
+            ): ?JsonResponse {
+                if (
+                    ! $request->expectsJson()
+                    && ! $request->is('api/*')
+                    && ! $request->is('broadcasting/*')
+                ) {
+                    return null;
+                }
 
-            $code = 401;
+                $code = 401;
 
-            return response()->json([
-                'status' => [
-                    'code' => (string) $code,
-                    'success' => false,
-                    'message' => $exception->getMessage() ?: 'Unauthenticated.',
-                ],
-                'data' => [],
-            ], $code);
-        });
+                return response()->json([
+                    'status' => [
+                        'code' => (string) $code,
+                        'success' => false,
+                        'message' => $exception->getMessage() ?: 'Unauthenticated.',
+                    ],
+                    'data' => [],
+                ], $code);
+            });
 
-        $exceptions->render(static function (AuthorizationException $exception, Request $request) {
-            if (! $request->expectsJson() && ! $request->is('api/*') && ! $request->is('broadcasting/*')) {
-                return null;
-            }
+        $exceptions->render(
+            static function (
+                AuthorizationException $exception,
+                Request $request
+            ): ?JsonResponse {
+                if (
+                    ! $request->expectsJson()
+                     && ! $request->is('api/*')
+                     && ! $request->is('broadcasting/*')
+                ) {
+                    return null;
+                }
 
-            $code = 403;
+                $code = 403;
 
-            return response()->json([
-                'status' => [
-                    'code' => (string) $code,
-                    'success' => false,
-                    'message' => $exception->getMessage() ?: 'Forbidden.',
-                ],
-                'data' => [],
-            ], $code);
-        });
+                return response()->json([
+                    'status' => [
+                        'code' => (string) $code,
+                        'success' => false,
+                        'message' => $exception->getMessage() ?: 'Forbidden.',
+                    ],
+                    'data' => [],
+                ], $code);
+            });
 
         $exceptions->render(static function (ModelNotFoundException $exception, Request $request) {
             if (! $request->expectsJson() && ! $request->is('api/*') && ! $request->is('broadcasting/*')) {
@@ -127,23 +149,31 @@ return Application::configure(basePath: dirname(__DIR__))
             ], $code);
         });
 
-        $exceptions->render(static function (Throwable $exception, Request $request) {
-            if (! $request->expectsJson() && ! $request->is('api/*') && ! $request->is('broadcasting/*')) {
-                return null;
-            }
+        $exceptions->render(
+            static function (
+                Throwable $exception,
+                Request $request
+            ): ?JsonResponse {
+                if (
+                    ! $request->expectsJson()
+                    && ! $request->is('api/*')
+                    && ! $request->is('broadcasting/*')
+                ) {
+                    return null;
+                }
 
-            $code = 500;
-            $message = config('app.debug') && $exception->getMessage() !== ''
-                ? $exception->getMessage()
-                : 'Something went wrong.';
+                $code = 500;
+                $message = config('app.debug') && $exception->getMessage() !== ''
+                    ? $exception->getMessage()
+                    : 'Something went wrong.';
 
-            return response()->json([
-                'status' => [
-                    'code' => (string) $code,
-                    'success' => false,
-                    'message' => $message,
-                ],
-                'data' => [],
-            ], $code);
-        });
+                return response()->json([
+                    'status' => [
+                        'code' => (string) $code,
+                        'success' => false,
+                        'message' => $message,
+                    ],
+                    'data' => [],
+                ], $code);
+            });
     })->create();

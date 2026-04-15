@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Models;
 
 use Database\Factories\OrderTypeFactory;
@@ -33,6 +35,6 @@ class OrderType extends Model
      */
     public function orders(): HasMany
     {
-        return $this->hasMany(Order::class);
+        return $this->hasMany(Order::class, 'order_type_id', 'id');
     }
 }

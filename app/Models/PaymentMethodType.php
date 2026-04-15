@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Models;
 
 use Database\Factories\PaymentMethodTypeFactory;
@@ -51,6 +53,6 @@ class PaymentMethodType extends Model
      */
     public function paymentMethods(): HasMany
     {
-        return $this->hasMany(UserPaymentMethod::class);
+        return $this->hasMany(UserPaymentMethod::class, 'payment_method_type_id', 'id');
     }
 }

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Models;
 
 use Database\Factories\VendorFactory;
@@ -68,16 +70,16 @@ class Vendor extends Authenticatable
 
     public function type(): BelongsTo
     {
-        return $this->belongsTo(VendorType::class, 'vendor_type_id');
+        return $this->belongsTo(VendorType::class, 'vendor_type_id', 'id');
     }
 
     public function status(): BelongsTo
     {
-        return $this->belongsTo(VendorStatus::class, 'vendor_status_id');
+        return $this->belongsTo(VendorStatus::class, 'vendor_status_id', 'id');
     }
 
     public function preference(): MorphOne
     {
-        return $this->morphOne(PanelPreference::class, 'account');
+        return $this->morphOne(PanelPreference::class, 'account', 'account_type', 'account_id', 'id');
     }
 }

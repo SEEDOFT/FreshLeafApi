@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Requests\Admin;
 
 use Illuminate\Contracts\Validation\ValidationRule;
@@ -25,12 +27,5 @@ class UpdatePendingVendorRequest extends FormRequest
         return [
             'action' => ['required', 'string', 'in:approve,reject'],
         ];
-    }
-
-    protected function prepareForValidation(): void
-    {
-        $this->merge([
-            'action' => $this->input('action', (string) $this->route('action', '')),
-        ]);
     }
 }

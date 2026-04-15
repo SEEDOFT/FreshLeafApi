@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Models;
 
 use Database\Factories\AdminFactory;
@@ -59,11 +61,11 @@ class Admin extends Authenticatable
 
     public function type(): BelongsTo
     {
-        return $this->belongsTo(AdminType::class, 'type_id');
+        return $this->belongsTo(AdminType::class, 'type_id', 'id');
     }
 
     public function status(): BelongsTo
     {
-        return $this->belongsTo(AdminStatus::class, 'status_id');
+        return $this->belongsTo(AdminStatus::class, 'status_id', 'id');
     }
 }

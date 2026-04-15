@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Models;
 
 use Database\Factories\NotificationStatusFactory;
@@ -33,6 +35,6 @@ class NotificationStatus extends Model
      */
     public function notifications(): HasMany
     {
-        return $this->hasMany(Notification::class);
+        return $this->hasMany(Notification::class, 'notification_status_id', 'id');
     }
 }

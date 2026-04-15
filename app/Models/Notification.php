@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Models;
 
 use Database\Factories\NotificationFactory;
@@ -59,7 +61,7 @@ class Notification extends Model
      */
     public function user(): BelongsTo
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(User::class, 'user_id', 'id');
     }
 
     /**
@@ -67,7 +69,7 @@ class Notification extends Model
      */
     public function type(): BelongsTo
     {
-        return $this->belongsTo(NotificationType::class, 'notification_type_id');
+        return $this->belongsTo(NotificationType::class, 'notification_type_id', 'id');
     }
 
     /**
@@ -75,6 +77,6 @@ class Notification extends Model
      */
     public function status(): BelongsTo
     {
-        return $this->belongsTo(NotificationStatus::class, 'notification_status_id');
+        return $this->belongsTo(NotificationStatus::class, 'notification_status_id', 'id');
     }
 }

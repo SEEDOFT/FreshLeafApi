@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Attributes\Fillable;
@@ -38,11 +40,11 @@ class AiChatMessage extends Model
 {
     public function session(): BelongsTo
     {
-        return $this->belongsTo(AiChatSession::class, 'ai_chat_session_id');
+        return $this->belongsTo(AiChatSession::class, 'ai_chat_session_id', 'id');
     }
 
     public function user(): BelongsTo
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(User::class, 'user_id', 'id');
     }
 }

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Models;
 
 use Database\Factories\VendorTypeFactory;
@@ -18,6 +20,7 @@ use Illuminate\Support\Carbon;
  * @property Carbon|null $updated_at
  * @property-read Collection<int, Vendor> $vendors
  * @property-read int|null $vendors_count
+ *
  * @method static \Database\Factories\VendorTypeFactory factory($count = null, $state = [])
  * @method static \Illuminate\Database\Eloquent\Builder<VendorType>|VendorType newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<VendorType>|VendorType newQuery()
@@ -26,6 +29,7 @@ use Illuminate\Support\Carbon;
  * @method static \Illuminate\Database\Eloquent\Builder<VendorType>|VendorType whereId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<VendorType>|VendorType whereName($value)
  * @method static \Illuminate\Database\Eloquent\Builder<VendorType>|VendorType whereUpdatedAt($value)
+ *
  * @mixin \Eloquent
  */
 #[Table('vendor_types', key: 'id')]
@@ -41,6 +45,6 @@ class VendorType extends Model
 
     public function vendors(): HasMany
     {
-        return $this->hasMany(Vendor::class, 'type_id');
+        return $this->hasMany(Vendor::class, 'type_id', 'id');
     }
 }

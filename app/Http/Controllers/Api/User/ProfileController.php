@@ -29,26 +29,10 @@ class ProfileController extends Controller
      */
     public function update(UpdateUserRequest $request): JsonResponse
     {
-        $validatedData = $request->validated();
-
-        if (isset($validatedData['password'])) {
-            $validatedData['password'] = Hash::make($validatedData['password']);
-        }
-
-        if ($request->hasFile('image')) {
-            if ($this->user->image) {
-                Storage::disk(config('filesystems.default'))
-                    ->delete("users/$this->user->image");
-            }
-
-            $validatedData['image'] = self::storeUserImage($request->file('image'));
-        }
-
-        $this->user->update($validatedData);
-
-        return static::successResponse(
-            new UserResource($this->user),
-            'User updated successfully'
+        return $this->persistUserProfile(
+            $request->validated(),
+            $request,
+            false
         );
     }
 
@@ -57,24 +41,10 @@ class ProfileController extends Controller
      */
     public function replace(ReplaceUserRequest $request): JsonResponse
     {
-        $validatedData = $request->validated();
-
-        $validatedData['password'] = Hash::make($validatedData['password']);
-
-        if ($request->hasFile('image')) {
-            if ($this->user->image) {
-                Storage::disk(config('filesystems.default'))
-                    ->delete("users/$this->user->image");
-            }
-
-            $validatedData['image'] = self::storeUserImage($request->file('image'));
-        }
-
-        $this->user->update($validatedData);
-
-        return static::successResponse(
-            new UserResource($this->user),
-            'User replaced successfully'
+        return $this->persistUserProfile(
+            $request->validated(),
+            $request,
+            true
         );
     }
 
@@ -85,7 +55,7 @@ class ProfileController extends Controller
     {
         $this->user()->update([
             'user_status_id' => UserStatus::DELETED,
-            'deleted_at' => now(),
+            'deleted_at' => \now(),
         ]);
 
         return static::successResponse(message: 'User deleted successfully');
@@ -100,5 +70,34 @@ class ProfileController extends Controller
         $file->storeAs('users', $fileName, 'public');
 
         return $fileName;
+    }
+
+    /**
+     * Persist user profile data for both update and replace operations
+     */
+    private function persistUserProfile(
+        array $validatedData,
+        UpdateUserRequest|ReplaceUserRequest $request,
+        bool $isReplace,
+    ): JsonResponse {
+        if (isset($validatedData['password'])) {
+            $validatedData['password'] = Hash::make($validatedData['password']);
+        }
+
+        if ($request->hasFile('image')) {
+            if ($this->user->image) {
+                Storage::disk(\config('filesystems.default'))
+                    ->delete("users/$this->user->image");
+            }
+
+            $validatedData['image'] = self::storeUserImage($request->file('image'));
+        }
+
+        $this->user->update($validatedData);
+
+        return static::successResponse(
+            new UserResource($this->user),
+            $isReplace ? 'User replaced successfully' : 'User updated successfully'
+        );
     }
 }

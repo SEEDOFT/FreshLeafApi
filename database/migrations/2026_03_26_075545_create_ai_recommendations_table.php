@@ -13,7 +13,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('ai_recommendations', function (Blueprint $table) {
+        Schema::create('ai_recommendations', static function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->constrained()->cascadeOnDelete();
             $table->foreignId('ai_recommendation_type_id')->constrained()->restrictOnDelete();

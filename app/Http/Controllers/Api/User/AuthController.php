@@ -10,6 +10,7 @@ use App\Http\Requests\User\Auth\RegisterRequest;
 use App\Http\Requests\User\Auth\UpdatePasswordRequest;
 use App\Http\Requests\User\Auth\VerifyPasswordRequest;
 use App\Models\User;
+use App\Models\UserProfile;
 use App\Models\UserStatus;
 use App\Models\UserType;
 use Illuminate\Http\JsonResponse;
@@ -25,9 +26,8 @@ class AuthController extends Controller
         $validatedData = $request->validated();
 
         /** @var User|null $user */
-        $user = User::where('phone_number', $validatedData['phone_number'])
-            ->ofType(UserType::USER)
-            ->active()
+        $user = User::ofType(UserType::USER)
+            ->where('phone_number', $validatedData['phone_number'])
             ->first();
 
         if (! $user || ! Hash::check($validatedData['password'], $user->password)) {
@@ -39,7 +39,7 @@ class AuthController extends Controller
         }
 
         if (! $user->isType(UserType::USER)) {
-            return static::errorResponse('Only users can login here', 403);
+            return static::errorResponse('Invalid login details', 401);
         }
 
         $token = $user->createToken('user_auth_token')->plainTextToken;
@@ -67,9 +67,7 @@ class AuthController extends Controller
             'password' => Hash::make($validatedData['password']),
         ]);
 
-        $user->userProfile()->create([
-            'preferred_language' => 'en',
-        ]);
+        UserProfile::createDefaultForUser($user);
 
         $token = $user->createToken('user_auth_token')->plainTextToken;
 
@@ -84,7 +82,7 @@ class AuthController extends Controller
      */
     public function logout(): JsonResponse
     {
-        auth()->user()->tokens()->delete();
+        \auth()->user()->tokens()->delete();
 
         return static::successResponse(message: 'Tokens Revoked');
     }

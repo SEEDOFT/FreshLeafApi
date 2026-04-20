@@ -19,7 +19,7 @@ class PendingVendorResource extends JsonResource
 
         return [
             'id' => $this->id,
-            'name' => trim($this->first_name.' '.$this->last_name),
+            'name' => \trim($this->first_name.' '.$this->last_name),
             'email' => $this->email,
             'business_name' => $profile?->business_name,
             'contact_phone' => $profile?->contact_phone,
@@ -34,8 +34,8 @@ class PendingVendorResource extends JsonResource
                 UserStatus::PENDING => 'pending',
                 default => 'unknown',
             },
-            'submitted_at' => optional($this->created_at)->toIso8601String(),
-            'updated_at' => optional($this->updated_at)->toIso8601String(),
+            'submitted_at' => \optional($this->created_at)->toIso8601String(),
+            'updated_at' => \optional($this->updated_at)->toIso8601String(),
         ];
     }
 }

@@ -13,7 +13,7 @@ class StoreProductRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return $this->user() !== null;
+        return \auth()->check();
     }
 
     /**

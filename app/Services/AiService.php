@@ -92,14 +92,14 @@ class AiService
      */
     private function resolveProviders(): array
     {
-        $requested = (string) config('ai.default', 'gemini');
-        $fallbacks = config('ai.fallbacks', []);
+        $requested = (string) \config('ai.default', 'gemini');
+        $fallbacks = \config('ai.fallbacks', []);
 
-        if (! is_array($fallbacks)) {
+        if (! \is_array($fallbacks)) {
             $fallbacks = [];
         }
 
-        $orderedProviders = array_values(array_unique(array_filter([
+        $orderedProviders = \array_values(\array_unique(\array_filter([
             $requested,
             ...$fallbacks,
         ])));

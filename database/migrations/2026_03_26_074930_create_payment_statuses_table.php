@@ -13,7 +13,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('payment_statuses', function (Blueprint $table) {
+        Schema::create('payment_statuses', static function (Blueprint $table) {
             $table->unsignedBigInteger('id');
             $table->string('code')->unique();
             $table->string('name');

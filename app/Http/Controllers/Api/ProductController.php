@@ -105,7 +105,7 @@ class ProductController extends Controller
     public function userShow(Product $product): JsonResponse
     {
         if ((int) $product->product_status_id !== ProductStatus::ACTIVE) {
-            abort(404, 'Product not found.');
+            \abort(404, 'Product not found.');
         }
 
         return $this->successResponse(
@@ -122,7 +122,7 @@ class ProductController extends Controller
         $vendorId = (int) $request->user()->getAuthIdentifier();
 
         if ((int) $product->vendor_user_id !== $vendorId) {
-            abort(404, 'Product not found.');
+            \abort(404, 'Product not found.');
         }
 
         return $this->successResponse(

@@ -13,7 +13,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('user_behavior_events', function (Blueprint $table) {
+        Schema::create('user_behavior_events', static function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->nullable()->constrained()->nullOnDelete();
             $table->foreignId('behavior_event_type_id')->constrained()->restrictOnDelete();

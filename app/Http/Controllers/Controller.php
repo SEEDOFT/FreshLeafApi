@@ -25,7 +25,7 @@ abstract class Controller
     protected function user(): User
     {
         /** @var User|null */
-        $user = auth()->user();
+        $user = \auth()->user();
 
         if (! $user) {
             throw new HttpResponseException(

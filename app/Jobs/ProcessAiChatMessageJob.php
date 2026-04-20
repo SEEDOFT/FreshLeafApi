@@ -43,6 +43,9 @@ class ProcessAiChatMessageJob implements ShouldQueue
         $this->onQueue('ai-stream');
     }
 
+    /**
+     * Handle the job.
+     */
     public function handle(AiService $aiService): void
     {
         $session = AiChatSession::where('session_id', $this->sessionId)
@@ -65,10 +68,10 @@ class ProcessAiChatMessageJob implements ShouldQueue
             return;
         }
 
-        $sequence = max(1, (int) $assistantMessage->sequence);
-        $timestamp = now()->toIso8601String();
+        $sequence = \max(1, (int) $assistantMessage->sequence);
+        $timestamp = \now()->toIso8601String();
 
-        event(new AiMessageStarted(
+        \event(new AiMessageStarted(
             userId: $this->userId,
             sessionId: $this->sessionId,
             messageId: $this->messageId,
@@ -89,14 +92,14 @@ class ProcessAiChatMessageJob implements ShouldQueue
                 ])
                 ->all();
 
-            $lastHistoryMessage = end($history);
+            $lastHistoryMessage = \end($history);
 
             if (
-                is_array($lastHistoryMessage)
-                && ($lastHistoryMessage['role'] ?? null) === 'user'
-                && ($lastHistoryMessage['content'] ?? null) === $this->prompt
+                \is_array($lastHistoryMessage)
+                && $lastHistoryMessage['role'] === 'user'
+                && $lastHistoryMessage['content'] === $this->prompt
             ) {
-                array_pop($history);
+                \array_pop($history);
             }
 
             $options = [
@@ -118,14 +121,14 @@ class ProcessAiChatMessageJob implements ShouldQueue
             foreach ($chunks as $chunk) {
                 $sequence++;
 
-                event(new AiMessageChunk(
+                \event(new AiMessageChunk(
                     userId: $this->userId,
                     sessionId: $this->sessionId,
                     messageId: $this->messageId,
                     role: 'assistant',
                     textChunk: $chunk,
                     sequence: $sequence,
-                    timestamp: now()->toIso8601String(),
+                    timestamp: \now()->toIso8601String(),
                 ));
             }
 
@@ -138,14 +141,14 @@ class ProcessAiChatMessageJob implements ShouldQueue
 
             $session->update(['last_message_at' => Carbon::now()]);
 
-            event(new AiMessageCompleted(
+            \event(new AiMessageCompleted(
                 userId: $this->userId,
                 sessionId: $this->sessionId,
                 messageId: $this->messageId,
                 role: 'assistant',
                 fullText: $fullText,
                 sequence: $sequence + 1,
-                timestamp: now()->toIso8601String(),
+                timestamp: \now()->toIso8601String(),
             ));
         } catch (Exception $exception) {
             $friendlyMessage = $this->toClientSafeError($exception->getMessage());
@@ -156,14 +159,14 @@ class ProcessAiChatMessageJob implements ShouldQueue
                 'sequence' => $sequence + 1,
             ]);
 
-            event(new AiMessageFailed(
+            \event(new AiMessageFailed(
                 userId: $this->userId,
                 sessionId: $this->sessionId,
                 messageId: $this->messageId,
                 role: 'assistant',
                 error: $friendlyMessage,
                 sequence: $sequence + 1,
-                timestamp: now()->toIso8601String(),
+                timestamp: \now()->toIso8601String(),
             ));
 
             Log::error('AI chat generation failed', [
@@ -179,6 +182,9 @@ class ProcessAiChatMessageJob implements ShouldQueue
         }
     }
 
+    /**
+     * Handle a job failure after all retry attempts have been exhausted.
+     */
     public function failed(?Exception $exception): void
     {
         Log::critical('AI chat job permanently failed', [
@@ -194,6 +200,9 @@ class ProcessAiChatMessageJob implements ShouldQueue
         );
     }
 
+    /**
+     * Broadcast a failure event to the client with a user-friendly message.
+     */
     private function broadcastFailure(string $error): void
     {
         try {
@@ -207,14 +216,14 @@ class ProcessAiChatMessageJob implements ShouldQueue
 
             $sequence = $assistantMessage ? (int) $assistantMessage->sequence + 1 : 1;
 
-            event(new AiMessageFailed(
+            \event(new AiMessageFailed(
                 userId: $this->userId,
                 sessionId: $this->sessionId,
                 messageId: $this->messageId,
                 role: 'assistant',
                 error: 'AI service is temporarily unavailable. Please try again.',
                 sequence: $sequence,
-                timestamp: now()->toIso8601String(),
+                timestamp: \now()->toIso8601String(),
             ));
         } catch (Exception $e) {
             Log::error('Failed to broadcast failure event', [
@@ -225,49 +234,60 @@ class ProcessAiChatMessageJob implements ShouldQueue
         }
     }
 
+    /**
+     * Convert raw error messages into user-friendly messages for clients.
+     */
     private function toClientSafeError(string $message): string
     {
-        $normalized = mb_strtolower($message);
+        $normalized = \mb_strtolower($message);
 
-        if (str_contains($normalized, 'quota exceeded') || str_contains($normalized, '429')) {
+        if (\str_contains($normalized, 'quota exceeded') || \str_contains($normalized, '429')) {
             return 'AI service is temporarily busy. Please try again in about a minute.';
         }
 
-        if (str_contains($normalized, 'api key') || str_contains($normalized, 'permission denied') || str_contains($normalized, '403')) {
+        if (
+            \str_contains($normalized, 'api key') ||
+        \str_contains($normalized, 'permission denied') ||
+        \str_contains($normalized, '403')
+        ) {
             return 'AI service is not available right now. Please contact support.';
         }
 
-        if (str_contains($normalized, 'timeout') || str_contains($normalized, 'connection')) {
+        if (\str_contains($normalized, 'timeout') || \str_contains($normalized, 'connection')) {
             return 'AI service connection issue. Please retry shortly.';
         }
 
         return 'Failed to generate AI response. Please try again.';
     }
 
+    /**
+     * Build the system prompt by combining the base prompt, project context,
+     * language-specific instructions, and relevant topics.
+     */
     private function buildSystemPrompt(): string
     {
-        $basePrompt = $this->readFileContent(config('ai.system_prompt_file'));
+        $basePrompt = $this->readFileContent(\config('ai.system_prompt_file'));
 
-        $projectContext = $this->readFileContent(config('ai.project_context_file'));
+        $projectContext = $this->readFileContent(\config('ai.project_context_file'));
 
         $languageCode = $this->detectLanguage();
 
         $languagePrompt = '';
 
         if ($languageCode !== null) {
-            $languagePrompts = config('ai.language_prompts', []);
+            $languagePrompts = \config('ai.language_prompts', []);
 
-            if (is_array($languagePrompts) && isset($languagePrompts[$languageCode])) {
+            if (\is_array($languagePrompts) && isset($languagePrompts[$languageCode])) {
                 $languagePrompt = ' '.$languagePrompts[$languageCode];
             }
         }
 
-        $relevantTopics = config('ai.relevant_topics', []);
-        $relevantTopicsText = is_array($relevantTopics) && $relevantTopics !== []
-            ? 'You can help with: '.implode(', ', $relevantTopics).'.'
+        $relevantTopics = \config('ai.relevant_topics', []);
+        $relevantTopicsText = \is_array($relevantTopics) && $relevantTopics !== []
+            ? 'You can help with: '.\implode(', ', $relevantTopics).'.'
             : '';
 
-        $offTopicResponse = (string) config('ai.off_topic_response', '');
+        $offTopicResponse = (string) \config('ai.off_topic_response', '');
 
         $relevantPrompt = '';
 
@@ -279,35 +299,43 @@ class ProcessAiChatMessageJob implements ShouldQueue
             $relevantPrompt .= ' If asked about unrelated topics, respond: '.$offTopicResponse;
         }
 
-        $parts = array_filter([
+        $parts = \array_filter([
             $basePrompt,
             $projectContext,
             $languagePrompt,
             $relevantPrompt,
         ]);
 
-        return implode("\n\n", $parts);
+        return \implode("\n\n", $parts);
     }
 
+    /**
+     * Safely read file content, returning an empty string if the file does not
+     * exist or cannot be read.
+     */
     private function readFileContent(string $path): string
     {
-        if ($path === '' || ! file_exists($path)) {
+        if ($path === '' || ! \file_exists($path)) {
             return '';
         }
 
-        $content = file_get_contents($path);
+        $content = \file_get_contents($path);
 
-        return $content !== false ? trim($content) : '';
+        return $content !== false ? \trim($content) : '';
     }
 
+    /**
+     * Detect the language code from the provided language string, returning a
+     * supported code or null if not detectable.
+     */
     private function detectLanguage(): ?string
     {
         if ($this->language !== null && $this->language !== '') {
-            $code = mb_strtolower(mb_substr($this->language, 0, 2));
+            $code = \mb_strtolower(\mb_substr($this->language, 0, 2));
 
             $supported = ['km', 'en'];
 
-            if (in_array($code, $supported, true)) {
+            if (\in_array($code, $supported, true)) {
                 return $code;
             }
         }
@@ -316,6 +344,9 @@ class ProcessAiChatMessageJob implements ShouldQueue
     }
 
     /**
+     * Chunk the given text into smaller parts of a specified size, ensuring
+     * that multibyte characters are handled correctly.
+     *
      * @return array<int, string>
      */
     private function chunkText(string $text, int $size = 120): array
@@ -325,10 +356,10 @@ class ProcessAiChatMessageJob implements ShouldQueue
         }
 
         $chunks = [];
-        $length = mb_strlen($text);
+        $length = \mb_strlen($text);
 
         for ($offset = 0; $offset < $length; $offset += $size) {
-            $chunks[] = mb_substr($text, $offset, $size);
+            $chunks[] = \mb_substr($text, $offset, $size);
         }
 
         return $chunks;

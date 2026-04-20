@@ -32,16 +32,16 @@ class AiChatController extends Controller
             ],
             [
                 'title' => $validatedDataData['title'] ?? null,
-                'last_message_at' => now(),
+                'last_message_at' => \now(),
             ],
         );
 
         return $this->successResponse([
             'session_id' => $session->session_id,
             'title' => $session->title,
-            'created_at' => optional($session->created_at)
+            'created_at' => \optional($session->created_at)
                 ->toIso8601String(),
-            'updated_at' => optional($session->updated_at)
+            'updated_at' => \optional($session->updated_at)
                 ->toIso8601String(),
         ], 'Chat session ready');
     }
@@ -86,7 +86,7 @@ class AiChatController extends Controller
                 ]);
 
                 $session->update([
-                    'last_message_at' => now(),
+                    'last_message_at' => \now(),
                 ]);
 
                 ProcessAiChatMessageJob::dispatch(
@@ -139,7 +139,7 @@ class AiChatController extends Controller
                 'content' => $message->content,
                 'status' => $message->status,
                 'sequence' => $message->sequence,
-                'timestamp' => optional($message->created_at)
+                'timestamp' => \optional($message->created_at)
                     ->toIso8601String(),
                 'error' => $message->error,
             ])

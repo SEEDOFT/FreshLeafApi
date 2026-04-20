@@ -13,7 +13,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('behavior_event_types', function (Blueprint $table) {
+        Schema::create('behavior_event_types', static function (Blueprint $table) {
             $table->id();
             $table->string('code')->unique();
             $table->string('name');

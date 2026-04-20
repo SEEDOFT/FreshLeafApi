@@ -22,7 +22,7 @@ class UserAddressController extends Controller
     {
         $addresses = Auth::user()->addresses()
             ->latest()
-            ->simplePaginate(request()->integer('per_page', 10));
+            ->simplePaginate(\request()->integer('per_page', 10));
 
         return $this->successResponse(AddressResource::collection($addresses));
     }
@@ -35,7 +35,8 @@ class UserAddressController extends Controller
         $validatedData = $request->validated();
 
         if (isset($validatedData['lat'], $validatedData['long'])) {
-            $validatedData['address_map'] = "https://www.google.com/maps?q={$validatedData['lat']},{$validatedData['long']}";
+            $validatedData['address_map'] =
+                "https://www.google.com/maps?q={$validatedData['lat']},{$validatedData['long']}";
         }
 
         $address = Auth::user()->addresses()->create($validatedData);
@@ -67,7 +68,8 @@ class UserAddressController extends Controller
         $validatedData = $request->validated();
 
         if (isset($validatedData['lat'], $validatedData['long'])) {
-            $validatedData['address_map'] = "https://www.google.com/maps?q={$validatedData['lat']},{$validatedData['long']}";
+            $validatedData['address_map'] =
+                "https://www.google.com/maps?q={$validatedData['lat']},{$validatedData['long']}";
         } else {
             unset($validatedData['lat'], $validatedData['long']);
         }
@@ -89,7 +91,8 @@ class UserAddressController extends Controller
         $validatedData = $request->validated();
 
         if (isset($validatedData['lat'], $validatedData['long'])) {
-            $validatedData['address_map'] = "https://www.google.com/maps?q={$validatedData['lat']},{$validatedData['long']}";
+            $validatedData['address_map'] =
+                "https://www.google.com/maps?q={$validatedData['lat']},{$validatedData['long']}";
         } else {
             $validatedData['address_map'] = null;
         }

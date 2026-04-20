@@ -13,7 +13,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('notification_types', function (Blueprint $table) {
+        Schema::create('notification_types', static function (Blueprint $table) {
             $table->id();
             $table->string('code')->unique();
             $table->string('name');

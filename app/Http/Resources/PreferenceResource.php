@@ -17,7 +17,7 @@ class PreferenceResource extends JsonResource
         return [
             'locale' => $this->locale,
             'theme' => $this->theme,
-            'updated_at' => optional($this->updated_at)->toIso8601String(),
+            'updated_at' => \optional($this->updated_at)->toIso8601String(),
         ];
     }
 }

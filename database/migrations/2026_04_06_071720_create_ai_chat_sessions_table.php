@@ -13,7 +13,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('ai_chat_sessions', function (Blueprint $table) {
+        Schema::create('ai_chat_sessions', static function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->constrained()->cascadeOnDelete();
             $table->string('session_id')->unique();

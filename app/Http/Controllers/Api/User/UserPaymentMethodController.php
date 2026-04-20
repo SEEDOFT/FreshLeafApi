@@ -22,7 +22,7 @@ class UserPaymentMethodController extends Controller
      */
     public function index(Request $request): JsonResponse
     {
-        $paymentMethods = Auth::user()->paymentMethods()
+        $paymentMethods = $request->user()->paymentMethods()
             ->where('payment_method_status_id', PaymentMethodStatus::ACTIVE)
             ->orderBy('is_default', 'desc')
             ->orderBy('created_at', 'desc')
@@ -39,16 +39,16 @@ class UserPaymentMethodController extends Controller
      */
     public function store(StorePaymentMethodRequest $request): JsonResponse
     {
-        $data = array_merge(
+        $data = \array_merge(
             $request->validated(),
             ['payment_method_status_id' => PaymentMethodStatus::ACTIVE]
         );
 
         if ($data['is_default'] ?? false) {
-            Auth::user()->paymentMethods()->update(['is_default' => false]);
+            $request->user()->paymentMethods()->update(['is_default' => false]);
         }
 
-        $paymentMethod = Auth::user()->paymentMethods()->create($data);
+        $paymentMethod = $request->user()->paymentMethods()->create($data);
 
         return $this->successResponse(
             new PaymentMethodResource($paymentMethod),
@@ -115,7 +115,7 @@ class UserPaymentMethodController extends Controller
         $data = $request->validated();
 
         if ($data['is_default'] ?? false) {
-            Auth::user()->paymentMethods()
+            $request->user()->paymentMethods()
                 ->where('id', '!=', $paymentMethod->id)
                 ->update(['is_default' => false]);
         }
@@ -143,7 +143,7 @@ class UserPaymentMethodController extends Controller
         $paymentMethod->update([
             'payment_method_status_id' => PaymentMethodStatus::DELETE,
             'is_default' => false,
-            'deleted_at' => now(),
+            'deleted_at' => \now(),
         ]);
 
         return $this->successResponse(message: 'Payment method deleted successfully');

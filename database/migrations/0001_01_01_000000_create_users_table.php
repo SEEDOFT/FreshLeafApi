@@ -23,8 +23,6 @@ return new class extends Migration
             $table->foreignId('user_status_id');
             $table->string('phone_number');
             $table->string('image')->nullable();
-            $table->string('pin')->nullable();
-            $table->string('preferred_language')->default('en');
             $table->string('password');
             $table->rememberToken();
             $table->timestamps();

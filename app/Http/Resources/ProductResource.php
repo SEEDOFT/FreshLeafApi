@@ -56,8 +56,8 @@ class ProductResource extends JsonResource
                 'quantity_in_unit' => $variant->quantity_in_unit,
                 'price' => $variant->price,
             ])->values()->all()),
-            'created_at' => optional($this->created_at)->toIso8601String(),
-            'updated_at' => optional($this->updated_at)->toIso8601String(),
+            'created_at' => \optional($this->created_at)->toIso8601String(),
+            'updated_at' => \optional($this->updated_at)->toIso8601String(),
         ];
     }
 }

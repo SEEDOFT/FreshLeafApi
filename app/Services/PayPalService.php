@@ -33,14 +33,14 @@ class PayPalService
 
     public function __construct()
     {
-        $mode = config('services.paypal.mode', 'sandbox');
+        $mode = \config('services.paypal.mode', 'sandbox');
         $environment = $mode === 'production' ? Environment::PRODUCTION : Environment::SANDBOX;
 
         $this->client = PaypalServerSdkClientBuilder::init()
             ->clientCredentialsAuthCredentials(
                 ClientCredentialsAuthCredentialsBuilder::init(
-                    config('services.paypal.client_id'),
-                    config('services.paypal.secret')
+                    \config('services.paypal.client_id'),
+                    \config('services.paypal.secret')
                 )
             )
             ->environment($environment)
@@ -60,7 +60,7 @@ class PayPalService
         try {
             $amount = AmountWithBreakdownBuilder::init(
                 $data['currency'] ?? 'USD',
-                number_format($data['amount'], 2, '.', '')
+                \number_format($data['amount'], 2, '.', '')
             )->build();
 
             $purchaseUnit = PurchaseUnitRequestBuilder::init($amount)
@@ -80,7 +80,7 @@ class PayPalService
                     OrderApplicationContextBuilder::init()
                         ->returnUrl($data['return_url'])
                         ->cancelUrl($data['cancel_url'] ?? $data['return_url'])
-                        ->brandName($data['brand_name'] ?? config('app.name'))
+                        ->brandName($data['brand_name'] ?? \config('app.name'))
                         ->build()
                 );
             }
@@ -196,7 +196,7 @@ class PayPalService
             if ($amount !== null) {
                 $refundAmount = MoneyBuilder::init(
                     $currency,
-                    number_format($amount, 2, '.', '')
+                    \number_format($amount, 2, '.', '')
                 )->build();
 
                 $refundBody = RefundRequestBuilder::init($refundAmount)->build();
@@ -275,7 +275,7 @@ class PayPalService
     public function verifyWebhook(array $data): bool
     {
         try {
-            $webhookId = config('services.paypal.webhook_id');
+            $webhookId = \config('services.paypal.webhook_id');
 
             $response = $this->webhooksController->verifyWebhookSignature([
                 'body' => VerifyWebhookSignatureRequestBuilder::init(

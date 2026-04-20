@@ -13,7 +13,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('inventory_batches', function (Blueprint $table) {
+        Schema::create('inventory_batches', static function (Blueprint $table) {
             $table->id();
             $table->foreignId('product_id')->constrained()->restrictOnDelete();
             $table->foreignId('product_variant_id')->constrained()->restrictOnDelete();

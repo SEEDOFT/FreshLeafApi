@@ -22,9 +22,9 @@ class AuthController extends Controller
     public function register(RegisterVendorRequest $request): JsonResponse
     {
         $validatedData = $request->validated();
-        $nameParts = preg_split('/\s+/', trim($validatedData['name'])) ?: [];
+        $nameParts = \preg_split('/\s+/', \trim($validatedData['name'])) ?: [];
         $firstName = $nameParts[0] ?? $validatedData['name'];
-        $lastName = count($nameParts) > 1 ? implode(' ', array_slice($nameParts, 1)) : 'Vendor';
+        $lastName = \count($nameParts) > 1 ? \implode(' ', \array_slice($nameParts, 1)) : 'Vendor';
 
         $vendor = User::create([
             'first_name' => $firstName,
@@ -64,7 +64,7 @@ class AuthController extends Controller
         $vendor = User::query()
             ->ofType(UserType::VENDOR)
             ->where(
-                filter_var($lookup, FILTER_VALIDATE_EMAIL) ? 'email' : 'phone_number',
+                \filter_var($lookup, FILTER_VALIDATE_EMAIL) ? 'email' : 'phone_number',
                 $lookup
             )
             ->first();

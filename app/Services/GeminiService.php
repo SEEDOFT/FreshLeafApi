@@ -20,8 +20,8 @@ class GeminiService implements AiProviderContract
 
     public function __construct()
     {
-        $this->apiKey = (string) config('services.gemini.api_key');
-        $this->model = (string) config('services.gemini.model', 'gemini-2.0-flash');
+        $this->apiKey = (string) \config('services.gemini.api_key');
+        $this->model = (string) \config('services.gemini.model', 'gemini-2.0-flash');
     }
 
     public function generateContent(string $prompt, array $options = []): string
@@ -153,12 +153,12 @@ class GeminiService implements AiProviderContract
 
         $parts = $response->json('candidates.0.content.parts', []);
 
-        if (! is_array($parts) || $parts === []) {
+        if (! \is_array($parts) || $parts === []) {
             throw new Exception('No text content in Gemini response');
         }
 
-        $text = collect($parts)
-            ->map(fn (mixed $part): string => is_array($part) ? (string) ($part['text'] ?? '') : '')
+        $text = \collect($parts)
+            ->map(fn (mixed $part): string => \is_array($part) ? (string) ($part['text'] ?? '') : '')
             ->implode('');
 
         if ($text === '') {
@@ -209,12 +209,12 @@ class GeminiService implements AiProviderContract
 
         $parts = $response->json('candidates.0.content.parts', []);
 
-        if (! is_array($parts) || $parts === []) {
+        if (! \is_array($parts) || $parts === []) {
             throw new Exception('No text content in Gemini response');
         }
 
-        $text = collect($parts)
-            ->map(fn (mixed $part): string => is_array($part) ? (string) ($part['text'] ?? '') : '')
+        $text = \collect($parts)
+            ->map(fn (mixed $part): string => \is_array($part) ? (string) ($part['text'] ?? '') : '')
             ->implode('');
 
         if ($text === '') {
@@ -226,11 +226,11 @@ class GeminiService implements AiProviderContract
 
     private function endpointUrl(): string
     {
-        return sprintf(
+        return \sprintf(
             '%s/models/%s:generateContent?key=%s',
             $this->baseUrl,
             $this->model,
-            urlencode($this->apiKey)
+            \urlencode($this->apiKey)
         );
     }
 

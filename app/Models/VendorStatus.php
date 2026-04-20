@@ -8,6 +8,7 @@ use Database\Factories\VendorStatusFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Table;
 use Illuminate\Database\Eloquent\Attributes\UseFactory;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -21,14 +22,14 @@ use Illuminate\Support\Carbon;
  * @property-read Collection<int, Vendor> $vendors
  * @property-read int|null $vendors_count
  *
- * @method static \Database\Factories\VendorStatusFactory factory($count = null, $state = [])
- * @method static \Illuminate\Database\Eloquent\Builder<VendorStatus>|VendorStatus newModelQuery()
- * @method static \Illuminate\Database\Eloquent\Builder<VendorStatus>|VendorStatus newQuery()
- * @method static \Illuminate\Database\Eloquent\Builder<VendorStatus>|VendorStatus query()
- * @method static \Illuminate\Database\Eloquent\Builder<VendorStatus>|VendorStatus whereCreatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder<VendorStatus>|VendorStatus whereId($value)
- * @method static \Illuminate\Database\Eloquent\Builder<VendorStatus>|VendorStatus whereName($value)
- * @method static \Illuminate\Database\Eloquent\Builder<VendorStatus>|VendorStatus whereUpdatedAt($value)
+ * @method static VendorStatusFactory factory($count = null, $state = [])
+ * @method static Builder<self> newModelQuery()
+ * @method static Builder<self> newQuery()
+ * @method static Builder<self> query()
+ * @method static Builder<self> whereCreatedAt($value)
+ * @method static Builder<self> whereId($value)
+ * @method static Builder<self> whereName($value)
+ * @method static Builder<self> whereUpdatedAt($value)
  *
  * @mixin \Eloquent
  */

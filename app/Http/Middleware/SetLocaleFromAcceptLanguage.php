@@ -19,7 +19,7 @@ class SetLocaleFromAcceptLanguage
         $locale = $this->resolveLocale($request);
 
         if ($locale !== null) {
-            app()->setLocale($locale);
+            \app()->setLocale($locale);
         }
 
         return $next($request);

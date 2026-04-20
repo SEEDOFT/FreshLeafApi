@@ -39,7 +39,7 @@ class PaymentController extends Controller
             $data = $request->validated();
             $user = Auth::user();
 
-            $amountInCents = (int) round($data['amount'] * 100);
+            $amountInCents = (int) \round($data['amount'] * 100);
 
             $paymentIntentData = [
                 'amount' => $amountInCents,
@@ -112,7 +112,7 @@ class PaymentController extends Controller
             }
 
             $refundAmount = isset($data['amount'])
-                ? (int) round($data['amount'] * 100)
+                ? (int) \round($data['amount'] * 100)
                 : null;
 
             $refund = $this->stripeService->createRefund(
@@ -140,7 +140,7 @@ class PaymentController extends Controller
     {
         $payload = $request->getContent();
         $sigHeader = $request->header('Stripe-Signature');
-        $webhookSecret = config('services.stripe.webhook_secret');
+        $webhookSecret = \config('services.stripe.webhook_secret');
 
         try {
             $event = $this->stripeService->verifyWebhookSignature($payload, $sigHeader, $webhookSecret);
@@ -366,7 +366,7 @@ class PaymentController extends Controller
                 'payment_type_id' => PaymentType::CARD,
                 'payment_status_id' => PaymentStatus::COMPLETED,
                 'amount' => $paymentIntent->amount / 100,
-                'paid_at' => now(),
+                'paid_at' => \now(),
             ]
         );
     }
@@ -404,7 +404,7 @@ class PaymentController extends Controller
                 'payment_type_id' => PaymentType::CARD,
                 'payment_status_id' => PaymentStatus::COMPLETED,
                 'amount' => $amount,
-                'paid_at' => now(),
+                'paid_at' => \now(),
             ]
         );
     }

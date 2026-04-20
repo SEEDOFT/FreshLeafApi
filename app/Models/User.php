@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Hidden;
 use Illuminate\Database\Eloquent\Attributes\Scope;
+// use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Attributes\Table;
 use Illuminate\Database\Eloquent\Attributes\UseFactory;
 use Illuminate\Database\Eloquent\Builder;
@@ -63,6 +63,7 @@ use Laravel\Sanctum\HasApiTokens;
 #[UseFactory(UserFactory::class)]
 class User extends Authenticatable
 {
+    /** @use HasFactory<UserFactory> */
     use HasApiTokens, HasFactory, Notifiable, SoftDeletes;
 
     /**
@@ -138,37 +139,34 @@ class User extends Authenticatable
     /**
      * Scope a query to a specific user status.
      *
-     * @param  Builder<self>  $query
-     * @return Builder<self>
+     * @param  Builder<User>  $query
      */
     #[Scope]
-    public function withStatus(Builder $query, int $userStatusId): Builder
+    protected function withStatus(Builder $query, int $userStatusId): void
     {
-        return $query->where('user_status_id', $userStatusId);
+        $query->where('user_status_id', $userStatusId);
     }
 
     /**
      * Scope a query to a specific user type.
      *
-     * @param  Builder<self>  $query
-     * @return Builder<self>
+     * @param  Builder<User>  $query
      */
     #[Scope]
-    public function ofType(Builder $query, int $userTypeId): Builder
+    protected function ofType(Builder $query, int $userTypeId): void
     {
-        return $query->where('user_type_id', $userTypeId);
+        $query->where('user_type_id', $userTypeId);
     }
 
     /**
      * Scope a query to active users.
      *
-     * @param  Builder<self>  $query
-     * @return Builder<self>
+     * @param  Builder<User>  $query
      */
     #[Scope]
-    public function active(Builder $query): Builder
+    protected function active(Builder $query): void
     {
-        return $query->withStatus(UserStatus::ACTIVE);
+        $this->withStatus($query, UserStatus::ACTIVE);
     }
 
     /**

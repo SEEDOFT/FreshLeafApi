@@ -22,10 +22,10 @@ class ZenService implements AiProviderContract
 
     public function __construct()
     {
-        $this->apiKey = (string) config('ai.providers.zen.api_key', '');
-        $this->baseUrl = rtrim((string) config('ai.providers.zen.base_url', ''), '/');
-        $this->model = (string) config('ai.providers.zen.model', 'zen-free');
-        $this->timeout = (int) config('ai.providers.zen.timeout', 40);
+        $this->apiKey = (string) \config('ai.providers.zen.api_key', '');
+        $this->baseUrl = \rtrim((string) \config('ai.providers.zen.base_url', ''), '/');
+        $this->model = (string) \config('ai.providers.zen.model', 'zen-free');
+        $this->timeout = (int) \config('ai.providers.zen.timeout', 40);
     }
 
     public function generateContent(string $prompt, array $options = []): string

@@ -13,7 +13,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('panel_preferences', function (Blueprint $table) {
+        Schema::create('panel_preferences', static function (Blueprint $table) {
             $table->id();
             $table->morphs('account');
             $table->string('locale', 2)->default('km');

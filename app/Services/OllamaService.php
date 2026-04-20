@@ -20,9 +20,9 @@ class OllamaService implements AiProviderContract
 
     public function __construct()
     {
-        $this->baseUrl = rtrim((string) config('ai.providers.ollama.base_url', 'http://127.0.0.1:11434'), '/');
-        $this->model = (string) config('ai.providers.ollama.model', 'qwen2.5:1.5b');
-        $this->timeout = (int) config('ai.providers.ollama.timeout', 60);
+        $this->baseUrl = \rtrim((string) \config('ai.providers.ollama.base_url', 'http://127.0.0.1:11434'), '/');
+        $this->model = (string) \config('ai.providers.ollama.model', 'qwen2.5:1.5b');
+        $this->timeout = (int) \config('ai.providers.ollama.timeout', 60);
     }
 
     public function generateContent(string $prompt, array $options = []): string

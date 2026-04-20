@@ -14,7 +14,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('payment_types', function (Blueprint $table) {
+        Schema::create('payment_types', static function (Blueprint $table) {
             $table->unsignedBigInteger('id');
             $table->string('code')->unique();
             $table->string('name');

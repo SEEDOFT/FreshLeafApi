@@ -14,7 +14,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('consumer_profiles', function (Blueprint $table) {
+        Schema::table('consumer_profiles', static function (Blueprint $table) {
             $table->string('pin')->nullable()->after('user_id');
         });
 
@@ -41,7 +41,7 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('consumer_profiles', function (Blueprint $table) {
+        Schema::table('consumer_profiles', static function (Blueprint $table) {
             $table->dropColumn('pin');
         });
     }

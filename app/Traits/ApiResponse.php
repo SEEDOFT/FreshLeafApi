@@ -35,7 +35,7 @@ trait ApiResponse
         ?string $message = null,
         int $code = 200
     ): JsonResponse {
-        return response()->json(
+        return \response()->json(
             self::baseResponse(
                 code: (string) $code,
                 success: true,
@@ -52,7 +52,7 @@ trait ApiResponse
         int $code = 400,
         mixed $data = []
     ): JsonResponse {
-        return response()->json(
+        return \response()->json(
             self::baseResponse(
                 code: (string) $code,
                 success: false,
@@ -69,7 +69,7 @@ trait ApiResponse
         int $code = 403,
         mixed $data = []
     ): JsonResponse {
-        return response()->json(
+        return \response()->json(
             self::baseResponse(
                 code: (string) $code,
                 success: false,
@@ -86,7 +86,7 @@ trait ApiResponse
         int $code = 401,
         mixed $data = []
     ): JsonResponse {
-        return response()->json(
+        return \response()->json(
             self::baseResponse(
                 code: (string) $code,
                 success: false,

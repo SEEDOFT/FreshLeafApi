@@ -13,13 +13,13 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('products', function (Blueprint $table) {
+        Schema::table('products', static function (Blueprint $table) {
             $table->dropForeign(['category_id']);
         });
 
         Schema::rename('categories', 'product_categories');
 
-        Schema::table('products', function (Blueprint $table) {
+        Schema::table('products', static function (Blueprint $table) {
             $table->foreign('category_id')
                 ->references('id')
                 ->on('product_categories')
@@ -32,13 +32,13 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('products', function (Blueprint $table) {
+        Schema::table('products', static function (Blueprint $table) {
             $table->dropForeign(['category_id']);
         });
 
         Schema::rename('product_categories', 'categories');
 
-        Schema::table('products', function (Blueprint $table) {
+        Schema::table('products', static function (Blueprint $table) {
             $table->foreign('category_id')
                 ->references('id')
                 ->on('categories')

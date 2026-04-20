@@ -4,9 +4,15 @@ declare(strict_types=1);
 
 namespace App\Http\Resources\User;
 
+use App\Models\User;
+use App\Models\UserProfile;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
+/**
+ * @mixin User
+ * @mixin UserProfile
+ */
 class UserResource extends JsonResource
 {
     /**
@@ -23,7 +29,7 @@ class UserResource extends JsonResource
             'email' => $this->email,
             'phone_number' => $this->phone_number,
             'image' => $this->image,
-            'set_pin' => (bool) optional($this->userProfile)->pin,
+            'set_pin' => (bool) $this->userProfile->pin,
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
         ];

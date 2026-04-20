@@ -16,7 +16,7 @@ class StripeService
 {
     public function __construct()
     {
-        Stripe::setApiKey(config('services.stripe.secret'));
+        Stripe::setApiKey(\config('services.stripe.secret'));
     }
 
     /**

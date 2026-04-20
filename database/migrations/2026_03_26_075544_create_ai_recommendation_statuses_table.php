@@ -13,7 +13,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('ai_recommendation_statuses', function (Blueprint $table) {
+        Schema::create('ai_recommendation_statuses', static function (Blueprint $table) {
             $table->id();
             $table->string('code')->unique();
             $table->string('name');

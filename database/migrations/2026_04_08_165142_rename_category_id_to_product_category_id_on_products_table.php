@@ -13,7 +13,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('products', function (Blueprint $table) {
+        Schema::table('products', static function (Blueprint $table) {
             $table->dropForeign(['category_id']);
             $table->renameColumn('category_id', 'product_category_id');
             $table->foreign('product_category_id')
@@ -28,7 +28,7 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('products', function (Blueprint $table) {
+        Schema::table('products', static function (Blueprint $table) {
             $table->dropForeign(['product_category_id']);
             $table->renameColumn('product_category_id', 'category_id');
             $table->foreign('category_id')

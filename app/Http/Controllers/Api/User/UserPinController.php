@@ -8,8 +8,8 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\User\Pin\SetPinRequest;
 use App\Http\Requests\User\Pin\UpdatePinRequest;
 use App\Http\Requests\User\Pin\VerifyPinRequest;
+use App\Models\UserProfile;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Support\Facades\Hash;
 
 class UserPinController extends Controller
 {
@@ -19,18 +19,13 @@ class UserPinController extends Controller
     public function setPin(SetPinRequest $request): JsonResponse
     {
         $validatedData = $request->validated();
-        $user = $this->user();
-        $profile = $user->userProfile()->firstOrCreate([
-            'user_id' => $user->id,
-        ], [
-            'preferred_language' => 'en',
-        ]);
+        $profile = UserProfile::firstOrCreateForUser($this->user());
 
-        if ($profile->pin) {
+        if ($profile->hasPin()) {
             return static::errorResponse('PIN already set. Use update endpoint to change it.', 422);
         }
 
-        $profile->update(['pin' => Hash::make($validatedData['pin'])]);
+        $profile->setPin($validatedData['pin']);
 
         return static::successResponse(message: 'PIN set successfully');
     }
@@ -41,14 +36,13 @@ class UserPinController extends Controller
     public function updatePin(UpdatePinRequest $request): JsonResponse
     {
         $validatedData = $request->validated();
-        $user = $this->user();
-        $profile = $user->userProfile;
+        $profile = $this->user()->userProfile;
 
-        if ($profile === null || ! Hash::check($validatedData['current_pin'], $profile->pin)) {
+        if ($profile === null || ! $profile->verifyPin($validatedData['current_pin'])) {
             return static::errorResponse('Invalid current PIN', 401);
         }
 
-        $profile->update(['pin' => Hash::make($validatedData['pin'])]);
+        $profile->setPin($validatedData['pin']);
 
         return static::successResponse(message: 'PIN updated successfully');
     }
@@ -59,14 +53,13 @@ class UserPinController extends Controller
     public function verifyPin(VerifyPinRequest $request): JsonResponse
     {
         $validatedData = $request->validated();
-        $user = $this->user();
-        $profile = $user->userProfile;
+        $profile = $this->user()->userProfile;
 
-        if ($profile === null || ! $profile->pin) {
+        if ($profile === null || ! $profile->hasPin()) {
             return static::errorResponse('PIN not set', 422);
         }
 
-        if (! Hash::check($validatedData['pin'], $profile->pin)) {
+        if (! $profile->verifyPin($validatedData['pin'])) {
             return static::errorResponse('Invalid PIN', 401);
         }
 
@@ -74,19 +67,15 @@ class UserPinController extends Controller
     }
 
     /**
-     * Reset the user's PIN without requiring the current PIN (e.g., for forgotten PIN).
+     * Reset the user's PIN without requiring the current PIN (e.g., for
+     * forgotten PIN).
      */
     public function resetPin(SetPinRequest $request): JsonResponse
     {
         $validatedData = $request->validated();
-        $user = $this->user();
-        $profile = $user->userProfile()->firstOrCreate([
-            'user_id' => $user->id,
-        ], [
-            'preferred_language' => 'en',
-        ]);
+        $profile = UserProfile::firstOrCreateForUser($this->user());
 
-        $profile->update(['pin' => Hash::make($validatedData['pin'])]);
+        $profile->setPin($validatedData['pin']);
 
         return static::successResponse(message: 'PIN reset successfully');
     }

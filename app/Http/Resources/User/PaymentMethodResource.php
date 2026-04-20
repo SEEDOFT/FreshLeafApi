@@ -27,11 +27,12 @@ class PaymentMethodResource extends JsonResource
             'payment_method_status_id' => $this->payment_method_status_id,
             'label' => $this->label,
             'card_holder_name' => $this->card_holder_name,
-            'card_number' => $this->maskCardNumber($this->card_number),
+            'card_number' => self::maskCardNumber($this->card_number),
             'expiry_month' => $this->expiry_month,
             'expiry_year' => $this->expiry_year,
             'is_default' => $this->is_default,
-            // CVV should NOT be returned to the client usually, even for the owner.
+            // CVV should NOT be returned to the client usually, even for the
+            // owner.
             // But for a full CRUD, we could return it masked.
             'cvv' => '***',
             'billing_address' => $this->billing_address,
@@ -46,17 +47,17 @@ class PaymentMethodResource extends JsonResource
     /**
      * Mask the card number to show only last 4 digits.
      */
-    private function maskCardNumber(?string $cardNumber): ?string
+    private static function maskCardNumber(?string $cardNumber): ?string
     {
         if (! $cardNumber) {
             return null;
         }
 
-        $length = strlen($cardNumber);
+        $length = \strlen($cardNumber);
         if ($length <= 4) {
             return $cardNumber;
         }
 
-        return str_repeat('*', $length - 4).substr($cardNumber, -4);
+        return \str_repeat('*', $length - 4).\substr($cardNumber, -4);
     }
 }

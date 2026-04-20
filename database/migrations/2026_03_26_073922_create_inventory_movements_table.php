@@ -13,7 +13,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('inventory_movements', function (Blueprint $table) {
+        Schema::create('inventory_movements', static function (Blueprint $table) {
             $table->id();
             $table->foreignId('inventory_batch_id')->constrained()->cascadeOnDelete();
             $table->foreignId('inventory_movement_type_id')->constrained()->restrictOnDelete();

@@ -13,7 +13,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('order_status_histories', function (Blueprint $table) {
+        Schema::create('order_status_histories', static function (Blueprint $table) {
             $table->id();
             $table->foreignId('order_id')->constrained()->cascadeOnDelete();
             $table->foreignId('from_order_status_id')->constrained('order_statuses')->restrictOnDelete();

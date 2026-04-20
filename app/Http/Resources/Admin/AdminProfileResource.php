@@ -18,7 +18,7 @@ class AdminProfileResource extends JsonResource
 
         return [
             'id' => $this->id,
-            'name' => trim($this->first_name.' '.$this->last_name),
+            'name' => \trim($this->first_name.' '.$this->last_name),
             'email' => $this->email,
             'phone_number' => $this->phone_number,
             'department' => $profile?->department,
@@ -28,7 +28,7 @@ class AdminProfileResource extends JsonResource
             'permissions' => $profile?->permissions,
             'status_id' => $this->user_status_id,
             'type_id' => $this->user_type_id,
-            'updated_at' => optional($this->updated_at)->toIso8601String(),
+            'updated_at' => \optional($this->updated_at)->toIso8601String(),
         ];
     }
 }

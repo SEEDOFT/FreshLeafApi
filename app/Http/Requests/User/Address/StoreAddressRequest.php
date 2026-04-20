@@ -6,7 +6,6 @@ namespace App\Http\Requests\User\Address;
 
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Support\Facades\Auth;
 
 class StoreAddressRequest extends FormRequest
 {
@@ -15,7 +14,7 @@ class StoreAddressRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return Auth::check();
+        return \auth()->check();
     }
 
     /**

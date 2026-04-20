@@ -14,7 +14,7 @@ return new class extends Migration
     public function up(): void
     {
         if (! Schema::hasColumn('products', 'vendor_user_id')) {
-            Schema::table('products', function (Blueprint $table) {
+            Schema::table('products', static function (Blueprint $table) {
                 $table->foreignId('vendor_user_id')
                     ->nullable()
                     ->after('product_status_id')
@@ -32,7 +32,7 @@ return new class extends Migration
     public function down(): void
     {
         if (Schema::hasColumn('products', 'vendor_user_id')) {
-            Schema::table('products', function (Blueprint $table) {
+            Schema::table('products', static function (Blueprint $table) {
                 $table->dropConstrainedForeignId('vendor_user_id');
             });
         }

@@ -4,26 +4,29 @@ declare(strict_types=1);
 
 namespace App\Http\Requests\User;
 
+use App\Models\User;
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\Rule;
 
 class ReplaceUserRequest extends FormRequest
 {
     public function authorize(): bool
     {
-        return true;
+        return \auth()->check();
     }
 
     public function rules(): array
     {
-        $user = $this->route('user') ?? Auth::user();
-        $userId = $user?->id;
+        /** @var User|null $user */
+        $user = \auth()->user();
+
+        $userId = $user->id ?? 0;
 
         return [
             'first_name' => ['required', 'string', 'max:255'],
             'last_name' => ['required', 'string', 'max:255'],
             'email' => [
+                'required',
                 'nullable',
                 'email',
                 'max:255',

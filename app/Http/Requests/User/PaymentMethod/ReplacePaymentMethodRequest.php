@@ -15,7 +15,7 @@ class ReplacePaymentMethodRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return auth()->check();
+        return \auth()->check();
     }
 
     /**
@@ -32,7 +32,7 @@ class ReplacePaymentMethodRequest extends FormRequest
             'card_holder_name' => ['required', 'string', 'max:255'],
             'card_number' => ['required', 'string', 'min:12', 'max:19'],
             'expiry_month' => ['required', 'integer', 'min:1', 'max:12'],
-            'expiry_year' => ['required', 'integer', 'min:'.date('Y'), 'max:'.(date('Y') + 20)],
+            'expiry_year' => ['required', 'integer', 'min:'.\date('Y'), 'max:'.(\date('Y') + 20)],
             'cvv' => ['required', 'string', 'min:3', 'max:4'],
             'is_default' => ['sometimes', 'boolean'],
         ];
@@ -43,7 +43,7 @@ class ReplacePaymentMethodRequest extends FormRequest
         $validator->after(function (Validator $validator) {
             if ($this->boolean('is_default')) {
                 $paymentMethod = $this->route('payment_method');
-                if (auth()->user()->paymentMethods()->where('id', '!=', $paymentMethod->id)->where('is_default', true)->exists()) {
+                if (\auth()->user()->paymentMethods()->where('id', '!=', $paymentMethod->id)->where('is_default', true)->exists()) {
                     $validator->errors()->add('is_default', 'Only one payment method can be set as default.');
                 }
             }

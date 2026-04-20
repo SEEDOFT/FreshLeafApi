@@ -8,6 +8,7 @@ use Database\Factories\VendorTypeFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Table;
 use Illuminate\Database\Eloquent\Attributes\UseFactory;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -21,14 +22,14 @@ use Illuminate\Support\Carbon;
  * @property-read Collection<int, Vendor> $vendors
  * @property-read int|null $vendors_count
  *
- * @method static \Database\Factories\VendorTypeFactory factory($count = null, $state = [])
- * @method static \Illuminate\Database\Eloquent\Builder<VendorType>|VendorType newModelQuery()
- * @method static \Illuminate\Database\Eloquent\Builder<VendorType>|VendorType newQuery()
- * @method static \Illuminate\Database\Eloquent\Builder<VendorType>|VendorType query()
- * @method static \Illuminate\Database\Eloquent\Builder<VendorType>|VendorType whereCreatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder<VendorType>|VendorType whereId($value)
- * @method static \Illuminate\Database\Eloquent\Builder<VendorType>|VendorType whereName($value)
- * @method static \Illuminate\Database\Eloquent\Builder<VendorType>|VendorType whereUpdatedAt($value)
+ * @method static VendorTypeFactory factory($count = null, $state = [])
+ * @method static Builder<self> newModelQuery()
+ * @method static Builder<self> newQuery()
+ * @method static Builder<self> query()
+ * @method static Builder<self> whereCreatedAt($value)
+ * @method static Builder<self> whereId($value)
+ * @method static Builder<self> whereName($value)
+ * @method static Builder<self> whereUpdatedAt($value)
  *
  * @mixin \Eloquent
  */

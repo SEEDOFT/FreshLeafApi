@@ -31,10 +31,14 @@ use Illuminate\Support\Carbon;
 #[UseFactory(CartFactory::class)]
 class Cart extends Model
 {
+    /** @use HasFactory<CartFactory> */
     use HasFactory;
 
     /**
      * Get the user that owns the cart.
+     */
+    /**
+     * @return BelongsTo<User, $this>
      */
     public function user(): BelongsTo
     {
@@ -44,6 +48,9 @@ class Cart extends Model
     /**
      * Get the cart status.
      */
+    /**
+     * @return BelongsTo<CartStatus, $this>
+     */
     public function status(): BelongsTo
     {
         return $this->belongsTo(CartStatus::class, 'cart_status_id', 'id');
@@ -51,6 +58,9 @@ class Cart extends Model
 
     /**
      * Get the items for the cart.
+     */
+    /**
+     * @return HasMany<CartItem, $this>
      */
     public function items(): HasMany
     {

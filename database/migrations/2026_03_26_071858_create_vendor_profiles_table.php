@@ -13,16 +13,14 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('operation_profiles', static function (Blueprint $table) {
+        Schema::create('vendor_profiles', static function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id')->unique()->constrained()->cascadeOnDelete();
+            $table->unsignedBigInteger('user_id')->unique();
             $table->string('business_name');
             $table->string('contact_phone')->nullable();
             $table->string('city')->nullable();
             $table->string('province')->nullable();
-            $table->text('address')->nullable();
             $table->boolean('is_verified')->default(false);
-            $table->json('meta')->nullable();
             $table->timestamps();
         });
     }
@@ -32,6 +30,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('operation_profiles');
+        Schema::dropIfExists('vendor_profiles');
     }
 };

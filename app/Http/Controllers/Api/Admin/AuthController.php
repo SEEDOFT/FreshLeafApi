@@ -22,13 +22,16 @@ class AuthController extends Controller
         $validatedData = $request->validated();
 
         /** @var User|null $admin */
-        $admin = User::query()
-            ->ofType(UserType::ADMIN)
+        $admin = User::ofType(UserType::ADMIN)
             ->where('phone_number', $validatedData['phone_number'])
             ->first();
 
         if (! $admin) {
             return $this->errorResponse('Admin not found', 404);
+        }
+
+        if (! $admin->isActive()) {
+            return $this->errorResponse('Admin account is not active', 403);
         }
 
         if (! Hash::check($validatedData['password'], $admin->password)) {

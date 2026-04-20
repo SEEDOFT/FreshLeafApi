@@ -76,6 +76,9 @@ class InventoryBatch extends Model
     /**
      * Get the product for the batch.
      */
+    /**
+     * @return BelongsTo<Product, $this>
+     */
     public function product(): BelongsTo
     {
         return $this->belongsTo(Product::class, 'product_id', 'id');
@@ -83,6 +86,9 @@ class InventoryBatch extends Model
 
     /**
      * Get the product variant for the batch.
+     */
+    /**
+     * @return BelongsTo<ProductVariant, $this>
      */
     public function variant(): BelongsTo
     {
@@ -92,6 +98,9 @@ class InventoryBatch extends Model
     /**
      * Get the supplier for the batch.
      */
+    /**
+     * @return BelongsTo<Supplier, $this>
+     */
     public function supplier(): BelongsTo
     {
         return $this->belongsTo(Supplier::class, 'supplier_id', 'id');
@@ -100,6 +109,9 @@ class InventoryBatch extends Model
     /**
      * Get the batch status.
      */
+    /**
+     * @return BelongsTo<InventoryBatchStatus, $this>
+     */
     public function status(): BelongsTo
     {
         return $this->belongsTo(InventoryBatchStatus::class, 'inventory_batch_status_id', 'id');
@@ -107,6 +119,9 @@ class InventoryBatch extends Model
 
     /**
      * Get the movements for the batch.
+     */
+    /**
+     * @return HasMany<InventoryMovement, $this>
      */
     public function movements(): HasMany
     {

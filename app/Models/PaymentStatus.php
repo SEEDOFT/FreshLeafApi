@@ -41,6 +41,9 @@ class PaymentStatus extends Model
     /**
      * Get the orders for the payment status.
      */
+    /**
+     * @return HasMany<Order, $this>
+     */
     public function orders(): HasMany
     {
         return $this->hasMany(Order::class, 'payment_status_id', 'id');
@@ -48,6 +51,9 @@ class PaymentStatus extends Model
 
     /**
      * Get the payments for the status.
+     */
+    /**
+     * @return HasMany<Payment, $this>
      */
     public function payments(): HasMany
     {

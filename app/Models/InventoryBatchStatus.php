@@ -33,6 +33,9 @@ class InventoryBatchStatus extends Model
     /**
      * Get the inventory batches for the status.
      */
+    /**
+     * @return HasMany<InventoryBatch, $this>
+     */
     public function inventoryBatches(): HasMany
     {
         return $this->hasMany(InventoryBatch::class, 'inventory_batch_status_id', 'id');

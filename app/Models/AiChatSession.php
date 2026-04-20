@@ -42,11 +42,17 @@ class AiChatSession extends Model
         ];
     }
 
+    /**
+     * @return BelongsTo<User, $this>
+     */
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class, 'user_id', 'id');
     }
 
+    /**
+     * @return HasMany<AiChatMessage, $this>
+     */
     public function messages(): HasMany
     {
         return $this->hasMany(AiChatMessage::class, 'ai_chat_session_id', 'id')->orderBy('created_at');

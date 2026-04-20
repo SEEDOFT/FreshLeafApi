@@ -44,6 +44,9 @@ class CartItem extends Model
     /**
      * Get the cart that owns the item.
      */
+    /**
+     * @return BelongsTo<Cart, $this>
+     */
     public function cart(): BelongsTo
     {
         return $this->belongsTo(Cart::class, 'cart_id', 'id');
@@ -52,6 +55,9 @@ class CartItem extends Model
     /**
      * Get the product for the item.
      */
+    /**
+     * @return BelongsTo<Product, $this>
+     */
     public function product(): BelongsTo
     {
         return $this->belongsTo(Product::class, 'product_id', 'id');
@@ -59,6 +65,9 @@ class CartItem extends Model
 
     /**
      * Get the product variant for the item.
+     */
+    /**
+     * @return BelongsTo<ProductVariant, $this>
      */
     public function variant(): BelongsTo
     {

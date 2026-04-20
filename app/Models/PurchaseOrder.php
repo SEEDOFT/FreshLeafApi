@@ -60,6 +60,9 @@ class PurchaseOrder extends Model
     /**
      * Get the supplier that owns the purchase order.
      */
+    /**
+     * @return BelongsTo<Supplier, $this>
+     */
     public function supplier(): BelongsTo
     {
         return $this->belongsTo(Supplier::class, 'supplier_id', 'id');
@@ -68,6 +71,9 @@ class PurchaseOrder extends Model
     /**
      * Get the purchase order status.
      */
+    /**
+     * @return BelongsTo<PurchaseOrderStatus, $this>
+     */
     public function status(): BelongsTo
     {
         return $this->belongsTo(PurchaseOrderStatus::class, 'purchase_order_status_id', 'id');
@@ -75,6 +81,9 @@ class PurchaseOrder extends Model
 
     /**
      * Get the items for the purchase order.
+     */
+    /**
+     * @return HasMany<PurchaseOrderItem, $this>
      */
     public function items(): HasMany
     {

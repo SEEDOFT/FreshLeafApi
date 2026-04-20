@@ -33,6 +33,9 @@ class NotificationType extends Model
     /**
      * Get the notifications for the type.
      */
+    /**
+     * @return HasMany<Notification, $this>
+     */
     public function notifications(): HasMany
     {
         return $this->hasMany(Notification::class, 'notification_type_id', 'id');

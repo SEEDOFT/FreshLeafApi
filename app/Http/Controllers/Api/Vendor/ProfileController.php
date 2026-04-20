@@ -29,6 +29,7 @@ class ProfileController extends Controller
         $validated = $request->validated();
 
         $profile = $vendor->vendorProfile()->firstOrCreate(['user_id' => $vendor->id]);
+        $profile->ensureDefaultWallets();
         $profile->update([
             'business_name' => $validated['business_name'],
             'contact_phone' => $validated['contact_phone'] ?? null,

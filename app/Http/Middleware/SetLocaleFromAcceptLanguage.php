@@ -4,44 +4,68 @@ declare(strict_types=1);
 
 namespace App\Http\Middleware;
 
+use App\Models\User;
+use App\Traits\ApiResponse;
 use Closure;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use Symfony\Component\HttpFoundation\Response;
 
 class SetLocaleFromAcceptLanguage
 {
+    use ApiResponse;
+
     /** @var list<string> */
     private const array SUPPORTED_LOCALES = ['km', 'en'];
 
+    /**
+     * Handle an incoming request.
+     *
+     * @param  Closure(Request): (Response)  $next
+     */
     public function handle(Request $request, Closure $next): Response
     {
         $locale = $this->resolveLocale($request);
 
         if ($locale !== null) {
             \app()->setLocale($locale);
+        } else {
+            \app()->setLocale(config('app.locale'));
         }
 
         return $next($request);
     }
 
+    /**
+     * Resolve the locale from the request.
+     *
+     * @return string|null The resolved locale or null if not found
+     */
     private function resolveLocale(Request $request): ?string
     {
+        /** @var User|null $user */
         $user = $request->user();
 
-        if ($user === null && Auth::guard('sanctum')->check()) {
-            $user = Auth::guard('sanctum')->user();
+        if (! $user) {
+            return $this->detectFromHeader($request);
         }
 
-        $preferredLocale = $user?->preference?->locale;
+        $preferredLocale = $user->userProfile->preferred_language;
 
-        if (\is_string($preferredLocale) && \in_array($preferredLocale, self::SUPPORTED_LOCALES, true)) {
+        if (
+            \is_string($preferredLocale) &&
+            \in_array($preferredLocale, self::SUPPORTED_LOCALES, true)
+        ) {
             return $preferredLocale;
         }
 
         return $this->detectFromHeader($request);
     }
 
+    /**
+     * Detect the locale from the Accept-Language header.
+     *
+     * @return string|null The detected locale or null if not found
+     */
     private function detectFromHeader(Request $request): ?string
     {
         $acceptLanguage = $request->header('Accept-Language');

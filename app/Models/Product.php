@@ -79,6 +79,7 @@ use Illuminate\Support\Str;
 #[UseFactory(ProductFactory::class)]
 class Product extends Model
 {
+    /** @use HasFactory<ProductFactory> */
     use HasFactory, SoftDeletes;
 
     /**
@@ -106,10 +107,10 @@ class Product extends Model
         });
     }
 
-    // Relationships
-
     /**
      * Get the category that owns the product.
+     *
+     * @return BelongsTo<ProductCategory, $this>
      */
     public function category(): BelongsTo
     {
@@ -118,6 +119,8 @@ class Product extends Model
 
     /**
      * Get the product category that owns the product.
+     *
+     * @return BelongsTo<ProductCategory, $this>
      */
     public function productCategory(): BelongsTo
     {
@@ -126,6 +129,8 @@ class Product extends Model
 
     /**
      * Get the product type.
+     *
+     * @return BelongsTo<ProductType, $this>
      */
     public function type(): BelongsTo
     {
@@ -134,6 +139,8 @@ class Product extends Model
 
     /**
      * Get the default unit for the product.
+     *
+     * @return BelongsTo<Unit, $this>
      */
     public function defaultUnit(): BelongsTo
     {
@@ -142,6 +149,8 @@ class Product extends Model
 
     /**
      * Get the product status.
+     *
+     * @return BelongsTo<ProductStatus, $this>
      */
     public function status(): BelongsTo
     {
@@ -150,6 +159,8 @@ class Product extends Model
 
     /**
      * Get the vendor owner for the product.
+     *
+     * @return BelongsTo<User, $this>
      */
     public function vendor(): BelongsTo
     {
@@ -158,6 +169,8 @@ class Product extends Model
 
     /**
      * Get the variants for the product.
+     *
+     * @return HasMany<ProductVariant, $this>
      */
     public function variants(): HasMany
     {
@@ -166,6 +179,8 @@ class Product extends Model
 
     /**
      * Get the substitutions for the product.
+     *
+     * @return HasMany<ProductSubstitution, $this>
      */
     public function substitutions(): HasMany
     {
@@ -174,6 +189,8 @@ class Product extends Model
 
     /**
      * Get the substitutions where this product is the substitute.
+     *
+     * @return HasMany<ProductSubstitution, $this>
      */
     public function substitutionsFor(): HasMany
     {
@@ -182,6 +199,8 @@ class Product extends Model
 
     /**
      * Get the price histories for the product.
+     *
+     * @return HasMany<PriceHistory, $this>
      */
     public function priceHistories(): HasMany
     {
@@ -190,6 +209,8 @@ class Product extends Model
 
     /**
      * Get the inventory batches for the product.
+     *
+     * @return HasMany<InventoryBatch, $this>
      */
     public function inventoryBatches(): HasMany
     {
@@ -198,14 +219,25 @@ class Product extends Model
 
     /**
      * Get the inventory movements for the product.
+     *
+     * @return HasManyThrough<InventoryMovement, InventoryBatch, $this>
      */
     public function inventoryMovements(): HasManyThrough
     {
-        return $this->hasManyThrough(InventoryMovement::class, InventoryBatch::class, 'product_id', 'inventory_batch_id', 'id', 'id');
+        return $this->hasManyThrough(
+            InventoryMovement::class,
+            InventoryBatch::class,
+            'product_id',
+            'inventory_batch_id',
+            'id',
+            'id'
+        );
     }
 
     /**
      * Get the order items for the product.
+     *
+     * @return HasMany<OrderItem, $this>
      */
     public function orderItems(): HasMany
     {
@@ -214,6 +246,8 @@ class Product extends Model
 
     /**
      * Get the cart items for the product.
+     *
+     * @return HasMany<CartItem, $this>
      */
     public function cartItems(): HasMany
     {
@@ -222,13 +256,13 @@ class Product extends Model
 
     /**
      * Get the purchase order items for the product.
+     *
+     * @return HasMany<PurchaseOrderItem, $this>
      */
     public function purchaseOrderItems(): HasMany
     {
         return $this->hasMany(PurchaseOrderItem::class, 'product_id', 'id');
     }
-
-    // Scopes
 
     /**
      * Scope a query to only include active products.

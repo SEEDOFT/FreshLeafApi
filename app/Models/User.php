@@ -16,6 +16,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -41,8 +42,10 @@ use Laravel\Sanctum\HasApiTokens;
  * @property-read UserProfile|null $userProfile
  * @property-read VendorProfile|null $vendorProfile
  * @property-read AdminProfile|null $adminProfile
- * @property-read UserAddress[]|HasMany $addresses
- * @property-read UserPaymentMethod[]|HasMany $paymentMethods
+ * @property-read Address[]|MorphMany<Address, $this> $addresses
+ * @property-read UserPaymentMethod[]|HasMany<UserPaymentMethod, $this> $paymentMethods
+ * @property-read Wallet|null $wallet
+ * @property-read Wallet[]|MorphMany<Wallet, $this> $wallets
  *
  * @method static Builder<static>|User ofType(int $userTypeId)
  * @method static Builder<static>|User withStatus(int $userStatusId)
@@ -66,11 +69,6 @@ class User extends Authenticatable
     /** @use HasFactory<UserFactory> */
     use HasApiTokens, HasFactory, Notifiable, SoftDeletes;
 
-    /**
-     * Get the attributes that should be cast.
-     *
-     * @return array<string, string>
-     */
     protected function casts(): array
     {
         return [
@@ -82,6 +80,8 @@ class User extends Authenticatable
 
     /**
      * Get the user type.
+     *
+     * @return BelongsTo<UserType, $this>
      */
     public function type(): BelongsTo
     {
@@ -90,6 +90,8 @@ class User extends Authenticatable
 
     /**
      * Get the user status.
+     *
+     * @return BelongsTo<UserStatus, $this>
      */
     public function status(): BelongsTo
     {
@@ -98,14 +100,18 @@ class User extends Authenticatable
 
     /**
      * Get the addresses for the user.
+     *
+     * @return MorphMany<Address, $this>
      */
-    public function addresses(): HasMany
+    public function addresses(): MorphMany
     {
-        return $this->hasMany(UserAddress::class, 'user_id', 'id');
+        return $this->morphMany(Address::class, 'addressable');
     }
 
     /**
      * Get the end-user profile.
+     *
+     * @return HasOne<UserProfile, $this>
      */
     public function userProfile(): HasOne
     {
@@ -114,6 +120,8 @@ class User extends Authenticatable
 
     /**
      * Get the vendor profile.
+     *
+     * @return HasOne<VendorProfile, $this>
      */
     public function vendorProfile(): HasOne
     {
@@ -122,6 +130,8 @@ class User extends Authenticatable
 
     /**
      * Get the admin profile.
+     *
+     * @return HasOne<AdminProfile, $this>
      */
     public function adminProfile(): HasOne
     {
@@ -130,10 +140,38 @@ class User extends Authenticatable
 
     /**
      * Get the payment methods for the user.
+     *
+     * @return HasMany<UserPaymentMethod, $this>
      */
     public function paymentMethods(): HasMany
     {
         return $this->hasMany(UserPaymentMethod::class, 'user_id', 'id');
+    }
+
+    /**
+     * Get wallets for the user.
+     *
+     * @return MorphMany<Wallet, $this>
+     */
+    public function wallets(): MorphMany
+    {
+        return $this->morphMany(Wallet::class, 'walletable');
+    }
+
+    /**
+     * Ensure the user has default wallets for KHR and USD.
+     */
+    public function ensureDefaultWallets(): void
+    {
+        $this->wallets()->create([
+            'balance' => '0.00',
+            'currency_id' => Currency::KHR,
+        ]);
+
+        $this->wallets()->create([
+            'balance' => '0.00',
+            'currency_id' => Currency::USD,
+        ]);
     }
 
     /**
@@ -166,7 +204,7 @@ class User extends Authenticatable
     #[Scope]
     protected function active(Builder $query): void
     {
-        $this->withStatus($query, UserStatus::ACTIVE);
+        $query->withStatus(UserStatus::ACTIVE);
     }
 
     /**

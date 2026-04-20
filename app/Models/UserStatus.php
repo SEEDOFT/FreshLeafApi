@@ -16,28 +16,32 @@ use Illuminate\Support\Carbon;
 
 /**
  * @property int $id
+ * @property string $code
  * @property string $name
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  * @property-read Collection<int, User> $users
  */
 #[Table('user_statuses', key: 'id')]
-#[Fillable(['name'])]
+#[Fillable(['code', 'name'])]
 #[UseFactory(UserStatusFactory::class)]
 class UserStatus extends Model
 {
+    /** @use HasFactory<UserStatusFactory> */
     use HasFactory;
 
-    public const int ACTIVE = 1;
+    public const int PENDING = 1;
 
-    public const int INACTIVE = 2;
+    public const int ACTIVE = 2;
 
-    public const int DELETED = 3;
+    public const int INACTIVE = 3;
 
-    public const int PENDING = 4;
+    public const int DELETED = 4;
 
     /**
-     * Get the users for the user status.
+     * Get the users for this status.
+     *
+     * @return HasMany<User, $this>
      */
     public function users(): HasMany
     {

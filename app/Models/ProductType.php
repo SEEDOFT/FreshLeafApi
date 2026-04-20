@@ -32,6 +32,9 @@ class ProductType extends Model
     /**
      * Get the products for the product type.
      */
+    /**
+     * @return HasMany<Product, $this>
+     */
     public function products(): HasMany
     {
         return $this->hasMany(Product::class, 'product_type_id', 'id');

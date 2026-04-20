@@ -20,14 +20,12 @@ class RegisterVendorRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name' => ['required', 'string', 'max:160'],
-            'email' => ['required', 'string', 'email', 'max:255', 'unique:users,email'],
+            'first_name' => ['required', 'string', 'max:160'],
+            'last_name' => ['required', 'string', 'max:160'],
+            'email' => ['required', 'string', 'email', 'max:255'],
             'password' => ['required', 'string', 'min:8', 'confirmed'],
             'business_name' => ['required', 'string', 'max:160'],
-            'contact_phone' => ['required', 'string', 'max:40', 'unique:users,phone_number'],
-            'city' => ['required', 'string', 'max:120'],
-            'province' => ['required', 'string', 'max:120'],
-            'address' => ['required', 'string', 'max:255'],
+            'contact_phone' => ['required', 'string', 'max:40'],
         ];
     }
 }

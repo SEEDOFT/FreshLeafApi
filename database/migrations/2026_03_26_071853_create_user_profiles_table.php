@@ -13,13 +13,13 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('consumer_profiles', static function (Blueprint $table) {
+        Schema::create('user_profiles', static function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id')->unique()->constrained()->cascadeOnDelete();
+            $table->unsignedBigInteger('user_id')->unique();
+            $table->string('pin')->nullable();
+            $table->string('gender')->nullable();
             $table->date('date_of_birth')->nullable();
-            $table->string('gender', 20)->nullable();
-            $table->string('preferred_language', 10)->default('en');
-            $table->json('preferences')->nullable();
+            $table->string('preferred_language')->default('en');
             $table->timestamps();
         });
     }
@@ -29,6 +29,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('consumer_profiles');
+        Schema::dropIfExists('user_profiles');
     }
 };

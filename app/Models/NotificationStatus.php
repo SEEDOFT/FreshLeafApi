@@ -33,6 +33,9 @@ class NotificationStatus extends Model
     /**
      * Get the notifications for the status.
      */
+    /**
+     * @return HasMany<Notification, $this>
+     */
     public function notifications(): HasMany
     {
         return $this->hasMany(Notification::class, 'notification_status_id', 'id');

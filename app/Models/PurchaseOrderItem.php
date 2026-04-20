@@ -60,6 +60,9 @@ class PurchaseOrderItem extends Model
     /**
      * Get the purchase order that owns the item.
      */
+    /**
+     * @return BelongsTo<PurchaseOrder, $this>
+     */
     public function purchaseOrder(): BelongsTo
     {
         return $this->belongsTo(PurchaseOrder::class, 'purchase_order_id', 'id');
@@ -68,6 +71,9 @@ class PurchaseOrderItem extends Model
     /**
      * Get the product for the item.
      */
+    /**
+     * @return BelongsTo<Product, $this>
+     */
     public function product(): BelongsTo
     {
         return $this->belongsTo(Product::class, 'product_id', 'id');
@@ -75,6 +81,9 @@ class PurchaseOrderItem extends Model
 
     /**
      * Get the product variant for the item.
+     */
+    /**
+     * @return BelongsTo<ProductVariant, $this>
      */
     public function variant(): BelongsTo
     {

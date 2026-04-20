@@ -39,6 +39,9 @@ class PaymentMethodStatus extends Model
     /**
      * Get the payment methods for the status.
      */
+    /**
+     * @return HasMany<UserPaymentMethod, $this>
+     */
     public function paymentMethods(): HasMany
     {
         return $this->hasMany(UserPaymentMethod::class, 'payment_method_status_id', 'id');

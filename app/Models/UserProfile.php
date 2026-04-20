@@ -11,12 +11,19 @@ use Illuminate\Database\Eloquent\Attributes\UseFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Hash;
 
 /**
  * @property int $id
  * @property int $user_id
  * @property string|null $pin
+ * @property string|null $gender
+ * @property string|null $preferred_language
+ * @property Carbon|null $date_of_birth
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ * @property-read User $user
  */
 #[Table('user_profiles', key: 'id')]
 #[Fillable([
@@ -24,7 +31,6 @@ use Illuminate\Support\Facades\Hash;
     'pin',
     'gender',
     'preferred_language',
-    'preferences',
 ])]
 #[UseFactory(UserProfileFactory::class)]
 class UserProfile extends Model
@@ -37,13 +43,11 @@ class UserProfile extends Model
         return [
             'pin' => 'hashed',
             'date_of_birth' => 'date',
-            'preferences' => 'array',
         ];
     }
 
     /**
-     * Belong to User
-
+     * Get the user that owns the profile.
      *
      * @return BelongsTo<User, $this>
      */
@@ -61,18 +65,6 @@ class UserProfile extends Model
             ['user_id' => $user->id],
             ['preferred_language' => 'en'],
         );
-    }
-
-    /**
-     * Create a default profile for a new user.
-     */
-    public static function createDefaultForUser(User $user): self
-    {
-        return self::create([
-            'user_id' => $user->id,
-            'preferred_language' => 'en',
-            'pin' => null,
-        ]);
     }
 
     /**
@@ -96,6 +88,6 @@ class UserProfile extends Model
      */
     public function setPin(string $pin): void
     {
-        $this->update(['pin' => $pin]);
+        $this->update(['pin' => Hash::make($pin)]);
     }
 }

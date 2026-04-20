@@ -33,6 +33,9 @@ class CartStatus extends Model
     /**
      * Get the carts for the status.
      */
+    /**
+     * @return HasMany<Cart, $this>
+     */
     public function carts(): HasMany
     {
         return $this->hasMany(Cart::class, 'cart_status_id', 'id');

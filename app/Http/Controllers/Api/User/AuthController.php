@@ -10,7 +10,6 @@ use App\Http\Requests\User\Auth\RegisterRequest;
 use App\Http\Requests\User\Auth\UpdatePasswordRequest;
 use App\Http\Requests\User\Auth\VerifyPasswordRequest;
 use App\Models\User;
-use App\Models\UserProfile;
 use App\Models\UserStatus;
 use App\Models\UserType;
 use Illuminate\Http\JsonResponse;
@@ -67,7 +66,11 @@ class AuthController extends Controller
             'password' => Hash::make($validatedData['password']),
         ]);
 
-        UserProfile::createDefaultForUser($user);
+        $user->userProfile()->create([
+            'preferred_language' => 'en',
+        ]);
+
+        $user->ensureDefaultWallets();
 
         $token = $user->createToken('user_auth_token')->plainTextToken;
 

@@ -194,6 +194,19 @@ Route::prefix('v1')->name('v1.')->group(static function () {
                     Route::get('/', 'vendorIndex')->name('index');
                     Route::get('{product}', 'vendorShow')->name('show');
                 });
+
+            Route::prefix('addresses')
+                ->name('addresses.')
+                ->controller(VendorController\VendorAddressController::class)
+                ->middleware(['auth:sanctum', 'active.type:vendor'])
+                ->group(static function () {
+                    Route::get('/', 'index')->name('index');
+                    Route::get('{address}', 'show')->name('show');
+                    Route::post('/', 'store')->name('store');
+                    Route::put('{address}', 'replace')->name('replace');
+                    Route::patch('{address}', 'update')->name('update');
+                    Route::delete('{address}', 'destroy')->name('delete');
+                });
         });
 
     // Fallback Route - 404

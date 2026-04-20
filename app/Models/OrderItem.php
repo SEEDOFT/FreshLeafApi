@@ -48,6 +48,9 @@ class OrderItem extends Model
     /**
      * Get the order that owns the item.
      */
+    /**
+     * @return BelongsTo<Order, $this>
+     */
     public function order(): BelongsTo
     {
         return $this->belongsTo(Order::class, 'order_id', 'id');
@@ -56,6 +59,9 @@ class OrderItem extends Model
     /**
      * Get the product for the item.
      */
+    /**
+     * @return BelongsTo<Product, $this>
+     */
     public function product(): BelongsTo
     {
         return $this->belongsTo(Product::class, 'product_id', 'id');
@@ -63,6 +69,9 @@ class OrderItem extends Model
 
     /**
      * Get the product variant for the item.
+     */
+    /**
+     * @return BelongsTo<ProductVariant, $this>
      */
     public function variant(): BelongsTo
     {

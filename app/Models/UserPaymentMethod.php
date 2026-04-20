@@ -26,8 +26,13 @@ use Illuminate\Support\Carbon;
  * @property int $expiry_year
  * @property string $cvv
  * @property bool $is_default
+ * @property string $billing_address
+ * @property string $billing_city
+ * @property string $billing_state
+ * @property string $billing_zip_code
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
+ * @property string|null $deleted_at
  * @property-read User $user
  * @property-read PaymentMethodType $type
  * @property-read PaymentMethodStatus $status
@@ -52,13 +57,9 @@ use Illuminate\Support\Carbon;
 #[UseFactory(UserPaymentMethodFactory::class)]
 class UserPaymentMethod extends Model
 {
+    /** @use HasFactory<UserPaymentMethodFactory> */
     use HasFactory, SoftDeletes;
 
-    /**
-     * Get the attributes that should be cast.
-     *
-     * @return array<string, string>
-     */
     protected function casts(): array
     {
         return [
@@ -76,15 +77,9 @@ class UserPaymentMethod extends Model
     }
 
     /**
-     * Get the route key name for route model binding.
-     */
-    public function getRouteKeyName(): string
-    {
-        return 'id';
-    }
-
-    /**
      * Get the user that owns the payment method.
+     *
+     * @return BelongsTo<User, $this>
      */
     public function user(): BelongsTo
     {
@@ -93,6 +88,8 @@ class UserPaymentMethod extends Model
 
     /**
      * Get the payment method type of the payment method.
+     *
+     * @return BelongsTo<PaymentMethodType, $this>
      */
     public function type(): BelongsTo
     {
@@ -101,6 +98,8 @@ class UserPaymentMethod extends Model
 
     /**
      * Get the payment method status of the payment method.
+     *
+     * @return BelongsTo<PaymentMethodStatus, $this>
      */
     public function status(): BelongsTo
     {

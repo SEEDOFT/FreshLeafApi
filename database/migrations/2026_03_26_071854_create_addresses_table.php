@@ -13,7 +13,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('user_addresses', static function (Blueprint $table) {
+        Schema::create('addresses', static function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('user_id');
             $table->string('label');
@@ -27,6 +27,7 @@ return new class extends Migration
             $table->decimal('lat', 10, 8);
             $table->decimal('long', 11, 8);
             $table->string('address_map')->nullable();
+            $table->morphs('addressable');
             $table->timestamps();
             $table->softDeletes();
         });
@@ -37,6 +38,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('addresses');
+        Schema::dropIfExists('user_addresses');
     }
 };

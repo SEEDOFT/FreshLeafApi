@@ -56,6 +56,9 @@ class PriceHistory extends Model
     /**
      * Get the product.
      */
+    /**
+     * @return BelongsTo<Product, $this>
+     */
     public function product(): BelongsTo
     {
         return $this->belongsTo(Product::class, 'product_id', 'id');
@@ -64,6 +67,9 @@ class PriceHistory extends Model
     /**
      * Get the product variant.
      */
+    /**
+     * @return BelongsTo<ProductVariant, $this>
+     */
     public function variant(): BelongsTo
     {
         return $this->belongsTo(ProductVariant::class, 'product_variant_id', 'id');
@@ -71,6 +77,9 @@ class PriceHistory extends Model
 
     /**
      * Get the user who changed the price.
+     */
+    /**
+     * @return BelongsTo<User, $this>
      */
     public function changer(): BelongsTo
     {

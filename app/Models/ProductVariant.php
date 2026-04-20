@@ -53,10 +53,13 @@ use Illuminate\Support\Carbon;
 #[UseFactory(ProductVariantFactory::class)]
 class ProductVariant extends Model
 {
+    /** @use HasFactory<ProductVariantFactory> */
     use HasFactory;
 
     /**
      * Get the product that owns the variant.
+     *
+     * @return BelongsTo<Product, $this>
      */
     public function product(): BelongsTo
     {
@@ -65,6 +68,8 @@ class ProductVariant extends Model
 
     /**
      * Get the unit for the variant.
+     *
+     * @return BelongsTo<Unit, $this>
      */
     public function unit(): BelongsTo
     {
@@ -72,7 +77,9 @@ class ProductVariant extends Model
     }
 
     /**
-     * Get the price histories for the product variant.
+     * Get the price history for the product variant.
+     *
+     * @return HasMany<PriceHistory, $this>
      */
     public function priceHistories(): HasMany
     {
@@ -81,6 +88,8 @@ class ProductVariant extends Model
 
     /**
      * Get the inventory batches for the product variant.
+     *
+     * @return HasMany<InventoryBatch, $this>
      */
     public function inventoryBatches(): HasMany
     {
@@ -89,14 +98,26 @@ class ProductVariant extends Model
 
     /**
      * Get the inventory movements for the product variant.
+     *
+     * @return HasManyThrough<InventoryMovement, InventoryBatch, $this>
      */
     public function inventoryMovements(): HasManyThrough
     {
-        return $this->hasManyThrough(InventoryMovement::class, InventoryBatch::class, 'product_variant_id', 'inventory_batch_id', 'id', 'id');
+        return $this->hasManyThrough(
+            InventoryMovement::class,
+            InventoryBatch::class,
+            'product_variant_id',
+            'inventory_batch_id',
+            'id',
+            'id'
+        );
     }
 
     /**
      * Get the order items for the product variant.
+     */
+    /**
+     * @return HasMany<OrderItem, $this>
      */
     public function orderItems(): HasMany
     {
@@ -106,6 +127,9 @@ class ProductVariant extends Model
     /**
      * Get the cart items for the product variant.
      */
+    /**
+     * @return HasMany<CartItem, $this>
+     */
     public function cartItems(): HasMany
     {
         return $this->hasMany(CartItem::class, 'product_variant_id', 'id');
@@ -113,6 +137,9 @@ class ProductVariant extends Model
 
     /**
      * Get the purchase order items for the product variant.
+     */
+    /**
+     * @return HasMany<PurchaseOrderItem, $this>
      */
     public function purchaseOrderItems(): HasMany
     {

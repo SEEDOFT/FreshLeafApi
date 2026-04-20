@@ -34,6 +34,9 @@ class ProductSubstitution extends Model
     /**
      * Get the product.
      */
+    /**
+     * @return BelongsTo<Product, $this>
+     */
     public function product(): BelongsTo
     {
         return $this->belongsTo(Product::class, 'product_id', 'id');
@@ -41,6 +44,9 @@ class ProductSubstitution extends Model
 
     /**
      * Get the substitute product.
+     */
+    /**
+     * @return BelongsTo<Product, $this>
      */
     public function substituteProduct(): BelongsTo
     {

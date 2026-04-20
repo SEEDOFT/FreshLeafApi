@@ -4,19 +4,21 @@ declare(strict_types=1);
 
 namespace App\Models;
 
-use Database\Factories\UserAddressFactory;
+use Database\Factories\AddressFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Table;
 use Illuminate\Database\Eloquent\Attributes\UseFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Carbon;
 
 /**
  * @property int $id
- * @property int $user_id
+ * @property int|null $addressable_id
+ * @property string|null $addressable_type
+ * @property int|null $user_id
  * @property string $label
  * @property string $recipient_name
  * @property string $phone
@@ -29,9 +31,10 @@ use Illuminate\Support\Carbon;
  * @property Carbon|null $updated_at
  * @property Carbon|null $deleted_at
  */
-#[Table('user_addresses', key: 'id', keyType: 'int')]
+#[Table('addresses', key: 'id', keyType: 'int')]
 #[Fillable([
-    'user_id',
+    'addressable_type',
+    'addressable_id',
     'label',
     'recipient_name',
     'phone',
@@ -44,16 +47,19 @@ use Illuminate\Support\Carbon;
     'long',
     'address_map',
 ])]
-#[UseFactory(UserAddressFactory::class)]
-class UserAddress extends Model
+#[UseFactory(AddressFactory::class)]
+class Address extends Model
 {
+    /** @use HasFactory<AddressFactory> */
     use HasFactory, SoftDeletes;
 
     /**
-     * Get the user that owns the address.
+     * Get the parent addressable model.
+     *
+     * @return MorphTo<Model, $this>
      */
-    public function user(): BelongsTo
+    public function addressable(): MorphTo
     {
-        return $this->belongsTo(User::class, 'user_id', 'id');
+        return $this->morphTo('addressable', 'addressable_type', 'addressable_id');
     }
 }

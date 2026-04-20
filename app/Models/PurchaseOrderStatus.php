@@ -32,6 +32,9 @@ class PurchaseOrderStatus extends Model
     /**
      * Get the purchase orders for the status.
      */
+    /**
+     * @return HasMany<PurchaseOrder, $this>
+     */
     public function purchaseOrders(): HasMany
     {
         return $this->hasMany(PurchaseOrder::class, 'purchase_order_status_id', 'id');

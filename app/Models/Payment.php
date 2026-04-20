@@ -56,6 +56,9 @@ class Payment extends Model
     /**
      * Get the order that owns the payment.
      */
+    /**
+     * @return BelongsTo<Order, $this>
+     */
     public function order(): BelongsTo
     {
         return $this->belongsTo(Order::class, 'order_id', 'id');
@@ -64,6 +67,9 @@ class Payment extends Model
     /**
      * Get the payment type.
      */
+    /**
+     * @return BelongsTo<PaymentType, $this>
+     */
     public function type(): BelongsTo
     {
         return $this->belongsTo(PaymentType::class, 'payment_type_id', 'id');
@@ -71,6 +77,9 @@ class Payment extends Model
 
     /**
      * Get the payment status.
+     */
+    /**
+     * @return BelongsTo<PaymentStatus, $this>
      */
     public function status(): BelongsTo
     {

@@ -12,19 +12,18 @@ abstract class Controller
 {
     use ApiResponse;
 
-    protected User $user;
-
-    public function __construct()
-    {
-        $this->user = $this->user();
-    }
+    protected ?User $authenticatedUser = null;
 
     /**
      * Get the authenticated user.
      */
     protected function user(): User
     {
-        /** @var User|null */
+        if ($this->authenticatedUser instanceof User) {
+            return $this->authenticatedUser;
+        }
+
+        /** @var User|null $user */
         $user = \auth()->user();
 
         if (! $user) {
@@ -33,6 +32,8 @@ abstract class Controller
             );
         }
 
-        return $user;
+        $this->authenticatedUser = $user;
+
+        return $this->authenticatedUser;
     }
 }

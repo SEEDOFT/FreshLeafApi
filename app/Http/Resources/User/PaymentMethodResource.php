@@ -31,9 +31,6 @@ class PaymentMethodResource extends JsonResource
             'expiry_month' => $this->expiry_month,
             'expiry_year' => $this->expiry_year,
             'is_default' => $this->is_default,
-            // CVV should NOT be returned to the client usually, even for the
-            // owner.
-            // But for a full CRUD, we could return it masked.
             'cvv' => '***',
             'billing_address' => $this->billing_address,
             'billing_city' => $this->billing_city,

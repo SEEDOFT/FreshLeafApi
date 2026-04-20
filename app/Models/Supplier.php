@@ -36,6 +36,9 @@ class Supplier extends Model
     /**
      * Get the purchase orders for the supplier.
      */
+    /**
+     * @return HasMany<PurchaseOrder, $this>
+     */
     public function purchaseOrders(): HasMany
     {
         return $this->hasMany(PurchaseOrder::class, 'supplier_id', 'id');

@@ -33,6 +33,9 @@ class InventoryMovementType extends Model
     /**
      * Get the inventory movements for the type.
      */
+    /**
+     * @return HasMany<InventoryMovement, $this>
+     */
     public function inventoryMovements(): HasMany
     {
         return $this->hasMany(InventoryMovement::class, 'inventory_movement_type_id', 'id');

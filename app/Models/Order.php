@@ -33,7 +33,7 @@ use Illuminate\Support\Carbon;
  * @property string|null $notes
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
- * @property-read UserAddress $address
+ * @property-read Address $address
  * @property-read Collection<int, OrderItem> $items
  * @property-read int|null $items_count
  * @property-read PaymentStatus $paymentStatus
@@ -66,11 +66,6 @@ class Order extends Model
 {
     use HasFactory;
 
-    /**
-     * Get the attributes that should be cast.
-     *
-     * @return array<string, string>
-     */
     protected function casts(): array
     {
         return [
@@ -80,6 +75,8 @@ class Order extends Model
 
     /**
      * Get the user that owns the order.
+     *
+     * @return BelongsTo<User, $this>
      */
     public function user(): BelongsTo
     {
@@ -88,14 +85,18 @@ class Order extends Model
 
     /**
      * Get the address for the order.
+     *
+     * @return BelongsTo<Address, $this>
      */
     public function address(): BelongsTo
     {
-        return $this->belongsTo(UserAddress::class, 'address_id', 'id');
+        return $this->belongsTo(Address::class, 'address_id', 'id');
     }
 
     /**
      * Get the order type.
+     *
+     * @return BelongsTo<OrderType, $this>
      */
     public function type(): BelongsTo
     {
@@ -104,6 +105,8 @@ class Order extends Model
 
     /**
      * Get the order status.
+     *
+     * @return BelongsTo<OrderStatus, $this>
      */
     public function status(): BelongsTo
     {
@@ -112,6 +115,8 @@ class Order extends Model
 
     /**
      * Get the payment status.
+     *
+     * @return BelongsTo<PaymentStatus, $this>
      */
     public function paymentStatus(): BelongsTo
     {
@@ -120,6 +125,8 @@ class Order extends Model
 
     /**
      * Get the items for the order.
+     *
+     * @return HasMany<OrderItem, $this>
      */
     public function items(): HasMany
     {
@@ -128,6 +135,8 @@ class Order extends Model
 
     /**
      * Get the payments for the order.
+     *
+     * @return HasMany<Payment, $this>
      */
     public function payments(): HasMany
     {

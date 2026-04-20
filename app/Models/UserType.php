@@ -15,24 +15,27 @@ use Illuminate\Support\Carbon;
 
 /**
  * @property int $id
+ * @property int $code
  * @property string $name
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  * @property-read Collection<int, User> $users
  */
 #[Table('user_types', key: 'id')]
-#[Fillable(['name'])]
+#[Fillable(['code', 'name'])]
 #[UseFactory(UserTypeFactory::class)]
 class UserType extends Model
 {
-    public const int USER = 1;
+    public const int ADMIN = 1;
 
     public const int VENDOR = 2;
 
-    public const int ADMIN = 3;
+    public const int USER = 3;
 
     /**
-     * Get the users for the user type.
+     * Get the users for this type.
+     *
+     * @return HasMany<User, $this>
      */
     public function users(): HasMany
     {

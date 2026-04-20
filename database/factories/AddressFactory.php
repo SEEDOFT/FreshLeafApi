@@ -4,14 +4,16 @@ declare(strict_types=1);
 
 namespace Database\Factories;
 
-use App\Models\AiRecommendationItem;
+use App\Models\Address;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends Factory<AiRecommendationItem>
+ * @extends Factory<Address>
  */
-class AiRecommendationItemFactory extends Factory
+class AddressFactory extends Factory
 {
+    protected $model = Address::class;
+
     /**
      * Define the model's default state.
      *

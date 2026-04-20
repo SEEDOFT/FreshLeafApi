@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace App\Http\Resources\User;
 
-use App\Models\UserAddress;
+use App\Models\Address;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 /**
- * @mixin UserAddress
+ * @mixin Address
  */
 class AddressResource extends JsonResource
 {

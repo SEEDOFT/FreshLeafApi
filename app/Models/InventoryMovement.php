@@ -46,6 +46,9 @@ class InventoryMovement extends Model
     /**
      * Get the inventory batch for the movement.
      */
+    /**
+     * @return BelongsTo<InventoryBatch, $this>
+     */
     public function batch(): BelongsTo
     {
         return $this->belongsTo(InventoryBatch::class, 'inventory_batch_id', 'id');
@@ -54,6 +57,9 @@ class InventoryMovement extends Model
     /**
      * Get the inventory movement type.
      */
+    /**
+     * @return BelongsTo<InventoryMovementType, $this>
+     */
     public function type(): BelongsTo
     {
         return $this->belongsTo(InventoryMovementType::class, 'inventory_movement_type_id', 'id');
@@ -61,6 +67,9 @@ class InventoryMovement extends Model
 
     /**
      * Get the user who created the movement.
+     */
+    /**
+     * @return BelongsTo<User, $this>
      */
     public function creator(): BelongsTo
     {

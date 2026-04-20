@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 namespace Database\Factories;
 
-use App\Models\AiRecommendationStatus;
+use App\Models\Currency;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends Factory<AiRecommendationStatus>
+ * @extends Factory<Currency>
  */
-class AiRecommendationStatusFactory extends Factory
+class CurrencyFactory extends Factory
 {
     /**
      * Define the model's default state.

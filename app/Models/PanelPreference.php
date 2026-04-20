@@ -16,6 +16,9 @@ use Illuminate\Database\Eloquent\Relations\MorphTo;
 ])]
 class PanelPreference extends Model
 {
+    /**
+     * @return MorphTo<Model, $this>
+     */
     public function account(): MorphTo
     {
         return $this->morphTo('account', 'account_type', 'account_id');

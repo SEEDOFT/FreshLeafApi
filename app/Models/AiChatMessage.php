@@ -38,11 +38,17 @@ use Illuminate\Support\Carbon;
 ])]
 class AiChatMessage extends Model
 {
+    /**
+     * @return BelongsTo<AiChatSession, $this>
+     */
     public function session(): BelongsTo
     {
         return $this->belongsTo(AiChatSession::class, 'ai_chat_session_id', 'id');
     }
 
+    /**
+     * @return BelongsTo<User, $this>
+     */
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class, 'user_id', 'id');

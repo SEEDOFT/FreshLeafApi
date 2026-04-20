@@ -15,11 +15,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 #[Table('admin_profiles', key: 'id')]
 #[Fillable([
     'user_id',
-    'department',
     'job_title',
-    'office_phone',
-    'super_admin',
-    'permissions',
 ])]
 #[UseFactory(AdminProfileFactory::class)]
 class AdminProfile extends Model
@@ -27,14 +23,11 @@ class AdminProfile extends Model
     /** @use HasFactory<AdminProfileFactory> */
     use HasFactory;
 
-    protected function casts(): array
-    {
-        return [
-            'super_admin' => 'boolean',
-            'permissions' => 'array',
-        ];
-    }
-
+    /**
+     * Get the user that owns the admin profile.
+     *
+     * @return BelongsTo<User, $this>
+     */
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class, 'user_id', 'id');

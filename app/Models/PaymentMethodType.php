@@ -51,6 +51,9 @@ class PaymentMethodType extends Model
     /**
      * Get the payment methods for the type.
      */
+    /**
+     * @return HasMany<UserPaymentMethod, $this>
+     */
     public function paymentMethods(): HasMany
     {
         return $this->hasMany(UserPaymentMethod::class, 'payment_method_type_id', 'id');

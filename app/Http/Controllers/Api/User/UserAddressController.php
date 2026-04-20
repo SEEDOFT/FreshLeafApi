@@ -9,7 +9,7 @@ use App\Http\Requests\User\Address\ReplaceAddressRequest;
 use App\Http\Requests\User\Address\StoreAddressRequest;
 use App\Http\Requests\User\Address\UpdateAddressRequest;
 use App\Http\Resources\User\AddressResource;
-use App\Models\UserAddress;
+use App\Models\Address;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
 
@@ -47,9 +47,9 @@ class UserAddressController extends Controller
     /**
      * Get a specific user address
      */
-    public function show(UserAddress $userAddress): JsonResponse
+    public function show(Address $userAddress): JsonResponse
     {
-        if ($userAddress->user_id !== Auth::id()) {
+        if (! $this->isOwnedByCurrentUser($userAddress)) {
             return $this->errorResponse('Address not found', 404);
         }
 
@@ -59,9 +59,9 @@ class UserAddressController extends Controller
     /**
      * Update an existing user address
      */
-    public function update(UpdateAddressRequest $request, UserAddress $userAddress): JsonResponse
+    public function update(UpdateAddressRequest $request, Address $userAddress): JsonResponse
     {
-        if ($userAddress->user_id !== Auth::id()) {
+        if (! $this->isOwnedByCurrentUser($userAddress)) {
             return $this->errorResponse('Address not found', 404);
         }
 
@@ -82,9 +82,9 @@ class UserAddressController extends Controller
     /**
      * Replace an existing user address
      */
-    public function replace(ReplaceAddressRequest $request, UserAddress $userAddress): JsonResponse
+    public function replace(ReplaceAddressRequest $request, Address $userAddress): JsonResponse
     {
-        if ($userAddress->user_id !== Auth::id()) {
+        if (! $this->isOwnedByCurrentUser($userAddress)) {
             return $this->errorResponse('Address not found', 404);
         }
 
@@ -105,14 +105,20 @@ class UserAddressController extends Controller
     /**
      * Delete a user address
      */
-    public function destroy(UserAddress $userAddress): JsonResponse
+    public function destroy(Address $userAddress): JsonResponse
     {
-        if ($userAddress->user_id !== Auth::id()) {
+        if (! $this->isOwnedByCurrentUser($userAddress)) {
             return $this->errorResponse('Address not found', 404);
         }
 
         $userAddress->delete();
 
         return $this->successResponse(message: 'Address deleted successfully');
+    }
+
+    private function isOwnedByCurrentUser(Address $address): bool
+    {
+        return $address->addressable_type === Auth::user()::class
+            && (int) $address->addressable_id === (int) Auth::id();
     }
 }

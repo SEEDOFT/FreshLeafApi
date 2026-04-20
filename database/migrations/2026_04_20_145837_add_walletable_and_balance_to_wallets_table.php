@@ -3,7 +3,6 @@
 declare(strict_types=1);
 
 use Illuminate\Database\Migrations\Migration;
-use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
@@ -12,7 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::rename('payment_methods', 'user_payment_methods');
+        // Moved to base create migration for migrate:fresh compatibility.
     }
 
     /**
@@ -20,6 +19,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::rename('user_payment_methods', 'payment_methods');
+        // No-op.
     }
 };

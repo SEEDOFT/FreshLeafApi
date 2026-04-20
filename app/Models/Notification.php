@@ -59,6 +59,9 @@ class Notification extends Model
     /**
      * Get the user that owns the notification.
      */
+    /**
+     * @return BelongsTo<User, $this>
+     */
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class, 'user_id', 'id');
@@ -67,6 +70,9 @@ class Notification extends Model
     /**
      * Get the notification type.
      */
+    /**
+     * @return BelongsTo<NotificationType, $this>
+     */
     public function type(): BelongsTo
     {
         return $this->belongsTo(NotificationType::class, 'notification_type_id', 'id');
@@ -74,6 +80,9 @@ class Notification extends Model
 
     /**
      * Get the notification status.
+     */
+    /**
+     * @return BelongsTo<NotificationStatus, $this>
      */
     public function status(): BelongsTo
     {

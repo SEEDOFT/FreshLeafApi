@@ -21,7 +21,7 @@ class ProfileController extends Controller
      */
     public function show(): JsonResponse
     {
-        return static::successResponse(new UserResource($this->user));
+        return static::successResponse(new UserResource($this->user()));
     }
 
     /**
@@ -85,18 +85,18 @@ class ProfileController extends Controller
         }
 
         if ($request->hasFile('image')) {
-            if ($this->user->image) {
+            if ($this->user()->image) {
                 Storage::disk(\config('filesystems.default'))
-                    ->delete("users/$this->user->image");
+                    ->delete('users/'.$this->user()->image);
             }
 
             $validatedData['image'] = self::storeUserImage($request->file('image'));
         }
 
-        $this->user->update($validatedData);
+        $this->user()->update($validatedData);
 
         return static::successResponse(
-            new UserResource($this->user),
+            new UserResource($this->user()),
             $isReplace ? 'User replaced successfully' : 'User updated successfully'
         );
     }

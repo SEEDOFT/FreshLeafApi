@@ -17,9 +17,10 @@ class PanelRegistrationTest extends TestCase
     public function test_vendor_registration_creates_pending_vendor_via_api(): void
     {
         $response = $this->postJson('/api/v1/vendor/auth/register', [
-            'name' => 'Sok Dara',
+            'first_name' => 'Sok',
+            'last_name' => 'Dara',
             'email' => 'vendor.api@example.test',
-            'contact_phone' => '+85512999111',
+            'phone_number' => '+85512999111',
             'password' => 'password123',
             'password_confirmation' => 'password123',
             'business_name' => 'FreshLeaf Organic Vendor',
@@ -79,14 +80,14 @@ class PanelRegistrationTest extends TestCase
         ]);
 
         $this->postJson('/api/v1/vendor/auth/login', [
-            'email' => 'pending-login@test.local',
+            'phone_number' => '+85510000112',
             'password' => 'password123',
         ])
             ->assertForbidden()
             ->assertJsonPath('status.message', 'Your account is pending approval');
 
         $this->postJson('/api/v1/vendor/auth/login', [
-            'email' => 'active-login@test.local',
+            'phone_number' => '+85510000113',
             'password' => 'password123',
         ])
             ->assertOk()

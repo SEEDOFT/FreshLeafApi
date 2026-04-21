@@ -2,14 +2,15 @@
 
 declare(strict_types=1);
 
-namespace App\Http\Controllers\Api;
+namespace App\Http\Controllers\Api\Product;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Product\StoreProductRequest;
 use App\Http\Requests\Product\UpdateProductRequest;
-use App\Http\Resources\ProductResource;
+use App\Http\Resources\Product\ProductResource;
 use App\Models\Product;
 use App\Models\ProductStatus;
+use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -28,13 +29,12 @@ class ProductController extends Controller
      */
     public function userIndex(Request $request): JsonResponse
     {
-        $products = Product::query()
-            ->active()
+        $products = Product::active()
             ->with(['category', 'type', 'defaultUnit', 'status', 'vendor'])
             ->orderByDesc('id')
-            ->paginate($request->integer('per_page', 15));
+            ->simplePaginate($request->integer('per_page', 15));
 
-        return $this->paginateResponse($products, 'Products available for sale loaded successfully');
+        return static::successResponse($products, 'Products available for sale loaded successfully');
     }
 
     /**
@@ -45,9 +45,9 @@ class ProductController extends Controller
         $products = Product::query()
             ->with(['category', 'type', 'defaultUnit', 'status', 'vendor'])
             ->orderByDesc('id')
-            ->paginate($request->integer('per_page', 15));
+            ->simplePaginate($request->integer('per_page', 15));
 
-        return $this->paginateResponse($products, 'All products loaded successfully');
+        return static::successResponse($products, 'All products loaded successfully');
     }
 
     /**
@@ -55,15 +55,20 @@ class ProductController extends Controller
      */
     public function vendorIndex(Request $request): JsonResponse
     {
-        $vendorId = (int) $request->user()->getAuthIdentifier();
+        /** @var User|null $vendor */
+        $vendor = $request->user();
+        if (! $vendor) {
+            return static::errorResponse('Unauthenticated', 401);
+        }
 
-        $products = Product::query()
-            ->byVendor($vendorId)
+        $vendorId = (int) $vendor->id;
+
+        $products = Product::byVendor($vendorId)
             ->with(['category', 'type', 'defaultUnit', 'status', 'vendor'])
             ->orderByDesc('id')
-            ->paginate($request->integer('per_page', 15));
+            ->simplePaginate($request->integer('per_page', 15));
 
-        return $this->paginateResponse($products, 'Vendor products loaded successfully');
+        return static::successResponse($products, 'Vendor products loaded successfully');
     }
 
     /**
@@ -73,7 +78,7 @@ class ProductController extends Controller
     {
         $product = Product::query()->create($request->validated());
 
-        return $this->successResponse(
+        return static::successResponse(
             new ProductResource($product->load(['category', 'type', 'defaultUnit', 'status'])),
             'Product created successfully',
             201
@@ -83,10 +88,17 @@ class ProductController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Product $product): JsonResponse
+    public function show(string $id): JsonResponse
     {
-        return $this->successResponse(
-            new ProductResource($product->load(['category', 'type', 'defaultUnit', 'status', 'variants', 'vendor'])),
+        $product = Product::query()->find($id);
+        if (! $product) {
+            \abort(404, 'Product not found.');
+        }
+
+        return static::successResponse(
+            new ProductResource($product->load([
+                'category', 'type', 'defaultUnit', 'status', 'variants', 'vendor',
+            ])),
             'Product loaded successfully'
         );
     }
@@ -94,22 +106,29 @@ class ProductController extends Controller
     /**
      * Display a product for admin mode (all products).
      */
-    public function adminShow(Product $product): JsonResponse
+    public function adminShow(string $id): JsonResponse
     {
-        return $this->show($product);
+        return $this->show($id);
     }
 
     /**
      * Display a product for user mode (must be available for sale).
      */
-    public function userShow(Product $product): JsonResponse
+    public function userShow(string $id): JsonResponse
     {
+        $product = Product::query()->find($id);
+        if (! $product) {
+            \abort(404, 'Product not found.');
+        }
+
         if ((int) $product->product_status_id !== ProductStatus::ACTIVE) {
             \abort(404, 'Product not found.');
         }
 
-        return $this->successResponse(
-            new ProductResource($product->load(['category', 'type', 'defaultUnit', 'status', 'variants', 'vendor'])),
+        return static::successResponse(
+            new ProductResource($product->load([
+                'category', 'type', 'defaultUnit', 'status', 'variants', 'vendor',
+            ])),
             'Product loaded successfully'
         );
     }
@@ -117,15 +136,26 @@ class ProductController extends Controller
     /**
      * Display a product for vendor mode (must belong to current vendor).
      */
-    public function vendorShow(Request $request, Product $product): JsonResponse
+    public function vendorShow(Request $request, string $id): JsonResponse
     {
-        $vendorId = (int) $request->user()->getAuthIdentifier();
+        /** @var User|null $vendor */
+        $vendor = $request->user();
+        if (! $vendor) {
+            return static::errorResponse('Unauthenticated', 401);
+        }
+
+        $product = Product::query()->find($id);
+        if (! $product) {
+            \abort(404, 'Product not found.');
+        }
+
+        $vendorId = (int) $vendor->getAuthIdentifier();
 
         if ((int) $product->vendor_user_id !== $vendorId) {
             \abort(404, 'Product not found.');
         }
 
-        return $this->successResponse(
+        return static::successResponse(
             new ProductResource($product->load(['category', 'type', 'defaultUnit', 'status', 'variants', 'vendor'])),
             'Product loaded successfully'
         );
@@ -134,11 +164,16 @@ class ProductController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdateProductRequest $request, Product $product): JsonResponse
+    public function update(UpdateProductRequest $request, string $id): JsonResponse
     {
+        $product = Product::query()->find($id);
+        if (! $product) {
+            \abort(404, 'Product not found.');
+        }
+
         $product->update($request->validated());
 
-        return $this->successResponse(
+        return static::successResponse(
             new ProductResource($product->fresh()->load(['category', 'type', 'defaultUnit', 'status', 'variants'])),
             'Product updated successfully'
         );
@@ -147,24 +182,15 @@ class ProductController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Product $product): JsonResponse
+    public function destroy(string $id): JsonResponse
     {
+        $product = Product::query()->find($id);
+        if (! $product) {
+            \abort(404, 'Product not found.');
+        }
+
         $product->delete();
 
-        return $this->successResponse(message: 'Product deleted successfully');
-    }
-
-    /**
-     * Build a standard paginated product response.
-     */
-    private function paginateResponse($products, string $message): JsonResponse
-    {
-        return $this->successResponse([
-            'items' => ProductResource::collection($products->items()),
-            'total' => $products->total(),
-            'current_page' => $products->currentPage(),
-            'per_page' => $products->perPage(),
-            'last_page' => $products->lastPage(),
-        ], $message);
+        return static::successResponse(message: 'Product deleted successfully');
     }
 }

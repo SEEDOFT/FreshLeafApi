@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Database\Factories;
 
 use App\Models\Currency;
+use App\Models\User;
 use App\Models\Wallet;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
@@ -23,6 +24,7 @@ class WalletFactory extends Factory
         $usdId = (int) Currency::query()->where('code', Currency::USD)->value('id');
 
         return [
+            'user_id' => User::factory(),
             'balance' => fake()->randomFloat(2, 0, 1000),
             'currency_id' => $usdId > 0 ? $usdId : null,
             'is_default' => false,

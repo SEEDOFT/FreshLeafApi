@@ -11,24 +11,46 @@ use App\Http\Requests\User\Address\UpdateAddressRequest;
 use App\Http\Resources\User\AddressResource;
 use App\Models\Address;
 use App\Models\User;
-use App\Models\VendorProfile;
+use App\Models\UserType;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Gate;
 
 class VendorAddressController extends Controller
 {
-    public function index(): JsonResponse
+    /**
+     * List vendor addresses
+     */
+    public function index(Request $request): JsonResponse
     {
-        $profile = $this->currentVendorProfile();
+        Gate::authorize('viewAny', [Address::class, UserType::VENDOR]);
 
-        $addresses = $profile->addresses()
+        /** @var User|null $vendor */
+        $vendor = $request->user();
+        if (! $vendor) {
+            return static::errorResponse('Unauthenticated', 401);
+        }
+
+        $addresses = $vendor->addresses()
             ->latest()
-            ->simplePaginate(\request()->integer('per_page', 10));
+            ->simplePaginate($request->integer('per_page', 10));
 
-        return $this->successResponse(AddressResource::collection($addresses));
+        return static::successResponse(AddressResource::collection($addresses));
     }
 
+    /**
+     * Create a new vendor address
+     */
     public function store(StoreAddressRequest $request): JsonResponse
     {
+        Gate::authorize('create', [Address::class, UserType::VENDOR]);
+
+        /** @var User|null $vendor */
+        $vendor = $request->user();
+        if (! $vendor) {
+            return static::errorResponse('Unauthenticated', 401);
+        }
+
         $validatedData = $request->validated();
 
         if (isset($validatedData['lat'], $validatedData['long'])) {
@@ -36,29 +58,52 @@ class VendorAddressController extends Controller
                 "https://www.google.com/maps?q={$validatedData['lat']},{$validatedData['long']}";
         }
 
-        $address = $this->currentVendorProfile()->addresses()->create($validatedData);
+        $address = $vendor->addresses()->create([
+            'user_id' => $vendor->id,
+            'label' => $validatedData['label'],
+            'recipient_name' => $validatedData['recipient_name'],
+            'phone' => $validatedData['phone'],
+            'address_line_1' => $validatedData['address_line_1'],
+            'address_line_2' => $validatedData['address_line_2'] ?? null,
+            'city' => $validatedData['city'],
+            'province' => $validatedData['province'],
+            'postal_code' => $validatedData['postal_code'],
+            'lat' => $validatedData['lat'],
+            'long' => $validatedData['long'],
+            'address_map' => $validatedData['address_map'],
+        ]);
 
-        return $this->successResponse(
-            new AddressResource($address),
-            'Address created successfully',
-            201
-        );
+        return static::successResponse(new AddressResource($address), 'Address created successfully', 201);
     }
 
-    public function show(Address $address): JsonResponse
+    /**
+     * Get a specific vendor address
+     */
+    public function show(string $id, Request $request): JsonResponse
     {
-        if (! $this->isOwnedByCurrentVendor($address)) {
-            return $this->errorResponse('Address not found', 404);
+        $vendorAddress = Address::query()->find($id);
+
+        if (! $vendorAddress) {
+            return static::errorResponse('Address not found', 404);
         }
 
-        return $this->successResponse(new AddressResource($address));
+        Gate::authorize('view', [$vendorAddress, UserType::VENDOR]);
+
+        return static::successResponse(new AddressResource($vendorAddress), 'Address retrieved successfully');
     }
 
-    public function update(UpdateAddressRequest $request, Address $address): JsonResponse
+    /**
+     * Update an existing vendor address
+     */
+    public function update(string $id, UpdateAddressRequest $request): JsonResponse
     {
-        if (! $this->isOwnedByCurrentVendor($address)) {
-            return $this->errorResponse('Address not found', 404);
+        $vendorAddress = Address::query()->find($id);
+
+        if (! $vendorAddress) {
+            return static::errorResponse('Address not found', 404);
         }
+
+        Gate::authorize('update', [$vendorAddress, UserType::VENDOR]);
 
         $validatedData = $request->validated();
 
@@ -69,19 +114,23 @@ class VendorAddressController extends Controller
             unset($validatedData['lat'], $validatedData['long']);
         }
 
-        $address->update($validatedData);
+        $vendorAddress->update($validatedData);
 
-        return $this->successResponse(
-            new AddressResource($address),
-            'Address updated successfully'
-        );
+        return static::successResponse(new AddressResource($vendorAddress), 'Address updated successfully');
     }
 
-    public function replace(ReplaceAddressRequest $request, Address $address): JsonResponse
+    /**
+     * Replace an existing vendor address
+     */
+    public function replace(string $id, ReplaceAddressRequest $request): JsonResponse
     {
-        if (! $this->isOwnedByCurrentVendor($address)) {
-            return $this->errorResponse('Address not found', 404);
+        $vendorAddress = Address::query()->find($id);
+
+        if (! $vendorAddress) {
+            return static::errorResponse('Address not found', 404);
         }
+
+        Gate::authorize('update', [$vendorAddress, UserType::VENDOR]);
 
         $validatedData = $request->validated();
 
@@ -92,49 +141,26 @@ class VendorAddressController extends Controller
             $validatedData['address_map'] = null;
         }
 
-        $address->update($validatedData);
+        $vendorAddress->update($validatedData);
 
-        return $this->successResponse(
-            new AddressResource($address),
-            'Address replaced successfully'
-        );
+        return static::successResponse(new AddressResource($vendorAddress), 'Address replaced successfully');
     }
 
-    public function destroy(Address $address): JsonResponse
+    /**
+     * Delete a vendor address
+     */
+    public function destroy(string $id, Request $request): JsonResponse
     {
-        if (! $this->isOwnedByCurrentVendor($address)) {
-            return $this->errorResponse('Address not found', 404);
+        $vendorAddress = Address::query()->find($id);
+
+        if (! $vendorAddress) {
+            return static::errorResponse('Address not found', 404);
         }
 
-        $address->delete();
+        Gate::authorize('delete', [$vendorAddress, UserType::VENDOR]);
 
-        return $this->successResponse(message: 'Address deleted successfully');
-    }
+        $vendorAddress->delete();
 
-    private function currentVendor(): User
-    {
-        /** @var User $vendor */
-        $vendor = \request()->user();
-
-        return $vendor;
-    }
-
-    private function currentVendorProfile(): VendorProfile
-    {
-        $profile = $this->currentVendor()->vendorProfile()->firstOrCreate([
-            'user_id' => $this->currentVendor()->id,
-        ]);
-
-        $profile->ensureDefaultWallets();
-
-        return $profile;
-    }
-
-    private function isOwnedByCurrentVendor(Address $address): bool
-    {
-        $profileId = $this->currentVendorProfile()->id;
-
-        return $address->addressable_type === VendorProfile::class
-            && (int) $address->addressable_id === (int) $profileId;
+        return static::successResponse(message: 'Address deleted successfully');
     }
 }

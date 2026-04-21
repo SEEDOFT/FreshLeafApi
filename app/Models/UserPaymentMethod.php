@@ -37,7 +37,7 @@ use Illuminate\Support\Carbon;
  * @property-read PaymentMethodType $type
  * @property-read PaymentMethodStatus $status
  */
-#[Table('user_payment_methods', key: 'id')]
+#[Table('payment_methods', key: 'id')]
 #[Fillable([
     'user_id',
     'payment_method_type_id',

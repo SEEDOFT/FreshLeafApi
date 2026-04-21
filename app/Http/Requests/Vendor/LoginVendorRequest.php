@@ -20,8 +20,7 @@ class LoginVendorRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'email' => ['sometimes', 'required_without:phone_number', 'string', 'email', 'max:255'],
-            'phone_number' => ['sometimes', 'required_without:email', 'string', 'max:40'],
+            'phone_number' => ['required', 'string', 'max:40', 'starts_with:+855'],
             'password' => ['required', 'string'],
         ];
     }

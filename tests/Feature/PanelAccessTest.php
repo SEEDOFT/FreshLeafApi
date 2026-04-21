@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Tests\Feature;
 
-use App\Models\PanelPreference;
 use App\Models\User;
 use App\Models\UserStatus;
 use App\Models\UserType;
@@ -16,7 +15,7 @@ class PanelAccessTest extends TestCase
 {
     use LazilyRefreshDatabase;
 
-    public function test_admin_login_logout_and_dashboard_access_work_via_api(): void
+    public function test_admin_login_logout_and_profile_access_work_via_api(): void
     {
         $admin = User::query()->create([
             'first_name' => 'Super',
@@ -30,7 +29,7 @@ class PanelAccessTest extends TestCase
         $admin->adminProfile()->create(['super_admin' => true]);
 
         $loginResponse = $this->postJson('/api/v1/admin/auth/login', [
-            'email' => 'admin-access@test.local',
+            'phone_number' => '+85510000091',
             'password' => 'password123',
         ]);
 
@@ -41,10 +40,9 @@ class PanelAccessTest extends TestCase
         $token = (string) $loginResponse->json('data.access_token');
 
         $this->withHeader('Authorization', 'Bearer '.$token)
-            ->getJson('/api/v1/admin/dashboard')
+            ->getJson('/api/v1/admin/profile')
             ->assertOk()
-            ->assertJsonPath('status.success', true)
-            ->assertJsonPath('data.module', 'dashboard');
+            ->assertJsonPath('status.success', true);
 
         $this->withHeader('Authorization', 'Bearer '.$token)
             ->postJson('/api/v1/admin/auth/logout')
@@ -84,7 +82,7 @@ class PanelAccessTest extends TestCase
         ]);
 
         $adminToken = (string) $this->postJson('/api/v1/admin/auth/login', [
-            'email' => 'admin-isolation@test.local',
+            'phone_number' => '+85510000092',
             'password' => 'password123',
         ])->json('data.access_token');
 
@@ -94,8 +92,8 @@ class PanelAccessTest extends TestCase
         $this->assertSame(User::class, PersonalAccessToken::query()->findOrFail($adminTokenId)->tokenable_type);
 
         $this->withToken($adminToken)
-            ->getJson('/api/v1/vendor/dashboard')
-            ->assertForbidden();
+            ->getJson('/api/v1/vendor/profile')
+            ->assertUnauthorized();
     }
 
     public function test_vendor_token_cannot_access_admin_routes(): void
@@ -130,7 +128,7 @@ class PanelAccessTest extends TestCase
         ]);
 
         $vendorToken = (string) $this->postJson('/api/v1/vendor/auth/login', [
-            'email' => 'vendor-isolation-two@test.local',
+            'phone_number' => '+85510000121',
             'password' => 'password123',
         ])->json('data.access_token');
 
@@ -140,11 +138,11 @@ class PanelAccessTest extends TestCase
         $this->assertSame(User::class, PersonalAccessToken::query()->findOrFail($vendorTokenId)->tokenable_type);
 
         $this->withToken($vendorToken)
-            ->getJson('/api/v1/admin/dashboard')
-            ->assertForbidden();
+            ->getJson('/api/v1/admin/profile')
+            ->assertUnauthorized();
     }
 
-    public function test_admin_preferences_can_be_saved_and_loaded(): void
+    public function test_admin_profile_can_be_updated_and_loaded(): void
     {
         $admin = User::query()->create([
             'first_name' => 'Admin',
@@ -158,26 +156,23 @@ class PanelAccessTest extends TestCase
         $admin->adminProfile()->create(['super_admin' => true]);
 
         $token = (string) $this->postJson('/api/v1/admin/auth/login', [
-            'email' => 'admin-preferences@test.local',
+            'phone_number' => '+85510000094',
             'password' => 'password123',
         ])->json('data.access_token');
 
         $this->withHeader('Authorization', 'Bearer '.$token)
-            ->patchJson('/api/v1/admin/preferences', [
-                'locale' => 'en',
-                'theme' => 'dark',
+            ->patchJson('/api/v1/admin/profile', [
+                'department' => 'Operations',
+                'job_title' => 'Manager',
             ])
             ->assertOk()
-            ->assertJsonPath('data.locale', 'en')
-            ->assertJsonPath('data.theme', 'dark');
+            ->assertJsonPath('data.department', 'Operations')
+            ->assertJsonPath('data.job_title', 'Manager');
 
         $this->withHeader('Authorization', 'Bearer '.$token)
-            ->getJson('/api/v1/admin/preferences')
+            ->getJson('/api/v1/admin/profile')
             ->assertOk()
-            ->assertJsonPath('data.locale', 'en')
-            ->assertJsonPath('data.theme', 'dark');
-
-        $this->assertDatabaseCount('panel_preferences', 1);
-        $this->assertNotNull(PanelPreference::query()->first());
+            ->assertJsonPath('data.department', 'Operations')
+            ->assertJsonPath('data.job_title', 'Manager');
     }
 }

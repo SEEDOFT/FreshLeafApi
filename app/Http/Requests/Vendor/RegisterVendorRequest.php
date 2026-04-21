@@ -4,17 +4,24 @@ declare(strict_types=1);
 
 namespace App\Http\Requests\Vendor;
 
+use App\Models\UserType;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class RegisterVendorRequest extends FormRequest
 {
+    /**
+     * Determine if the user is authorized to make this request.
+     */
     public function authorize(): bool
     {
         return true;
     }
 
     /**
+     * Get the validation rules that apply to the request.
+     *
      * @return array<string, ValidationRule|array<mixed>|string>
      */
     public function rules(): array
@@ -23,9 +30,19 @@ class RegisterVendorRequest extends FormRequest
             'first_name' => ['required', 'string', 'max:160'],
             'last_name' => ['required', 'string', 'max:160'],
             'email' => ['required', 'string', 'email', 'max:255'],
+            'phone_number' => [
+                'required',
+                'string',
+                'max:20',
+                'starts_with:+855',
+                Rule::unique('users', 'phone_number')
+                    ->where(static function ($query): void {
+                        $query->where('user_type_id', UserType::VENDOR)
+                            ->whereNull('deleted_at');
+                    }),
+            ],
             'password' => ['required', 'string', 'min:8', 'confirmed'],
             'business_name' => ['required', 'string', 'max:160'],
-            'contact_phone' => ['required', 'string', 'max:40'],
         ];
     }
 }

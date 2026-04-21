@@ -4,8 +4,10 @@ declare(strict_types=1);
 
 namespace App\Http\Requests\User\PaymentMethod;
 
+use App\Models\UserPaymentMethod;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\Validator;
 
 class ReplacePaymentMethodRequest extends FormRequest
@@ -42,8 +44,18 @@ class ReplacePaymentMethodRequest extends FormRequest
     {
         $validator->after(function (Validator $validator) {
             if ($this->boolean('is_default')) {
-                $paymentMethod = $this->route('payment_method');
-                if (\auth()->user()->paymentMethods()->where('id', '!=', $paymentMethod->id)->where('is_default', true)->exists()) {
+                $paymentMethodId = (int) $this->route('id');
+                if ($paymentMethodId <= 0) {
+                    return;
+                }
+
+                $paymentMethod = UserPaymentMethod::query()->find($paymentMethodId);
+                if (! $paymentMethod) {
+                    return;
+                }
+
+                $user = Auth::user();
+                if ($user && $user->paymentMethods()->where('id', '!=', $paymentMethod->id)->where('is_default', true)->exists()) {
                     $validator->errors()->add('is_default', 'Only one payment method can be set as default.');
                 }
             }

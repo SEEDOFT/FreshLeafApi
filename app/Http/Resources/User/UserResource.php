@@ -8,6 +8,7 @@ use App\Models\User;
 use App\Models\UserProfile;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
+use Illuminate\Support\Facades\Storage;
 
 /**
  * @mixin User
@@ -28,7 +29,7 @@ class UserResource extends JsonResource
             'last_name' => $this->last_name,
             'email' => $this->email,
             'phone_number' => $this->phone_number,
-            'image' => $this->image,
+            'image' => Storage::url('users/'.$this->image),
             'set_pin' => (bool) $this->userProfile->pin,
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,

@@ -10,14 +10,12 @@ use Illuminate\Database\Eloquent\Attributes\Table;
 use Illuminate\Database\Eloquent\Attributes\UseFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\MorphTo;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Carbon;
 
 /**
  * @property int $id
- * @property int|null $addressable_id
- * @property string|null $addressable_type
  * @property int|null $user_id
  * @property string $label
  * @property string $recipient_name
@@ -33,8 +31,7 @@ use Illuminate\Support\Carbon;
  */
 #[Table('addresses', key: 'id', keyType: 'int')]
 #[Fillable([
-    'addressable_type',
-    'addressable_id',
+    'user_id',
     'label',
     'recipient_name',
     'phone',
@@ -54,12 +51,12 @@ class Address extends Model
     use HasFactory, SoftDeletes;
 
     /**
-     * Get the parent addressable model.
+     * Get the user that owns this address.
      *
-     * @return MorphTo<Model, $this>
+     * @return BelongsTo<User, $this>
      */
-    public function addressable(): MorphTo
+    public function user(): BelongsTo
     {
-        return $this->morphTo('addressable', 'addressable_type', 'addressable_id');
+        return $this->belongsTo(User::class, 'user_id', 'id');
     }
 }

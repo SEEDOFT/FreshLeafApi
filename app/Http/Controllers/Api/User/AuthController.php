@@ -13,6 +13,8 @@ use App\Models\User;
 use App\Models\UserStatus;
 use App\Models\UserType;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Hash;
 
 class AuthController extends Controller
@@ -83,9 +85,17 @@ class AuthController extends Controller
     /**
      * User Logout
      */
-    public function logout(): JsonResponse
+    public function logout(Request $request): JsonResponse
     {
-        \auth()->user()->tokens()->delete();
+        /** @var User|null $user */
+        $user = $request->user();
+        if (! $user) {
+            return static::errorResponse('Unauthenticated', 401);
+        }
+
+        Gate::authorize('auth.logout');
+
+        $user->tokens()->delete();
 
         return static::successResponse(message: 'Tokens Revoked');
     }
@@ -95,9 +105,17 @@ class AuthController extends Controller
      */
     public function verifyPassword(VerifyPasswordRequest $request): JsonResponse
     {
+        /** @var User|null $user */
+        $user = $request->user();
+        if (! $user) {
+            return static::errorResponse('Unauthenticated', 401);
+        }
+
+        Gate::authorize('auth.verifyPassword');
+
         $validatedData = $request->validated();
 
-        if (! Hash::check($validatedData['password'], $this->user()->password)) {
+        if (! Hash::check($validatedData['password'], $user->password)) {
             return static::errorResponse('Invalid password', 401);
         }
 
@@ -109,9 +127,17 @@ class AuthController extends Controller
      */
     public function updatePassword(UpdatePasswordRequest $request): JsonResponse
     {
+        /** @var User|null $user */
+        $user = $request->user();
+        if (! $user) {
+            return static::errorResponse('Unauthenticated', 401);
+        }
+
+        Gate::authorize('auth.updatePassword');
+
         $validatedData = $request->validated();
 
-        $this->user()->update([
+        $user->update([
             'password' => Hash::make($validatedData['password']),
         ]);
 

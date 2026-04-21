@@ -16,7 +16,11 @@ return new class extends Migration
         Schema::create('admin_profiles', static function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('user_id')->unique();
+            $table->string('department')->nullable();
             $table->string('job_title')->nullable();
+            $table->string('office_phone')->nullable();
+            $table->boolean('super_admin')->default(false);
+            $table->json('permissions')->nullable();
             $table->timestamps();
         });
     }

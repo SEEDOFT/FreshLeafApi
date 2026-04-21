@@ -24,15 +24,15 @@ class EnsureActiveUserType
         $user = $request->user();
 
         if (! $user) {
-            return static::forbidden('Unauthenticated.');
+            return static::unauthorized('Unauthenticated.');
         }
 
         if (! $user->isActive()) {
-            return static::forbidden('Your account is not active.');
+            return static::unauthorized('Unauthenticated.');
         }
 
         if (! $user->isType(self::resolveType($type))) {
-            return static::forbidden('You are not authorized for this resource.');
+            return static::unauthorized('Unauthenticated.');
         }
 
         return $next($request);

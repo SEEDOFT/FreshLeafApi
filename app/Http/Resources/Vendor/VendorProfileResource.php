@@ -4,9 +4,15 @@ declare(strict_types=1);
 
 namespace App\Http\Resources\Vendor;
 
+use App\Models\User;
+use App\Models\VendorProfile;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
+/**
+ * @mixin User
+ * @mixin VendorProfile
+ */
 class VendorProfileResource extends JsonResource
 {
     /**
@@ -30,7 +36,8 @@ class VendorProfileResource extends JsonResource
             'meta' => $profile?->meta,
             'status_id' => $this->user_status_id,
             'type_id' => $this->user_type_id,
-            'updated_at' => \optional($this->updated_at)->toIso8601String(),
+            'created_at' => $this->created_at,
+            'updated_at' => $this->updated_at,
         ];
     }
 }

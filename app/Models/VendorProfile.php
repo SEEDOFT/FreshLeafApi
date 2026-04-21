@@ -11,8 +11,6 @@ use Illuminate\Database\Eloquent\Attributes\UseFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\MorphMany;
-use Illuminate\Database\Eloquent\Relations\MorphOne;
 
 #[Table('vendor_profiles', key: 'id')]
 #[Fillable([
@@ -21,8 +19,15 @@ use Illuminate\Database\Eloquent\Relations\MorphOne;
     'contact_phone',
     'city',
     'province',
-    'user_address_id',
+    'address',
     'is_verified',
+    'approved_at',
+    'rejected_at',
+    'approved_by_admin_id',
+    'rejected_by_admin_id',
+    'approve_reason',
+    'reject_reason',
+    'meta',
 ])]
 #[UseFactory(VendorProfileFactory::class)]
 class VendorProfile extends Model
@@ -34,6 +39,11 @@ class VendorProfile extends Model
     {
         return [
             'is_verified' => 'boolean',
+            'approved_at' => 'datetime',
+            'rejected_at' => 'datetime',
+            'approved_by_admin_id' => 'integer',
+            'rejected_by_admin_id' => 'integer',
+            'meta' => 'array',
         ];
     }
 
@@ -45,36 +55,5 @@ class VendorProfile extends Model
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class, 'user_id', 'id');
-    }
-
-    /**
-     * Get all addresses for the vendor profile.
-     *
-     * @return MorphMany<Address, $this>
-     */
-    public function addresses(): MorphMany
-    {
-        return $this->morphMany(Address::class, 'addressable');
-    }
-
-    /**
-     * Get the default wallet for the vendor profile.
-     *
-     * @return MorphOne<Wallet, $this>
-     */
-    public function wallet(): MorphOne
-    {
-        return $this->morphOne(Wallet::class, 'walletable')
-            ->where('is_default', true);
-    }
-
-    /**
-     * Get all wallets for the vendor profile.
-     *
-     * @return MorphMany<Wallet, $this>
-     */
-    public function wallets(): MorphMany
-    {
-        return $this->morphMany(Wallet::class, 'walletable');
     }
 }

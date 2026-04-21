@@ -8,6 +8,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\User\Pin\SetPinRequest;
 use App\Http\Requests\User\Pin\UpdatePinRequest;
 use App\Http\Requests\User\Pin\VerifyPinRequest;
+use App\Models\User;
 use App\Models\UserProfile;
 use Illuminate\Http\JsonResponse;
 
@@ -18,8 +19,14 @@ class UserPinController extends Controller
      */
     public function setPin(SetPinRequest $request): JsonResponse
     {
+        /** @var User|null $user */
+        $user = $request->user();
+        if (! $user) {
+            return static::errorResponse('Unauthenticated', 401);
+        }
+
         $validatedData = $request->validated();
-        $profile = UserProfile::firstOrCreateForUser($this->user());
+        $profile = UserProfile::firstOrCreateForUser($user);
 
         if ($profile->hasPin()) {
             return static::errorResponse('PIN already set. Use update endpoint to change it.', 422);
@@ -35,8 +42,14 @@ class UserPinController extends Controller
      */
     public function updatePin(UpdatePinRequest $request): JsonResponse
     {
+        /** @var User|null $user */
+        $user = $request->user();
+        if (! $user) {
+            return static::errorResponse('Unauthenticated', 401);
+        }
+
         $validatedData = $request->validated();
-        $profile = $this->user()->userProfile;
+        $profile = $user->userProfile;
 
         if ($profile === null || ! $profile->verifyPin($validatedData['current_pin'])) {
             return static::errorResponse('Invalid current PIN', 401);
@@ -52,8 +65,14 @@ class UserPinController extends Controller
      */
     public function verifyPin(VerifyPinRequest $request): JsonResponse
     {
+        /** @var User|null $user */
+        $user = $request->user();
+        if (! $user) {
+            return static::errorResponse('Unauthenticated', 401);
+        }
+
         $validatedData = $request->validated();
-        $profile = $this->user()->userProfile;
+        $profile = $user->userProfile;
 
         if ($profile === null || ! $profile->hasPin()) {
             return static::errorResponse('PIN not set', 422);
@@ -72,8 +91,14 @@ class UserPinController extends Controller
      */
     public function resetPin(SetPinRequest $request): JsonResponse
     {
+        /** @var User|null $user */
+        $user = $request->user();
+        if (! $user) {
+            return static::errorResponse('Unauthenticated', 401);
+        }
+
         $validatedData = $request->validated();
-        $profile = UserProfile::firstOrCreateForUser($this->user());
+        $profile = UserProfile::firstOrCreateForUser($user);
 
         $profile->setPin($validatedData['pin']);
 

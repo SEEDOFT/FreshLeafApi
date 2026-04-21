@@ -10,7 +10,7 @@ use App\Events\AiMessageFailed;
 use App\Events\AiMessageStarted;
 use App\Models\AiChatMessage;
 use App\Models\AiChatSession;
-use App\Services\AiService;
+use App\Services\Ai\AiService;
 use Exception;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
@@ -23,14 +23,9 @@ class ProcessAiChatMessageJob implements ShouldQueue
 {
     use InteractsWithQueue, Queueable, SerializesModels;
 
-    public int $tries = 3;
-
-    public int $maxExceptions = 3;
-
-    public int $timeout = 120;
-
-    public int $backoff = 30;
-
+    /**
+     * Create a new job instance.
+     */
     public function __construct(
         public int $userId,
         public string $sessionId,

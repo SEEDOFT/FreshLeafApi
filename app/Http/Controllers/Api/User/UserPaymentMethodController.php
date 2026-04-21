@@ -10,10 +10,11 @@ use App\Http\Requests\User\PaymentMethod\StorePaymentMethodRequest;
 use App\Http\Requests\User\PaymentMethod\UpdatePaymentMethodRequest;
 use App\Http\Resources\User\PaymentMethodResource;
 use App\Models\PaymentMethodStatus;
+use App\Models\User;
 use App\Models\UserPaymentMethod;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Gate;
 
 class UserPaymentMethodController extends Controller
 {
@@ -22,7 +23,15 @@ class UserPaymentMethodController extends Controller
      */
     public function index(Request $request): JsonResponse
     {
-        $paymentMethods = $request->user()->paymentMethods()
+        /** @var User|null $user */
+        $user = $request->user();
+        if (! $user) {
+            return $this->errorResponse('Unauthenticated', 401);
+        }
+
+        Gate::authorize('viewAny', UserPaymentMethod::class);
+
+        $paymentMethods = $user->paymentMethods()
             ->where('payment_method_status_id', PaymentMethodStatus::ACTIVE)
             ->orderBy('is_default', 'desc')
             ->orderBy('created_at', 'desc')
@@ -39,16 +48,24 @@ class UserPaymentMethodController extends Controller
      */
     public function store(StorePaymentMethodRequest $request): JsonResponse
     {
+        /** @var User|null $user */
+        $user = $request->user();
+        if (! $user) {
+            return $this->errorResponse('Unauthenticated', 401);
+        }
+
+        Gate::authorize('create', UserPaymentMethod::class);
+
         $data = \array_merge(
             $request->validated(),
             ['payment_method_status_id' => PaymentMethodStatus::ACTIVE]
         );
 
         if ($data['is_default'] ?? false) {
-            $request->user()->paymentMethods()->update(['is_default' => false]);
+            $user->paymentMethods()->update(['is_default' => false]);
         }
 
-        $paymentMethod = $request->user()->paymentMethods()->create($data);
+        $paymentMethod = $user->paymentMethods()->create($data);
 
         return $this->successResponse(
             new PaymentMethodResource($paymentMethod),
@@ -60,14 +77,20 @@ class UserPaymentMethodController extends Controller
     /**
      * Display the specified payment method.
      */
-    public function show(UserPaymentMethod $paymentMethod): JsonResponse
+    public function show(Request $request, string $id): JsonResponse
     {
-        if (
-            $paymentMethod->user_id !== Auth::id() ||
-            $paymentMethod->payment_method_status_id !== PaymentMethodStatus::ACTIVE
-        ) {
+        /** @var User|null $user */
+        $user = $request->user();
+        if (! $user) {
+            return $this->errorResponse('Unauthenticated', 401);
+        }
+
+        $paymentMethod = UserPaymentMethod::query()->find($id);
+        if (! $paymentMethod) {
             return $this->errorResponse('Payment method not found', 404);
         }
+
+        Gate::authorize('view', $paymentMethod);
 
         return $this->successResponse(new PaymentMethodResource($paymentMethod));
     }
@@ -75,19 +98,25 @@ class UserPaymentMethodController extends Controller
     /**
      * Update the specified payment method in storage.
      */
-    public function update(UpdatePaymentMethodRequest $request, UserPaymentMethod $paymentMethod): JsonResponse
+    public function update(UpdatePaymentMethodRequest $request, string $id): JsonResponse
     {
-        if (
-            $paymentMethod->user_id !== Auth::id() ||
-            $paymentMethod->payment_method_status_id !== PaymentMethodStatus::ACTIVE
-        ) {
+        /** @var User|null $user */
+        $user = $request->user();
+        if (! $user) {
+            return $this->errorResponse('Unauthenticated', 401);
+        }
+
+        $paymentMethod = UserPaymentMethod::query()->find($id);
+        if (! $paymentMethod) {
             return $this->errorResponse('Payment method not found', 404);
         }
+
+        Gate::authorize('update', $paymentMethod);
 
         $data = $request->validated();
 
         if ($data['is_default'] ?? false) {
-            Auth::user()->paymentMethods()
+            $user->paymentMethods()
                 ->where('id', '!=', $paymentMethod->id)
                 ->update(['is_default' => false]);
         }
@@ -103,19 +132,25 @@ class UserPaymentMethodController extends Controller
     /**
      * Replace the specified payment method in storage.
      */
-    public function replace(ReplacePaymentMethodRequest $request, UserPaymentMethod $paymentMethod): JsonResponse
+    public function replace(ReplacePaymentMethodRequest $request, string $id): JsonResponse
     {
-        if (
-            $paymentMethod->user_id !== Auth::id() ||
-            $paymentMethod->payment_method_status_id !== PaymentMethodStatus::ACTIVE
-        ) {
+        /** @var User|null $user */
+        $user = $request->user();
+        if (! $user) {
+            return $this->errorResponse('Unauthenticated', 401);
+        }
+
+        $paymentMethod = UserPaymentMethod::query()->find($id);
+        if (! $paymentMethod) {
             return $this->errorResponse('Payment method not found', 404);
         }
+
+        Gate::authorize('update', $paymentMethod);
 
         $data = $request->validated();
 
         if ($data['is_default'] ?? false) {
-            $request->user()->paymentMethods()
+            $user->paymentMethods()
                 ->where('id', '!=', $paymentMethod->id)
                 ->update(['is_default' => false]);
         }
@@ -131,14 +166,20 @@ class UserPaymentMethodController extends Controller
     /**
      * Remove the specified payment method from storage.
      */
-    public function destroy(UserPaymentMethod $paymentMethod): JsonResponse
+    public function destroy(Request $request, string $id): JsonResponse
     {
-        if (
-            $paymentMethod->user_id !== Auth::id() ||
-            $paymentMethod->payment_method_status_id !== PaymentMethodStatus::ACTIVE
-        ) {
+        /** @var User|null $user */
+        $user = $request->user();
+        if (! $user) {
+            return $this->errorResponse('Unauthenticated', 401);
+        }
+
+        $paymentMethod = UserPaymentMethod::query()->find($id);
+        if (! $paymentMethod) {
             return $this->errorResponse('Payment method not found', 404);
         }
+
+        Gate::authorize('delete', $paymentMethod);
 
         $paymentMethod->update([
             'payment_method_status_id' => PaymentMethodStatus::DELETE,

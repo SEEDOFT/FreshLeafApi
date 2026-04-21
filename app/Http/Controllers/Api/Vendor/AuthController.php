@@ -22,22 +22,17 @@ class AuthController extends Controller
     public function login(LoginVendorRequest $request): JsonResponse
     {
         $validatedData = $request->validated();
-        $lookup = $validatedData['email'] ?? $validatedData['phone_number'];
 
         /** @var User|null $vendor */
-        $vendor = User::query()
-            ->ofType(UserType::VENDOR)
-            ->where(
-                \filter_var($lookup, FILTER_VALIDATE_EMAIL) ? 'email' : 'phone_number',
-                $lookup
-            )
+        $vendor = User::ofType(UserType::VENDOR)
+            ->where('phone_number', $validatedData['phone_number'])
             ->first();
 
         if (! $vendor || ! Hash::check($validatedData['password'], $vendor->password)) {
             return static::errorResponse('Invalid login details', 401);
         }
 
-        if ($vendor->user_status_id !== UserStatus::ACTIVE) {
+        if (! $vendor->isActive()) {
             return static::errorResponse('Your account is pending approval', 403);
         }
 
@@ -55,28 +50,29 @@ class AuthController extends Controller
     public function register(RegisterVendorRequest $request): JsonResponse
     {
         $validatedData = $request->validated();
+        $phoneNumber = $validatedData['phone_number'];
 
         $vendor = User::create([
             'first_name' => $validatedData['first_name'],
             'last_name' => $validatedData['last_name'],
-            'phone_number' => $validatedData['contact_phone'],
+            'phone_number' => $phoneNumber,
             'email' => $validatedData['email'],
             'password' => Hash::make($validatedData['password']),
             'user_type_id' => UserType::VENDOR,
             'user_status_id' => UserStatus::PENDING,
         ]);
 
-        $vendorProfile = $vendor->vendorProfile()->create([
+        $vendor->vendorProfile()->create([
             'business_name' => $validatedData['business_name'],
-            'contact_phone' => $validatedData['contact_phone'],
-            'city' => $validatedData['city'],
-            'province' => $validatedData['province'],
-            'address' => $validatedData['address'],
+            'contact_phone' => $phoneNumber,
+            'city' => $validatedData['city'] ?? null,
+            'province' => $validatedData['province'] ?? null,
+            'address' => $validatedData['address'] ?? null,
             'is_verified' => false,
             'meta' => null,
         ]);
 
-        $vendorProfile->ensureDefaultWallets();
+        $vendor->ensureDefaultWallets();
 
         return static::successResponse([
             'vendor_id' => $vendor->id,
@@ -89,7 +85,9 @@ class AuthController extends Controller
      */
     public function logout(Request $request): JsonResponse
     {
-        $request->user()?->currentAccessToken()?->delete();
+        /** @var User|null $vendor */
+        $vendor = $request->user();
+        $vendor?->currentAccessToken()?->delete();
 
         return static::successResponse(message: 'Tokens Revoked');
     }

@@ -4,12 +4,20 @@ declare(strict_types=1);
 
 namespace App\Http\Resources\Admin;
 
+use App\Models\AdminProfile;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
+/**
+ * @mixin User
+ * @mixin AdminProfile
+ */
 class AdminProfileResource extends JsonResource
 {
     /**
+     * Transform the resource into an array.
+     *
      * @return array<string, mixed>
      */
     public function toArray(Request $request): array
@@ -26,9 +34,8 @@ class AdminProfileResource extends JsonResource
             'office_phone' => $profile?->office_phone,
             'super_admin' => (bool) $profile?->super_admin,
             'permissions' => $profile?->permissions,
-            'status_id' => $this->user_status_id,
-            'type_id' => $this->user_type_id,
-            'updated_at' => \optional($this->updated_at)->toIso8601String(),
+            'created_at' => $this->created_at,
+            'updated_at' => $this->updated_at,
         ];
     }
 }

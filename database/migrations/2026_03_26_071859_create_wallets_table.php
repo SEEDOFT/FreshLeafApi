@@ -15,11 +15,13 @@ return new class extends Migration
     {
         Schema::create('wallets', static function (Blueprint $table) {
             $table->id();
-            $table->morphs('walletable');
+            $table->unsignedBigInteger('user_id')->index();
             $table->unsignedBigInteger('currency_id');
             $table->decimal('balance', 16, 4);
-            $table->unique(['walletable_type', 'walletable_id', 'currency_id',
-            ], 'wallets_walletable_currency_unique');
+            $table->unique(
+                ['user_id', 'currency_id'],
+                'wallets_user_currency_unique'
+            );
             $table->timestamps();
         });
     }

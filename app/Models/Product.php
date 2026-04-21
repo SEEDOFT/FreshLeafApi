@@ -268,39 +268,35 @@ class Product extends Model
      * Scope a query to only include active products.
      *
      * @param  Builder<self>  $query
-     * @return Builder<self>
      */
     #[Scope]
-    public function active(Builder $query): Builder
+    protected function active(Builder $query): void
     {
-        return $query->where('product_status_id', ProductStatus::ACTIVE);
+        $query->where('product_status_id', ProductStatus::ACTIVE);
     }
 
     /**
      * Scope a query to filter products by category.
      *
      * @param  Builder<self>  $query
-     * @return Builder<self>
      */
     #[Scope]
-    public function byCategory(Builder $query, int|ProductCategory $category): Builder
+    protected function byCategory(Builder $query, int|ProductCategory $category): void
     {
         $categoryId = $category instanceof ProductCategory
-            ? $category->id
-            : $category;
+            ? $category->id : $category;
 
-        return $query->where('product_category_id', $categoryId);
+        $query->where('product_category_id', $categoryId);
     }
 
     /**
      * Scope a query by vendor owner.
      *
      * @param  Builder<self>  $query
-     * @return Builder<self>
      */
     #[Scope]
-    public function byVendor(Builder $query, int $vendorUserId): Builder
+    protected function byVendor(Builder $query, int $vendorUserId): void
     {
-        return $query->where('vendor_user_id', $vendorUserId);
+        $query->where('vendor_user_id', $vendorUserId);
     }
 }

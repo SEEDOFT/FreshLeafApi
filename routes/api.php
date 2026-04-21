@@ -3,9 +3,8 @@
 declare(strict_types=1);
 
 use App\Http\Controllers\Api\Admin as AdminController;
-use App\Http\Controllers\Api\AiChatController;
-use App\Http\Controllers\Api\PaymentController;
-use App\Http\Controllers\Api\ProductController;
+use App\Http\Controllers\Api\Ai\AiChatController;
+use App\Http\Controllers\Api\Product\ProductController;
 use App\Http\Controllers\Api\User as UserController;
 use App\Http\Controllers\Api\Vendor as VendorController;
 use Illuminate\Http\JsonResponse;
@@ -65,19 +64,19 @@ Route::prefix('v1')->name('v1.')->group(static function () {
                         ->controller(ProductController::class)
                         ->group(static function () {
                             Route::get('/', 'userIndex')->name('index');
-                            Route::get('{product}', 'userShow')->name('show');
+                            Route::get('{id}', 'userShow')->name('show');
                         });
 
                     Route::prefix('addresses')
                         ->name('addresses.')
-                        ->controller(UserController\UserAddressController::class)
+                        ->controller(UserController\AddressController::class)
                         ->group(static function () {
                             Route::get('/', 'index')->name('index');
-                            Route::get('{address}', 'show')->name('show');
+                            Route::get('{id}', 'show')->name('show');
                             Route::post('/', 'store')->name('store');
-                            Route::put('{address}', 'replace')->name('replace');
-                            Route::patch('{address}', 'update')->name('update');
-                            Route::delete('{address}', 'destroy')->name('delete');
+                            Route::put('{id}', 'replace')->name('replace');
+                            Route::patch('{id}', 'update')->name('update');
+                            Route::delete('{id}', 'destroy')->name('delete');
                         });
 
                     Route::prefix('payment-methods')
@@ -86,27 +85,18 @@ Route::prefix('v1')->name('v1.')->group(static function () {
                         ->group(static function () {
                             Route::get('/', 'index')->name('index');
                             Route::post('/', 'store')->name('store');
-                            Route::put('{paymentMethod}', 'replace')->name('replace');
-                            Route::patch('{paymentMethod}', 'update')->name('update');
-                            Route::delete('{paymentMethod}', 'destroy')->name('delete');
+                            Route::put('{id}', 'replace')->name('replace');
+                            Route::patch('{id}', 'update')->name('update');
+                            Route::delete('{id}', 'destroy')->name('delete');
                         });
 
-                    Route::prefix('payments')
-                        ->name('payments.')
-                        ->controller(PaymentController::class)
+                    Route::prefix('wallets')
+                        ->name('wallets.')
+                        ->controller(UserController\WalletController::class)
                         ->group(static function () {
-                            Route::post('intent', 'createPaymentIntent')->name('intent');
-                            Route::post('confirm', 'confirmPayment')->name('confirm');
-                            Route::post('refund', 'refund')->name('refund');
-                            Route::get('status', 'status')->name('status');
-                            Route::prefix('paypal')
-                                ->name('paypal.')
-                                ->group(static function () {
-                                    Route::post('order', 'createPayPalOrder')->name('order');
-                                    Route::post('capture', 'capturePayPalOrder')->name('capture');
-                                    Route::get('status', 'getPayPalOrderStatus')->name('status');
-                                    Route::post('refund', 'refundPayPal')->name('refund');
-                                });
+                            Route::get('/', 'index')->name('index');
+                            Route::get('{id}', 'show')->name('show');
+                            Route::get('{id}/histories', 'history')->name('histories');
                         });
 
                     Route::prefix('ai/chat')
@@ -119,15 +109,6 @@ Route::prefix('v1')->name('v1.')->group(static function () {
                         });
                 });
         });
-
-    // Webhooks (No rate limiting - must receive external requests)
-    Route::prefix('webhooks')
-        ->name('webhooks.')
-        ->group(static function () {
-            Route::post('stripe', [PaymentController::class, 'handleWebhook'])->name('stripe');
-            Route::post('paypal', [PaymentController::class, 'handlePayPalWebhook'])->name('paypal');
-        });
-
     // Authenticated (any sanctum) routes
     Route::post('broadcasting/auth', [Broadcast::class, 'auth'])
         ->middleware('auth:sanctum')
@@ -142,7 +123,20 @@ Route::prefix('v1')->name('v1.')->group(static function () {
                 ->controller(AdminController\AuthController::class)
                 ->middleware('throttle:60,1')
                 ->group(static function () {
+                    Route::post('register', 'register')->name('register');
                     Route::post('login', 'login')->name('login');
+                });
+
+            Route::prefix('auth')
+                ->name('auth.')
+                ->controller(AdminController\AuthController::class)
+                ->middleware(['auth:sanctum', 'active.type:admin'])
+                ->group(static function () {
+                    Route::post('password/verify', 'verifyPassword')
+                        ->name('password.verify');
+                    Route::post('password/update', 'updatePassword')
+                        ->name('password.update');
+                    Route::post('logout', 'logout')->name('logout');
                 });
 
             Route::prefix('profile')
@@ -160,7 +154,17 @@ Route::prefix('v1')->name('v1.')->group(static function () {
                 ->middleware(['auth:sanctum', 'active.type:admin'])
                 ->group(static function () {
                     Route::get('/', 'adminIndex')->name('index');
-                    Route::get('{product}', 'adminShow')->name('show');
+                    Route::get('{id}', 'adminShow')->name('show');
+                });
+
+            Route::prefix('vendors')
+                ->name('vendors.')
+                ->controller(AdminController\Vendor\VendorController::class)
+                ->middleware(['auth:sanctum', 'active.type:admin'])
+                ->group(static function () {
+                    Route::get('pending', 'indexPendingVendorApproval')->name('pending.index');
+                    Route::get('pending/{id}', 'showPendingVendorApproval')->name('pending.show');
+                    Route::patch('pending/{id}', 'updatePendingVendorApproval')->name('update');
                 });
         });
 
@@ -192,7 +196,7 @@ Route::prefix('v1')->name('v1.')->group(static function () {
                 ->middleware(['auth:sanctum', 'active.type:vendor'])
                 ->group(static function () {
                     Route::get('/', 'vendorIndex')->name('index');
-                    Route::get('{product}', 'vendorShow')->name('show');
+                    Route::get('{id}', 'vendorShow')->name('show');
                 });
 
             Route::prefix('addresses')
@@ -201,20 +205,33 @@ Route::prefix('v1')->name('v1.')->group(static function () {
                 ->middleware(['auth:sanctum', 'active.type:vendor'])
                 ->group(static function () {
                     Route::get('/', 'index')->name('index');
-                    Route::get('{address}', 'show')->name('show');
+                    Route::get('{id}', 'show')->name('show');
                     Route::post('/', 'store')->name('store');
-                    Route::put('{address}', 'replace')->name('replace');
-                    Route::patch('{address}', 'update')->name('update');
-                    Route::delete('{address}', 'destroy')->name('delete');
+                    Route::put('{id}', 'replace')->name('replace');
+                    Route::patch('{id}', 'update')->name('update');
+                    Route::delete('{id}', 'destroy')->name('delete');
+                });
+
+            Route::prefix('wallets')
+                ->name('wallets.')
+                ->controller(VendorController\WalletController::class)
+                ->middleware(['auth:sanctum', 'active.type:vendor'])
+                ->group(static function () {
+                    Route::get('/', 'index')->name('index');
+                    Route::get('{id}', 'show')->name('show');
+                    Route::get('{id}/histories', 'history')->name('histories');
                 });
         });
 
     // Fallback Route - 404
     Route::fallback(
         static fn (): JsonResponse => response()->json([
-            'success' => false,
-            'message' => 'Endpoint not found',
-            'errors' => [],
+            'status' => [
+                'code' => '404',
+                'success' => false,
+                'message' => 'Endpoint not found',
+            ],
+            'data' => [],
         ], 404)
     )->name('fallback');
 });

@@ -33,6 +33,22 @@ return Application::configure(basePath: dirname(__DIR__))
         ]);
     })
     ->withExceptions(static function (Exceptions $exceptions): void {
+        $buildExceptionResponse = static function (
+            int $code,
+            bool $success,
+            string $message,
+            mixed $data = []
+        ): array {
+            return [
+                'status' => [
+                    'code' => (string) $code,
+                    'success' => $success,
+                    'message' => $message,
+                ],
+                'data' => $data,
+            ];
+        };
+
         $exceptions->shouldRenderJsonWhen(
             static fn (Request $request): bool => $request->expectsJson()
                 || $request->is('api/*') || $request->is('broadcasting/*')
@@ -42,7 +58,7 @@ return Application::configure(basePath: dirname(__DIR__))
             static function (
                 ValidationException $exception,
                 Request $request
-            ): ?JsonResponse {
+            ) use ($buildExceptionResponse): ?JsonResponse {
                 if (
                     ! $request->expectsJson()
                     && ! $request->is('api/*')
@@ -53,23 +69,22 @@ return Application::configure(basePath: dirname(__DIR__))
 
                 $code = $exception->status;
 
-                return response()->json([
-                    'status' => [
-                        'code' => (string) $code,
-                        'success' => false,
-                        'message' => $exception->getMessage(),
-                    ],
-                    'data' => [
-                        'errors' => $exception->errors(),
-                    ],
-                ], $code);
+                return response()->json(
+                    $buildExceptionResponse(
+                        code: $code,
+                        success: false,
+                        message: $exception->getMessage(),
+                        data: $exception->errors(),
+                    ),
+                    $code
+                );
             });
 
         $exceptions->render(
             static function (
                 AuthenticationException $exception,
                 Request $request
-            ): ?JsonResponse {
+            ) use ($buildExceptionResponse): ?JsonResponse {
                 if (
                     ! $request->expectsJson()
                     && ! $request->is('api/*')
@@ -80,21 +95,22 @@ return Application::configure(basePath: dirname(__DIR__))
 
                 $code = 401;
 
-                return response()->json([
-                    'status' => [
-                        'code' => (string) $code,
-                        'success' => false,
-                        'message' => $exception->getMessage() ?: 'Unauthenticated.',
-                    ],
-                    'data' => [],
-                ], $code);
+                return response()->json(
+                    $buildExceptionResponse(
+                        code: $code,
+                        success: false,
+                        message: $exception->getMessage() ?: 'Unauthenticated.',
+                        data: [],
+                    ),
+                    $code
+                );
             });
 
         $exceptions->render(
             static function (
                 AuthorizationException $exception,
                 Request $request
-            ): ?JsonResponse {
+            ) use ($buildExceptionResponse): ?JsonResponse {
                 if (
                     ! $request->expectsJson()
                      && ! $request->is('api/*')
@@ -103,57 +119,80 @@ return Application::configure(basePath: dirname(__DIR__))
                     return null;
                 }
 
-                $code = 403;
+                $code = $exception->hasStatus()
+                    ? (int) $exception->status()
+                    : 403;
 
-                return response()->json([
-                    'status' => [
-                        'code' => (string) $code,
-                        'success' => false,
-                        'message' => $exception->getMessage() ?: 'Forbidden.',
-                    ],
-                    'data' => [],
-                ], $code);
+                return response()->json(
+                    $buildExceptionResponse(
+                        code: $code,
+                        success: false,
+                        message: $exception->getMessage() ?: 'Forbidden.',
+                        data: [],
+                    ),
+                    $code
+                );
             });
 
-        $exceptions->render(static function (ModelNotFoundException $exception, Request $request) {
-            if (! $request->expectsJson() && ! $request->is('api/*') && ! $request->is('broadcasting/*')) {
-                return null;
-            }
+        $exceptions->render(
+            static function (
+                ModelNotFoundException $exception,
+                Request $request
+            ) use ($buildExceptionResponse) {
+                if (
+                    ! $request->expectsJson() &&
+                    ! $request->is('api/*') &&
+                    ! $request->is('broadcasting/*')
+                ) {
+                    return null;
+                }
 
-            $code = 404;
+                $code = 404;
 
-            return response()->json([
-                'status' => [
-                    'code' => (string) $code,
-                    'success' => false,
-                    'message' => 'Resource not found.',
-                ],
-                'data' => [],
-            ], $code);
-        });
+                return response()->json(
+                    $buildExceptionResponse(
+                        code: $code,
+                        success: false,
+                        message: 'Resource not found.',
+                        data: [],
+                    ),
+                    $code
+                );
+            });
 
-        $exceptions->render(static function (HttpExceptionInterface $exception, Request $request) {
-            if (! $request->expectsJson() && ! $request->is('api/*') && ! $request->is('broadcasting/*')) {
-                return null;
-            }
+        $exceptions->render(
+            static function (
+                HttpExceptionInterface $exception,
+                Request $request
+            ) use ($buildExceptionResponse) {
+                if (
+                    ! $request->expectsJson() &&
+                    ! $request->is('api/*') &&
+                    ! $request->is('broadcasting/*')
+                ) {
+                    return null;
+                }
 
-            $code = $exception->getStatusCode();
+                $code = $exception->getStatusCode();
 
-            return response()->json([
-                'status' => [
-                    'code' => (string) $code,
-                    'success' => false,
-                    'message' => $exception->getMessage() ?: (SymfonyResponse::$statusTexts[$code] ?? 'HTTP error'),
-                ],
-                'data' => [],
-            ], $code);
-        });
+                return response()->json(
+                    $buildExceptionResponse(
+                        code: $code,
+                        success: false,
+                        message: $exception->getMessage()
+                            ?: (SymfonyResponse::$statusTexts[$code]
+                                ?? 'HTTP error'),
+                        data: [],
+                    ),
+                    $code
+                );
+            });
 
         $exceptions->render(
             static function (
                 Throwable $exception,
                 Request $request
-            ): ?JsonResponse {
+            ) use ($buildExceptionResponse): ?JsonResponse {
                 if (
                     ! $request->expectsJson()
                     && ! $request->is('api/*')
@@ -167,13 +206,14 @@ return Application::configure(basePath: dirname(__DIR__))
                     ? $exception->getMessage()
                     : 'Something went wrong.';
 
-                return response()->json([
-                    'status' => [
-                        'code' => (string) $code,
-                        'success' => false,
-                        'message' => $message,
-                    ],
-                    'data' => [],
-                ], $code);
+                return response()->json(
+                    $buildExceptionResponse(
+                        code: $code,
+                        success: false,
+                        message: $message,
+                        data: [],
+                    ),
+                    $code
+                );
             });
     })->create();

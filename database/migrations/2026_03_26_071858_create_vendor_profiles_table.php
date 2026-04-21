@@ -20,7 +20,9 @@ return new class extends Migration
             $table->string('contact_phone')->nullable();
             $table->string('city')->nullable();
             $table->string('province')->nullable();
+            $table->string('address')->nullable();
             $table->boolean('is_verified')->default(false);
+            $table->json('meta')->nullable();
             $table->timestamps();
         });
     }

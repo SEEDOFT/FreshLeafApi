@@ -16,7 +16,6 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
-use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -42,14 +41,9 @@ use Laravel\Sanctum\HasApiTokens;
  * @property-read UserProfile|null $userProfile
  * @property-read VendorProfile|null $vendorProfile
  * @property-read AdminProfile|null $adminProfile
- * @property-read Address[]|MorphMany<Address, $this> $addresses
+ * @property-read Address[]|HasMany<Address, $this> $addresses
  * @property-read UserPaymentMethod[]|HasMany<UserPaymentMethod, $this> $paymentMethods
- * @property-read Wallet|null $wallet
- * @property-read Wallet[]|MorphMany<Wallet, $this> $wallets
- *
- * @method static Builder<static>|User ofType(int $userTypeId)
- * @method static Builder<static>|User withStatus(int $userStatusId)
- * @method static Builder<static>|User active()
+ * @property-read Wallet[]|HasMany<Wallet, $this> $wallets
  */
 #[Table('users', key: 'id', keyType: 'int')]
 #[Fillable([
@@ -101,11 +95,11 @@ class User extends Authenticatable
     /**
      * Get the addresses for the user.
      *
-     * @return MorphMany<Address, $this>
+     * @return HasMany<Address, $this>
      */
-    public function addresses(): MorphMany
+    public function addresses(): HasMany
     {
-        return $this->morphMany(Address::class, 'addressable');
+        return $this->hasMany(Address::class, 'user_id', 'id');
     }
 
     /**
@@ -151,11 +145,11 @@ class User extends Authenticatable
     /**
      * Get wallets for the user.
      *
-     * @return MorphMany<Wallet, $this>
+     * @return HasMany<Wallet, $this>
      */
-    public function wallets(): MorphMany
+    public function wallets(): HasMany
     {
-        return $this->morphMany(Wallet::class, 'walletable');
+        return $this->hasMany(Wallet::class, 'user_id', 'id');
     }
 
     /**
@@ -163,15 +157,24 @@ class User extends Authenticatable
      */
     public function ensureDefaultWallets(): void
     {
-        $this->wallets()->create([
-            'balance' => '0.00',
-            'currency_id' => Currency::KHR,
-        ]);
+        $khrCurrencyId = (int) Currency::where('code', Currency::KHR)
+            ->value('id');
+        $usdCurrencyId = (int) Currency::where('code', Currency::USD)
+            ->value('id');
 
-        $this->wallets()->create([
-            'balance' => '0.00',
-            'currency_id' => Currency::USD,
-        ]);
+        if ($khrCurrencyId <= 0 || $usdCurrencyId <= 0) {
+            return;
+        }
+
+        $this->wallets()->firstOrCreate(
+            ['user_id' => $this->id, 'currency_id' => $khrCurrencyId],
+            ['balance' => '0.00'],
+        );
+
+        $this->wallets()->firstOrCreate(
+            ['user_id' => $this->id, 'currency_id' => $usdCurrencyId],
+            ['balance' => '0.00'],
+        );
     }
 
     /**

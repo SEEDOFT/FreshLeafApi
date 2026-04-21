@@ -26,6 +26,7 @@ class UpdatePendingVendorRequest extends FormRequest
     {
         return [
             'action' => ['required', 'string', 'in:approve,reject'],
+            'reason' => ['nullable', 'string', 'max:1000', 'required_if:action,reject'],
         ];
     }
 }

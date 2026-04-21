@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Http\Controllers\Api;
+namespace App\Http\Controllers\Api\Ai;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Ai\CreateChatSessionRequest;
@@ -11,6 +11,7 @@ use App\Http\Requests\Ai\StoreChatMessageRequest;
 use App\Jobs\ProcessAiChatMessageJob;
 use App\Models\AiChatMessage;
 use App\Models\AiChatSession;
+use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
@@ -24,11 +25,17 @@ class AiChatController extends Controller
     {
         $validatedDataData = $request->validated();
         $sessionId = $validatedDataData['session_id'] ?? (string) Str::uuid();
+        /** @var User|null $user */
+        $user = $request->user();
+
+        if (! $user) {
+            return $this->errorResponse('Unauthenticated', 401);
+        }
 
         $session = AiChatSession::firstOrCreate(
             [
                 'session_id' => $sessionId,
-                'user_id' => $this->user()->id,
+                'user_id' => $user->id,
             ],
             [
                 'title' => $validatedDataData['title'] ?? null,
@@ -51,7 +58,13 @@ class AiChatController extends Controller
      */
     public function storeMessage(StoreChatMessageRequest $request): JsonResponse
     {
-        $user = $this->user();
+        /** @var User|null $user */
+        $user = $request->user();
+
+        if (! $user) {
+            return $this->errorResponse('Unauthenticated', 401);
+        }
+
         $validatedData = $request->validated();
 
         $session = AiChatSession::where('session_id', $validatedData['session_id'])
@@ -115,7 +128,13 @@ class AiChatController extends Controller
      */
     public function history(FetchChatHistoryRequest $request): JsonResponse
     {
-        $user = $this->user();
+        /** @var User|null $user */
+        $user = $request->user();
+
+        if (! $user) {
+            return $this->errorResponse('Unauthenticated', 401);
+        }
+
         $validatedData = $request->validated();
 
         $session = AiChatSession::where('session_id', $validatedData['session_id'])

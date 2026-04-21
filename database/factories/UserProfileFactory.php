@@ -26,7 +26,6 @@ class UserProfileFactory extends Factory
             'date_of_birth' => fake()->optional()->date(),
             'gender' => fake()->optional()->randomElement(['male', 'female', 'other']),
             'preferred_language' => 'en',
-            'preferences' => null,
         ];
     }
 }

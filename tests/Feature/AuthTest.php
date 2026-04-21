@@ -18,18 +18,18 @@ class AuthTest extends TestCase
     {
         parent::setUp();
 
-        UserStatus::insert([
-            ['id' => UserStatus::ACTIVE, 'name' => 'Active'],
-            ['id' => UserStatus::INACTIVE, 'name' => 'Inactive'],
-            ['id' => UserStatus::DELETED, 'name' => 'Deleted'],
-            ['id' => UserStatus::PENDING, 'name' => 'Pending'],
-        ]);
+        UserStatus::upsert([
+            ['id' => UserStatus::ACTIVE, 'code' => 'ACTIVE', 'name' => 'Active'],
+            ['id' => UserStatus::INACTIVE, 'code' => 'INACTIVE', 'name' => 'Inactive'],
+            ['id' => UserStatus::DELETED, 'code' => 'DELETED', 'name' => 'Deleted'],
+            ['id' => UserStatus::PENDING, 'code' => 'PENDING', 'name' => 'Pending'],
+        ], ['id'], ['code', 'name']);
 
-        UserType::insert([
-            ['id' => UserType::USER, 'name' => 'User'],
-            ['id' => UserType::VENDOR, 'name' => 'Vendor'],
-            ['id' => UserType::ADMIN, 'name' => 'Admin'],
-        ]);
+        UserType::upsert([
+            ['id' => UserType::USER, 'code' => 'USER', 'name' => 'User'],
+            ['id' => UserType::VENDOR, 'code' => 'VENDOR', 'name' => 'Vendor'],
+            ['id' => UserType::ADMIN, 'code' => 'ADMIN', 'name' => 'Admin'],
+        ], ['id'], ['code', 'name']);
     }
 
     /**
@@ -40,7 +40,7 @@ class AuthTest extends TestCase
         $response = $this->postJson('/api/v1/auth/register', [
             'first_name' => 'John',
             'last_name' => 'Doe',
-            'phone_number' => '1234567890',
+            'phone_number' => '+855123456789',
             'password' => 'password123',
             'password_confirmation' => 'password123',
         ]);
@@ -64,7 +64,7 @@ class AuthTest extends TestCase
         $this->assertDatabaseHas('users', [
             'first_name' => 'John',
             'last_name' => 'Doe',
-            'phone_number' => '1234567890',
+            'phone_number' => '+855123456789',
         ]);
     }
 
@@ -74,14 +74,14 @@ class AuthTest extends TestCase
     public function test_user_can_login(): void
     {
         $user = User::factory()->create([
-            'phone_number' => '1234567890',
+            'phone_number' => '+855123456789',
             'password' => bcrypt('password123'),
             'user_status_id' => UserStatus::ACTIVE,
             'user_type_id' => UserType::USER,
         ]);
 
         $response = $this->postJson('/api/v1/auth/login', [
-            'phone_number' => '1234567890',
+            'phone_number' => '+855123456789',
             'password' => 'password123',
         ]);
 
@@ -108,14 +108,14 @@ class AuthTest extends TestCase
     public function test_user_cannot_login_with_invalid_credentials(): void
     {
         User::factory()->create([
-            'phone_number' => '1234567890',
+            'phone_number' => '+855123456789',
             'password' => bcrypt('password123'),
             'user_status_id' => UserStatus::ACTIVE,
             'user_type_id' => UserType::USER,
         ]);
 
         $response = $this->postJson('/api/v1/auth/login', [
-            'phone_number' => '1234567890',
+            'phone_number' => '+855123456789',
             'password' => 'wrongpassword',
         ]);
 
@@ -152,14 +152,61 @@ class AuthTest extends TestCase
         $this->assertCount(0, $user->tokens);
     }
 
-    public function test_admin_registration_endpoint_is_not_available(): void
+    public function test_admin_registration_requires_bootstrap_key(): void
     {
+        config()->set('auth.admin_registration_key', 'dev-secret');
+
         $this->postJson('/api/v1/admin/auth/register', [
             'first_name' => 'Admin',
             'last_name' => 'User',
-            'phone_number' => '85510000112',
+            'phone_number' => '+85510000112',
             'password' => 'password123',
             'password_confirmation' => 'password123',
-        ])->assertNotFound();
+        ])->assertForbidden();
+    }
+
+    public function test_admin_can_register_with_bootstrap_key(): void
+    {
+        config()->set('auth.admin_registration_key', 'dev-secret');
+
+        User::factory()->create([
+            'first_name' => 'Normal',
+            'last_name' => 'User',
+            'phone_number' => '+85510000112',
+            'user_type_id' => UserType::USER,
+            'user_status_id' => UserStatus::ACTIVE,
+        ]);
+
+        $response = $this
+            ->withHeader('X-Admin-Registration-Key', 'dev-secret')
+            ->postJson('/api/v1/admin/auth/register', [
+                'first_name' => 'Admin',
+                'last_name' => 'User',
+                'phone_number' => '+85510000112',
+                'email' => 'admin-register@test.local',
+                'password' => 'password123',
+                'password_confirmation' => 'password123',
+                'super_admin' => true,
+            ]);
+
+        $response->assertCreated()
+            ->assertJsonPath('status.success', true)
+            ->assertJsonPath('status.message', 'Admin registered successfully')
+            ->assertJsonStructure([
+                'status' => ['code', 'success', 'message'],
+                'data' => ['admin_id', 'access_token', 'token_type'],
+            ]);
+
+        $this->assertDatabaseHas('users', [
+            'phone_number' => '+85510000112',
+            'user_type_id' => UserType::ADMIN,
+            'user_status_id' => UserStatus::ACTIVE,
+        ]);
+
+        $this->assertDatabaseHas('users', [
+            'phone_number' => '+85510000112',
+            'user_type_id' => UserType::USER,
+            'user_status_id' => UserStatus::ACTIVE,
+        ]);
     }
 }

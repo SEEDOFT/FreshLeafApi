@@ -5,11 +5,15 @@ declare(strict_types=1);
 namespace App\Http\Controllers\Api\User;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\User\ReplaceUserRequest;
-use App\Http\Requests\User\UpdateUserRequest;
+use App\Http\Requests\User\Profile\ReplaceUserRequest;
+use App\Http\Requests\User\Profile\UpdateUserRequest;
 use App\Http\Resources\User\UserResource;
+use App\Models\User;
 use App\Models\UserStatus;
+use App\Models\UserType;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
@@ -19,9 +23,17 @@ class ProfileController extends Controller
     /**
      * Show authenticate user's information
      */
-    public function show(): JsonResponse
+    public function show(Request $request): JsonResponse
     {
-        return static::successResponse(new UserResource($this->user()));
+        /** @var User|null $user */
+        $user = $request->user();
+        if (! $user) {
+            return static::errorResponse('Unauthenticated', 401);
+        }
+
+        Gate::authorize('view', [$user, UserType::USER]);
+
+        return static::successResponse(new UserResource($user));
     }
 
     /**
@@ -51,9 +63,17 @@ class ProfileController extends Controller
     /**
      * Soft delete the authenticate user
      */
-    public function destroy(): JsonResponse
+    public function destroy(Request $request): JsonResponse
     {
-        $this->user()->update([
+        /** @var User|null $user */
+        $user = $request->user();
+        if (! $user) {
+            return static::errorResponse('Unauthenticated', 401);
+        }
+
+        Gate::authorize('delete', [$user, UserType::USER]);
+
+        $user->update([
             'user_status_id' => UserStatus::DELETED,
             'deleted_at' => \now(),
         ]);
@@ -80,23 +100,31 @@ class ProfileController extends Controller
         UpdateUserRequest|ReplaceUserRequest $request,
         bool $isReplace,
     ): JsonResponse {
+        /** @var User|null $user */
+        $user = $request->user();
+        if (! $user) {
+            return static::errorResponse('Unauthenticated', 401);
+        }
+
+        Gate::authorize('update', [$user, UserType::USER]);
+
         if (isset($validatedData['password'])) {
             $validatedData['password'] = Hash::make($validatedData['password']);
         }
 
         if ($request->hasFile('image')) {
-            if ($this->user()->image) {
+            if ($user->image) {
                 Storage::disk(\config('filesystems.default'))
-                    ->delete('users/'.$this->user()->image);
+                    ->delete('users/'.$user->image);
             }
 
             $validatedData['image'] = self::storeUserImage($request->file('image'));
         }
 
-        $this->user()->update($validatedData);
+        $user->update($validatedData);
 
         return static::successResponse(
-            new UserResource($this->user()),
+            new UserResource($user),
             $isReplace ? 'User replaced successfully' : 'User updated successfully'
         );
     }

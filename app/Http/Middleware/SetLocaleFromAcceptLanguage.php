@@ -49,7 +49,7 @@ class SetLocaleFromAcceptLanguage
             return $this->detectFromHeader($request);
         }
 
-        $preferredLocale = $user->userProfile->preferred_language;
+        $preferredLocale = $user->userProfile?->preferred_language;
 
         if (
             \is_string($preferredLocale) &&

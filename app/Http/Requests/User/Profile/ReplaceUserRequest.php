@@ -2,26 +2,29 @@
 
 declare(strict_types=1);
 
-namespace App\Http\Requests\User;
+namespace App\Http\Requests\User\Profile;
 
 use App\Models\User;
+use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Validation\Rule;
 
 class ReplaceUserRequest extends FormRequest
 {
+    /**
+     * Determine if the user is authorized to make this request.
+     */
     public function authorize(): bool
     {
         return \auth()->check();
     }
 
+    /**
+     * Get the validation rules that apply to the request.
+     *
+     * @return array<string, ValidationRule|array<mixed>|string>
+     */
     public function rules(): array
     {
-        /** @var User|null $user */
-        $user = \auth()->user();
-
-        $userId = $user->id ?? 0;
-
         return [
             'first_name' => ['required', 'string', 'max:255'],
             'last_name' => ['required', 'string', 'max:255'],
@@ -30,16 +33,8 @@ class ReplaceUserRequest extends FormRequest
                 'nullable',
                 'email',
                 'max:255',
-                Rule::unique('users', 'email')->ignore($userId),
             ],
             'image' => ['required', 'file', 'mimes:png,jpg', 'max:204800000'],
-            'phone_number' => [
-                'required',
-                'string',
-                'max:20',
-                Rule::unique('users', 'phone_number')->ignore($userId),
-            ],
-            'password' => ['required', 'string', 'min:8', 'confirmed'],
         ];
     }
 }

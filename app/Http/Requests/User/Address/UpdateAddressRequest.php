@@ -25,17 +25,17 @@ class UpdateAddressRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'label' => ['sometimes', 'string', 'max:255'],
-            'recipient_name' => ['sometimes', 'string', 'max:255'],
-            'phone' => ['sometimes', 'string', 'max:20'],
-            'address_line_1' => ['sometimes', 'string', 'max:255'],
-            'address_line_2' => ['sometimes', 'nullable', 'string', 'max:255'],
-            'city' => ['sometimes', 'string', 'max:255'],
-            'province' => ['sometimes', 'string', 'max:255'],
-            'postal_code' => ['sometimes', 'string', 'max:20'],
-            'lat' => ['sometimes', 'nullable', 'numeric'],
-            'long' => ['sometimes', 'nullable', 'numeric'],
-            'address_map' => ['sometimes', 'nullable', 'string', 'max:255'],
+            'label' => ['sometimes', 'required', 'string', 'max:255'],
+            'recipient_name' => ['sometimes', 'required', 'string', 'max:255'],
+            'phone' => ['sometimes', 'required', 'string', 'max:20'],
+            'address_line_1' => ['sometimes', 'required', 'string', 'max:255'],
+            'address_line_2' => ['sometimes', 'required', 'nullable', 'string', 'max:255'],
+            'city' => ['sometimes', 'required', 'string', 'max:255'],
+            'province' => ['sometimes', 'required', 'string', 'max:255'],
+            'postal_code' => ['sometimes', 'required', 'string', 'max:20'],
+            'lat' => ['sometimes', 'required', 'required_with:long', 'numeric'],
+            'long' => ['sometimes', 'required', 'required_with:lat', 'numeric'],
+            'address_map' => ['nullable', 'string', 'max:255'],
         ];
     }
 }

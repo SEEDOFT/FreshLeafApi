@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Requests\User\PaymentMethod;
 
-use App\Models\UserPaymentMethod;
+use App\Models\PaymentMethod;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Auth;
@@ -49,7 +49,7 @@ class UpdatePaymentMethodRequest extends FormRequest
                     return;
                 }
 
-                $paymentMethod = UserPaymentMethod::query()->find($paymentMethodId);
+                $paymentMethod = PaymentMethod::query()->find($paymentMethodId);
                 if (! $paymentMethod) {
                     return;
                 }

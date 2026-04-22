@@ -5,9 +5,8 @@ declare(strict_types=1);
 namespace App\Http\Controllers\Api\Vendor;
 
 use App\Http\Controllers\Controller;
-use App\Http\Resources\User\WalletHistoryResource;
-use App\Http\Resources\User\WalletResource;
-use App\Models\User;
+use App\Http\Resources\Shared\WalletHistoryResource;
+use App\Http\Resources\Shared\WalletResource;
 use App\Models\UserType;
 use App\Models\Wallet;
 use Illuminate\Http\JsonResponse;
@@ -23,11 +22,7 @@ class WalletController extends Controller
     {
         Gate::authorize('viewAny', [Wallet::class, UserType::VENDOR]);
 
-        /** @var User|null $vendor */
-        $vendor = $request->user();
-        if (! $vendor) {
-            return static::errorResponse('Unauthenticated', 401);
-        }
+        $vendor = $this->authenticatedUser($request);
 
         $wallets = $vendor->wallets()
             ->with('currency')
@@ -75,6 +70,7 @@ class WalletController extends Controller
         Gate::authorize('view', [$wallet, UserType::VENDOR]);
 
         $histories = $wallet->histories()
+            ->with('currency')
             ->orderByDesc('id')
             ->simplePaginate($request->integer('per_page', 10));
 

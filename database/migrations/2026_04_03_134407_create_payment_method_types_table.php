@@ -20,10 +20,13 @@ return new class extends Migration
             $table->timestamps();
         });
 
+        $now = now();
+
         DB::table('payment_method_types')->insert([
-            ['id' => 1, 'code' => 'visa', 'name' => 'Visa'],
-            ['id' => 2, 'code' => 'master_card', 'name' => 'MasterCard'],
-            ['id' => 3, 'code' => 'union_pay', 'name' => 'UnionPay'],
+            ['id' => 1, 'code' => 'wallet', 'name' => 'Wallet', 'created_at' => $now, 'updated_at' => $now],
+            ['id' => 2, 'code' => 'credit_debit', 'name' => 'Credit / Debit Card', 'created_at' => $now, 'updated_at' => $now],
+            ['id' => 3, 'code' => 'aba', 'name' => 'ABA', 'created_at' => $now, 'updated_at' => $now],
+            ['id' => 4, 'code' => 'acleda', 'name' => 'ACLEDA', 'created_at' => $now, 'updated_at' => $now],
         ]);
     }
 

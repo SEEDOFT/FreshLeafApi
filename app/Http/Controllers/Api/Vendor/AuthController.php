@@ -85,9 +85,8 @@ class AuthController extends Controller
      */
     public function logout(Request $request): JsonResponse
     {
-        /** @var User|null $vendor */
-        $vendor = $request->user();
-        $vendor?->currentAccessToken()?->delete();
+        $vendor = $this->authenticatedUser($request);
+        $vendor->currentAccessToken()->delete();
 
         return static::successResponse(message: 'Tokens Revoked');
     }

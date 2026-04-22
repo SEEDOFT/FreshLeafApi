@@ -42,7 +42,7 @@ use Laravel\Sanctum\HasApiTokens;
  * @property-read VendorProfile|null $vendorProfile
  * @property-read AdminProfile|null $adminProfile
  * @property-read Address[]|HasMany<Address, $this> $addresses
- * @property-read UserPaymentMethod[]|HasMany<UserPaymentMethod, $this> $paymentMethods
+ * @property-read PaymentMethod[]|HasMany<PaymentMethod, $this> $paymentMethods
  * @property-read Wallet[]|HasMany<Wallet, $this> $wallets
  */
 #[Table('users', key: 'id', keyType: 'int')]
@@ -135,11 +135,11 @@ class User extends Authenticatable
     /**
      * Get the payment methods for the user.
      *
-     * @return HasMany<UserPaymentMethod, $this>
+     * @return HasMany<PaymentMethod, $this>
      */
     public function paymentMethods(): HasMany
     {
-        return $this->hasMany(UserPaymentMethod::class, 'user_id', 'id');
+        return $this->hasMany(PaymentMethod::class, 'user_id', 'id');
     }
 
     /**
@@ -166,15 +166,37 @@ class User extends Authenticatable
             return;
         }
 
-        $this->wallets()->firstOrCreate(
+        $khrWallet = $this->wallets()->firstOrCreate(
             ['user_id' => $this->id, 'currency_id' => $khrCurrencyId],
             ['balance' => '0.00'],
         );
 
-        $this->wallets()->firstOrCreate(
+        $freshKhrWallet = $khrWallet->fresh();
+
+        WalletHistory::insert([
+            'user_id' => $this->id,
+            'wallet_id' => $freshKhrWallet->id,
+            'currency_id' => $khrCurrencyId,
+            'balance' => $freshKhrWallet->balance,
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+
+        $usdWallet = $this->wallets()->firstOrCreate(
             ['user_id' => $this->id, 'currency_id' => $usdCurrencyId],
             ['balance' => '0.00'],
         );
+
+        $freshUsdWallet = $usdWallet->fresh();
+
+        WalletHistory::insert([
+            'user_id' => $this->id,
+            'wallet_id' => $freshUsdWallet->id,
+            'currency_id' => $usdCurrencyId,
+            'balance' => $freshUsdWallet->balance,
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
     }
 
     /**

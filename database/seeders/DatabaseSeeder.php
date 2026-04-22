@@ -32,6 +32,7 @@ class DatabaseSeeder extends Seeder
             ProductSeeder::class,
             ProductSampleSeeder::class,
             ProductVariantSeeder::class,
+            WalletTransactionSeeder::class,
         ]);
 
         User::factory()->create([

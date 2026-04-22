@@ -6,10 +6,10 @@ namespace Tests\Feature;
 
 use App\Models\Address;
 use App\Models\Currency;
+use App\Models\PaymentMethod;
 use App\Models\PaymentMethodStatus;
 use App\Models\PaymentMethodType;
 use App\Models\User;
-use App\Models\UserPaymentMethod;
 use App\Models\UserType;
 use App\Models\Wallet;
 use App\Policies\UserPolicy;
@@ -27,8 +27,8 @@ class PolicyRolloutCoreTest extends TestCase
         parent::setUp();
 
         PaymentMethodType::query()->firstOrCreate(
-            ['id' => PaymentMethodType::VISA],
-            ['code' => 'visa', 'name' => 'Visa']
+            ['id' => PaymentMethodType::CREDIT_DEBIT],
+            ['code' => 'credit_debit', 'name' => 'Credit / Debit Card']
         );
 
         PaymentMethodStatus::query()->firstOrCreate(
@@ -145,13 +145,17 @@ class PolicyRolloutCoreTest extends TestCase
 
         $createResponse = $this->postJson('/api/v1/user/payment-methods', [
             'label' => 'Main Card',
-            'payment_method_type_id' => PaymentMethodType::VISA,
+            'payment_method_type_id' => PaymentMethodType::CREDIT_DEBIT,
             'card_holder_name' => 'John Doe',
             'card_number' => '4111111111111111',
             'expiry_month' => 12,
             'expiry_year' => (int) date('Y') + 2,
             'cvv' => '123',
             'is_default' => true,
+            'billing_address' => 'Street 1',
+            'billing_city' => 'Phnom Penh',
+            'billing_state' => 'Phnom Penh',
+            'billing_zip_code' => '12000',
         ])->assertCreated();
 
         $paymentMethodId = (int) $createResponse->json('data.id');
@@ -177,7 +181,7 @@ class PolicyRolloutCoreTest extends TestCase
             ->assertJsonPath('status.message', 'Address not found');
     }
 
-    public function test_user_payment_method_returns_not_found_for_missing_id(): void
+    public function test_payment_method_returns_not_found_for_missing_id(): void
     {
         $owner = User::factory()->create();
         Sanctum::actingAs($owner);
@@ -265,9 +269,9 @@ class PolicyRolloutCoreTest extends TestCase
         $owner = User::factory()->create();
         $otherUser = User::factory()->create();
 
-        $paymentMethod = UserPaymentMethod::query()->create([
+        $paymentMethod = PaymentMethod::query()->create([
             'user_id' => $otherUser->id,
-            'payment_method_type_id' => PaymentMethodType::VISA,
+            'payment_method_type_id' => PaymentMethodType::CREDIT_DEBIT,
             'payment_method_status_id' => PaymentMethodStatus::ACTIVE,
             'label' => 'Other Card',
             'card_holder_name' => 'Other User',

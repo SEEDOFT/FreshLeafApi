@@ -20,7 +20,7 @@ use Illuminate\Support\Carbon;
  * @property string $name
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
- * @property-read Collection<int, UserPaymentMethod> $paymentMethods
+ * @property-read Collection<int, PaymentMethod> $paymentMethods
  * @property-read int|null $paymentMethods_count
  */
 #[Table('payment_method_statuses', key: 'id')]
@@ -28,6 +28,7 @@ use Illuminate\Support\Carbon;
 #[UseFactory(PaymentMethodStatusFactory::class)]
 class PaymentMethodStatus extends Model
 {
+    /** @use HasFactory<PaymentMethodStatusFactory> */
     use HasFactory;
 
     public const int ACTIVE = 1;
@@ -38,12 +39,11 @@ class PaymentMethodStatus extends Model
 
     /**
      * Get the payment methods for the status.
-     */
-    /**
-     * @return HasMany<UserPaymentMethod, $this>
+     *
+     * @return HasMany<PaymentMethod, $this>
      */
     public function paymentMethods(): HasMany
     {
-        return $this->hasMany(UserPaymentMethod::class, 'payment_method_status_id', 'id');
+        return $this->hasMany(PaymentMethod::class, 'payment_method_status_id', 'id');
     }
 }

@@ -4,10 +4,12 @@ declare(strict_types=1);
 
 namespace App\Models;
 
-use Database\Factories\UserPaymentMethodFactory;
+use Database\Factories\PaymentMethodFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
+use Illuminate\Database\Eloquent\Attributes\Scope;
 use Illuminate\Database\Eloquent\Attributes\Table;
 use Illuminate\Database\Eloquent\Attributes\UseFactory;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -36,6 +38,8 @@ use Illuminate\Support\Carbon;
  * @property-read User $user
  * @property-read PaymentMethodType $type
  * @property-read PaymentMethodStatus $status
+ *
+ * @method static Builder<static>|PaymentMethod active()
  */
 #[Table('payment_methods', key: 'id')]
 #[Fillable([
@@ -54,10 +58,10 @@ use Illuminate\Support\Carbon;
     'billing_state',
     'billing_zip_code',
 ])]
-#[UseFactory(UserPaymentMethodFactory::class)]
-class UserPaymentMethod extends Model
+#[UseFactory(PaymentMethodFactory::class)]
+class PaymentMethod extends Model
 {
-    /** @use HasFactory<UserPaymentMethodFactory> */
+    /** @use HasFactory<PaymentMethodFactory> */
     use HasFactory, SoftDeletes;
 
     protected function casts(): array
@@ -104,5 +108,14 @@ class UserPaymentMethod extends Model
     public function status(): BelongsTo
     {
         return $this->belongsTo(PaymentMethodStatus::class, 'payment_method_status_id', 'id');
+    }
+
+    /**
+     * Scope a query to only include active payment methods.
+     */
+    #[Scope]
+    protected function active(Builder $query): void
+    {
+        $query->where('payment_method_status_id', PaymentMethodStatus::ACTIVE);
     }
 }

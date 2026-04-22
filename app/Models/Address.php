@@ -6,6 +6,7 @@ namespace App\Models;
 
 use Database\Factories\AddressFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
+use Illuminate\Database\Eloquent\Attributes\Scope;
 use Illuminate\Database\Eloquent\Attributes\Table;
 use Illuminate\Database\Eloquent\Attributes\UseFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -58,5 +59,14 @@ class Address extends Model
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class, 'user_id', 'id');
+    }
+
+    /**
+     * Scope a query to only include active (not soft-deleted) addresses.
+     */
+    #[Scope]
+    protected function active($query): void
+    {
+        $query->whereNull('deleted_at');
     }
 }

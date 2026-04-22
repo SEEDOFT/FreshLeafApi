@@ -14,22 +14,10 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
     'wallet_id',
     'user_id',
     'currency_id',
-    'action',
-    'amount_before',
-    'amount_change',
-    'amount_after',
-    'performed_by_user_id',
-    'reference_type',
-    'reference_id',
-    'description',
-    'meta',
+    'balance',
 ])]
 class WalletHistory extends Model
 {
-    public const string ACTION_CREATED = 'created';
-
-    public const string ACTION_BALANCE_UPDATED = 'balance_updated';
-
     /**
      * {@inheritDoc}
      *
@@ -38,10 +26,7 @@ class WalletHistory extends Model
     protected function casts(): array
     {
         return [
-            'amount_before' => 'decimal:4',
-            'amount_change' => 'decimal:4',
-            'amount_after' => 'decimal:4',
-            'meta' => 'array',
+            'balance' => 'decimal:4',
         ];
     }
 
@@ -67,13 +52,5 @@ class WalletHistory extends Model
     public function currency(): BelongsTo
     {
         return $this->belongsTo(Currency::class, 'currency_id', 'id');
-    }
-
-    /**
-     * @return BelongsTo<User, $this>
-     */
-    public function performedBy(): BelongsTo
-    {
-        return $this->belongsTo(User::class, 'performed_by_user_id', 'id');
     }
 }

@@ -22,6 +22,12 @@ return new class extends Migration
             $table->string('province')->nullable();
             $table->string('address')->nullable();
             $table->boolean('is_verified')->default(false);
+            $table->timestamp('approved_at')->nullable();
+            $table->timestamp('rejected_at')->nullable();
+            $table->unsignedBigInteger('approved_by_admin_id')->nullable()->index();
+            $table->unsignedBigInteger('rejected_by_admin_id')->nullable()->index();
+            $table->text('approve_reason')->nullable();
+            $table->text('reject_reason')->nullable();
             $table->json('meta')->nullable();
             $table->timestamps();
         });

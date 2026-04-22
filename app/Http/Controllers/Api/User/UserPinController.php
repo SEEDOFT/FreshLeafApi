@@ -19,11 +19,7 @@ class UserPinController extends Controller
      */
     public function setPin(SetPinRequest $request): JsonResponse
     {
-        /** @var User|null $user */
-        $user = $request->user();
-        if (! $user) {
-            return static::errorResponse('Unauthenticated', 401);
-        }
+        $user = $this->authenticatedUser($request);
 
         $validatedData = $request->validated();
         $profile = UserProfile::firstOrCreateForUser($user);
@@ -42,11 +38,7 @@ class UserPinController extends Controller
      */
     public function updatePin(UpdatePinRequest $request): JsonResponse
     {
-        /** @var User|null $user */
-        $user = $request->user();
-        if (! $user) {
-            return static::errorResponse('Unauthenticated', 401);
-        }
+        $user = $this->authenticatedUser($request);
 
         $validatedData = $request->validated();
         $profile = $user->userProfile;
@@ -65,11 +57,7 @@ class UserPinController extends Controller
      */
     public function verifyPin(VerifyPinRequest $request): JsonResponse
     {
-        /** @var User|null $user */
-        $user = $request->user();
-        if (! $user) {
-            return static::errorResponse('Unauthenticated', 401);
-        }
+        $user = $this->authenticatedUser($request);
 
         $validatedData = $request->validated();
         $profile = $user->userProfile;
@@ -91,11 +79,7 @@ class UserPinController extends Controller
      */
     public function resetPin(SetPinRequest $request): JsonResponse
     {
-        /** @var User|null $user */
-        $user = $request->user();
-        if (! $user) {
-            return static::errorResponse('Unauthenticated', 401);
-        }
+        $user = $this->authenticatedUser($request);
 
         $validatedData = $request->validated();
         $profile = UserProfile::firstOrCreateForUser($user);

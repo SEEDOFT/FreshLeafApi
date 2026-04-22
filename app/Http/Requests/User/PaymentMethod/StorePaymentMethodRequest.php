@@ -32,11 +32,11 @@ class StorePaymentMethodRequest extends FormRequest
             'expiry_month' => ['required', 'integer', 'min:1', 'max:12'],
             'expiry_year' => ['required', 'integer', 'min:'.\date('Y'), 'max:'.\date('Y') + 20],
             'cvv' => ['required', 'string', 'min:3', 'max:4'],
-            'is_default' => ['sometimes', 'boolean'],
-            'billing_address' => ['sometimes', 'string', 'max:255'],
-            'billing_city' => ['sometimes', 'string', 'max:255'],
-            'billing_state' => ['sometimes', 'string', 'max:255'],
-            'billing_zip_code' => ['sometimes', 'string', 'max:20'],
+            'is_default' => ['sometimes', 'required', 'boolean'],
+            'billing_address' => ['required', 'string', 'max:255'],
+            'billing_city' => ['required', 'string', 'max:255'],
+            'billing_state' => ['required', 'string', 'max:255'],
+            'billing_zip_code' => ['required', 'string', 'max:20'],
         ];
     }
 }

@@ -8,7 +8,6 @@ use App\Models\Currency;
 use App\Models\User;
 use App\Models\UserType;
 use App\Models\Wallet;
-use App\Models\WalletHistory;
 use Illuminate\Foundation\Testing\LazilyRefreshDatabase;
 use Laravel\Sanctum\Sanctum;
 use Tests\TestCase;
@@ -16,6 +15,12 @@ use Tests\TestCase;
 class WalletApiTest extends TestCase
 {
     use LazilyRefreshDatabase;
+
+    public function test_user_wallet_list_requires_authentication(): void
+    {
+        $this->getJson('/api/v1/user/wallets')
+            ->assertUnauthorized();
+    }
 
     public function test_user_can_list_own_wallets(): void
     {
@@ -27,7 +32,8 @@ class WalletApiTest extends TestCase
         $this->getJson('/api/v1/user/wallets')
             ->assertOk()
             ->assertJsonPath('status.success', true)
-            ->assertJsonPath('status.message', 'Wallets retrieved successfully');
+            ->assertJsonPath('status.message', 'Wallets retrieved successfully')
+            ->assertJsonPath('data.0.currency.code', Currency::USD);
     }
 
     public function test_user_cannot_view_other_user_wallet(): void
@@ -44,7 +50,7 @@ class WalletApiTest extends TestCase
             ->assertNotFound();
     }
 
-    public function test_wallet_history_is_logged_on_wallet_create_and_balance_update(): void
+    public function test_user_can_view_wallet_history_with_currency_fields(): void
     {
         $user = User::factory()->create(['user_type_id' => UserType::USER]);
         $usdId = (int) Currency::query()->where('code', Currency::USD)->value('id');
@@ -57,22 +63,24 @@ class WalletApiTest extends TestCase
 
         Sanctum::actingAs($user);
 
-        $wallet->update(['balance' => '25.5000']);
-
-        $this->assertDatabaseHas('wallet_histories', [
+        \DB::table('wallet_histories')->insert([
             'wallet_id' => $wallet->id,
-            'action' => WalletHistory::ACTION_CREATED,
-            'amount_before' => 0,
-            'amount_after' => 10.0000,
+            'user_id' => $user->id,
+            'currency_id' => $usdId,
+            'balance' => '25.5000',
+            'created_at' => now(),
+            'updated_at' => now(),
         ]);
 
-        $this->assertDatabaseHas('wallet_histories', [
-            'wallet_id' => $wallet->id,
-            'action' => WalletHistory::ACTION_BALANCE_UPDATED,
-            'amount_before' => 10.0000,
-            'amount_after' => 25.5000,
-            'performed_by_user_id' => $user->id,
-        ]);
+        $this->getJson('/api/v1/user/wallets/'.$wallet->id.'/histories')
+            ->assertOk()
+            ->assertJsonPath('status.success', true)
+            ->assertJsonPath('status.message', 'Wallet history retrieved successfully')
+            ->assertJsonPath('data.0.currency.code', Currency::USD)
+            ->assertJsonPath('data.0.currency_id', $usdId)
+            ->assertJsonPath('data.0.wallet_id', $wallet->id)
+            ->assertJsonPath('data.0.user_id', $user->id)
+            ->assertJsonPath('data.0.balance', '25.5000');
     }
 
     public function test_vendor_can_view_wallet_history(): void
@@ -87,11 +95,92 @@ class WalletApiTest extends TestCase
 
         Sanctum::actingAs($vendor);
 
-        $wallet->update(['balance' => '7.0000']);
+        \DB::table('wallet_histories')->insert([
+            'wallet_id' => $wallet->id,
+            'user_id' => $vendor->id,
+            'currency_id' => $usdId,
+            'balance' => '7.0000',
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
 
         $this->getJson('/api/v1/vendor/wallets/'.$wallet->id.'/histories')
             ->assertOk()
             ->assertJsonPath('status.success', true)
-            ->assertJsonPath('status.message', 'Wallet history retrieved successfully');
+            ->assertJsonPath('status.message', 'Wallet history retrieved successfully')
+            ->assertJsonPath('data.0.currency.code', Currency::USD)
+            ->assertJsonPath('data.0.currency_id', $usdId)
+            ->assertJsonPath('data.0.balance', '7.0000');
+    }
+
+    public function test_admin_can_list_own_wallets(): void
+    {
+        $admin = User::factory()->create(['user_type_id' => UserType::ADMIN]);
+        $admin->ensureDefaultWallets();
+
+        Sanctum::actingAs($admin);
+
+        $this->getJson('/api/v1/admin/wallets')
+            ->assertOk()
+            ->assertJsonPath('status.success', true)
+            ->assertJsonPath('status.message', 'Wallets retrieved successfully');
+    }
+
+    public function test_admin_can_view_own_wallet(): void
+    {
+        $admin = User::factory()->create(['user_type_id' => UserType::ADMIN]);
+        $admin->ensureDefaultWallets();
+        $walletId = (int) $admin->wallets()->value('id');
+
+        Sanctum::actingAs($admin);
+
+        $this->getJson('/api/v1/admin/wallets/'.$walletId)
+            ->assertOk()
+            ->assertJsonPath('status.success', true)
+            ->assertJsonPath('status.message', 'Wallet retrieved successfully');
+    }
+
+    public function test_admin_can_view_own_wallet_history(): void
+    {
+        $admin = User::factory()->create(['user_type_id' => UserType::ADMIN]);
+        $usdId = (int) Currency::query()->where('code', Currency::USD)->value('id');
+        $wallet = Wallet::query()->create([
+            'user_id' => $admin->id,
+            'currency_id' => $usdId,
+            'balance' => '1.0000',
+        ]);
+
+        Sanctum::actingAs($admin);
+
+        \DB::table('wallet_histories')->insert([
+            'wallet_id' => $wallet->id,
+            'user_id' => $admin->id,
+            'currency_id' => $usdId,
+            'balance' => '3.5000',
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+
+        $this->getJson('/api/v1/admin/wallets/'.$wallet->id.'/histories')
+            ->assertOk()
+            ->assertJsonPath('status.success', true)
+            ->assertJsonPath('status.message', 'Wallet history retrieved successfully')
+            ->assertJsonPath('data.0.currency.code', Currency::USD)
+            ->assertJsonPath('data.0.currency_id', $usdId)
+            ->assertJsonPath('data.0.balance', '3.5000');
+    }
+
+    public function test_admin_cannot_view_other_user_wallet(): void
+    {
+        $owner = User::factory()->create(['user_type_id' => UserType::USER]);
+        $owner->ensureDefaultWallets();
+        $admin = User::factory()->create(['user_type_id' => UserType::ADMIN]);
+
+        $walletId = (int) $owner->wallets()->value('id');
+
+        Sanctum::actingAs($admin);
+
+        $this->getJson('/api/v1/admin/wallets/'.$walletId)
+            ->assertNotFound();
     }
 }

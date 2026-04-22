@@ -20,11 +20,7 @@ class VendorController extends Controller
      */
     public function indexPendingVendorApproval(Request $request): JsonResponse
     {
-        /** @var User|null $admin */
-        $admin = $request->user();
-        if (! $admin) {
-            return static::errorResponse('Unauthenticated', 401);
-        }
+        $admin = $this->authenticatedUser($request);
 
         if (! (bool) $admin->adminProfile?->super_admin) {
             return static::errorResponse('Forbidden', 403);
@@ -47,11 +43,7 @@ class VendorController extends Controller
      */
     public function showPendingVendorApproval(Request $request, int $id): JsonResponse
     {
-        /** @var User|null $admin */
-        $admin = $request->user();
-        if (! $admin) {
-            return static::errorResponse('Unauthenticated', 401);
-        }
+        $admin = $this->authenticatedUser($request);
 
         if (! (bool) $admin->adminProfile?->super_admin) {
             return static::errorResponse('Forbidden', 403);
@@ -78,11 +70,7 @@ class VendorController extends Controller
      */
     public function updatePendingVendorApproval(int $id, UpdatePendingVendorRequest $request): JsonResponse
     {
-        /** @var User|null $admin */
-        $admin = $request->user();
-        if (! $admin) {
-            return static::errorResponse('Unauthenticated', 401);
-        }
+        $admin = $this->authenticatedUser($request);
 
         if (! (bool) $admin->adminProfile?->super_admin) {
             return static::errorResponse('Forbidden', 403);

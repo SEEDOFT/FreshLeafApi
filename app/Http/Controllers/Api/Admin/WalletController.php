@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Http\Controllers\Api\User;
+namespace App\Http\Controllers\Api\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Http\Resources\Shared\WalletHistoryResource;
@@ -16,15 +16,15 @@ use Illuminate\Support\Facades\Gate;
 class WalletController extends Controller
 {
     /**
-     * Display a listing of the user's wallets.
+     * Display a listing of the admin wallets.
      */
     public function index(Request $request): JsonResponse
     {
-        Gate::authorize('viewAny', [Wallet::class, UserType::USER]);
+        Gate::authorize('viewAny', [Wallet::class, UserType::ADMIN]);
 
-        $user = $this->authenticatedUser($request);
+        $admin = $this->authenticatedUser($request);
 
-        $wallets = $user->wallets()
+        $wallets = $admin->wallets()
             ->with('currency')
             ->orderByDesc('id')
             ->simplePaginate($request->integer('per_page', 10));
@@ -40,14 +40,15 @@ class WalletController extends Controller
      */
     public function show(string $id): JsonResponse
     {
-        $wallet = Wallet::with('currency')
+        $wallet = Wallet::query()
+            ->with('currency')
             ->find($id);
 
         if (! $wallet) {
             return static::errorResponse('Wallet not found', 404);
         }
 
-        Gate::authorize('view', [$wallet, UserType::USER]);
+        Gate::authorize('view', [$wallet, UserType::ADMIN]);
 
         return static::successResponse(
             new WalletResource($wallet),
@@ -66,7 +67,7 @@ class WalletController extends Controller
             return static::errorResponse('Wallet not found', 404);
         }
 
-        Gate::authorize('view', [$wallet, UserType::USER]);
+        Gate::authorize('view', [$wallet, UserType::ADMIN]);
 
         $histories = $wallet->histories()
             ->with('currency')

@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace App\Policies;
 
+use App\Models\PaymentMethod;
 use App\Models\PaymentMethodStatus;
 use App\Models\User;
-use App\Models\UserPaymentMethod;
 use Illuminate\Auth\Access\Response;
 
-class UserPaymentMethodPolicy
+class PaymentMethodPolicy
 {
     /**
      * Determine whether the authenticated user can view payment method list.
@@ -30,7 +30,7 @@ class UserPaymentMethodPolicy
     /**
      * Determine whether the authenticated user can view the payment method.
      */
-    public function view(User $user, UserPaymentMethod $paymentMethod): Response
+    public function view(User $user, PaymentMethod $paymentMethod): Response
     {
         return $this->ownsActivePaymentMethod($user, $paymentMethod);
     }
@@ -38,7 +38,7 @@ class UserPaymentMethodPolicy
     /**
      * Determine whether the authenticated user can update the payment method.
      */
-    public function update(User $user, UserPaymentMethod $paymentMethod): Response
+    public function update(User $user, PaymentMethod $paymentMethod): Response
     {
         return $this->ownsActivePaymentMethod($user, $paymentMethod);
     }
@@ -46,14 +46,14 @@ class UserPaymentMethodPolicy
     /**
      * Determine whether the authenticated user can delete the payment method.
      */
-    public function delete(User $user, UserPaymentMethod $paymentMethod): Response
+    public function delete(User $user, PaymentMethod $paymentMethod): Response
     {
         return $this->ownsActivePaymentMethod($user, $paymentMethod);
     }
 
     private function ownsActivePaymentMethod(
         User $user,
-        UserPaymentMethod $paymentMethod
+        PaymentMethod $paymentMethod
     ): Response {
         if (
             (int) $paymentMethod->user_id === (int) $user->id &&

@@ -15,16 +15,15 @@ class PaymentMethodTypeSeeder extends Seeder
     public function run(): void
     {
         $types = [
-            ['id' => PaymentMethodType::VISA, 'code' => 'visa', 'name' => 'Visa'],
-            ['id' => PaymentMethodType::MASTER_CARD, 'code' => 'master_card', 'name' => 'MasterCard'],
-            ['id' => PaymentMethodType::UNION_PAY, 'code' => 'union_pay', 'name' => 'UnionPay'],
-            ['id' => PaymentMethodType::AMERICAN_EXPRESS, 'code' => 'american_express', 'name' => 'American Express'],
-            ['id' => PaymentMethodType::DISCOVER, 'code' => 'discover', 'name' => 'Discover'],
-            ['id' => PaymentMethodType::JCB, 'code' => 'jcb', 'name' => 'JCB'],
-            ['id' => PaymentMethodType::DINERS_CLUB, 'code' => 'diners_club', 'name' => 'Diners Club'],
-            ['id' => PaymentMethodType::PAYPAL, 'code' => 'paypal', 'name' => 'PayPal'],
-            ['id' => PaymentMethodType::STRIPE, 'code' => 'stripe', 'name' => 'Stripe'],
+            ['id' => PaymentMethodType::WALLET, 'code' => 'wallet', 'name' => 'Wallet'],
+            ['id' => PaymentMethodType::CREDIT_DEBIT, 'code' => 'credit_debit', 'name' => 'Credit / Debit Card'],
+            ['id' => PaymentMethodType::ABA, 'code' => 'aba', 'name' => 'ABA'],
+            ['id' => PaymentMethodType::ACLEDA, 'code' => 'acleda', 'name' => 'ACLEDA'],
         ];
+
+        PaymentMethodType::query()
+            ->whereNotIn('id', \array_column($types, 'id'))
+            ->delete();
 
         foreach ($types as $type) {
             PaymentMethodType::updateOrCreate(

@@ -14,6 +14,7 @@ use App\Models\UserStatus;
 use App\Models\UserType;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Hash;
 
@@ -58,21 +59,21 @@ class AuthController extends Controller
     {
         $validatedData = $request->validated();
 
-        $user = User::create([
-            'first_name' => $validatedData['first_name'],
-            'last_name' => $validatedData['last_name'],
-            'phone_number' => $validatedData['phone_number'],
-            'image' => 'user.png',
-            'user_status_id' => UserStatus::ACTIVE,
-            'user_type_id' => UserType::USER,
-            'password' => Hash::make($validatedData['password']),
-        ]);
+        $user = DB::transaction(static function () use ($validatedData): User {
+            $user = User::create([
+                'first_name' => $validatedData['first_name'],
+                'last_name' => $validatedData['last_name'],
+                'email' => $validatedData['email'] ?? null,
+                'phone_number' => $validatedData['phone_number'],
+                'password' => Hash::make($validatedData['password']),
+                'user_type_id' => UserType::USER,
+                'user_status_id' => UserStatus::ACTIVE,
+            ]);
 
-        $user->userProfile()->create([
-            'preferred_language' => 'en',
-        ]);
+            $user->ensureDefaultWallets();
 
-        $user->ensureDefaultWallets();
+            return $user;
+        });
 
         $token = $user->createToken('user_auth_token')->plainTextToken;
 
@@ -87,11 +88,7 @@ class AuthController extends Controller
      */
     public function logout(Request $request): JsonResponse
     {
-        /** @var User|null $user */
-        $user = $request->user();
-        if (! $user) {
-            return static::errorResponse('Unauthenticated', 401);
-        }
+        $user = $this->authenticatedUser($request);
 
         Gate::authorize('auth.logout');
 
@@ -105,11 +102,7 @@ class AuthController extends Controller
      */
     public function verifyPassword(VerifyPasswordRequest $request): JsonResponse
     {
-        /** @var User|null $user */
-        $user = $request->user();
-        if (! $user) {
-            return static::errorResponse('Unauthenticated', 401);
-        }
+        $user = $this->authenticatedUser($request);
 
         Gate::authorize('auth.verifyPassword');
 
@@ -127,11 +120,7 @@ class AuthController extends Controller
      */
     public function updatePassword(UpdatePasswordRequest $request): JsonResponse
     {
-        /** @var User|null $user */
-        $user = $request->user();
-        if (! $user) {
-            return static::errorResponse('Unauthenticated', 401);
-        }
+        $user = $this->authenticatedUser($request);
 
         Gate::authorize('auth.updatePassword');
 

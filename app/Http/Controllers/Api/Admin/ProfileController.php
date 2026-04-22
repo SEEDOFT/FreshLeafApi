@@ -7,7 +7,6 @@ namespace App\Http\Controllers\Api\Admin;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\UpdateAdminProfileRequest;
 use App\Http\Resources\Admin\AdminProfileResource;
-use App\Models\User;
 use App\Models\UserType;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -20,11 +19,7 @@ class ProfileController extends Controller
      */
     public function show(Request $request): JsonResponse
     {
-        /** @var User|null $admin */
-        $admin = $request->user();
-        if (! $admin) {
-            return static::errorResponse('Unauthenticated', 401);
-        }
+        $admin = $this->authenticatedUser($request);
 
         Gate::authorize('view', [$admin, UserType::ADMIN]);
 
@@ -39,17 +34,14 @@ class ProfileController extends Controller
      */
     public function update(UpdateAdminProfileRequest $request): JsonResponse
     {
-        /** @var User|null $admin */
-        $admin = $request->user();
-        if (! $admin) {
-            return static::errorResponse('Unauthenticated', 401);
-        }
+        $admin = $this->authenticatedUser($request);
 
         Gate::authorize('update', [$admin, UserType::ADMIN]);
 
         $validatedData = $request->validated();
 
         $profile = $admin->adminProfile()->firstOrCreate(['user_id' => $admin->id]);
+
         $profile->update($validatedData);
 
         return static::successResponse(

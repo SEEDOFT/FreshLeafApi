@@ -10,7 +10,6 @@ use App\Http\Requests\User\Address\StoreAddressRequest;
 use App\Http\Requests\User\Address\UpdateAddressRequest;
 use App\Http\Resources\User\AddressResource;
 use App\Models\Address;
-use App\Models\User;
 use App\Models\UserType;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -25,11 +24,7 @@ class VendorAddressController extends Controller
     {
         Gate::authorize('viewAny', [Address::class, UserType::VENDOR]);
 
-        /** @var User|null $vendor */
-        $vendor = $request->user();
-        if (! $vendor) {
-            return static::errorResponse('Unauthenticated', 401);
-        }
+        $vendor = $this->authenticatedUser($request);
 
         $addresses = $vendor->addresses()
             ->latest()
@@ -45,11 +40,7 @@ class VendorAddressController extends Controller
     {
         Gate::authorize('create', [Address::class, UserType::VENDOR]);
 
-        /** @var User|null $vendor */
-        $vendor = $request->user();
-        if (! $vendor) {
-            return static::errorResponse('Unauthenticated', 401);
-        }
+        $vendor = $this->authenticatedUser($request);
 
         $validatedData = $request->validated();
 

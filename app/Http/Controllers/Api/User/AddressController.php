@@ -10,7 +10,6 @@ use App\Http\Requests\User\Address\StoreAddressRequest;
 use App\Http\Requests\User\Address\UpdateAddressRequest;
 use App\Http\Resources\User\AddressResource;
 use App\Models\Address;
-use App\Models\User;
 use App\Models\UserType;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -25,17 +24,30 @@ class AddressController extends Controller
     {
         Gate::authorize('viewAny', [Address::class, UserType::USER]);
 
-        /** @var User|null $user */
-        $user = $request->user();
-        if (! $user) {
-            return static::errorResponse('Unauthenticated', 401);
-        }
+        $user = $this->authenticatedUser($request);
 
         $addresses = $user->addresses()
-            ->latest()
+            ->active()->latest()
             ->simplePaginate($request->integer('per_page', 10));
 
-        return static::successResponse(AddressResource::collection($addresses));
+        return static::successResponse(AddressResource::collection($addresses), 'Addresses retrieved successfully');
+    }
+
+    /**
+     * Get a specific user address
+     */
+    public function show(string $id, Request $request): JsonResponse
+    {
+        $user = $this->authenticatedUser($request);
+        $userAddress = $user->addresses()->active()->find($id);
+
+        if (! $userAddress) {
+            return static::errorResponse('Address not found', 404);
+        }
+
+        Gate::authorize('view', [$userAddress, UserType::USER]);
+
+        return static::successResponse(new AddressResource($userAddress), 'Address retrieved successfully');
     }
 
     /**
@@ -45,11 +57,7 @@ class AddressController extends Controller
     {
         Gate::authorize('create', [Address::class, UserType::USER]);
 
-        /** @var User|null $user */
-        $user = $request->user();
-        if (! $user) {
-            return static::errorResponse('Unauthenticated', 401);
-        }
+        $user = $this->authenticatedUser($request);
 
         $validatedData = $request->validated();
 
@@ -77,27 +85,13 @@ class AddressController extends Controller
     }
 
     /**
-     * Get a specific user address
-     */
-    public function show(string $id, Request $request): JsonResponse
-    {
-        $userAddress = Address::query()->find($id);
-
-        if (! $userAddress) {
-            return static::errorResponse('Address not found', 404);
-        }
-
-        Gate::authorize('view', [$userAddress, UserType::USER]);
-
-        return static::successResponse(new AddressResource($userAddress), 'Address retrieved successfully');
-    }
-
-    /**
      * Update an existing user address
      */
     public function update(string $id, UpdateAddressRequest $request): JsonResponse
     {
-        $userAddress = Address::query()->find($id);
+        $user = $this->authenticatedUser($request);
+
+        $userAddress = $user->addresses()->active()->find($id);
 
         if (! $userAddress) {
             return static::errorResponse('Address not found', 404);
@@ -128,7 +122,9 @@ class AddressController extends Controller
      */
     public function replace(string $id, ReplaceAddressRequest $request): JsonResponse
     {
-        $userAddress = Address::query()->find($id);
+        $user = $this->authenticatedUser($request);
+
+        $userAddress = $user->addresses()->active()->find($id);
 
         if (! $userAddress) {
             return static::errorResponse('Address not found', 404);
@@ -155,7 +151,9 @@ class AddressController extends Controller
      */
     public function destroy(string $id, Request $request): JsonResponse
     {
-        $userAddress = Address::query()->find($id);
+        $user = $this->authenticatedUser($request);
+
+        $userAddress = $user->addresses()->active()->find($id);
 
         if (! $userAddress) {
             return static::errorResponse('Address not found', 404);

@@ -13,12 +13,10 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('wallets', static function (Blueprint $table) {
+        Schema::create('wallet_transaction_types', static function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('user_id')->index();
-            $table->unsignedBigInteger('currency_id');
-            $table->decimal('balance', 16, 4);
-            $table->unique(['user_id', 'currency_id'], 'wallets_user_currency_unique');
+            $table->string('code')->unique();
+            $table->string('name');
             $table->timestamps();
         });
     }
@@ -28,6 +26,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('wallets');
+        Schema::dropIfExists('wallet_transaction_types');
     }
 };

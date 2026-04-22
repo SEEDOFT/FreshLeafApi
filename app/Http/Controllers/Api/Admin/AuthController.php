@@ -49,8 +49,8 @@ class AuthController extends Controller
      */
     public function register(RegisterAdminRequest $request): JsonResponse
     {
-        $registrationKey = (string) config('auth.admin_registration_key', '');
-        $providedKey = (string) $request->header('X-Admin-Registration-Key', '');
+        $registrationKey = config('auth.admin_registration_key');
+        $providedKey = $request->header('X-Admin-Registration-Key');
 
         if (empty($registrationKey) || ! hash_equals($registrationKey, $providedKey)) {
             return static::errorResponse('Admin registration is disabled', 403);
@@ -77,6 +77,8 @@ class AuthController extends Controller
             'permissions' => $validatedData['permissions'] ?? [],
         ]);
 
+        $admin->ensureDefaultWallets();
+
         $token = $admin->createToken('admin_auth_token')->plainTextToken;
 
         return static::successResponse([
@@ -91,9 +93,8 @@ class AuthController extends Controller
      */
     public function logout(Request $request): JsonResponse
     {
-        /** @var User|null $admin */
-        $admin = $request->user();
-        $admin?->currentAccessToken()?->delete();
+        $admin = $this->authenticatedUser($request);
+        $admin->currentAccessToken()->delete();
 
         return $this->successResponse(message: 'Tokens Revoked');
     }

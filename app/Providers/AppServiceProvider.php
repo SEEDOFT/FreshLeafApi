@@ -5,12 +5,12 @@ declare(strict_types=1);
 namespace App\Providers;
 
 use App\Models\Address;
+use App\Models\PaymentMethod;
 use App\Models\User;
-use App\Models\UserPaymentMethod;
 use App\Models\Wallet;
 use App\Policies\AddressPolicy;
 use App\Policies\AuthActionPolicy;
-use App\Policies\UserPaymentMethodPolicy;
+use App\Policies\PaymentMethodPolicy;
 use App\Policies\UserPolicy;
 use App\Policies\WalletPolicy;
 use Illuminate\Support\Facades\Gate;
@@ -32,7 +32,7 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         Gate::policy(Address::class, AddressPolicy::class);
-        Gate::policy(UserPaymentMethod::class, UserPaymentMethodPolicy::class);
+        Gate::policy(PaymentMethod::class, PaymentMethodPolicy::class);
         Gate::policy(User::class, UserPolicy::class);
         Gate::policy(Wallet::class, WalletPolicy::class);
 

@@ -81,13 +81,22 @@ Route::prefix('v1')->name('v1.')->group(static function () {
 
                     Route::prefix('payment-methods')
                         ->name('payment-methods.')
-                        ->controller(UserController\UserPaymentMethodController::class)
+                        ->controller(UserController\PaymentMethodController::class)
                         ->group(static function () {
                             Route::get('/', 'index')->name('index');
+                            Route::get('{id}', 'show')->name('show');
                             Route::post('/', 'store')->name('store');
                             Route::put('{id}', 'replace')->name('replace');
                             Route::patch('{id}', 'update')->name('update');
                             Route::delete('{id}', 'destroy')->name('delete');
+                        });
+
+                    Route::prefix('payment-method-types')
+                        ->name('payment-method-types.')
+                        ->controller(UserController\PaymentMethodTypeController::class)
+                        ->group(static function () {
+                            Route::get('/', 'index')->name('index');
+                            Route::get('{id}', 'show')->name('show');
                         });
 
                     Route::prefix('wallets')
@@ -97,6 +106,17 @@ Route::prefix('v1')->name('v1.')->group(static function () {
                             Route::get('/', 'index')->name('index');
                             Route::get('{id}', 'show')->name('show');
                             Route::get('{id}/histories', 'history')->name('histories');
+                        });
+
+                    Route::prefix('wallet-transactions')
+                        ->name('wallet-transactions.')
+                        ->controller(UserController\WalletTransactionController::class)
+                        ->group(static function () {
+                            Route::get('/', 'index')->name('index');
+                            Route::get('{id}', 'show')->name('show');
+                            Route::post('/', 'store')->name('store');
+                            Route::patch('{id}', 'update')->name('update');
+                            Route::delete('{id}', 'destroy')->name('destroy');
                         });
 
                     Route::prefix('ai/chat')
@@ -113,6 +133,17 @@ Route::prefix('v1')->name('v1.')->group(static function () {
     Route::post('broadcasting/auth', [Broadcast::class, 'auth'])
         ->middleware('auth:sanctum')
         ->name('broadcasting.auth');
+
+    // Backward-compatible AI chat routes
+    Route::prefix('ai/chat')
+        ->name('ai.chat.')
+        ->controller(AiChatController::class)
+        ->middleware(['auth:sanctum', 'active.type:user'])
+        ->group(static function () {
+            Route::post('sessions', 'createSession')->name('sessions.create');
+            Route::post('messages', 'storeMessage')->name('messages.store');
+            Route::post('history', 'history')->name('history');
+        });
 
     // Admin routes
     Route::prefix('admin')
@@ -165,6 +196,29 @@ Route::prefix('v1')->name('v1.')->group(static function () {
                     Route::get('pending', 'indexPendingVendorApproval')->name('pending.index');
                     Route::get('pending/{id}', 'showPendingVendorApproval')->name('pending.show');
                     Route::patch('pending/{id}', 'updatePendingVendorApproval')->name('update');
+                });
+
+            Route::prefix('wallets')
+                ->name('wallets.')
+                ->controller(AdminController\WalletController::class)
+                ->middleware(['auth:sanctum', 'active.type:admin'])
+                ->group(static function () {
+                    Route::get('/', 'index')->name('index');
+                    Route::get('{id}', 'show')->name('show');
+                    Route::get('{id}/histories', 'history')->name('histories');
+                });
+
+            Route::prefix('payment-method-types')
+                ->name('payment-method-types.')
+                ->controller(AdminController\PaymentMethodTypeController::class)
+                ->middleware(['auth:sanctum', 'active.type:admin'])
+                ->group(static function () {
+                    Route::get('/', 'index')->name('index');
+                    Route::get('{id}', 'show')->name('show');
+                    Route::post('/', 'store')->name('store');
+                    Route::put('{id}', 'replace')->name('replace');
+                    Route::patch('{id}', 'update')->name('update');
+                    Route::delete('{id}', 'destroy')->name('delete');
                 });
         });
 

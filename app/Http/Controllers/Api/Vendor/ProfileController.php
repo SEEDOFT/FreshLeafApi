@@ -7,7 +7,6 @@ namespace App\Http\Controllers\Api\Vendor;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Vendor\UpdateVendorProfileRequest;
 use App\Http\Resources\Vendor\VendorProfileResource;
-use App\Models\User;
 use App\Models\UserType;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -20,12 +19,7 @@ class ProfileController extends Controller
      */
     public function show(Request $request): JsonResponse
     {
-        /** @var User|null $vendor */
-        $vendor = $request->user();
-
-        if (! $vendor) {
-            return static::errorResponse('Vendor not found', 404);
-        }
+        $vendor = $this->authenticatedUser($request);
 
         Gate::authorize('view', [$vendor, UserType::VENDOR]);
 
@@ -40,12 +34,7 @@ class ProfileController extends Controller
      */
     public function update(UpdateVendorProfileRequest $request): JsonResponse
     {
-        /** @var User|null $vendor */
-        $vendor = $request->user();
-
-        if (! $vendor) {
-            return static::errorResponse('Vendor not found', 404);
-        }
+        $vendor = $this->authenticatedUser($request);
 
         Gate::authorize('update', [$vendor, UserType::VENDOR]);
 

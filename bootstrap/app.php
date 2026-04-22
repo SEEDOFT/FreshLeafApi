@@ -24,6 +24,8 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(static function (Middleware $middleware): void {
+        $middleware->redirectGuestsTo(null);
+
         $middleware->alias([
             'active.type' => EnsureActiveUserType::class,
         ]);

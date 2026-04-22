@@ -63,7 +63,7 @@ Core user tables
     updated_at,
     deleted_at
 
--> UserPaymentMethods
+-> PaymentMethods
     id,
     user_id,
     payment_method_type_id,

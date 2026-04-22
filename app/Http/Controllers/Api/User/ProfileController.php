@@ -25,11 +25,7 @@ class ProfileController extends Controller
      */
     public function show(Request $request): JsonResponse
     {
-        /** @var User|null $user */
-        $user = $request->user();
-        if (! $user) {
-            return static::errorResponse('Unauthenticated', 401);
-        }
+        $user = $this->authenticatedUser($request);
 
         Gate::authorize('view', [$user, UserType::USER]);
 
@@ -65,11 +61,7 @@ class ProfileController extends Controller
      */
     public function destroy(Request $request): JsonResponse
     {
-        /** @var User|null $user */
-        $user = $request->user();
-        if (! $user) {
-            return static::errorResponse('Unauthenticated', 401);
-        }
+        $user = $this->authenticatedUser($request);
 
         Gate::authorize('delete', [$user, UserType::USER]);
 
@@ -100,11 +92,7 @@ class ProfileController extends Controller
         UpdateUserRequest|ReplaceUserRequest $request,
         bool $isReplace,
     ): JsonResponse {
-        /** @var User|null $user */
-        $user = $request->user();
-        if (! $user) {
-            return static::errorResponse('Unauthenticated', 401);
-        }
+        $user = $this->authenticatedUser($request);
 
         Gate::authorize('update', [$user, UserType::USER]);
 

@@ -11,7 +11,6 @@ use App\Http\Requests\Ai\StoreChatMessageRequest;
 use App\Jobs\ProcessAiChatMessageJob;
 use App\Models\AiChatMessage;
 use App\Models\AiChatSession;
-use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
@@ -25,12 +24,7 @@ class AiChatController extends Controller
     {
         $validatedDataData = $request->validated();
         $sessionId = $validatedDataData['session_id'] ?? (string) Str::uuid();
-        /** @var User|null $user */
-        $user = $request->user();
-
-        if (! $user) {
-            return $this->errorResponse('Unauthenticated', 401);
-        }
+        $user = $this->authenticatedUser($request);
 
         $session = AiChatSession::firstOrCreate(
             [
@@ -43,7 +37,7 @@ class AiChatController extends Controller
             ],
         );
 
-        return $this->successResponse([
+        return static::successResponse([
             'session_id' => $session->session_id,
             'title' => $session->title,
             'created_at' => \optional($session->created_at)
@@ -58,12 +52,7 @@ class AiChatController extends Controller
      */
     public function storeMessage(StoreChatMessageRequest $request): JsonResponse
     {
-        /** @var User|null $user */
-        $user = $request->user();
-
-        if (! $user) {
-            return $this->errorResponse('Unauthenticated', 401);
-        }
+        $user = $this->authenticatedUser($request);
 
         $validatedData = $request->validated();
 
@@ -72,7 +61,7 @@ class AiChatController extends Controller
             ->first();
 
         if (! $session) {
-            return $this->errorResponse('Chat session not found', 404);
+            return static::errorResponse('Chat session not found', 404);
         }
 
         /** @var array{0: AiChatMessage, 1: AiChatMessage} */
@@ -115,7 +104,7 @@ class AiChatController extends Controller
                 return [$userMessage, $assistantMessage];
             });
 
-        return $this->successResponse([
+        return static::successResponse([
             'session_id' => $session->session_id,
             'user_message_id' => $result[0]->message_id,
             'ai_message_id' => $result[1]->message_id,
@@ -128,12 +117,7 @@ class AiChatController extends Controller
      */
     public function history(FetchChatHistoryRequest $request): JsonResponse
     {
-        /** @var User|null $user */
-        $user = $request->user();
-
-        if (! $user) {
-            return $this->errorResponse('Unauthenticated', 401);
-        }
+        $user = $this->authenticatedUser($request);
 
         $validatedData = $request->validated();
 
@@ -142,7 +126,7 @@ class AiChatController extends Controller
             ->first();
 
         if (! $session) {
-            return $this->errorResponse('Chat session not found', 404);
+            return static::errorResponse('Chat session not found', 404);
         }
 
         $limit = $validatedData['limit'] ?? 100;
@@ -164,7 +148,7 @@ class AiChatController extends Controller
             ])
             ->values();
 
-        return $this->successResponse([
+        return static::successResponse([
             'session_id' => $session->session_id,
             'messages' => $messages,
         ], 'Chat history loaded');

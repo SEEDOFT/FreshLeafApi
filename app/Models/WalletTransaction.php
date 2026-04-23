@@ -23,6 +23,7 @@ use Illuminate\Support\Carbon;
  * @property int|null $payment_method_id
  * @property int|null $reference_id
  * @property string|null $reference_type
+ * @property string|null $description
  * @property Carbon|null $transaction_date
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at

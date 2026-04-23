@@ -10,13 +10,15 @@ trait ApiResponse
 {
     /**
      * Base Response Structure
+     *
+     * @return array{status: array{code: string, success: bool, message: ?string}, data: mixed}
      */
     private static function baseResponse(
         string $code,
         bool $success,
         ?string $message = null,
         mixed $data = [],
-    ) {
+    ): array {
         return [
             'status' => [
                 'code' => $code,

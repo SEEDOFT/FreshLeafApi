@@ -122,7 +122,7 @@ class AiService implements AiProviderContract
     {
         /** @var string $requested */
         $requested = \config('ai.default', 'gemini');
-        /** @var array $fallbacks */
+        /** @var array<int, string> $fallbacks */
         $fallbacks = \config('ai.fallbacks', []);
 
         $orderedProviders = [$requested, ...$fallbacks]

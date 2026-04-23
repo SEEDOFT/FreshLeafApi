@@ -28,6 +28,7 @@ use Illuminate\Support\Carbon;
 #[UseFactory(ProductStatusFactory::class)]
 class ProductStatus extends Model
 {
+    /** @use HasFactory<ProductStatusFactory> */
     use HasFactory;
 
     public const int ACTIVE = 1;

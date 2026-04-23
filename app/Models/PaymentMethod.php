@@ -112,6 +112,8 @@ class PaymentMethod extends Model
 
     /**
      * Scope a query to only include active payment methods.
+     *
+     * @param  Builder<PaymentMethod>  $query
      */
     #[Scope]
     protected function active(Builder $query): void

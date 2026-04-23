@@ -30,6 +30,7 @@ use Illuminate\Support\Carbon;
 #[UseFactory(PaymentStatusFactory::class)]
 class PaymentStatus extends Model
 {
+    /** @use HasFactory<PaymentStatusFactory> */
     use HasFactory;
 
     public const int ACTIVE = 1;

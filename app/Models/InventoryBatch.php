@@ -58,6 +58,7 @@ use Illuminate\Support\Carbon;
 #[UseFactory(InventoryBatchFactory::class)]
 class InventoryBatch extends Model
 {
+    /** @use HasFactory<InventoryBatchFactory> */
     use HasFactory;
 
     /**

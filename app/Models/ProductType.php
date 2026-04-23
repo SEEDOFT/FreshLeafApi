@@ -27,6 +27,7 @@ use Illuminate\Support\Carbon;
 #[UseFactory(ProductTypeFactory::class)]
 class ProductType extends Model
 {
+    /** @use HasFactory<ProductTypeFactory> */
     use HasFactory;
 
     /**

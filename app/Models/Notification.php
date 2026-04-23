@@ -41,6 +41,7 @@ use Illuminate\Support\Carbon;
 #[UseFactory(NotificationFactory::class)]
 class Notification extends Model
 {
+    /** @use HasFactory<NotificationFactory> */
     use HasFactory;
 
     /**

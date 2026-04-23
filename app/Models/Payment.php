@@ -39,6 +39,7 @@ use Illuminate\Support\Carbon;
 #[UseFactory(PaymentFactory::class)]
 class Payment extends Model
 {
+    /** @use HasFactory<PaymentFactory> */
     use HasFactory;
 
     /**

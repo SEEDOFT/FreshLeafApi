@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Requests\Ai;
 
+use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 
 class StoreChatMessageRequest extends FormRequest
@@ -13,6 +14,9 @@ class StoreChatMessageRequest extends FormRequest
         return \auth()->check();
     }
 
+    /**
+     * @return array<string, ValidationRule|array<mixed>|string>
+     */
     public function rules(): array
     {
         return [

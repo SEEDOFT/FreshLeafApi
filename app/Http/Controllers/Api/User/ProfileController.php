@@ -13,6 +13,7 @@ use App\Models\UserStatus;
 use App\Models\UserType;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
@@ -76,7 +77,7 @@ class ProfileController extends Controller
     /**
      * Store user image and return the file name
      */
-    private function storeUserImage($file): string
+    private function storeUserImage(UploadedFile $file): string
     {
         $fileName = Str::ulid().'.'.$file->getClientOriginalExtension();
         $file->storeAs('users', $fileName, 'public');
@@ -86,6 +87,8 @@ class ProfileController extends Controller
 
     /**
      * Persist user profile data for both update and replace operations
+     *
+     * @param  array<string, mixed>  $validatedData
      */
     private function persistUserProfile(
         array $validatedData,

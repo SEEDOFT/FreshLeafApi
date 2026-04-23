@@ -28,6 +28,7 @@ use Illuminate\Support\Carbon;
 #[UseFactory(InventoryMovementTypeFactory::class)]
 class InventoryMovementType extends Model
 {
+    /** @use HasFactory<InventoryMovementTypeFactory> */
     use HasFactory;
 
     /**

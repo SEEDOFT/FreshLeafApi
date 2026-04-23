@@ -20,7 +20,7 @@ use Illuminate\Support\Carbon;
  * @property string|null $job_title
  * @property string|null $office_phone
  * @property bool $super_admin
- * @property array|null $permissions
+ * @property array<string, mixed>|null $permissions
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  * @property-read User $user

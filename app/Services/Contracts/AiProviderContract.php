@@ -10,7 +10,7 @@ interface AiProviderContract
      * Generate content based on the given prompt and options.
      *
      * @param  string  $prompt  The input prompt for content generation.
-     * @param  array  $options  Additional options for content generation (e.g., temperature, max tokens).
+     * @param  array<string, mixed>  $options  Additional options for content generation (e.g., temperature, max tokens).
      * @return string The generated content.
      */
     public function generateContent(string $prompt, array $options = []): string;
@@ -18,9 +18,9 @@ interface AiProviderContract
     /**
      * Generate content based on the given history, prompt, and options.
      *
-     * @param  array  $history  An array of previous interactions or messages.
+     * @param  array<int, array<string, mixed>>  $history  An array of previous interactions or messages.
      * @param  string  $prompt  The input prompt for content generation.
-     * @param  array  $options  Additional options for content generation (e.g., temperature, max tokens).
+     * @param  array<string, mixed>  $options  Additional options for content generation (e.g., temperature, max tokens).
      * @return string The generated content.
      */
     public function generateContentWithHistory(array $history, string $prompt, array $options = []): string;
@@ -30,7 +30,7 @@ interface AiProviderContract
      *
      * @param  string  $systemPrompt  The system prompt for content generation.
      * @param  string  $prompt  The input prompt for content generation.
-     * @param  array  $options  Additional options for content generation (e.g., temperature, max tokens).
+     * @param  array<string, mixed>  $options  Additional options for content generation (e.g., temperature, max tokens).
      * @return string The generated content.
      */
     public function generateContentWithSystemPrompt(
@@ -43,9 +43,9 @@ interface AiProviderContract
      * Generate content based on the given system prompt, history, prompt, and options.
      *
      * @param  string  $systemPrompt  The system prompt for content generation.
-     * @param  array  $history  An array of previous interactions or messages.
+     * @param  array<int, array<string, mixed>>  $history  An array of previous interactions or messages.
      * @param  string  $prompt  The input prompt for content generation.
-     * @param  array  $options  Additional options for content generation (e.g., temperature, max tokens).
+     * @param  array<string, mixed>  $options  Additional options for content generation (e.g., temperature, max tokens).
      * @return string The generated content.
      */
     public function generateContentWithSystemPromptAndHistory(

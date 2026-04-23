@@ -63,7 +63,7 @@ class WalletTransactionPolicy
 
         $wallet = $transaction->wallet;
 
-        if ($wallet && (int) $wallet->user_id === (int) $user->id) {
+        if ((int) $wallet->user_id === (int) $user->id) {
             return Response::allow();
         }
 

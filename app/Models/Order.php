@@ -64,6 +64,7 @@ use Illuminate\Support\Carbon;
 #[UseFactory(OrderFactory::class)]
 class Order extends Model
 {
+    /** @use HasFactory<OrderFactory> */
     use HasFactory;
 
     protected function casts(): array

@@ -28,6 +28,7 @@ use Illuminate\Support\Carbon;
 #[UseFactory(OrderTypeFactory::class)]
 class OrderType extends Model
 {
+    /** @use HasFactory<OrderTypeFactory> */
     use HasFactory;
 
     /**

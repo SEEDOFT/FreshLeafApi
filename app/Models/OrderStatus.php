@@ -30,6 +30,7 @@ use Illuminate\Support\Carbon;
 #[UseFactory(OrderStatusFactory::class)]
 class OrderStatus extends Model
 {
+    /** @use HasFactory<OrderStatusFactory> */
     use HasFactory;
 
     /**

@@ -41,6 +41,7 @@ use Illuminate\Support\Carbon;
 #[UseFactory(InventoryMovementFactory::class)]
 class InventoryMovement extends Model
 {
+    /** @use HasFactory<InventoryMovementFactory> */
     use HasFactory;
 
     /**

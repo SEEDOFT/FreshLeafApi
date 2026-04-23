@@ -39,6 +39,7 @@ use Illuminate\Support\Carbon;
 #[UseFactory(PriceHistoryFactory::class)]
 class PriceHistory extends Model
 {
+    /** @use HasFactory<PriceHistoryFactory> */
     use HasFactory;
 
     /**

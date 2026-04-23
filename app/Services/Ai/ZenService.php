@@ -118,6 +118,10 @@ class ZenService implements AiProviderContract
         return $this->requestChat($messages, $options);
     }
 
+    /**
+     * @param  array<int, array<string, mixed>>  $messages
+     * @param  array<string, mixed>  $options
+     */
     private function requestChat(array $messages, array $options): string
     {
         if ($this->apiKey === '') {

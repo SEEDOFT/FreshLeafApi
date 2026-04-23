@@ -31,6 +31,7 @@ use Illuminate\Support\Carbon;
 #[UseFactory(SupplierFactory::class)]
 class Supplier extends Model
 {
+    /** @use HasFactory<SupplierFactory> */
     use HasFactory;
 
     /**

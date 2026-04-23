@@ -39,6 +39,7 @@ use Illuminate\Support\Carbon;
 #[UseFactory(CartItemFactory::class)]
 class CartItem extends Model
 {
+    /** @use HasFactory<CartItemFactory> */
     use HasFactory;
 
     /**

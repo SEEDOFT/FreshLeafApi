@@ -121,6 +121,10 @@ class GeminiService implements AiProviderContract
         return $this->requestContentWithSystemInstruction($systemPrompt, $contents, $options);
     }
 
+    /**
+     * @param  array<int, array<string, mixed>>  $contents
+     * @param  array<string, mixed>  $options
+     */
     private function requestContent(array $contents, array $options): string
     {
         if ($this->apiKey === '') {
@@ -168,6 +172,10 @@ class GeminiService implements AiProviderContract
         return $text;
     }
 
+    /**
+     * @param  array<int, array<string, mixed>>  $contents
+     * @param  array<string, mixed>  $options
+     */
     private function requestContentWithSystemInstruction(
         string $systemPrompt,
         array $contents,

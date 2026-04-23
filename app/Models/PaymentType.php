@@ -28,6 +28,7 @@ use Illuminate\Support\Carbon;
 #[UseFactory(PaymentTypeFactory::class)]
 class PaymentType extends Model
 {
+    /** @use HasFactory<PaymentTypeFactory> */
     use HasFactory;
 
     public const int VISA = 1;

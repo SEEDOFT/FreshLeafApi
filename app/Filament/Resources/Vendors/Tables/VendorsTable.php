@@ -60,8 +60,11 @@ class VendorsTable
                     ->label('Status'),
                 TrashedFilter::make(),
             ])
-            ->recordActions([
-                ViewAction::make(),
+            ->actions([
+                ViewAction::make()
+                    ->label('View Submission')
+                    ->icon('heroicon-o-eye')
+                    ->color('info'),
                 EditAction::make(),
                 Action::make('approveVendor')
                     ->label('Approve')
@@ -103,7 +106,7 @@ class VendorsTable
                     ])
                     ->requiresConfirmation(),
             ])
-            ->toolbarActions([
+            ->bulkActions([
                 BulkActionGroup::make([
                     DeleteBulkAction::make(),
                     ForceDeleteBulkAction::make(),

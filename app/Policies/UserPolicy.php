@@ -64,6 +64,11 @@ class UserPolicy
             };
         }
 
+        // Admins can view anything in the admin panel
+        if ($authenticatedUser->isType(UserType::ADMIN) && Filament::getCurrentPanel()?->getId() === 'admin') {
+            return Response::allow();
+        }
+
         if ((int) $authenticatedUser->user_type_id !== $expectedType) {
             return Response::denyAsNotFound('Profile not found.');
         }

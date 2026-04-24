@@ -32,6 +32,7 @@ use Illuminate\Support\Str;
  * @property string|null $description
  * @property array<array-key, mixed>|null $nutrition_data
  * @property int|null $shelf_life_days
+ * @property bool $is_organic
  * @property Carbon|null $deleted_at
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
@@ -75,6 +76,7 @@ use Illuminate\Support\Str;
     'description',
     'nutrition_data',
     'shelf_life_days',
+    'is_organic',
 ])]
 #[UseFactory(ProductFactory::class)]
 class Product extends Model
@@ -91,6 +93,7 @@ class Product extends Model
     {
         return [
             'nutrition_data' => 'array',
+            'is_organic' => 'boolean',
             'deleted_at' => 'datetime',
         ];
     }

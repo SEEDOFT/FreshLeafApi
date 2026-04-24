@@ -49,10 +49,10 @@ class AuthController extends Controller
      */
     public function register(RegisterAdminRequest $request): JsonResponse
     {
-        $registrationKey = config('auth.admin_registration_key');
-        $providedKey = $request->header('X-Admin-Registration-Key');
+        $registrationKey = (string) config('auth.admin_registration_key');
+        $providedKey = (string) $request->header('X-Admin-Registration-Key');
 
-        if (empty($registrationKey) || ! hash_equals($registrationKey, $providedKey)) {
+        if ($registrationKey === '' || ! hash_equals($registrationKey, $providedKey)) {
             return static::errorResponse('Admin registration is disabled', 403);
         }
 

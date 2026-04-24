@@ -1,0 +1,57 @@
+<?php
+
+declare(strict_types=1);
+
+namespace App\Filament\Widgets;
+
+use App\Models\Order;
+use Filament\Widgets\ChartWidget;
+use Illuminate\Support\Facades\DB;
+use Override;
+
+class AdminRevenueChart extends ChartWidget
+{
+    protected ?string $heading = 'Revenue Trend (30 Days)';
+
+    #[Override]
+    protected function getData(): array
+    {
+        $data = Order::whereHas('paymentStatus', fn ($query) => $query->where('code', 'paid'))
+            ->where('created_at', '>=', now()->subDays(30))
+            ->select(
+                DB::raw('DATE(created_at) as date'),
+                DB::raw('SUM(total_amount) as total')
+            )
+            ->groupBy('date')
+            ->orderBy('date')
+            ->pluck('total', 'date')
+            ->toArray();
+
+        $labels = [];
+        $values = [];
+
+        for ($i = 29; $i >= 0; $i--) {
+            $date = now()->subDays($i)->format('Y-m-d');
+            $labels[] = now()->subDays($i)->format('M d');
+            $values[] = $data[$date] ?? 0;
+        }
+
+        return [
+            'datasets' => [
+                [
+                    'label' => 'Daily Revenue (USD)',
+                    'data' => $values,
+                    'fill' => 'start',
+                    'tension' => 0.4,
+                ],
+            ],
+            'labels' => $labels,
+        ];
+    }
+
+    #[Override]
+    protected function getType(): string
+    {
+        return 'line';
+    }
+}

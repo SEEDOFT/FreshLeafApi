@@ -31,9 +31,10 @@ Core user tables
     created_at,
     updated_at
 
-    + 1: Active
-    + 2: Inactive
-    + 3: Deleted
+    + 1: Pending
+    + 2: Active
+    + 3: Inactive
+    + 4: Deleted
 
 -> UserTypes
     id,
@@ -41,9 +42,9 @@ Core user tables
     created_at,
     updated_at
 
-    + 1: Consumer
-    + 2: Operation
-    + 3: Admin
+    + 1: Admin
+    + 2: Vendor
+    + 3: Consumer
 
 -> UserAddresses
     id,
@@ -110,15 +111,66 @@ Core user tables
     created_at,
     updated_at
 
-    + 1: visa
-    + 2: master_card
-    + 3: union_pay
-    + 4: american_express
-    + 5: discover
-    + 6: jcb
-    + 7: diners_club
-    + 8: paypal
-    + 9: stripe
+    + 1: wallet
+    + 2: credit_debit
+    + 3: aba
+    + 4: acleda
+
+Wallet and transaction tables
+
+-> Wallets
+    id,
+    user_id,
+    currency_id,
+    balance,
+    created_at,
+    updated_at
+
+-> WalletTransactionTypes
+    id,
+    code,
+    name,
+    created_at,
+    updated_at
+
+    + 1: top_up
+    + 2: purchase
+    + 3: refund
+    + 4: withdrawal
+
+-> WalletTransactionStatuses
+    id,
+    code,
+    name,
+    created_at,
+    updated_at
+
+    + 1: pending
+    + 2: completed
+    + 3: failed
+    + 4: cancelled
+
+-> WalletTransactions
+    id,
+    wallet_id,
+    wallet_transaction_type_id,
+    wallet_transaction_status_id,
+    amount,
+    reference_type,
+    reference_id,
+    description,
+    created_at,
+    updated_at
+
+-> WalletTransactionHistories
+    id,
+    wallet_transaction_id,
+    from_wallet_transaction_status_id,
+    to_wallet_transaction_status_id,
+    changed_by_user_id,
+    note,
+    created_at,
+    updated_at
 
 Catalog and inventory tables
 

@@ -7,11 +7,21 @@ use App\Http\Controllers\Api\Ai\AiChatController;
 use App\Http\Controllers\Api\Product\ProductController;
 use App\Http\Controllers\Api\User as UserController;
 use App\Http\Controllers\Api\Vendor as VendorController;
+use Illuminate\Broadcasting\BroadcastController;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Support\Facades\Broadcast;
 use Illuminate\Support\Facades\Route;
 
 Route::prefix('v1')->name('v1.')->group(static function () {
+    // Top-level Auth Routes (for User)
+    Route::prefix('auth')
+        ->name('auth.')
+        ->controller(UserController\AuthController::class)
+        ->group(static function () {
+            Route::post('register', 'register')->name('register');
+            Route::post('login', 'login')->name('login');
+            Route::post('logout', 'logout')->middleware('auth:sanctum')->name('logout');
+        });
+
     // User routes
     Route::prefix('user')
         ->name('user.')
@@ -99,6 +109,14 @@ Route::prefix('v1')->name('v1.')->group(static function () {
                             Route::get('{id}', 'show')->name('show');
                         });
 
+                    Route::prefix('devices')
+                        ->name('devices.')
+                        ->controller(UserController\DeviceController::class)
+                        ->group(static function () {
+                            Route::post('/', 'store')->name('store');
+                            Route::delete('{token}', 'destroy')->name('destroy');
+                        });
+
                     Route::prefix('wallets')
                         ->name('wallets.')
                         ->controller(UserController\WalletController::class)
@@ -130,7 +148,7 @@ Route::prefix('v1')->name('v1.')->group(static function () {
                 });
         });
     // Authenticated (any sanctum) routes
-    Route::post('broadcasting/auth', [Broadcast::class, 'auth'])
+    Route::post('broadcasting/auth', [BroadcastController::class, 'authenticate'])
         ->middleware('auth:sanctum')
         ->name('broadcasting.auth');
 

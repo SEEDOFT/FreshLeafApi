@@ -22,6 +22,11 @@ return [
             'model' => env('OLLAMA_MODEL', 'qwen2.5:1.5b'),
             'timeout' => (int) env('OLLAMA_TIMEOUT', 60),
         ],
+        'llama_cpp' => [
+            'base_url' => env('LLAMA_CPP_BASE_URL', 'http://127.0.0.1:9000'),
+            'model' => env('LLAMA_CPP_MODEL', 'phi-3-mini'),
+            'timeout' => (int) env('LLAMA_CPP_TIMEOUT', 120),
+        ],
     ],
 
     'system_prompt_file' => storage_path('ai-context/system-prompt.md'),

@@ -9,12 +9,14 @@
 
 # FreshLeaf API
 
-A Laravel 13 REST API with payment integrations (Stripe, PayPal) and backend-driven AI chat streaming through Laravel Reverb (REST + private WebSocket channels).
+A Laravel 13 REST API with multi-method payment support and backend-driven AI chat streaming through Laravel Reverb (REST + private WebSocket channels).
 
 ## Features
 
-- **Payment Processing**: Stripe & PayPal sandbox integration
-- **AI Chat**: Session-based AI chat over REST + Reverb private channels
+- **Payment Processing**: Multi-method support (Wallet, Credit/Debit, ABA, ACLEDA, COD)
+- **Wallet System**: Internal wallet tracking with full transaction history and CRUD support
+- **AI Chat**: Session-based AI chat with real-time SSE streaming over Laravel Reverb (private WebSocket channels)
+- **Offline AI**: Native integration with `llama.cpp` for local testing without external dependencies
 - **Authentication**: Laravel Sanctum for API token auth
 - **API Versioning**: `/api/v1/` prefix with RESTful endpoints
 
@@ -34,11 +36,14 @@ copy .env.example .env
 php artisan key:generate
 php artisan migrate
 
+# Optional: Setup Offline AI (llama.cpp)
+php ai/setup-ai.php
+
 # Start development (all services)
 composer run dev
 
 # Or with custom Laravel server host/port
-composer run dev -- --host=192.168.0.108 --port=9000
+composer run dev -- --host=192.168.0.108 --port=8000
 ```
 
 ## AI Chat Flow (Flutter)
@@ -46,86 +51,33 @@ composer run dev -- --host=192.168.0.108 --port=9000
 1. `POST /api/v1/ai/chat/sessions` to create / reuse a session.
 2. Subscribe to `private-ai-chat.{userId}.{sessionId}`.
 3. `POST /api/v1/ai/chat/messages` to send user prompt.
-4. Stream UI updates from: `AiMessageStarted`, `AiMessageChunk`, `AiMessageCompleted`, `AiMessageFailed`.
+4. Stream UI updates from: `AiMessageStarted`, `AiMessageChunk` (received in real-time as AI generates), `AiMessageCompleted`, `AiMessageFailed`.
 5. Hydrate on cold start with `POST /api/v1/ai/chat/history`.
 
 ## Environment Variables
 
 ```env
-# Reverb server runtime bind
-REVERB_SERVER_HOST=0.0.0.0
-REVERB_SERVER_PORT=8080
+# ... (existing reverb and payment keys)
 
-# Reverb public host/port for clients
-REVERB_HOST=127.0.0.1
-REVERB_PORT=8080
-
-# Flutter runtime keys (dart-define)
-REVERB_APP_KEY=your_reverb_app_key
-REVERB_WS_SCHEME=ws
-REVERB_WS_HOST=127.0.0.1
-REVERB_WS_PORT=8080
-REVERB_AUTH_ENDPOINT=/api/v1/broadcasting/auth
-
-# Stripe
-STRIPE_KEY=pk_test_...
-STRIPE_SECRET=sk_test_...
-STRIPE_WEBHOOK_SECRET=whsec_...
-
-# PayPal
-PAYPAL_CLIENT_ID=...
-PAYPAL_SECRET=...
-PAYPAL_MODE=sandbox
-
-# Gemini AI
-GEMINI_API_KEY=...
-GEMINI_MODEL=gemini-2.0-flash
-
-# AI provider selection
+# AI provider selection: gemini, zen, ollama, or llama_cpp
 AI_PROVIDER=gemini
-AI_FALLBACK_PROVIDERS=zen,ollama
+AI_FALLBACK_PROVIDERS=zen,llama_cpp,ollama
 
-# OpenCode Zen (free tier)
-ZEN_API_KEY=...
-ZEN_BASE_URL=https://opencode.ai/zen/v1
-ZEN_MODEL=minimax-m2.5-free
-ZEN_TIMEOUT=40
-
-# Ollama (local AI)
-OLLAMA_BASE_URL=http://127.0.0.1:11434
-OLLAMA_MODEL=qwen2.5:1.5b
-OLLAMA_TIMEOUT=60
+# Llama.cpp (Internal Local AI)
+LLAMA_CPP_BASE_URL=http://127.0.0.1:8080
+LLAMA_CPP_MODEL=phi-3-mini
+LLAMA_CPP_TIMEOUT=120
 ```
 
-AI uses Google AI Studio API key mode (Gemini REST API) on the backend. No Vertex ADC / service account is required.
+## Offline AI (llama.cpp)
 
-## Lightweight Local AI (Free)
+This project includes a native integration with `llama.cpp`. Testers can run AI features entirely on their local CPU.
 
-Recommended lightweight local model: `qwen2.5:1.5b`.
-
-```bash
-# Install Ollama, then pull a lightweight model
-ollama pull qwen2.5:1.5b
-
-# Run local Ollama server (default http://127.0.0.1:11434)
-ollama serve
-```
-
-To switch backend provider to local AI:
-
-```env
-AI_PROVIDER=ollama
-AI_FALLBACK_PROVIDERS=gemini
-```
-
-To use OpenCode Zen free tier first:
-
-```env
-AI_PROVIDER=zen
-AI_FALLBACK_PROVIDERS=gemini,ollama
-ZEN_API_KEY=your_zen_api_key
-ZEN_MODEL=minimax-m2.5-free
-```
+1. Run `php ai/setup-ai.php` to download the engine and Phi-3 model (~2.4GB).
+2. Start the AI server:
+   - Windows: `ai\start-ai.bat`
+   - Mac/Linux: `./ai/start-ai.sh`
+3. Set `AI_PROVIDER=llama_cpp` in your `.env`.
 
 ## API Endpoints
 
@@ -136,19 +88,28 @@ ZEN_MODEL=minimax-m2.5-free
 | POST | `/api/v1/auth/login` | Login (get token) |
 | POST | `/api/v1/auth/logout` | Logout (require auth) |
 
+### Wallet & Transactions (require auth)
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/api/v1/user/wallets` | List own wallets |
+| GET | `/api/v1/user/wallets/{id}/histories` | View wallet balance history |
+| GET | `/api/v1/user/wallet-transactions` | List all wallet transactions |
+| POST | `/api/v1/user/wallet-transactions` | Create a new transaction |
+| GET | `/api/v1/user/wallet-transactions/{id}` | View transaction details |
+| PATCH | `/api/v1/user/wallet-transactions/{id}` | Update transaction (e.g. status) |
+| DELETE | `/api/v1/user/wallet-transactions/{id}` | Delete transaction record |
+
 ### Payments (require auth)
 | Method | Endpoint | Description |
 |--------|----------|-------------|
-| POST | `/api/v1/users/payments/intent` | Create Stripe payment intent |
-| POST | `/api/v1/users/payments/confirm` | Confirm Stripe payment |
-| POST | `/api/v1/users/payments/paypal/order` | Create PayPal order |
-| POST | `/api/v1/users/payments/paypal/capture` | Capture PayPal payment |
+| GET | `/api/v1/user/payment-methods` | List saved payment methods |
+| POST | `/api/v1/user/payment-methods` | Save new payment method |
 
 ### AI Chat (require auth)
 | Method | Endpoint | Description |
 |--------|----------|-------------|
 | POST | `/api/v1/ai/chat/sessions` | Create / reuse chat session |
-| POST | `/api/v1/ai/chat/messages` | Submit user message (queues AI job) |
+| POST | `/api/v1/ai/chat/messages` | Submit user message (starts real-time stream) |
 | POST | `/api/v1/ai/chat/history` | Load message history |
 
 ### Broadcast Auth (require auth)

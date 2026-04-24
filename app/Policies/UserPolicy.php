@@ -6,6 +6,7 @@ namespace App\Policies;
 
 use App\Models\User;
 use App\Models\UserType;
+use Filament\Facades\Filament;
 use Illuminate\Auth\Access\Response;
 
 class UserPolicy
@@ -16,7 +17,7 @@ class UserPolicy
     public function view(
         User $authenticatedUser,
         User $targetUser,
-        int $expectedType,
+        ?int $expectedType = null,
     ): Response {
         return $this->ownsProfile($authenticatedUser, $targetUser, $expectedType);
     }
@@ -27,7 +28,7 @@ class UserPolicy
     public function update(
         User $authenticatedUser,
         User $targetUser,
-        int $expectedType,
+        ?int $expectedType = null,
     ): Response {
         return $this->ownsProfile($authenticatedUser, $targetUser, $expectedType);
     }
@@ -38,7 +39,7 @@ class UserPolicy
     public function delete(
         User $authenticatedUser,
         User $targetUser,
-        int $expectedType,
+        ?int $expectedType = null,
     ): Response {
         return $this->ownsProfile($authenticatedUser, $targetUser, $expectedType);
     }
@@ -46,8 +47,23 @@ class UserPolicy
     private function ownsProfile(
         User $authenticatedUser,
         User $targetUser,
-        int $expectedType,
+        ?int $expectedType,
     ): Response {
+        // If expectedType is not provided (e.g. from Filament), infer it from the current panel
+        if ($expectedType === null) {
+            $panel = Filament::getCurrentPanel();
+
+            if (! $panel) {
+                return Response::deny();
+            }
+
+            $expectedType = match ($panel->getId()) {
+                'admin' => UserType::ADMIN,
+                'vendor' => UserType::VENDOR,
+                default => null,
+            };
+        }
+
         if ((int) $authenticatedUser->user_type_id !== $expectedType) {
             return Response::denyAsNotFound('Profile not found.');
         }
@@ -63,7 +79,7 @@ class UserPolicy
         return Response::denyAsNotFound('Profile not found.');
     }
 
-    private function hasProfileForType(User $targetUser, int $expectedType): bool
+    private function hasProfileForType(User $targetUser, ?int $expectedType): bool
     {
         return match ($expectedType) {
             UserType::USER => $targetUser->userProfile()->exists(),

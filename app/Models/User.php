@@ -5,10 +5,12 @@ declare(strict_types=1);
 namespace App\Models;
 
 use Database\Factories\UserFactory;
+use Filament\Models\Contracts\FilamentUser;
+use Filament\Models\Contracts\HasName;
+use Filament\Panel;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Hidden;
 use Illuminate\Database\Eloquent\Attributes\Scope;
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Attributes\Table;
 use Illuminate\Database\Eloquent\Attributes\UseFactory;
 use Illuminate\Database\Eloquent\Builder;
@@ -21,6 +23,7 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Carbon;
 use Laravel\Sanctum\HasApiTokens;
+use Override;
 
 /**
  * @property int $id
@@ -44,6 +47,7 @@ use Laravel\Sanctum\HasApiTokens;
  * @property-read Address[]|HasMany<Address, $this> $addresses
  * @property-read PaymentMethod[]|HasMany<PaymentMethod, $this> $paymentMethods
  * @property-read Wallet[]|HasMany<Wallet, $this> $wallets
+ * @property-read UserDevice[]|HasMany<UserDevice, $this> $devices
  */
 #[Table('users', key: 'id', keyType: 'int')]
 #[Fillable([
@@ -58,11 +62,42 @@ use Laravel\Sanctum\HasApiTokens;
 ])]
 #[Hidden(['password', 'remember_token'])]
 #[UseFactory(UserFactory::class)]
-class User extends Authenticatable
+class User extends Authenticatable implements FilamentUser, HasName
 {
     /** @use HasFactory<UserFactory> */
     use HasApiTokens, HasFactory, Notifiable, SoftDeletes;
 
+    /**
+     * Determine whether the user can access the given panel.
+     */
+    #[Override]
+    public function canAccessPanel(Panel $panel): bool
+    {
+        if ($panel->getId() === 'admin') {
+            return $this->isType(UserType::ADMIN);
+        }
+
+        if ($panel->getId() === 'vendor') {
+            return $this->isType(UserType::VENDOR);
+        }
+
+        return false;
+    }
+
+    /**
+     * Get the user's name for Filament.
+     */
+    #[Override]
+    public function getFilamentName(): string
+    {
+        return "{$this->first_name} {$this->last_name}";
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * @return array<string, string>
+     */
     protected function casts(): array
     {
         return [
@@ -150,6 +185,29 @@ class User extends Authenticatable
     public function wallets(): HasMany
     {
         return $this->hasMany(Wallet::class, 'user_id', 'id');
+    }
+
+    /**
+     * Get the devices for the user.
+     *
+     * @return HasMany<UserDevice, $this>
+     */
+    public function devices(): HasMany
+    {
+        return $this->hasMany(UserDevice::class, 'user_id', 'id');
+    }
+
+    /**
+     * Specifies the user's FCM tokens for notifications.
+     *
+     * @return array<int, string>
+     */
+    public function routeNotificationForFcm(): array
+    {
+        return $this->devices()
+            ->where('is_active', true)
+            ->pluck('device_token')
+            ->all();
     }
 
     /**

@@ -9,6 +9,7 @@ use Exception;
 use Illuminate\Http\Client\ConnectionException;
 use Illuminate\Http\Client\Response;
 use Illuminate\Support\Facades\Http;
+use Psr\Http\Message\StreamInterface;
 
 class ZenService implements AiProviderContract
 {
@@ -116,6 +117,127 @@ class ZenService implements AiProviderContract
         ];
 
         return $this->requestChat($messages, $options);
+    }
+
+    /**
+     * Stream content based on a system prompt, conversation history, and user prompt.
+     *
+     * @param  string  $systemPrompt  The system prompt for content generation.
+     * @param  array<int, array<string, mixed>>  $history  An array of previous messages in the conversation.
+     * @param  string  $prompt  The user prompt to generate content for.
+     * @param  callable(string): void  $onChunk  A callback function that is invoked for each generated text chunk.
+     * @param  array<string, mixed>  $options  Additional options for content generation.
+     * @return string The full generated content from Zen.
+     *
+     * @throws Exception If the API key or base URL is missing, or if the request fails.
+     */
+    public function streamContentWithSystemPromptAndHistory(
+        string $systemPrompt,
+        array $history,
+        string $prompt,
+        callable $onChunk,
+        array $options = [],
+    ): string {
+        if ($this->apiKey === '') {
+            throw new Exception('Zen API key is missing');
+        }
+
+        if ($this->baseUrl === '') {
+            throw new Exception('Zen API base URL is missing');
+        }
+
+        $messages = [
+            ['role' => 'system', 'content' => $systemPrompt],
+        ];
+
+        foreach ($history as $message) {
+            $content = (string) ($message['content'] ?? '');
+            if ($content === '') {
+                continue;
+            }
+            $messages[] = [
+                'role' => ($message['role'] ?? 'user') === 'assistant' ? 'assistant' : 'user',
+                'content' => $content,
+            ];
+        }
+
+        $messages[] = ['role' => 'user', 'content' => $prompt];
+
+        $payload = [
+            'model' => $this->model,
+            'messages' => $messages,
+            'temperature' => $options['temperature'] ?? 0.7,
+            'max_tokens' => $options['maxOutputTokens'] ?? 4096,
+            'stream' => true,
+        ];
+
+        $fullText = '';
+
+        try {
+            $response = Http::withOptions(['stream' => true])
+                ->acceptJson()
+                ->withToken($this->apiKey)
+                ->post($this->baseUrl.'/chat/completions', $payload);
+
+            if ($response->failed()) {
+                throw new Exception($this->extractErrorMessage($response));
+            }
+
+            $body = $response->toPsrResponse()->getBody();
+
+            while (! $body->eof()) {
+                $line = $this->readLine($body);
+
+                if ($line === '' || $line === 'data: [DONE]') {
+                    continue;
+                }
+
+                if (! \str_starts_with($line, 'data: ')) {
+                    continue;
+                }
+
+                $data = \json_decode(\substr($line, 6), true);
+
+                if (! \is_array($data)) {
+                    continue;
+                }
+
+                $text = (string) ($data['choices'][0]['delta']['content'] ?? '');
+
+                if ($text !== '') {
+                    $fullText .= $text;
+                    $onChunk($text);
+                }
+            }
+        } catch (ConnectionException $exception) {
+            throw new Exception('Zen connection failed: '.$exception->getMessage());
+        }
+
+        if ($fullText === '') {
+            throw new Exception('Zen returned an empty response');
+        }
+
+        return $fullText;
+    }
+
+    /**
+     * Read a line from the stream.
+     */
+    private function readLine(StreamInterface $stream): string
+    {
+        $buffer = '';
+
+        while (! $stream->eof()) {
+            $char = $stream->read(1);
+
+            if ($char === "\n") {
+                break;
+            }
+
+            $buffer .= $char;
+        }
+
+        return \trim($buffer);
     }
 
     /**

@@ -104,16 +104,39 @@ class ProcessAiChatMessageJob implements ShouldQueue
 
             $systemPrompt = $this->buildSystemPrompt();
 
-            $fullText = $aiService->generateContentWithSystemPromptAndHistory(
+            $buffer = '';
+            $lastEmitTime = \microtime(true);
+
+            $fullText = $aiService->streamContentWithSystemPromptAndHistory(
                 systemPrompt: $systemPrompt,
                 history: $history,
                 prompt: $this->prompt,
+                onChunk: function (string $chunk) use (&$sequence, &$buffer, &$lastEmitTime): void {
+                    $buffer .= $chunk;
+
+                    // Emit at most once every 100ms
+                    if (\microtime(true) - $lastEmitTime > 0.1) {
+                        $sequence++;
+
+                        \event(new AiMessageChunk(
+                            userId: $this->userId,
+                            sessionId: $this->sessionId,
+                            messageId: $this->messageId,
+                            role: 'assistant',
+                            textChunk: $buffer,
+                            sequence: $sequence,
+                            timestamp: \now()->toIso8601String(),
+                        ));
+
+                        $buffer = '';
+                        $lastEmitTime = \microtime(true);
+                    }
+                },
                 options: $options,
             );
 
-            $chunks = $this->chunkText($fullText);
-
-            foreach ($chunks as $chunk) {
+            // Flush any remaining buffer
+            if ($buffer !== '') {
                 $sequence++;
 
                 \event(new AiMessageChunk(
@@ -121,7 +144,7 @@ class ProcessAiChatMessageJob implements ShouldQueue
                     sessionId: $this->sessionId,
                     messageId: $this->messageId,
                     role: 'assistant',
-                    textChunk: $chunk,
+                    textChunk: $buffer,
                     sequence: $sequence,
                     timestamp: \now()->toIso8601String(),
                 ));
@@ -336,27 +359,5 @@ class ProcessAiChatMessageJob implements ShouldQueue
         }
 
         return null;
-    }
-
-    /**
-     * Chunk the given text into smaller parts of a specified size, ensuring
-     * that multibyte characters are handled correctly.
-     *
-     * @return array<int, string>
-     */
-    private function chunkText(string $text, int $size = 120): array
-    {
-        if ($text === '') {
-            return [''];
-        }
-
-        $chunks = [];
-        $length = \mb_strlen($text);
-
-        for ($offset = 0; $offset < $length; $offset += $size) {
-            $chunks[] = \mb_substr($text, $offset, $size);
-        }
-
-        return $chunks;
     }
 }

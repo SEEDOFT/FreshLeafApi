@@ -22,20 +22,17 @@ class AiChatController extends Controller
      */
     public function createSession(CreateChatSessionRequest $request): JsonResponse
     {
-        $validatedDataData = $request->validated();
-        $sessionId = $validatedDataData['session_id'] ?? (string) Str::uuid();
+        $validatedData = $request->validated();
+        $sessionId = $validatedData['session_id'] ?? (string) Str::uuid();
         $user = $this->authenticatedUser($request);
 
-        $session = AiChatSession::firstOrCreate(
-            [
-                'session_id' => $sessionId,
-                'user_id' => $user->id,
-            ],
-            [
-                'title' => $validatedDataData['title'] ?? null,
-                'last_message_at' => \now(),
-            ],
-        );
+        $session = AiChatSession::firstOrCreate([
+            'session_id' => $sessionId,
+            'user_id' => $user->id,
+        ], [
+            'title' => $validatedData['title'] ?? null,
+            'last_message_at' => \now(),
+        ]);
 
         return static::successResponse([
             'session_id' => $session->session_id,
@@ -66,7 +63,7 @@ class AiChatController extends Controller
 
         /** @var array{0: AiChatMessage, 1: AiChatMessage} */
         $result = DB::transaction(
-            function () use ($user, $session, $validatedData, $request): array {
+            static function () use ($user, $session, $validatedData, $request): array {
                 $userMessage = AiChatMessage::create([
                     'ai_chat_session_id' => $session->id,
                     'user_id' => $user->id,

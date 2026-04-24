@@ -57,6 +57,14 @@ User delivery addresses.
 - `province` (string)
 - `postal_code` (string)
 
+### `user_devices`
+Tracks FCM tokens for push notifications.
+- `id` (PK)
+- `user_id` (FK: `users`, cascade delete)
+- `device_token` (string, unique, index)
+- `device_type` (string, nullable) - e.g., 'android', 'ios'
+- `is_active` (boolean, default true)
+
 ---
 
 ## 2. Product Domain
@@ -155,17 +163,42 @@ User delivery addresses.
 ## 6. Order Domain
 
 ### `orders`
-- `id` (PK)
-- `user_id` (FK: `users`)
-- `address_id` (FK: `addresses`)
-- `order_number` (string, unique, index)
-- `total_amount` (decimal)
-- `order_status_id` (FK: `order_statuses`)
+...
 - `payment_status_id` (FK: `payment_statuses`)
 
 ---
 
-## 7. AI Domain
+## 7. Wallet Domain
+
+### `wallets`
+Tracks user balances per currency.
+- `id` (PK)
+- `user_id` (FK: `users`, unique per user/currency)
+- `currency_id` (FK: `currencies`)
+- `balance` (decimal, 16,4)
+
+### `wallet_transactions`
+Individual movements within a wallet.
+- `id` (PK)
+- `wallet_id` (FK: `wallets`)
+- `wallet_transaction_type_id` (FK: `wallet_transaction_types`)
+- `wallet_transaction_status_id` (FK: `wallet_transaction_statuses`)
+- `amount` (decimal, 16,2)
+- `reference_type`, `reference_id` (strings, nullable) - Morph link to orders/payments.
+- `description` (text, nullable)
+
+### `wallet_transaction_histories`
+Audit trail of transaction state changes.
+- `id` (PK)
+- `wallet_transaction_id` (FK: `wallet_transactions`)
+- `from_wallet_transaction_status_id` (FK: `wallet_transaction_statuses`, nullable)
+- `to_wallet_transaction_status_id` (FK: `wallet_transaction_statuses`)
+- `changed_by_user_id` (FK: `users`, nullable)
+- `note` (text, nullable)
+
+---
+
+## 8. AI Domain
 
 ### `user_behavior_events`
 - `id` (PK)

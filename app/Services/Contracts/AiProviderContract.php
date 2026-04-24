@@ -54,4 +54,22 @@ interface AiProviderContract
         string $prompt,
         array $options = [],
     ): string;
+
+    /**
+     * Stream content based on the given system prompt, history, prompt, and options.
+     *
+     * @param  string  $systemPrompt  The system prompt for content generation.
+     * @param  array<int, array<string, mixed>>  $history  An array of previous interactions or messages.
+     * @param  string  $prompt  The input prompt for content generation.
+     * @param  callable(string): void  $onChunk  A callback function that is invoked for each generated text chunk.
+     * @param  array<string, mixed>  $options  Additional options for content generation.
+     * @return string The full generated content.
+     */
+    public function streamContentWithSystemPromptAndHistory(
+        string $systemPrompt,
+        array $history,
+        string $prompt,
+        callable $onChunk,
+        array $options = [],
+    ): string;
 }

@@ -26,6 +26,7 @@ class VendorsTable
     public static function configure(Table $table): Table
     {
         return $table
+            ->stackedOnMobile()
             ->columns([
                 TextColumn::make('vendorProfile.business_name')
                     ->label('Business Name')

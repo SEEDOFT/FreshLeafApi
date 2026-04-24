@@ -17,6 +17,7 @@ class WalletTransactionsTable
     public static function configure(Table $table): Table
     {
         return $table
+            ->stackedOnMobile()
             ->columns([
                 TextColumn::make('wallet.user.name')
                     ->label('User')

@@ -4,25 +4,131 @@ declare(strict_types=1);
 
 namespace App\Filament\Pages\Auth;
 
+use App\Models\User;
 use App\Models\UserStatus;
 use App\Models\UserType;
 use Filament\Auth\Pages\Register as BaseRegister;
+use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\TextInput;
+use Filament\Schemas\Components\Grid;
+use Filament\Schemas\Components\Wizard;
+use Filament\Schemas\Components\Wizard\Step;
 use Filament\Schemas\Schema;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Arr;
+use Illuminate\Support\Facades\Blade;
+use Illuminate\Support\HtmlString;
 use Override;
 
 class Register extends BaseRegister
 {
+    public function getHeading(): string
+    {
+        return 'Create vendor account';
+    }
+
+    public function getSubHeading(): ?string
+    {
+        return 'Complete your business profile to start selling.';
+    }
+
+    public function getMaxWidth(): string
+    {
+        return '4xl';
+    }
+
+    protected function getFormActions(): array
+    {
+        return []; // Hide default buttons
+    }
+
     #[Override]
     public function form(Schema $schema): Schema
     {
         return $schema
             ->components([
-                $this->getNameFormComponent(),
-                $this->getPhoneNumberFormComponent(),
-                $this->getPasswordFormComponent(),
-                $this->getPasswordConfirmationFormComponent(),
-            ]);
+                Wizard::make([
+                    Step::make('Account')
+                        ->icon('heroicon-o-user')
+                        ->description('Basic information for login.')
+                        ->schema([
+                            Grid::make(2)->schema([
+                                $this->getNameFormComponent(),
+                                $this->getPhoneNumberFormComponent(),
+                                $this->getPasswordFormComponent(),
+                                $this->getPasswordConfirmationFormComponent(),
+                            ]),
+                        ]),
+
+                    Step::make('Business')
+                        ->icon('heroicon-o-building-storefront')
+                        ->description('Information about your store or farm.')
+                        ->schema([
+                            Grid::make(2)->schema([
+                                TextInput::make('business_name')
+                                    ->required()
+                                    ->maxLength(255),
+                                TextInput::make('contact_phone')
+                                    ->tel()
+                                    ->maxLength(255),
+                                TextInput::make('city')
+                                    ->maxLength(255),
+                                TextInput::make('province')
+                                    ->maxLength(255),
+                            ]),
+                            TextInput::make('address')
+                                ->columnSpanFull()
+                                ->maxLength(255),
+                        ]),
+
+                    Step::make('Verification')
+                        ->icon('heroicon-o-shield-check')
+                        ->description('Required identity documents.')
+                        ->schema([
+                            Grid::make(2)->schema([
+                                FileUpload::make('id_card_front')
+                                    ->label('ID Card (Front)')
+                                    ->image()
+                                    ->directory('vendor-verification')
+                                    ->required(),
+                                FileUpload::make('id_card_back')
+                                    ->label('ID Card (Back)')
+                                    ->image()
+                                    ->directory('vendor-verification')
+                                    ->required(),
+                                FileUpload::make('store_front_image')
+                                    ->label('Farm / Store Photo')
+                                    ->image()
+                                    ->directory('vendor-verification')
+                                    ->required(),
+                                FileUpload::make('organic_certificate_url')
+                                    ->label('Organic Certificate (Optional)')
+                                    ->directory('vendor-verification'),
+                            ]),
+                        ]),
+
+                    Step::make('Financials')
+                        ->icon('heroicon-o-banknotes')
+                        ->description('Payout account details.')
+                        ->schema([
+                            Grid::make(3)->schema([
+                                TextInput::make('bank_name')
+                                    ->label('Bank Name')
+                                    ->placeholder('e.g. ABA Bank')
+                                    ->required()
+                                    ->maxLength(255),
+                                TextInput::make('bank_account_name')
+                                    ->label('Account Holder Name')
+                                    ->required()
+                                    ->maxLength(255),
+                                TextInput::make('bank_account_number')
+                                    ->label('Account Number')
+                                    ->required()
+                                    ->maxLength(255),
+                            ]),
+                        ]),
+                ])->submitAction(new HtmlString(Blade::render('<x-filament::button type="submit" size="sm">Complete Registration</x-filament::button>'))),
+            ])->statePath('data');
     }
 
     protected function getPhoneNumberFormComponent(): TextInput
@@ -44,7 +150,6 @@ class Register extends BaseRegister
         $data['first_name'] = $nameParts[0];
         $data['last_name'] = $nameParts[1] ?? '';
 
-        // Remove 'name' since it's not in our DB
         unset($data['name']);
 
         $data['user_type_id'] = UserType::VENDOR;
@@ -54,9 +159,34 @@ class Register extends BaseRegister
     }
 
     #[Override]
+    protected function handleRegistration(array $data): Model
+    {
+        // 1. Separate vendor profile data
+        $vendorData = Arr::only($data, [
+            'business_name', 'contact_phone', 'city', 'province', 'address',
+            'id_card_front', 'id_card_back', 'store_front_image', 'organic_certificate_url',
+            'bank_name', 'bank_account_name', 'bank_account_number',
+        ]);
+
+        // 2. Separate user data
+        $userData = Arr::except($data, array_keys($vendorData));
+
+        // 3. Create User
+        /** @var User $user */
+        $user = $this->getUserModel()::create($userData);
+
+        // 4. Create Vendor Profile
+        $user->vendorProfile()->create($vendorData);
+
+        // 5. Create Default Wallets (0.00 Balance)
+        $user->ensureDefaultWallets();
+
+        return $user;
+    }
+
+    #[Override]
     protected function isRegisterRateLimited(string $email): bool
     {
-        // Redirect rate limiting to phone number instead of email
         $phone = $this->data['phone_number'] ?? '';
 
         return parent::isRegisterRateLimited($phone);

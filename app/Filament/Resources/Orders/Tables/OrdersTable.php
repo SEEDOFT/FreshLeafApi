@@ -17,6 +17,7 @@ class OrdersTable
     public static function configure(Table $table): Table
     {
         return $table
+            ->stackedOnMobile()
             ->columns([
                 TextColumn::make('order_number')
                     ->searchable()

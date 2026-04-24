@@ -14,6 +14,16 @@ use Override;
 
 class Login extends BaseLogin
 {
+    public function getHeading(): string
+    {
+        return 'Welcome back';
+    }
+
+    public function getSubHeading(): ?string
+    {
+        return 'Sign in to manage your FreshLeaf dashboard.';
+    }
+
     #[Override]
     public function form(Schema $schema): Schema
     {

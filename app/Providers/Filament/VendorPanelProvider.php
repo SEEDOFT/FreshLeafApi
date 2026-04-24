@@ -6,17 +6,21 @@ namespace App\Providers\Filament;
 
 use App\Filament\Pages\Auth\Login;
 use App\Filament\Pages\Auth\Register;
-use App\Filament\Vendor\Pages\VendorProfile;
+use App\Filament\Vendor\Clusters\Settings\Pages\BusinessProfile;
+use App\Filament\Vendor\Clusters\Settings\Pages\VendorProfile;
 use App\Filament\Vendor\Widgets\VendorEarningsChart;
 use App\Filament\Vendor\Widgets\VendorStatsOverview;
+use Filament\Enums\ThemeMode;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\AuthenticateSession;
 use Filament\Http\Middleware\DisableBladeIconComponents;
 use Filament\Http\Middleware\DispatchServingFilamentEvent;
+use Filament\Navigation\MenuItem;
 use Filament\Pages\Dashboard;
 use Filament\Panel;
 use Filament\PanelProvider;
 use Filament\Support\Colors\Color;
+use Filament\View\PanelsRenderHook;
 use Filament\Widgets\AccountWidget;
 use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
 use Illuminate\Cookie\Middleware\EncryptCookies;
@@ -36,12 +40,36 @@ class VendorPanelProvider extends PanelProvider
             ->path('vendor')
             ->login(Login::class)
             ->registration(Register::class)
-            ->profile(VendorProfile::class)
+            ->font('Plus Jakarta Sans')
+            ->viteTheme('resources/css/filament/panels/theme.css')
+            ->defaultThemeMode(ThemeMode::Light)
+            ->sidebarCollapsibleOnDesktop()
+            ->userMenuItems([
+                'profile' => MenuItem::make()->visible(false),
+                'my-account' => MenuItem::make()
+                    ->label('My Profile')
+                    ->icon('heroicon-o-user-circle')
+                    ->url(static fn (): string => VendorProfile::getUrl()),
+                'app-settings' => MenuItem::make()
+                    ->label('Store Settings')
+                    ->icon('heroicon-o-cog-6-tooth')
+                    ->url(static fn (): string => BusinessProfile::getUrl()),
+            ])
+            ->renderHook(
+                PanelsRenderHook::BODY_END,
+                static fn (): string => view('filament.hooks.panel-assets')->render(),
+            )
             ->colors([
-                'primary' => Color::Amber,
+                'primary' => '#2e9f58',
+                'success' => '#1fa971',
+                'warning' => '#f4b400',
+                'danger' => '#d64545',
+                'info' => '#2f80ed',
+                'gray' => Color::Gray,
             ])
             ->discoverResources(in: app_path('Filament/Vendor/Resources'), for: 'App\Filament\Vendor\Resources')
             ->discoverPages(in: app_path('Filament/Vendor/Pages'), for: 'App\Filament\Vendor\Pages')
+            ->discoverClusters(in: app_path('Filament/Vendor/Clusters'), for: 'App\Filament\Vendor\Clusters')
             ->pages([
                 Dashboard::class,
             ])

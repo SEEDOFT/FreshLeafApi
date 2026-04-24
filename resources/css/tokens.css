@@ -1,4 +1,10 @@
 :root {
+    --bp-phone-sm-max: 479px;
+    --bp-phone-max: 767px;
+    --bp-tablet-max: 1023px;
+    --bp-desktop-min: 1024px;
+    --bp-wide-min: 1280px;
+
     --brand-50: #effaf2;
     --brand-100: #d9f2df;
     --brand-300: #7ccb8e;
@@ -55,9 +61,17 @@
     --radius-16: 16px;
     --radius-24: 24px;
 
+    --container-max: 1280px;
+    --container-pad-inline: clamp(16px, 2.5vw, 32px);
+    --touch-target-min: 44px;
+
     --shadow-sm: 0 2px 8px rgba(22, 32, 24, 0.08);
     --shadow-md: 0 8px 24px rgba(22, 32, 24, 0.12);
     --shadow-lg: 0 18px 40px rgba(22, 32, 24, 0.15);
+
+    --motion-fast: 0.18s;
+    --motion-base: 0.22s;
+    --motion-slow: 0.3s;
 
     --type-display: 2rem;
     --type-h1: 1.5rem;
@@ -80,4 +94,41 @@
     --border-strong: #c5cfc7;
     --ring-focus: #2f80ed;
     --overlay: rgba(16, 22, 18, 0.64);
+}
+
+@media (max-width: 1279px) {
+    :root {
+        --container-pad-inline: 24px;
+    }
+}
+
+@media (max-width: 1023px) {
+    :root {
+        --container-pad-inline: 20px;
+        --type-display: 1.85rem;
+        --type-h1: 1.4rem;
+    }
+}
+
+@media (max-width: 767px) {
+    :root {
+        --container-pad-inline: 16px;
+        --space-7: 28px;
+        --space-8: 32px;
+        --space-9: 40px;
+        --type-display: 1.72rem;
+        --type-h1: 1.32rem;
+        --type-h2: 1.16rem;
+        --type-body: 0.92rem;
+    }
+}
+
+@media (max-width: 479px) {
+    :root {
+        --container-pad-inline: 12px;
+        --radius-16: 14px;
+        --type-display: 1.58rem;
+        --type-h1: 1.22rem;
+        --type-h2: 1.05rem;
+    }
 }

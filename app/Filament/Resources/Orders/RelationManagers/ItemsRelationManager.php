@@ -51,6 +51,7 @@ class ItemsRelationManager extends RelationManager
     public function table(Table $table): Table
     {
         return $table
+            ->stackedOnMobile()
             ->recordTitleAttribute('product_name_snapshot')
             ->columns([
                 TextColumn::make('product_name_snapshot')

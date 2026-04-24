@@ -4,18 +4,22 @@ declare(strict_types=1);
 
 namespace App\Providers\Filament;
 
-use App\Filament\Pages\AdminProfile;
+use App\Filament\Clusters\Settings\Pages\AdminProfile;
+use App\Filament\Clusters\Settings\Pages\ApplicationSettings;
 use App\Filament\Pages\Auth\Login;
 use App\Filament\Widgets\AdminRevenueChart;
 use App\Filament\Widgets\AdminStatsOverview;
+use Filament\Enums\ThemeMode;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\AuthenticateSession;
 use Filament\Http\Middleware\DisableBladeIconComponents;
 use Filament\Http\Middleware\DispatchServingFilamentEvent;
+use Filament\Navigation\MenuItem;
 use Filament\Pages\Dashboard;
 use Filament\Panel;
 use Filament\PanelProvider;
 use Filament\Support\Colors\Color;
+use Filament\View\PanelsRenderHook;
 use Filament\Widgets\AccountWidget;
 use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
 use Illuminate\Cookie\Middleware\EncryptCookies;
@@ -35,12 +39,44 @@ class AdminPanelProvider extends PanelProvider
             ->id('admin')
             ->path('admin')
             ->login(Login::class)
-            ->profile(AdminProfile::class)
+            ->font('Plus Jakarta Sans')
+            ->viteTheme('resources/css/filament/panels/theme.css')
+            ->defaultThemeMode(ThemeMode::Light)
+            ->sidebarCollapsibleOnDesktop()
+            ->userMenuItems([
+                'profile' => MenuItem::make()->visible(false),
+                'my-account' => MenuItem::make()
+                    ->label('My Profile')
+                    ->icon('heroicon-o-user-circle')
+                    ->url(static fn (): string => AdminProfile::getUrl()),
+                'app-settings' => MenuItem::make()
+                    ->label('Settings')
+                    ->icon('heroicon-o-cog-6-tooth')
+                    ->url(static fn (): string => ApplicationSettings::getUrl()),
+            ])
+            ->renderHook(
+                PanelsRenderHook::BODY_END,
+                static fn (): string => view('filament.hooks.panel-assets')->render(),
+            )
             ->colors([
-                'primary' => Color::Amber,
+                'primary' => '#2e9f58',
+                'success' => '#1fa971',
+                'warning' => '#f4b400',
+                'danger' => '#d64545',
+                'info' => '#2f80ed',
+                'gray' => Color::Gray,
+            ])
+            ->navigationGroups([
+                'Accounts',
+                'Catalog',
+                'Inventory',
+                'Sales',
+                'Logistics',
+                'Financial',
             ])
             ->discoverResources(in: app_path('Filament/Resources'), for: 'App\Filament\Resources')
             ->discoverPages(in: app_path('Filament/Pages'), for: 'App\Filament\Pages')
+            ->discoverClusters(in: app_path('Filament/Clusters'), for: 'App\Filament\Clusters')
             ->pages([
                 Dashboard::class,
             ])

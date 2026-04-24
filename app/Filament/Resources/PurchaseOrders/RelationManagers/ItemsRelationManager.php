@@ -55,6 +55,7 @@ class ItemsRelationManager extends RelationManager
     public function table(Table $table): Table
     {
         return $table
+            ->stackedOnMobile()
             ->recordTitleAttribute('batch_code')
             ->columns([
                 TextColumn::make('product.name')

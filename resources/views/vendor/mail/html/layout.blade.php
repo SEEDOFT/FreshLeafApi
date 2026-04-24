@@ -15,11 +15,28 @@ width: 100% !important;
 .footer {
 width: 100% !important;
 }
+
+.content-cell {
+padding: 24px !important;
+}
+
+.header {
+padding: 18px 0 !important;
+}
 }
 
 @media only screen and (max-width: 500px) {
 .button {
 width: 100% !important;
+display: block !important;
+}
+
+.content-cell {
+padding: 18px !important;
+}
+
+.table table {
+margin: 20px auto !important;
 }
 }
 </style>

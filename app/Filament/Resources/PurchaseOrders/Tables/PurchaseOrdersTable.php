@@ -16,6 +16,7 @@ class PurchaseOrdersTable
     public static function configure(Table $table): Table
     {
         return $table
+            ->stackedOnMobile()
             ->columns([
                 TextColumn::make('po_number')
                     ->searchable()

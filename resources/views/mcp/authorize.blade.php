@@ -44,20 +44,20 @@
     @vite(['resources/css/app.css'])
 </head>
 <body class="font-sans antialiased bg-background text-foreground">
-<div class="min-h-screen flex items-center justify-center p-4">
+<div class="min-h-screen flex items-center justify-center px-3 py-4 sm:p-6">
     <div class="w-full max-w-md">
         <!-- Card Container -->
         <div class="rounded-lg border bg-card text-card-foreground shadow-sm">
             <!-- Header -->
-            <div class="flex flex-col space-y-1.5 p-6">
-                <div class="flex items-center justify-center mb-4">
+            <div class="flex flex-col space-y-1.5 p-4 sm:p-6">
+                <div class="mb-3 flex items-center justify-center sm:mb-4">
                     <!-- Shield Icon -->
-                    <svg class="h-12 w-12 text-primary" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <svg class="h-10 w-10 text-primary sm:h-12 sm:w-12" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.618 5.984A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.031 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path>
                     </svg>
                 </div>
 
-                <h3 class="text-2xl font-semibold leading-none tracking-tight text-center">
+                <h3 class="text-center text-xl font-semibold leading-tight tracking-tight sm:text-2xl">
                     Authorize {{ $client->name }}
                 </h3>
 
@@ -67,11 +67,11 @@
             </div>
 
             <!-- Content -->
-            <div class="p-6 pt-0 space-y-4">
+            <div class="space-y-4 px-4 pb-0 pt-0 sm:p-6 sm:pt-0">
                 <!-- User Info -->
-                <div class="rounded-lg border p-4 bg-muted/50">
+                <div class="rounded-lg border bg-muted/50 p-3 sm:p-4">
                     <p class="text-sm text-muted-foreground mb-2">Logged in as:</p>
-                    <p class="font-medium">{{ $user->email }}</p>
+                    <p class="break-all text-sm font-medium sm:text-base">{{ $user->email }}</p>
                 </div>
 
                 <!-- Scopes / Permissions -->
@@ -85,7 +85,7 @@
                                     <div class="rounded-full bg-primary/10 p-1 mt-0.5">
                                         <div class="h-1.5 w-1.5 rounded-full bg-primary"></div>
                                     </div>
-                                    <span class="text-sm text-muted-foreground">
+                                    <span class="break-words text-sm text-muted-foreground">
                                         {{ $scope->description }}
                                     </span>
                                 </li>
@@ -96,7 +96,7 @@
             </div>
 
             <!-- Footer With Buttons -->
-            <div class="flex items-center p-6 pt-0 gap-3">
+            <div class="flex flex-col items-stretch gap-3 p-4 pt-0 sm:flex-row sm:items-center sm:p-6 sm:pt-0">
                 <!-- Deny Form -->
                 <form method="POST" action="{{ route('passport.authorizations.deny') }}" class="flex-1">
                     @csrf
@@ -104,7 +104,7 @@
                     <input type="hidden" name="state" value="">
                     <input type="hidden" name="client_id" value="{{ $client->id }}">
                     <input type="hidden" name="auth_token" value="{{ $authToken }}">
-                    <button type="submit" class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-10 px-4 py-2 w-full">
+                    <button type="submit" class="inline-flex h-11 w-full items-center justify-center whitespace-nowrap rounded-md border border-input bg-background px-4 py-2 text-sm font-medium transition-colors ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 hover:bg-accent hover:text-accent-foreground">
                         <svg class="mr-2 h-4 w-4" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
                         </svg>
@@ -118,7 +118,7 @@
                     <input type="hidden" name="state" value="">
                     <input type="hidden" name="client_id" value="{{ $client->id }}">
                     <input type="hidden" name="auth_token" value="{{ $authToken }}">
-                    <button type="submit" class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2 w-full" id="authorizeButton">
+                    <button type="submit" class="inline-flex h-11 w-full items-center justify-center whitespace-nowrap rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 hover:bg-primary/90" id="authorizeButton">
                         <span id="authorizeText">Authorize</span>
 
                         <svg id="loadingSpinner" class="animate-spin -ml-1 mr-3 h-4 w-4 text-white hidden" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">

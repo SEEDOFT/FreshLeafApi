@@ -7,7 +7,9 @@ namespace App\Filament\Pages\Auth;
 use App\Models\UserType;
 use Filament\Auth\Pages\Login as BaseLogin;
 use Filament\Facades\Filament;
+use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
+use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Schema;
 use Illuminate\Validation\ValidationException;
 use Override;
@@ -32,16 +34,35 @@ class Login extends BaseLogin
                 $this->getPhoneNumberFormComponent(),
                 $this->getPasswordFormComponent(),
                 $this->getRememberFormComponent(),
-            ]);
+            ])
+            ->statePath('data');
     }
 
-    protected function getPhoneNumberFormComponent(): TextInput
+    protected function getPhoneNumberFormComponent(): Grid
     {
-        return TextInput::make('phone_number')
-            ->label(__('custom.phone_number'))
-            ->required()
-            ->autocomplete()
-            ->autofocus();
+        return Grid::make(3)
+            ->schema([
+                Select::make('country_code')
+                    ->label('Code')
+                    ->options([
+                        '+855' => '+855 (KH)',
+                        '+66' => '+66 (TH)',
+                        '+84' => '+84 (VN)',
+                        '+1' => '+1 (US)',
+                    ])
+                    ->default('+855')
+                    ->required()
+                    ->searchable()
+                    ->columnSpan(1),
+                TextInput::make('phone_number_input')
+                    ->label(__('custom.phone_number'))
+                    ->placeholder('12 345 678')
+                    ->required()
+                    ->tel()
+                    ->autofocus()
+                    ->autocomplete()
+                    ->columnSpan(2),
+            ]);
     }
 
     #[Override]
@@ -49,16 +70,17 @@ class Login extends BaseLogin
     {
         $panelId = Filament::getCurrentOrDefaultPanel()->getId();
 
-        // Dynamically add the required user_type_id to the login query
-        // so we find the correct account for the panel (Admin vs Vendor)
         $userTypeId = match ($panelId) {
             'admin' => UserType::ADMIN,
             'vendor' => UserType::VENDOR,
             default => null,
         };
 
+        // Combine code and number, stripping leading 0 from input number
+        $fullPhone = $data['country_code'].ltrim($data['phone_number_input'], '0');
+
         return array_filter([
-            'phone_number' => $data['phone_number'],
+            'phone_number' => $fullPhone,
             'password' => $data['password'],
             'user_type_id' => $userTypeId,
         ]);
@@ -68,7 +90,7 @@ class Login extends BaseLogin
     protected function throwFailureValidationException(): never
     {
         throw ValidationException::withMessages([
-            'data.phone_number' => __('filament-panels::auth/pages/login.messages.failed'),
+            'data.phone_number_input' => __('filament-panels::auth/pages/login.messages.failed'),
         ]);
     }
 }

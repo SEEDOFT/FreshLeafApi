@@ -9,8 +9,10 @@ use App\Models\UserStatus;
 use App\Models\UserType;
 use Filament\Auth\Pages\Register as BaseRegister;
 use Filament\Forms\Components\FileUpload;
+use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Components\Grid;
+use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Components\Wizard;
 use Filament\Schemas\Components\Wizard\Step;
 use Filament\Schemas\Schema;
@@ -131,16 +133,42 @@ class Register extends BaseRegister
             ])->statePath('data');
     }
 
-    protected function getPhoneNumberFormComponent(): TextInput
+    protected function getPhoneNumberFormComponent(): Grid
     {
-        return TextInput::make('phone_number')
-            ->label(__('custom.phone_number'))
-            ->required()
-            ->unique($this->getUserModel(), 'phone_number', modifyRuleUsing: function ($rule) {
-                return $rule->where('user_type_id', UserType::VENDOR)
-                    ->whereNull('deleted_at');
-            })
-            ->maxLength(20);
+        return Grid::make(3)
+            ->schema([
+                Select::make('country_code')
+                    ->label('Code')
+                    ->options([
+                        '+855' => '+855 (KH)',
+                        '+66' => '+66 (TH)',
+                        '+84' => '+84 (VN)',
+                        '+1' => '+1 (US)',
+                    ])
+                    ->default('+855')
+                    ->required()
+                    ->searchable()
+                    ->columnSpan(1),
+                TextInput::make('phone_number_input')
+                    ->label(__('custom.phone_number'))
+                    ->placeholder('12 345 678')
+                    ->required()
+                    ->tel()
+                    ->rule(function (Get $get) {
+                        return function (string $attribute, $value, \Closure $fail) use ($get) {
+                            $fullPhone = $get('country_code').ltrim($value, '0');
+                            $exists = User::where('phone_number', $fullPhone)
+                                ->where('user_type_id', UserType::VENDOR)
+                                ->whereNull('deleted_at')
+                                ->exists();
+                            if ($exists) {
+                                $fail('This phone number is already registered.');
+                            }
+                        };
+                    })
+                    ->maxLength(20)
+                    ->columnSpan(2),
+            ]);
     }
 
     #[Override]
@@ -151,6 +179,10 @@ class Register extends BaseRegister
         $data['last_name'] = $nameParts[1] ?? '';
 
         unset($data['name']);
+
+        // Combine fields and strip leading zero
+        $data['phone_number'] = $data['country_code'].ltrim($data['phone_number_input'], '0');
+        unset($data['country_code'], $data['phone_number_input']);
 
         $data['user_type_id'] = UserType::VENDOR;
         $data['user_status_id'] = UserStatus::PENDING;
@@ -187,7 +219,7 @@ class Register extends BaseRegister
     #[Override]
     protected function isRegisterRateLimited(string $email): bool
     {
-        $phone = $this->data['phone_number'] ?? '';
+        $phone = $this->data['phone_number_input'] ?? '';
 
         return parent::isRegisterRateLimited($phone);
     }

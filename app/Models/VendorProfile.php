@@ -28,6 +28,13 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
     'approve_reason',
     'reject_reason',
     'meta',
+    'id_card_front',
+    'id_card_back',
+    'store_front_image',
+    'organic_certificate_url',
+    'bank_name',
+    'bank_account_name',
+    'bank_account_number',
 ])]
 #[UseFactory(VendorProfileFactory::class)]
 class VendorProfile extends Model

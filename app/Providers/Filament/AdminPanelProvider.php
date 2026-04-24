@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Providers\Filament;
 
+use App\Filament\Pages\AdminProfile;
 use App\Filament\Pages\Auth\Login;
 use App\Filament\Widgets\AdminRevenueChart;
 use App\Filament\Widgets\AdminStatsOverview;
@@ -34,6 +35,7 @@ class AdminPanelProvider extends PanelProvider
             ->id('admin')
             ->path('admin')
             ->login(Login::class)
+            ->profile(AdminProfile::class)
             ->colors([
                 'primary' => Color::Amber,
             ])

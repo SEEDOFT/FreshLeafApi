@@ -6,6 +6,7 @@ namespace App\Providers\Filament;
 
 use App\Filament\Pages\Auth\Login;
 use App\Filament\Pages\Auth\Register;
+use App\Filament\Vendor\Pages\VendorProfile;
 use App\Filament\Vendor\Widgets\VendorEarningsChart;
 use App\Filament\Vendor\Widgets\VendorStatsOverview;
 use Filament\Http\Middleware\Authenticate;
@@ -35,6 +36,7 @@ class VendorPanelProvider extends PanelProvider
             ->path('vendor')
             ->login(Login::class)
             ->registration(Register::class)
+            ->profile(VendorProfile::class)
             ->colors([
                 'primary' => Color::Amber,
             ])

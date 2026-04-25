@@ -6,6 +6,7 @@ namespace App\Services\Ai;
 
 use App\Services\Contracts\AiProviderContract;
 use Exception;
+use Illuminate\Support\Facades\Log;
 use Override;
 use Throwable;
 
@@ -39,11 +40,12 @@ class AiService implements AiProviderContract
             try {
                 return $provider->generateContent($prompt, $options);
             } catch (Throwable $exception) {
+                $this->logProviderFailure($providerName, $exception);
                 $lastException = new Exception($providerName.': '.$exception->getMessage(), previous: $exception);
             }
         }
 
-        throw $lastException ?? new Exception('No AI provider available');
+        throw $lastException ?? new Exception('No configured AI provider available. Check AI_PROVIDER and AI_FALLBACK_PROVIDERS.');
     }
 
     /**
@@ -59,11 +61,12 @@ class AiService implements AiProviderContract
             try {
                 return $provider->generateContentWithHistory($history, $prompt, $options);
             } catch (Throwable $exception) {
+                $this->logProviderFailure($providerName, $exception);
                 $lastException = new Exception($providerName.': '.$exception->getMessage(), previous: $exception);
             }
         }
 
-        throw $lastException ?? new Exception('No AI provider available');
+        throw $lastException ?? new Exception('No configured AI provider available. Check AI_PROVIDER and AI_FALLBACK_PROVIDERS.');
     }
 
     /**
@@ -82,11 +85,12 @@ class AiService implements AiProviderContract
             try {
                 return $provider->generateContentWithSystemPrompt($systemPrompt, $prompt, $options);
             } catch (Throwable $exception) {
+                $this->logProviderFailure($providerName, $exception);
                 $lastException = new Exception($providerName.': '.$exception->getMessage(), previous: $exception);
             }
         }
 
-        throw $lastException ?? new Exception('No AI provider available');
+        throw $lastException ?? new Exception('No configured AI provider available. Check AI_PROVIDER and AI_FALLBACK_PROVIDERS.');
     }
 
     /**
@@ -106,11 +110,12 @@ class AiService implements AiProviderContract
             try {
                 return $provider->generateContentWithSystemPromptAndHistory($systemPrompt, $history, $prompt, $options);
             } catch (Throwable $exception) {
+                $this->logProviderFailure($providerName, $exception);
                 $lastException = new Exception($providerName.': '.$exception->getMessage(), previous: $exception);
             }
         }
 
-        throw $lastException ?? new Exception('No AI provider available');
+        throw $lastException ?? new Exception('No configured AI provider available. Check AI_PROVIDER and AI_FALLBACK_PROVIDERS.');
     }
 
     /**
@@ -131,11 +136,12 @@ class AiService implements AiProviderContract
             try {
                 return $provider->streamContentWithSystemPromptAndHistory($systemPrompt, $history, $prompt, $onChunk, $options);
             } catch (Throwable $exception) {
+                $this->logProviderFailure($providerName, $exception);
                 $lastException = new Exception($providerName.': '.$exception->getMessage(), previous: $exception);
             }
         }
 
-        throw $lastException ?? new Exception('No AI provider available');
+        throw $lastException ?? new Exception('No configured AI provider available. Check AI_PROVIDER and AI_FALLBACK_PROVIDERS.');
     }
 
     /**
@@ -182,5 +188,13 @@ class AiService implements AiProviderContract
         }
 
         return $providers;
+    }
+
+    private function logProviderFailure(string $providerName, Throwable $exception): void
+    {
+        Log::warning('AI provider failed; trying next configured provider.', [
+            'provider' => $providerName,
+            'error' => $exception->getMessage(),
+        ]);
     }
 }

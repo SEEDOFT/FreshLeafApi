@@ -6,6 +6,7 @@ namespace App\Filament\Clusters\Settings\Pages;
 
 use App\Filament\Clusters\Settings;
 use Filament\Forms\Components\FileUpload;
+use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Notifications\Notification;
 use Filament\Pages\Page;
@@ -35,7 +36,16 @@ class AdminProfile extends Page
     public function mount(): void
     {
         $user = Auth::user();
+        if (! $user) {
+            return;
+        }
+
         $this->data = $user->toArray();
+
+        // Wrap image in array for FileUpload component if it's a string
+        if (isset($this->data['image']) && is_string($this->data['image'])) {
+            $this->data['image'] = [$this->data['image']];
+        }
 
         if ($user->adminProfile) {
             $this->data['adminProfile'] = $user->adminProfile->toArray();
@@ -80,6 +90,19 @@ class AdminProfile extends Page
                             ]),
                     ]),
 
+                Section::make('Preferences')
+                    ->description('Customize your dashboard language.')
+                    ->schema([
+                        Select::make('locale')
+                            ->label('Display Language')
+                            ->options([
+                                'km' => 'Khmer (ភាសាខ្មែរ)',
+                                'en' => 'English',
+                            ])
+                            ->required()
+                            ->native(false),
+                    ])->columns(2),
+
                 Section::make('Professional Details')
                     ->description('Manage your role and position within the company.')
                     ->schema([
@@ -103,7 +126,16 @@ class AdminProfile extends Page
     public function save(): void
     {
         $user = Auth::user();
+        if (! $user) {
+            return;
+        }
+
         $state = $this->getSchema('form')->getState();
+
+        // Unwrap image from array before saving to DB
+        if (isset($state['image']) && is_array($state['image'])) {
+            $state['image'] = reset($state['image']) ?: null;
+        }
 
         $adminProfileData = $state['adminProfile'] ?? [];
         unset($state['adminProfile']);
@@ -118,6 +150,9 @@ class AdminProfile extends Page
             ->title('Profile updated successfully.')
             ->success()
             ->send();
+
+        // Refresh to apply language change if locale changed
+        $this->redirect(static::getUrl());
     }
 
     protected function getNameFormComponent(): Component

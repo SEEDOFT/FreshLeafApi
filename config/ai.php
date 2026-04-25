@@ -7,7 +7,7 @@ return [
 
     'fallbacks' => array_values(array_filter(array_map(
         'trim',
-        explode(',', (string) env('AI_FALLBACK_PROVIDERS', 'ollama'))
+        explode(',', (string) env('AI_FALLBACK_PROVIDERS', 'zen'))
     ))),
 
     'providers' => [
@@ -27,6 +27,20 @@ return [
             'model' => env('LLAMA_CPP_MODEL', 'phi-3-mini'),
             'timeout' => (int) env('LLAMA_CPP_TIMEOUT', 120),
         ],
+    ],
+
+    'web_search' => [
+        'enabled' => (bool) env('AI_WEB_SEARCH_ENABLED', true),
+        'provider' => env('AI_WEB_SEARCH_PROVIDER', 'duckduckgo'),
+        'timeout' => (int) env('AI_WEB_SEARCH_TIMEOUT', 15),
+        'connect_timeout' => (int) env('AI_WEB_SEARCH_CONNECT_TIMEOUT', 5),
+        'live_query_keywords' => array_values(array_filter(array_map(
+            'trim',
+            explode(',', (string) env(
+                'AI_WEB_SEARCH_LIVE_QUERY_KEYWORDS',
+                'weather,today,current,latest,news,price,prices,market,exchange rate,forecast,now'
+            ))
+        ))),
     ],
 
     'system_prompt_file' => storage_path('ai-context/system-prompt.md'),

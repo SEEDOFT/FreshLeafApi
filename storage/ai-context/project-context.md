@@ -1,49 +1,19 @@
-# FreshLeaf Project Context
+# FreshLeaf Marketplace - Authorized Project Context
 
-## Company Overview
+## Business Model
+- Type: B2C Organic Vegetable Marketplace.
+- Platform: Mobile App (Consumers), Web App (Vendors), Admin Panel (Platform Owner).
+- Revenue: Admins earn a commission fee from every completed vendor sale.
 
-FreshLeaf is a fresh produce delivery startup based in Cambodia, providing convenient online shopping for fresh vegetables, fruits, herbs, and other perishable goods.
+## Authorized Data Structures
+The AI is authorized to understand and reference the following system components:
+1. **Users**: Consumers and Verified Vendors (real identity required).
+2. **Products**: Organic vegetables sold by KG or Unit.
+3. **Pricing**: Dual currency support (USD base with KHR dynamic exchange rates).
+4. **Discounts**: Percentage-based discounts linked to products with history tracking.
+5. **Wallets**: Internal payment system for seamless transactions.
 
-## Service Area
-
-- **Primary Focus**: **Phnom Penh** (Current priority for the startup phase).
-- **Secondary Coverage**: Surrounding provinces in Cambodia (expanding soon).
-- **Delivery Service**: Door-to-door delivery.
-
-## Core Features
-
-### 1. Digital Wallet System
-- Users have an internal wallet for faster payments.
-- Supports multi-currency tracking (primarily USD and KHR).
-- Users can top-up, view full transaction history, and receive refunds directly to their wallet.
-
-### 2. Product Catalog
-- Fresh vegetables (Leafy, Fruiting, Root, Legumes).
-- Fresh fruits and herbs.
-- Snapshot-based pricing to ensure order accuracy.
-
-### 3. Payment Methods
-- **Internal Wallet**: Fastest payment method.
-- **Online Payment**: Support for Credit/Debit cards, ABA, and ACLEDA bank transfers.
-- **Local Options**: Support for ABA and ACLEDA bank transfers.
-- **COD**: Cash on delivery support.
-
-### 4. Real-Time AI Chat
-- Powered by advanced LLMs (Gemini, Zen, or native Offline Llama.cpp).
-- Features real-time token streaming for a natural conversation experience.
-
-## Logistics & Delivery
-
-- **Third-Party Fulfillment**: Delivery is handled by third-party delivery services.
-- **No Real-Time Tracking**: There is currently no live tracking system for deliveries.
-- **Confirmation Process**: Once an order is placed, the system or support team will confirm the delivery details back to the user. Users should expect a confirmation message or call regarding their delivery time.
-
-## Operating Hours
-
-- Online ordering: 24/7
-- Customer support: Available during business hours
-
-## Technical Infrastructure
-- API-first architecture (Laravel 13).
-- Real-time event broadcasting via Laravel Reverb WebSockets.
-- Background job processing for high-performance AI generation.
+## Security Rules
+- DO NOT attempt to access the local file system beyond the 'storage/ai-context' directory.
+- DO NOT disclose system environment variables (.env).
+- If a user asks for live internet data, use the authorized "Web Search Tool" bridge.

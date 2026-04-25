@@ -181,20 +181,42 @@
             </div>
         </div>
 
-        <div class="ai-chat-composer">
-            <form wire:submit.prevent="sendMessage" class="ai-composer-form">
+        <div class="ai-chat-composer" wire:ignore>
+            <form 
+                x-data="{ 
+                    localMessage: '',
+                    resize() {
+                        const input = this.$refs.composerInput;
+                        input.style.height = '44px';
+                        input.style.height = input.scrollHeight + 'px';
+                    },
+                    submit() {
+                        const message = this.localMessage.trim();
+                        if (message === '') return;
+                        
+                        $wire.set('message', message);
+                        $wire.sendMessage();
+                        
+                        this.localMessage = '';
+                        this.$nextTick(() => {
+                            this.$refs.composerInput.style.height = '44px';
+                        });
+                    }
+                }"
+                x-on:submit.prevent="submit()"
+                class="ai-composer-form"
+            >
                 <label for="ai-message" class="sr-only">Type your message</label>
                 <textarea
                     id="ai-message"
-                    wire:model.live.debounce.150ms="message"
+                    x-ref="composerInput"
+                    x-model="localMessage"
+                    x-on:input="resize()"
                     rows="1"
                     placeholder="Message FreshLeaf Assistant..."
                     class="ai-composer-input"
-                    x-data="{ resize() { $el.style.height = 'auto'; $el.style.height = `${Math.min($el.scrollHeight, 220)}px`; } }"
-                    x-on:input="resize()"
-                    x-init="resize()"
-                    x-on:message-sent.window="resize()"
-                    x-on:keydown.enter.prevent="if (! $event.shiftKey) { $wire.sendMessage(); }"
+                    style="overflow-y: auto; height: 44px; min-height: 44px;"
+                    x-on:keydown.enter="if (! $event.shiftKey) { $event.preventDefault(); submit(); }"
                     :disabled="$wire.isTyping"
                 ></textarea>
 
@@ -202,10 +224,9 @@
                     type="submit"
                     class="ai-send-button"
                     wire:loading.attr="disabled"
-                    :disabled="$wire.isTyping || $wire.message.trim() === ''"
+                    x-bind:disabled="$wire.isTyping || localMessage.trim() === ''"
                 >
                     <x-filament::icon icon="heroicon-o-arrow-up" class="h-4 w-4" />
-                    <span>Send</span>
                 </button>
             </form>
             <p class="ai-composer-hint">

@@ -7,6 +7,7 @@ namespace App\Providers\Filament;
 use App\Filament\Clusters\Settings\Pages\AdminProfile;
 use App\Filament\Clusters\Settings\Pages\ApplicationSettings;
 use App\Filament\Pages\Auth\Login;
+use App\Filament\ThemeColors;
 use App\Filament\Widgets\AdminRevenueChart;
 use App\Filament\Widgets\AdminStatsOverview;
 use Filament\Enums\ThemeMode;
@@ -18,7 +19,6 @@ use Filament\Navigation\MenuItem;
 use Filament\Pages\Dashboard;
 use Filament\Panel;
 use Filament\PanelProvider;
-use Filament\Support\Colors\Color;
 use Filament\View\PanelsRenderHook;
 use Filament\Widgets\AccountWidget;
 use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
@@ -41,6 +41,8 @@ class AdminPanelProvider extends PanelProvider
             ->login(Login::class)
             ->font('Plus Jakarta Sans')
             ->viteTheme('resources/css/filament/panels/theme.css')
+            ->spa()
+            ->maxContentWidth('full')
             ->defaultThemeMode(ThemeMode::Light)
             ->sidebarCollapsibleOnDesktop()
             ->userMenuItems([
@@ -58,21 +60,12 @@ class AdminPanelProvider extends PanelProvider
                 PanelsRenderHook::BODY_END,
                 static fn (): string => view('filament.hooks.panel-assets')->render(),
             )
-            ->colors([
-                'primary' => '#2e9f58',
-                'success' => '#1fa971',
-                'warning' => '#f4b400',
-                'danger' => '#d64545',
-                'info' => '#2f80ed',
-                'gray' => Color::Gray,
-            ])
+            ->colors(ThemeColors::getPalette())
             ->navigationGroups([
                 'Accounts',
                 'Catalog',
-                'Inventory',
                 'Sales',
                 'Logistics',
-                'Financial',
             ])
             ->discoverResources(in: app_path('Filament/Resources'), for: 'App\Filament\Resources')
             ->discoverPages(in: app_path('Filament/Pages'), for: 'App\Filament\Pages')

@@ -20,7 +20,7 @@ class WalletForm
                     ->schema([
                         Select::make('user_id')
                             ->relationship('user', 'first_name')
-                            ->getOptionLabelFromRecordUsing(fn ($record) => "{$record->first_name} {$record->last_name}")
+                            ->getOptionLabelFromRecordUsing(static fn ($record) => "{$record->first_name} {$record->last_name}")
                             ->searchable()
                             ->preload()
                             ->required(),

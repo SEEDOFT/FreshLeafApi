@@ -41,7 +41,7 @@ class VendorForm
                         Grid::make(2)
                             ->schema([
                                 TextInput::make('business_name')
-                                    ->required(),
+                                    ->required(fn (string $operation): bool => $operation === 'create'),
                                 TextInput::make('contact_phone'),
                                 TextInput::make('city'),
                                 TextInput::make('province'),
@@ -60,17 +60,17 @@ class VendorForm
                             ->label('ID Card (Front)')
                             ->image()
                             ->directory('vendor-verification')
-                            ->required(),
+                            ->required(fn (string $operation): bool => $operation === 'create'),
                         FileUpload::make('id_card_back')
                             ->label('ID Card (Back)')
                             ->image()
                             ->directory('vendor-verification')
-                            ->required(),
+                            ->required(fn (string $operation): bool => $operation === 'create'),
                         FileUpload::make('store_front_image')
                             ->label('Farm / Store Photo')
                             ->image()
                             ->directory('vendor-verification')
-                            ->required(),
+                            ->required(fn (string $operation): bool => $operation === 'create'),
                         FileUpload::make('organic_certificate_url')
                             ->label('Organic Certificate (Optional)')
                             ->directory('vendor-verification'),
@@ -79,18 +79,26 @@ class VendorForm
                 Section::make('Financial Details')
                     ->relationship('vendorProfile')
                     ->schema([
-                        TextInput::make('bank_name')
-                            ->label('Bank Name (e.g. ABA, ACLEDA)')
-                            ->placeholder('ABA')
-                            ->required(),
-                        TextInput::make('bank_account_name')
-                            ->label('Account Holder Name')
-                            ->placeholder('KOY YOTRABOTH')
-                            ->required(),
-                        TextInput::make('bank_account_number')
-                            ->label('Account Number')
-                            ->required(),
-                    ])->columns(3),
+                        Grid::make(3)
+                            ->schema([
+                                TextInput::make('bank_name')
+                                    ->label('Bank Name (e.g. ABA, ACLEDA)')
+                                    ->placeholder('ABA')
+                                    ->required(fn (string $operation): bool => $operation === 'create'),
+                                TextInput::make('bank_account_name')
+                                    ->label('Account Holder Name')
+                                    ->placeholder('KOY YOTRABOTH')
+                                    ->required(fn (string $operation): bool => $operation === 'create'),
+                                TextInput::make('bank_account_number')
+                                    ->label('Account Number')
+                                    ->required(fn (string $operation): bool => $operation === 'create'),
+                            ]),
+                        FileUpload::make('bank_qr_code')
+                            ->label('Bank QR Code')
+                            ->image()
+                            ->directory('vendor-verification')
+                            ->columnSpanFull(),
+                    ]),
             ]);
     }
 }

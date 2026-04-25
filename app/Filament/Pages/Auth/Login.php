@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Filament\Pages\Auth;
 
 use App\Models\UserType;
-use Filament\Auth\Pages\Login as BaseLogin;
+use Filament\Auth\Pages\Login as BaseRegister;
 use Filament\Facades\Filament;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
@@ -14,7 +14,7 @@ use Filament\Schemas\Schema;
 use Illuminate\Validation\ValidationException;
 use Override;
 
-class Login extends BaseLogin
+class Login extends BaseRegister
 {
     public function getHeading(): string
     {
@@ -40,20 +40,15 @@ class Login extends BaseLogin
 
     protected function getPhoneNumberFormComponent(): Grid
     {
-        return Grid::make(3)
+        return Grid::make(4)
             ->schema([
-                Select::make('country_code')
-                    ->label('Code')
-                    ->options([
-                        '+855' => '+855 (KH)',
-                        '+66' => '+66 (TH)',
-                        '+84' => '+84 (VN)',
-                        '+1' => '+1 (US)',
-                    ])
-                    ->default('+855')
+                Select::make('country_iso')
+                    ->label('Country')
+                    ->options(get_country_options())
+                    ->default('KH')
                     ->required()
                     ->searchable()
-                    ->columnSpan(1),
+                    ->columnSpan(2),
                 TextInput::make('phone_number_input')
                     ->label(__('custom.phone_number'))
                     ->placeholder('12 345 678')
@@ -76,8 +71,9 @@ class Login extends BaseLogin
             default => null,
         };
 
-        // Combine code and number, stripping leading 0 from input number
-        $fullPhone = $data['country_code'].ltrim($data['phone_number_input'], '0');
+        // Combine dial code and number
+        $dialCode = get_dial_code($data['country_iso']);
+        $fullPhone = $dialCode.ltrim($data['phone_number_input'], '0');
 
         return array_filter([
             'phone_number' => $fullPhone,

@@ -128,6 +128,11 @@ class Register extends BaseRegister
                                     ->required()
                                     ->maxLength(255),
                             ]),
+                            FileUpload::make('bank_qr_code')
+                                ->label('Bank QR Code')
+                                ->image()
+                                ->directory('vendor-verification')
+                                ->required(),
                         ]),
                 ])->submitAction(new HtmlString(Blade::render('<x-filament::button type="submit" size="sm">Complete Registration</x-filament::button>'))),
             ])->statePath('data');
@@ -135,20 +140,15 @@ class Register extends BaseRegister
 
     protected function getPhoneNumberFormComponent(): Grid
     {
-        return Grid::make(3)
+        return Grid::make(4)
             ->schema([
-                Select::make('country_code')
-                    ->label('Code')
-                    ->options([
-                        '+855' => '+855 (KH)',
-                        '+66' => '+66 (TH)',
-                        '+84' => '+84 (VN)',
-                        '+1' => '+1 (US)',
-                    ])
-                    ->default('+855')
+                Select::make('country_iso')
+                    ->label('Country')
+                    ->options(get_country_options())
+                    ->default('KH')
                     ->required()
                     ->searchable()
-                    ->columnSpan(1),
+                    ->columnSpan(2),
                 TextInput::make('phone_number_input')
                     ->label(__('custom.phone_number'))
                     ->placeholder('12 345 678')
@@ -156,7 +156,8 @@ class Register extends BaseRegister
                     ->tel()
                     ->rule(function (Get $get) {
                         return function (string $attribute, $value, \Closure $fail) use ($get) {
-                            $fullPhone = $get('country_code').ltrim($value, '0');
+                            $dialCode = get_dial_code($get('country_iso'));
+                            $fullPhone = $dialCode.ltrim($value, '0');
                             $exists = User::where('phone_number', $fullPhone)
                                 ->where('user_type_id', UserType::VENDOR)
                                 ->whereNull('deleted_at')
@@ -181,8 +182,9 @@ class Register extends BaseRegister
         unset($data['name']);
 
         // Combine fields and strip leading zero
-        $data['phone_number'] = $data['country_code'].ltrim($data['phone_number_input'], '0');
-        unset($data['country_code'], $data['phone_number_input']);
+        $dialCode = get_dial_code($data['country_iso']);
+        $data['phone_number'] = $dialCode.ltrim($data['phone_number_input'], '0');
+        unset($data['country_iso'], $data['phone_number_input']);
 
         $data['user_type_id'] = UserType::VENDOR;
         $data['user_status_id'] = UserStatus::PENDING;
@@ -197,7 +199,7 @@ class Register extends BaseRegister
         $vendorData = Arr::only($data, [
             'business_name', 'contact_phone', 'city', 'province', 'address',
             'id_card_front', 'id_card_back', 'store_front_image', 'organic_certificate_url',
-            'bank_name', 'bank_account_name', 'bank_account_number',
+            'bank_name', 'bank_account_name', 'bank_account_number', 'bank_qr_code',
         ]);
 
         // 2. Separate user data

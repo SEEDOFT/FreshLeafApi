@@ -15,7 +15,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\Relations\HasManyThrough;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Str;
@@ -47,18 +47,12 @@ use Illuminate\Support\Str;
  * @property-read Collection<int, ProductVariant> $variants
  * @property-read int|null $variants_count
  * @property-read Collection<int, PriceHistory> $priceHistories
- * @property-read Collection<int, InventoryBatch> $inventoryBatches
- * @property-read Collection<int, InventoryMovement> $inventoryMovements
  * @property-read Collection<int, OrderItem> $orderItems
  * @property-read Collection<int, CartItem> $cartItems
- * @property-read Collection<int, PurchaseOrderItem> $purchaseOrderItems
  * @property-read int|null $ai_recommendation_items_count
  * @property-read int|null $cart_items_count
- * @property-read int|null $inventory_batches_count
- * @property-read int|null $inventory_movements_count
  * @property-read int|null $order_items_count
  * @property-read int|null $price_histories_count
- * @property-read int|null $purchase_order_items_count
  * @property-read Collection<int, ProductSubstitution> $substitutionsFor
  * @property-read int|null $substitutions_for_count
  * @property-read int|null $user_behavior_events_count
@@ -211,40 +205,39 @@ class Product extends Model
     }
 
     /**
-     * Get the inventory batches for the product.
+     * Get the discounts for the product.
      *
-     * @return HasMany<InventoryBatch, $this>
+     * @return HasMany<ProductDiscount, $this>
      */
-    public function inventoryBatches(): HasMany
+    public function discounts(): HasMany
     {
-        return $this->hasMany(InventoryBatch::class, 'product_id', 'id');
+        return $this->hasMany(ProductDiscount::class, 'product_id', 'id');
     }
 
     /**
-     * Get the inventory movements for the product.
+     * Get the current active discount for the product.
      *
-     * @return HasManyThrough<InventoryMovement, InventoryBatch, $this>
+     * @return HasOne<ProductDiscount, $this>
      */
-    public function inventoryMovements(): HasManyThrough
+    public function activeDiscount(): HasOne
     {
-        return $this->hasManyThrough(
-            InventoryMovement::class,
-            InventoryBatch::class,
-            'product_id',
-            'inventory_batch_id',
-            'id',
-            'id'
-        );
+        return $this->hasOne(ProductDiscount::class, 'product_id', 'id')
+            ->where('is_active', true)
+            ->where(function ($query) {
+                $query->whereNull('starts_at')
+                    ->orWhere('starts_at', '<=', now());
+            })
+            ->where(function ($query) {
+                $query->whereNull('ends_at')
+                    ->orWhere('ends_at', '>=', now());
+            });
     }
 
     /**
-     * Get the order items for the product.
-     *
-     * @return HasMany<OrderItem, $this>
+     * Get the current discount percentage.
      */
-    public function orderItems(): HasMany
-    {
-        return $this->hasMany(OrderItem::class, 'product_id', 'id');
+    public public(set) int $discountPercentage {
+        get => $this->activeDiscount?->discount_percentage ?? 0;
     }
 
     /**
@@ -255,16 +248,6 @@ class Product extends Model
     public function cartItems(): HasMany
     {
         return $this->hasMany(CartItem::class, 'product_id', 'id');
-    }
-
-    /**
-     * Get the purchase order items for the product.
-     *
-     * @return HasMany<PurchaseOrderItem, $this>
-     */
-    public function purchaseOrderItems(): HasMany
-    {
-        return $this->hasMany(PurchaseOrderItem::class, 'product_id', 'id');
     }
 
     /**

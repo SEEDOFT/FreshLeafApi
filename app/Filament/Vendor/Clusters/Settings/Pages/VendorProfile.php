@@ -6,6 +6,7 @@ namespace App\Filament\Vendor\Clusters\Settings\Pages;
 
 use App\Filament\Vendor\Clusters\Settings;
 use Filament\Forms\Components\FileUpload;
+use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Notifications\Notification;
 use Filament\Pages\Page;
@@ -35,7 +36,16 @@ class VendorProfile extends Page
     public function mount(): void
     {
         $user = Auth::user();
+        if (! $user) {
+            return;
+        }
+
         $this->data = $user->toArray();
+
+        // Wrap image in array for FileUpload component if it's a string
+        if (isset($this->data['image']) && is_string($this->data['image'])) {
+            $this->data['image'] = [$this->data['image']];
+        }
     }
 
     public function form(Schema $schema): Schema
@@ -74,6 +84,19 @@ class VendorProfile extends Page
                                     ->columnSpan(3),
                             ]),
                     ]),
+
+                Section::make('Preferences')
+                    ->description('Customize your store dashboard language.')
+                    ->schema([
+                        Select::make('locale')
+                            ->label('Display Language')
+                            ->options([
+                                'km' => 'Khmer (ភាសាខ្មែរ)',
+                                'en' => 'English',
+                            ])
+                            ->required()
+                            ->native(false),
+                    ])->columns(2),
             ])
             ->statePath('data');
     }
@@ -81,7 +104,16 @@ class VendorProfile extends Page
     public function save(): void
     {
         $user = Auth::user();
+        if (! $user) {
+            return;
+        }
+
         $state = $this->getSchema('form')->getState();
+
+        // Unwrap image from array before saving to DB
+        if (isset($state['image']) && is_array($state['image'])) {
+            $state['image'] = reset($state['image']) ?: null;
+        }
 
         $user->update($state);
 
@@ -89,6 +121,9 @@ class VendorProfile extends Page
             ->title('Profile updated successfully.')
             ->success()
             ->send();
+
+        // Refresh to apply language change if locale changed
+        $this->redirect(static::getUrl());
     }
 
     protected function getNameFormComponent(): Component

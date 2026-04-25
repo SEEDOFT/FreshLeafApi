@@ -15,15 +15,15 @@ class ProductStatusSeeder extends Seeder
     public function run(): void
     {
         $statuses = [
-            ['id' => ProductStatus::ACTIVE, 'code' => 'active', 'name' => 'Active'],
-            ['id' => ProductStatus::INACTIVE, 'code' => 'inactive', 'name' => 'Inactive'],
-            ['id' => ProductStatus::DRAFT, 'code' => 'draft', 'name' => 'Draft'],
+            ['id' => ProductStatus::ACTIVE, 'name' => 'Active'],
+            ['id' => ProductStatus::INACTIVE, 'name' => 'Inactive'],
+            ['id' => ProductStatus::DRAFT, 'name' => 'Draft'],
         ];
 
         foreach ($statuses as $status) {
             ProductStatus::query()->updateOrCreate(
                 ['id' => $status['id']],
-                ['code' => $status['code'], 'name' => $status['name']]
+                ['name' => $status['name']]
             );
         }
     }

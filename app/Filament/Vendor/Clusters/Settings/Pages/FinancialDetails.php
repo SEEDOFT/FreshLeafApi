@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Filament\Vendor\Clusters\Settings\Pages;
 
 use App\Filament\Vendor\Clusters\Settings;
+use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\TextInput;
 use Filament\Notifications\Notification;
 use Filament\Pages\Page;
@@ -52,6 +53,11 @@ class FinancialDetails extends Page
                         TextInput::make('bank_account_number')
                             ->label('Account Number')
                             ->maxLength(255),
+                        FileUpload::make('bank_qr_code')
+                            ->label('Bank QR Code')
+                            ->image()
+                            ->directory('vendor-verification')
+                            ->columnSpanFull(),
                     ])->columns(3),
             ])
             ->statePath('data');

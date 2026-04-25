@@ -23,8 +23,8 @@ class DatabaseSeeder extends Seeder
             DefaultSuperAdminSeeder::class,
             PaymentMethodTypeSeeder::class,
             PaymentMethodStatusSeeder::class,
-            OperationUserSeeder::class,
-            SupplierSeeder::class,
+            // OperationUserSeeder::class,
+            // SupplierSeeder::class,
             ProductStatusSeeder::class,
             ProductTypeSeeder::class,
             UnitSeeder::class,
@@ -32,6 +32,8 @@ class DatabaseSeeder extends Seeder
             ProductSeeder::class,
             ProductSampleSeeder::class,
             ProductVariantSeeder::class,
+            ProductDiscountSeeder::class,
+            ExchangeRateSeeder::class,
             WalletTransactionSeeder::class,
         ]);
 

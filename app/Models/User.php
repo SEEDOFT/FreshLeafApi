@@ -59,6 +59,7 @@ use Override;
     'password',
     'user_type_id',
     'user_status_id',
+    'locale',
 ])]
 #[Hidden(['password', 'remember_token'])]
 #[UseFactory(UserFactory::class)]

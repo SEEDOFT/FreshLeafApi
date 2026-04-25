@@ -6,6 +6,7 @@ namespace App\Providers\Filament;
 
 use App\Filament\Pages\Auth\Login;
 use App\Filament\Pages\Auth\Register;
+use App\Filament\ThemeColors;
 use App\Filament\Vendor\Clusters\Settings\Pages\BusinessProfile;
 use App\Filament\Vendor\Clusters\Settings\Pages\VendorProfile;
 use App\Filament\Vendor\Widgets\VendorEarningsChart;
@@ -19,7 +20,6 @@ use Filament\Navigation\MenuItem;
 use Filament\Pages\Dashboard;
 use Filament\Panel;
 use Filament\PanelProvider;
-use Filament\Support\Colors\Color;
 use Filament\View\PanelsRenderHook;
 use Filament\Widgets\AccountWidget;
 use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
@@ -42,6 +42,8 @@ class VendorPanelProvider extends PanelProvider
             ->registration(Register::class)
             ->font('Plus Jakarta Sans')
             ->viteTheme('resources/css/filament/panels/theme.css')
+            ->spa()
+            ->maxContentWidth('full')
             ->defaultThemeMode(ThemeMode::Light)
             ->sidebarCollapsibleOnDesktop()
             ->userMenuItems([
@@ -59,14 +61,7 @@ class VendorPanelProvider extends PanelProvider
                 PanelsRenderHook::BODY_END,
                 static fn (): string => view('filament.hooks.panel-assets')->render(),
             )
-            ->colors([
-                'primary' => '#2e9f58',
-                'success' => '#1fa971',
-                'warning' => '#f4b400',
-                'danger' => '#d64545',
-                'info' => '#2f80ed',
-                'gray' => Color::Gray,
-            ])
+            ->colors(ThemeColors::getPalette())
             ->discoverResources(in: app_path('Filament/Vendor/Resources'), for: 'App\Filament\Vendor\Resources')
             ->discoverPages(in: app_path('Filament/Vendor/Pages'), for: 'App\Filament\Vendor\Pages')
             ->discoverClusters(in: app_path('Filament/Vendor/Clusters'), for: 'App\Filament\Vendor\Clusters')

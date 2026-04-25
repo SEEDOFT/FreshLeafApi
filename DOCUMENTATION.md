@@ -1,7 +1,14 @@
 # Project Documentation - FreshLeaf API
 
 ## Overview
-This documentation outlines the implementation status of the FreshLeaf API, covering database schema, API endpoints, payment integrations, AI/Chat features, and the roadmap for future development. All models are built using PHP 8.3 features, including Attributes for property definitions (`Fillable`, `Hidden`) and explicit return types.
+This documentation outlines the implementation status of the FreshLeaf API, a multi-vendor organic vegetable marketplace. The platform follows a B2C model where consumers use a mobile app to purchase produce, while vendors use a web interface to manage their inventory and sales.
+
+### Business Model & Roles
+- **Consumers (B2C)**: Use the FreshLeaf mobile app to discover and buy organic vegetables.
+- **Vendors**: Required to register their real identity and verify their store before selling. They manage products, orders, and payments via a dedicated web dashboard.
+- **Administrators**: Overlook the platform, verify vendor identities, and collect a commission fee from vendors for every completed product sale.
+
+All models are built using PHP 8.3 features, including Attributes for property definitions (`Fillable`, `Hidden`) and explicit return types.
 
 ---
 
@@ -28,9 +35,8 @@ This documentation outlines the implementation status of the FreshLeaf API, cove
 - **Gemini provider:** Supports real streaming via Google AI Studio API.
 - **Llama.cpp provider (Offline):** Native integration with `llama-server`. Provides a fully offline, high-performance alternative using local CPU.
 - **Zen provider:** OpenCode Zen API key support with OpenAI-compatible chat completion payload and streaming.
-- **Ollama provider (local/free):** Supports local model usage with native streaming.
 - **Setup Automation:** `ai/setup-ai.php` script automates engine and model downloading for testers.
-- **Configuration:** `.env` keys (`AI_PROVIDER`, `AI_FALLBACK_PROVIDERS`, `GEMINI_API_KEY`, `GEMINI_MODEL`, `ZEN_API_KEY`, `ZEN_BASE_URL`, `ZEN_MODEL`, `OLLAMA_BASE_URL`, `OLLAMA_MODEL`, `LLAMA_CPP_BASE_URL`).
+- **Configuration:** `.env` keys (`AI_PROVIDER`, `AI_FALLBACK_PROVIDERS`, `GEMINI_API_KEY`, `GEMINI_MODEL`, `ZEN_API_KEY`, `ZEN_BASE_URL`, `ZEN_MODEL`, `LLAMA_CPP_BASE_URL`).
 
 ### 4. Laravel Reverb WebSocket Integration
 - **Package:** `laravel/reverb` v1.10.0 installed.

@@ -29,7 +29,7 @@ class SetLocaleFromAcceptLanguage
         if ($locale !== null) {
             \app()->setLocale($locale);
         } else {
-            \app()->setLocale(config('app.locale'));
+            \app()->setLocale(app_setting('default_locale', config('app.locale')));
         }
 
         return $next($request);
@@ -49,13 +49,21 @@ class SetLocaleFromAcceptLanguage
             return $this->detectFromHeader($request);
         }
 
-        $preferredLocale = $user->userProfile?->preferred_language;
+        // 1. Check User direct locale field (Admin/Vendor/Consumer)
+        $preferredLocale = $user->locale;
+
+        if (\in_array($preferredLocale, self::SUPPORTED_LOCALES, true)) {
+            return $preferredLocale;
+        }
+
+        // 2. Check UserProfile (Consumer specific)
+        $profileLocale = $user->userProfile?->preferred_language;
 
         if (
-            \is_string($preferredLocale) &&
-            \in_array($preferredLocale, self::SUPPORTED_LOCALES, true)
+            \is_string($profileLocale) &&
+            \in_array($profileLocale, self::SUPPORTED_LOCALES, true)
         ) {
-            return $preferredLocale;
+            return $profileLocale;
         }
 
         return $this->detectFromHeader($request);

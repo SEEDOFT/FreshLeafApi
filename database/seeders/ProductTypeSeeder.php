@@ -15,14 +15,14 @@ class ProductTypeSeeder extends Seeder
     public function run(): void
     {
         $types = [
-            ['code' => 'fresh', 'name' => 'Fresh Produce'],
-            ['code' => 'staple', 'name' => 'Staple'],
-            ['code' => 'protein', 'name' => 'Protein'],
+            ['name' => 'Fresh Produce'],
+            ['name' => 'Staple'],
+            ['name' => 'Protein'],
         ];
 
         foreach ($types as $type) {
             ProductType::query()->updateOrCreate(
-                ['code' => $type['code']],
+                ['name' => $type['name']],
                 ['name' => $type['name']]
             );
         }

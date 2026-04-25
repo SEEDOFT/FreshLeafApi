@@ -6,6 +6,7 @@ namespace App\Filament\Clusters\Settings\Pages;
 
 use App\Filament\Clusters\Settings;
 use App\Models\Setting;
+use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
 use Filament\Notifications\Notification;
@@ -38,6 +39,8 @@ class ApplicationSettings extends Page
             'timezone' => app_setting('timezone', 'Asia/Phnom_Penh'),
             'enable_ai_assistant_admin' => app_setting('enable_ai_assistant_admin', true),
             'enable_ai_assistant_vendor' => app_setting('enable_ai_assistant_vendor', true),
+            'commission_percentage' => app_setting('commission_percentage', 10.00),
+            'default_locale' => app_setting('default_locale', 'km'),
         ];
     }
 
@@ -45,6 +48,33 @@ class ApplicationSettings extends Page
     {
         return $schema
             ->components([
+                Section::make('Revenue Model')
+                    ->description('Manage platform fees and commissions.')
+                    ->schema([
+                        TextInput::make('commission_percentage')
+                            ->label('Commission Fee (%)')
+                            ->numeric()
+                            ->suffix('%')
+                            ->helperText('The percentage deducted from vendor sales upon completion.')
+                            ->required(),
+                    ]),
+
+                Section::make('Localization')
+                    ->description('Default settings for the entire platform.')
+                    ->schema([
+                        Select::make('default_locale')
+                            ->label('Default Language')
+                            ->options([
+                                'km' => 'Khmer (ភាសាខ្មែរ)',
+                                'en' => 'English',
+                            ])
+                            ->required()
+                            ->native(false),
+                        TextInput::make('timezone')
+                            ->label('System Timezone')
+                            ->required(),
+                    ])->columns(2),
+
                 Section::make('Notification Preferences')
                     ->description('Global configuration for system alerts.')
                     ->schema([
@@ -52,9 +82,6 @@ class ApplicationSettings extends Page
                             ->label('Enable Email Notifications'),
                         Toggle::make('sms_alerts')
                             ->label('Enable SMS Alerts for New Vendors'),
-                        TextInput::make('timezone')
-                            ->label('Preferred Timezone')
-                            ->required(),
                     ])->columns(2),
 
                 Section::make('AI Assistant Control')

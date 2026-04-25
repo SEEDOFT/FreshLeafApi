@@ -7,12 +7,18 @@
 <a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
 </p>
 
-# FreshLeaf API
+# FreshLeaf API (Multi-Vendor Organic Marketplace)
 
-A Laravel 13 REST API with multi-method payment support and backend-driven AI chat streaming through Laravel Reverb (REST + private WebSocket channels).
+A Laravel 13 REST API powering a multi-vendor organic vegetable marketplace. This backend manages the entire ecosystem:
+
+- **B2C Consumer App**: Mobile application for consumers to browse and buy organic vegetables.
+- **Vendor Web App**: A dedicated platform where vendors register their real identity, manage their store profile, and sell products.
+- **Admin Management**: System administrators manage the platform, verify vendors, and earn a commission fee from vendors upon each successfully completed sale.
 
 ## Features
 
+- **Multi-Vendor Marketplace**: Support for individual vendor stores and product management.
+- **Admin Commission System**: Automated tracking of commission fees on completed orders.
 - **Payment Processing**: Multi-method support (Wallet, Credit/Debit, ABA, ACLEDA, COD)
 - **Wallet System**: Internal wallet tracking with full transaction history and CRUD support
 - **AI Chat**: Session-based AI chat with real-time SSE streaming over Laravel Reverb (private WebSocket channels)
@@ -59,12 +65,12 @@ composer run dev -- --host=192.168.0.108 --port=8000
 ```env
 # ... (existing reverb and payment keys)
 
-# AI provider selection: gemini, zen, ollama, or llama_cpp
-AI_PROVIDER=gemini
-AI_FALLBACK_PROVIDERS=zen,llama_cpp,ollama
+# AI provider selection: gemini, zen, or llama_cpp
+AI_PROVIDER=llama_cpp
+AI_FALLBACK_PROVIDERS=zen
 
 # Llama.cpp (Internal Local AI)
-LLAMA_CPP_BASE_URL=http://127.0.0.1:8080
+LLAMA_CPP_BASE_URL=http://127.0.0.1:9000
 LLAMA_CPP_MODEL=phi-3-mini
 LLAMA_CPP_TIMEOUT=120
 ```

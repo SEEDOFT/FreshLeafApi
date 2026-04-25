@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Filament\Vendor\Widgets;
 
-use App\Models\InventoryBatch;
 use App\Models\Order;
 use App\Models\Product;
 use App\Models\Wallet;
@@ -31,11 +30,6 @@ class VendorStatsOverview extends BaseWidget
             ->whereHas('currency', fn ($q) => $q->where('code', 'USD'))
             ->value('balance') ?? 0;
 
-        $lowStockCount = InventoryBatch::whereHas('product', fn ($q) => $q->where('vendor_user_id', $user->id))
-            ->get()
-            ->filter(fn ($batch) => ($batch->received_qty - $batch->sold_qty - $batch->damaged_qty - $batch->expired_qty) < 10)
-            ->count();
-
         return [
             Stat::make('My Products', $productCount)
                 ->description('Total products listed')
@@ -49,10 +43,6 @@ class VendorStatsOverview extends BaseWidget
                 ->description('Current USD earnings')
                 ->descriptionIcon('heroicon-m-wallet')
                 ->color('success'),
-            Stat::make('Inventory Alerts', $lowStockCount)
-                ->description('Items with low stock')
-                ->descriptionIcon('heroicon-m-exclamation-triangle')
-                ->color($lowStockCount > 0 ? 'danger' : 'success'),
         ];
     }
 }

@@ -24,7 +24,7 @@ use Illuminate\Support\Carbon;
  * @property-read int|null $products_count
  */
 #[Table('product_statuses', key: 'id')]
-#[Fillable(['name'])]
+#[Fillable(['code', 'name'])]
 #[UseFactory(ProductStatusFactory::class)]
 class ProductStatus extends Model
 {

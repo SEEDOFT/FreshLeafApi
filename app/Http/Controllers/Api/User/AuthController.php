@@ -70,6 +70,10 @@ class AuthController extends Controller
                 'user_status_id' => UserStatus::ACTIVE,
             ]);
 
+            $user->userProfile()->create([
+                'preferred_language' => 'en',
+            ]);
+
             $user->ensureDefaultWallets();
 
             return $user;

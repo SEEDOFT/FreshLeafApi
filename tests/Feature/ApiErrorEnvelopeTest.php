@@ -20,17 +20,17 @@ class ApiErrorEnvelopeTest extends TestCase
     {
         parent::setUp();
 
-        UserStatus::insert([
-            ['id' => UserStatus::ACTIVE, 'name' => 'Active'],
-            ['id' => UserStatus::INACTIVE, 'name' => 'Inactive'],
-            ['id' => UserStatus::DELETED, 'name' => 'Deleted'],
-        ]);
+        UserStatus::upsert([
+            ['id' => UserStatus::ACTIVE, 'code' => 'ACTIVE', 'name' => 'Active'],
+            ['id' => UserStatus::INACTIVE, 'code' => 'INACTIVE', 'name' => 'Inactive'],
+            ['id' => UserStatus::DELETED, 'code' => 'DELETED', 'name' => 'Deleted'],
+        ], ['id'], ['code', 'name']);
 
-        UserType::insert([
-            ['id' => UserType::USER, 'name' => 'User'],
-            ['id' => UserType::VENDOR, 'name' => 'Vendor'],
-            ['id' => UserType::ADMIN, 'name' => 'Admin'],
-        ]);
+        UserType::upsert([
+            ['id' => UserType::USER, 'code' => 'USER', 'name' => 'User'],
+            ['id' => UserType::VENDOR, 'code' => 'VENDOR', 'name' => 'Vendor'],
+            ['id' => UserType::ADMIN, 'code' => 'ADMIN', 'name' => 'Admin'],
+        ], ['id'], ['code', 'name']);
 
         Route::middleware('api')->get('/api/v1/test/error-envelope-500', static function (): never {
             throw new RuntimeException('Synthetic failure');

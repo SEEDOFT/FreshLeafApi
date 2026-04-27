@@ -12,10 +12,10 @@ class ExampleTest extends TestCase
     /**
      * A basic test example.
      */
-    public function test_the_application_root_route_is_not_available_in_api_only_mode(): void
+    public function test_the_application_root_route_redirects_to_admin(): void
     {
         $response = $this->get('/');
 
-        $response->assertStatus(404);
+        $response->assertRedirect('/admin');
     }
 }

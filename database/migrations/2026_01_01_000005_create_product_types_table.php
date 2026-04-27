@@ -13,8 +13,9 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('product_statuses', static function (Blueprint $table) {
-            $table->unsignedBigInteger('id')->primary();
+        Schema::create('product_types', static function (Blueprint $table) {
+            $table->id();
+            $table->string('code')->unique();
             $table->string('name');
             $table->timestamps();
         });
@@ -25,6 +26,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('product_statuses');
+        Schema::dropIfExists('product_types');
     }
 };

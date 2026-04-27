@@ -19,8 +19,10 @@ class OrderStatusFactory extends Factory
      */
     public function definition(): array
     {
+        $code = $this->faker->unique()->slug();
         return [
-            //
+            'code' => $code,
+            'name' => ucfirst($code),
         ];
     }
 }

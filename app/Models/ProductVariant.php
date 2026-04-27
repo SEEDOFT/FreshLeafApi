@@ -80,6 +80,16 @@ class ProductVariant extends Model
     }
 
     /**
+     * Get the unit for the variant.
+     *
+     * @return BelongsTo<Unit, $this>
+     */
+    public function unit(): BelongsTo
+    {
+        return $this->belongsTo(Unit::class, 'unit_id', 'id');
+    }
+
+    /**
      * Get the current active price in USD after applying any product-level discounts.
      */
     public public(set) float $activePrice {

@@ -77,7 +77,7 @@ return Application::configure(basePath: dirname(__DIR__))
                         code: $code,
                         success: false,
                         message: $exception->getMessage(),
-                        data: $exception->errors(),
+                        data: ['errors' => $exception->errors()],
                     ),
                     $code
                 );

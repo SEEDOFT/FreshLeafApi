@@ -27,9 +27,9 @@ class ProductPricingTest extends TestCase
     {
         // 1. Setup Data
         $category = ProductCategory::create(['name' => 'Vegetables', 'slug' => 'vegetables']);
-        $type = ProductType::create(['name' => 'Organic', 'slug' => 'organic']);
+        $type = ProductType::create(['name' => 'Organic', 'code' => 'organic']);
         $unit = Unit::create(['name' => 'Kilogram', 'symbol' => 'KG']);
-        $status = ProductStatus::create(['name' => 'Active', 'slug' => 'active']);
+        $status = ProductStatus::create(['name' => 'Active', 'code' => 'active']);
 
         $product = Product::create([
             'product_category_id' => $category->id,

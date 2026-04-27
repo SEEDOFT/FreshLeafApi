@@ -24,6 +24,7 @@ class WalletHistoryResource extends JsonResource
             'id' => $this->id,
             'wallet_id' => $this->wallet_id,
             'user_id' => $this->user_id,
+            'currency_id' => $this->currency_id,
             'balance' => $this->balance,
             'currency' => $this->relationLoaded('currency')
                 ? new CurrencyResource($this->currency)

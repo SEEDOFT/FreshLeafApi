@@ -110,28 +110,36 @@ class ProcessAiChatMessageJob implements ShouldQueue
 
                 // 2. Handle Hybrid Search if requested
                 if ($query !== '') {
-                    $finalText = $this->answerWithSearch(
-                        aiService: $aiService,
-                        searchService: $searchService,
-                        systemPrompt: $systemPrompt,
-                        history: $history,
-                        query: $query,
-                        options: $options,
-                        sequence: $sequence,
-                    );
+                    if ($this->shouldHonorModelSearchRequest($query)) {
+                        $finalText = $this->answerWithSearch(
+                            aiService: $aiService,
+                            searchService: $searchService,
+                            systemPrompt: $systemPrompt,
+                            history: $history,
+                            query: $query,
+                            options: $options,
+                            sequence: $sequence,
+                        );
+                    } else {
+                        $normalPrompt = $this->buildNormalAnswerPrompt($query);
+                        $finalText = $aiService->streamContentWithSystemPromptAndHistory(
+                            systemPrompt: $systemPrompt,
+                            history: $history,
+                            prompt: $normalPrompt,
+                            onChunk: function (string $chunk) use (&$sequence): void {
+                                $this->broadcastAssistantChunk($chunk, $sequence);
+                            },
+                            options: $options,
+                        );
+                    }
                 } else {
                     // Regular response (no search needed)
-                    \event(new AiMessageChunk(
-                        userId: $this->userId,
-                        sessionId: $this->sessionId,
-                        messageId: $this->messageId,
-                        role: 'assistant',
-                        textChunk: $initialResponse,
-                        sequence: ++$sequence,
-                        timestamp: \now()->toIso8601String(),
-                    ));
+                    // BROADCAST the initial response so user actually sees it!
+                    $this->broadcastAssistantChunk($initialResponse, $sequence, trim: true);
                 }
             }
+
+            $finalText = $this->sanitizeAssistantOutput($finalText);
 
             $assistantMessage->update([
                 'content' => $finalText,
@@ -199,15 +207,7 @@ class ProcessAiChatMessageJob implements ShouldQueue
             history: $history,
             prompt: $finalPrompt,
             onChunk: function (string $chunk) use (&$sequence): void {
-                \event(new AiMessageChunk(
-                    userId: $this->userId,
-                    sessionId: $this->sessionId,
-                    messageId: $this->messageId,
-                    role: 'assistant',
-                    textChunk: $chunk,
-                    sequence: ++$sequence,
-                    timestamp: \now()->toIso8601String(),
-                ));
+                $this->broadcastAssistantChunk($chunk, $sequence);
             },
             options: $options,
         );
@@ -243,6 +243,65 @@ class ProcessAiChatMessageJob implements ShouldQueue
         }
 
         return false;
+    }
+
+    private function shouldHonorModelSearchRequest(string $query): bool
+    {
+        if (! (bool) \config('ai.web_search.enabled', true)) {
+            Log::info('AI Bridge: Ignoring model search request because web search is disabled', [
+                'session_id' => $this->sessionId,
+                'message_id' => $this->messageId,
+                'prompt' => $this->prompt,
+                'query' => $query,
+            ]);
+
+            return false;
+        }
+
+        return true;
+    }
+
+    private function buildNormalAnswerPrompt(string $ignoredSearchQuery): string
+    {
+        return "The previous draft incorrectly requested internet search with: [SEARCH_REQUIRED: {$ignoredSearchQuery}]. "
+            .'Do not output any SEARCH_REQUIRED tag, no-search tag, or explanation of search routing. '
+            .'Use the FreshLeaf project context when relevant, then answer the original user message naturally with helpful detail: "'
+            .$this->prompt.'"';
+    }
+
+    private function sanitizeAssistantOutput(string $text, bool $trim = true): string
+    {
+        $text = (string) \preg_replace('/\s*\[SEARCH_REQUIRED:\s*.*?\]\s*/is', ' ', $text);
+        $text = (string) \preg_replace(
+            '/\s*\[(?=[^\]]*(?:no\s+search|search\s+tag\s+(?:not\s+)?required|query\s+can\s+be\s+(?:answered|addressed)\s+directly))[^\]]*\]\.?\s*/iu',
+            ' ',
+            $text,
+        );
+        $text = (string) \preg_replace('/[ \t]+([.,!?;:])/', '$1', $text);
+        $text = (string) \preg_replace('/[ \t]+\r?\n/', "\n", $text);
+        $text = (string) \preg_replace('/\n{3,}/', "\n\n", $text);
+        $text = (string) \preg_replace('/ {2,}/', ' ', $text);
+
+        return $trim ? \trim($text) : $text;
+    }
+
+    private function broadcastAssistantChunk(string $chunk, int &$sequence, bool $trim = false): void
+    {
+        $chunk = $this->sanitizeAssistantOutput($chunk, $trim);
+
+        if (\trim($chunk) === '') {
+            return;
+        }
+
+        \event(new AiMessageChunk(
+            userId: $this->userId,
+            sessionId: $this->sessionId,
+            messageId: $this->messageId,
+            role: 'assistant',
+            textChunk: $chunk,
+            sequence: ++$sequence,
+            timestamp: \now()->toIso8601String(),
+        ));
     }
 
     private function toClientSafeError(string $message): string
@@ -285,8 +344,33 @@ class ProcessAiChatMessageJob implements ShouldQueue
     {
         $base = $this->readFileContent(\config('ai.system_prompt_file'));
         $ctx = $this->readFileContent(\config('ai.project_context_file'));
+        $languagePrompt = $this->resolveLanguagePrompt();
 
-        return "{$base}\n\n{$ctx}";
+        return "{$base}\n\n{$languagePrompt}\n\n{$ctx}";
+    }
+
+    private function resolveLanguagePrompt(): string
+    {
+        if ($this->containsKhmerText($this->prompt)) {
+            return 'Current conversation language guidance: The user wrote Khmer. Reply in natural, fluent Khmer unless the user asks for another language.';
+        }
+
+        $language = \mb_strtolower((string) $this->language);
+
+        if (\str_contains($language, 'km') || \str_contains($language, 'kh')) {
+            return 'Current conversation language guidance: The request language is Khmer. Reply in natural, fluent Khmer unless the user asks for another language.';
+        }
+
+        if (\str_contains($language, 'en')) {
+            return 'Current conversation language guidance: The request language is English. Reply in fluent English unless the user asks for another language.';
+        }
+
+        return 'Current conversation language guidance: Match the user message language. Use Khmer for Khmer, English for English, and natural mixed Khmer-English when the user mixes both.';
+    }
+
+    private function containsKhmerText(string $text): bool
+    {
+        return \preg_match('/[\x{1780}-\x{17FF}]/u', $text) === 1;
     }
 
     private function readFileContent(string $path): string

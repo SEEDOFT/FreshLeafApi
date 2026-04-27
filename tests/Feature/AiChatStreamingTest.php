@@ -59,6 +59,79 @@ class AiChatStreamingTest extends TestCase
         $this->assertSame('done', $assistantMessage->status);
     }
 
+    public function test_ai_chat_job_removes_internal_no_search_notes_from_regular_response(): void
+    {
+        Event::fake();
+        [$user, $session, $assistantMessage] = $this->createChatFixture();
+
+        $mockAiService = Mockery::mock(AiService::class);
+        $this->app->instance(AiService::class, $mockAiService);
+
+        $mockSearchService = Mockery::mock(WebSearchService::class);
+        $this->app->instance(WebSearchService::class, $mockSearchService);
+
+        $cleanAnswer = 'Salads are fresh dishes made with vegetables, fruits, herbs, nuts, cheese, or protein. For FreshLeaf, crisp lettuce, cucumber, tomato, carrot, and herbs are great organic salad ingredients.';
+        $leakedAnswer = $cleanAnswer."\n\n[No search tag required as the user's query can be addressed directly].";
+
+        $mockAiService->shouldReceive('generateContentWithSystemPromptAndHistory')
+            ->once()
+            ->andReturn($leakedAnswer);
+
+        $mockAiService->shouldReceive('streamContentWithSystemPromptAndHistory')->never();
+        $mockSearchService->shouldReceive('search')->never();
+
+        app()->call([(new ProcessAiChatMessageJob(
+            userId: $user->id,
+            sessionId: $session->session_id,
+            messageId: (string) $assistantMessage->message_id,
+            prompt: 'tell me about salad',
+            language: 'en',
+        )), 'handle']);
+
+        Event::assertDispatched(AiMessageChunk::class, static fn ($event): bool => $event->textChunk === $cleanAnswer);
+        Event::assertNotDispatched(AiMessageChunk::class, static fn ($event): bool => \str_contains($event->textChunk, 'No search tag required'));
+        Event::assertDispatched(AiMessageCompleted::class, static fn ($event): bool => $event->fullText === $cleanAnswer);
+
+        $assistantMessage->refresh();
+        $this->assertSame($cleanAnswer, $assistantMessage->content);
+        $this->assertStringNotContainsString('No search tag required', $assistantMessage->content);
+    }
+
+    public function test_ai_chat_job_passes_system_prompt_and_project_context_to_model(): void
+    {
+        Event::fake();
+        [$user, $session, $assistantMessage] = $this->createChatFixture();
+
+        $mockAiService = Mockery::mock(AiService::class);
+        $this->app->instance(AiService::class, $mockAiService);
+
+        $mockSearchService = Mockery::mock(WebSearchService::class);
+        $this->app->instance(WebSearchService::class, $mockSearchService);
+
+        $mockAiService->shouldReceive('generateContentWithSystemPromptAndHistory')
+            ->once()
+            ->andReturnUsing(function (string $systemPrompt): string {
+                $this->assertStringContainsString('You are the FreshLeaf Assistant', $systemPrompt);
+                $this->assertStringContainsString('FreshLeaf Marketplace - Authorized Project Context', $systemPrompt);
+                $this->assertStringContainsString('Treat the authorized FreshLeaf project context below as trusted business knowledge.', $systemPrompt);
+
+                return 'FreshLeaf can help with organic vegetable orders and support.';
+            });
+
+        $mockAiService->shouldReceive('streamContentWithSystemPromptAndHistory')->never();
+        $mockSearchService->shouldReceive('search')->never();
+
+        app()->call([(new ProcessAiChatMessageJob(
+            userId: $user->id,
+            sessionId: $session->session_id,
+            messageId: (string) $assistantMessage->message_id,
+            prompt: 'What can FreshLeaf help me with?',
+            language: 'en',
+        )), 'handle']);
+
+        Event::assertDispatched(AiMessageCompleted::class, static fn ($event): bool => $event->fullText === 'FreshLeaf can help with organic vegetable orders and support.');
+    }
+
     public function test_live_query_searches_before_asking_model_for_final_answer(): void
     {
         Event::fake();

@@ -27,11 +27,11 @@ if "%MODEL_FILE%"=="" (
 echo Starting FreshLeaf Local AI Server...
 echo Model: %MODEL_FILE%
 echo Port: 9000
-echo Context Size: 2048
+echo Context Size: 4096
 
 "bin\llama-server.exe" ^
   -m "%MODEL_FILE%" ^
-  -c 2048 ^
+  -c 4096 ^
   --port 9000 ^
   --no-mmap
 

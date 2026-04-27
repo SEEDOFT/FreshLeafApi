@@ -16,10 +16,14 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 #[Fillable([
     'user_id',
     'business_name',
+    'shop_description',
     'contact_phone',
     'city',
     'province',
     'address',
+    'opening_time',
+    'closing_time',
+    'is_open',
     'is_verified',
     'approved_at',
     'rejected_at',
@@ -46,6 +50,7 @@ class VendorProfile extends Model
     protected function casts(): array
     {
         return [
+            'is_open' => 'boolean',
             'is_verified' => 'boolean',
             'approved_at' => 'datetime',
             'rejected_at' => 'datetime',

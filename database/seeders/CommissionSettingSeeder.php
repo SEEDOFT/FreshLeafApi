@@ -22,5 +22,26 @@ class CommissionSettingSeeder extends Seeder
                 'group' => 'financial',
             ]
         );
+
+        $statuses = [
+            ['name' => 'Pending', 'code' => 'pending'],
+            ['name' => 'Processing', 'code' => 'processing'],
+            ['name' => 'Completed', 'code' => 'completed'],
+            ['name' => 'Failed', 'code' => 'failed'],
+        ];
+
+        foreach ($statuses as $status) {
+            \App\Models\PayoutStatus::updateOrCreate(['code' => $status['code']], $status);
+        }
+
+        $methods = [
+            ['name' => 'Bank Transfer', 'code' => 'bank_transfer'],
+            ['name' => 'Internal Wallet', 'code' => 'wallet'],
+            ['name' => 'Cash Payout', 'code' => 'cash'],
+        ];
+
+        foreach ($methods as $method) {
+            \App\Models\PayoutMethod::updateOrCreate(['code' => $method['code']], $method);
+        }
     }
 }

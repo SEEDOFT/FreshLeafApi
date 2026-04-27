@@ -7,11 +7,12 @@ The Laravel Boost guidelines are specifically curated by Laravel maintainers for
 
 ## Foundational Context
 
-This application is a Laravel application and its main Laravel ecosystems package & versions are below. You are an expert with them all. Ensure you abide by these specific packages & versions.
+This application is a modern Laravel application powered by **PHP 8.5** features. Ensure you abide by these specific packages & versions.
 
-- php - 8.3
+- php - 8.5 (Strictly use Property Hooks, Asymmetric Visibility, and Pipe Operator)
 - laravel/framework (LARAVEL) - v13
-- laravel/prompts (PROMPTS) - v0
+- laravel/reverb (REVERB) - v1 (Real-time WebSockets)
+- filament/filament (FILAMENT) - v4 (Modern Glassmorphism UI)
 - laravel/boost (BOOST) - v2
 - laravel/mcp (MCP) - v0
 - laravel/pail (PAIL) - v1
@@ -92,13 +93,17 @@ This project has domain-specific skills available. You MUST activate the relevan
 
 === php rules ===
 
-# PHP
+# PHP 8.5 Standards
 
+- **Property Hooks**: Use for all calculated model properties. Do not use legacy getter/setter attributes.
+- **Asymmetric Visibility**: Use `public private(set)` for properties that should be readonly externally.
+- **Pipe Operator (`|>`)**: Use for all multi-step data or price transformations.
+- **Strict Types**: Every file must start with `declare(strict_types=1);`.
 - Always use curly braces for control structures, even for single-line bodies.
-- Use PHP 8 constructor property promotion: `public function __construct(public GitHub $github) { }`. Do not leave empty zero-parameter `__construct()` methods unless the constructor is private.
-- Use explicit return type declarations and type hints for all method parameters: `function isAccessible(User $user, ?string $path = null): bool`
-- Use TitleCase for Enum keys: `FavoritePerson`, `BestLake`, `Monthly`.
-- Prefer PHPDoc blocks over inline comments. Only add inline comments for exceptionally complex logic.
+- Use PHP 8 constructor property promotion.
+- Use explicit return type declarations and type hints for all method parameters.
+- Use TitleCase for Enum keys.
+- Prefer PHPDoc blocks over inline comments.
 - Use array shape type definitions in PHPDoc blocks.
 
 === laravel/core rules ===

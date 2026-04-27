@@ -181,6 +181,14 @@ Check sibling files, related controllers, models, or tests for established patte
 - No JS/CSS in Blade, no HTML in PHP classes
 - Code should be readable; comments only for config files
 
+### 20. PHP 8.5 Modern Standards (FreshLeaf Exclusive)
+
+- **Property Hooks**: Use for calculated model properties (e.g., `activePrice`) instead of traditional `get...Attribute` methods.
+- **Asymmetric Visibility**: Use `public private(set)` to keep properties readable everywhere but writable only by the model's internal logic.
+- **Pipe Operator (`|>`)**: Use for multi-step data transformations (e.g., `price |> applyDiscount |> convertCurrency`).
+- **Strict Typing**: Always use `declare(strict_types=1);` and explicit return types (including `void`).
+- **Attributes**: Continue using Native PHP Attributes for model configuration (`#[Table]`, `#[Fillable]`).
+
 ## How to Apply
 
 Always use a sub-agent to read rule files and explore this skill's content.

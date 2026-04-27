@@ -1,10 +1,9 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Filament\Vendor\Resources\Payouts\Tables;
 
-use Filament\Actions\BulkActionGroup;
-use Filament\Actions\DeleteBulkAction;
-use Filament\Actions\EditAction;
 use Filament\Actions\ViewAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
@@ -15,46 +14,34 @@ class PayoutsTable
     {
         return $table
             ->columns([
-                TextColumn::make('vendor_user_id')
-                    ->numeric()
-                    ->sortable(),
-                TextColumn::make('payout_status_id')
-                    ->numeric()
-                    ->sortable(),
-                TextColumn::make('payout_method_id')
-                    ->numeric()
-                    ->sortable(),
                 TextColumn::make('amount')
-                    ->numeric()
+                    ->money('USD')
                     ->sortable(),
+                
+                TextColumn::make('status.name')
+                    ->badge()
+                    ->color(fn (string $state): string => match ($state) {
+                        'Pending' => 'warning',
+                        'Processing' => 'info',
+                        'Completed' => 'success',
+                        'Failed' => 'danger',
+                        default => 'gray',
+                    }),
+                
+                TextColumn::make('method.name')
+                    ->label('Method'),
+                
                 TextColumn::make('transaction_reference')
+                    ->label('Reference')
                     ->searchable(),
+                
                 TextColumn::make('processed_at')
+                    ->label('Paid On')
                     ->dateTime()
                     ->sortable(),
-                TextColumn::make('processed_by_admin_id')
-                    ->numeric()
-                    ->sortable(),
-                TextColumn::make('created_at')
-                    ->dateTime()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
-                TextColumn::make('updated_at')
-                    ->dateTime()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
             ])
-            ->filters([
-                //
-            ])
-            ->recordActions([
+            ->actions([
                 ViewAction::make(),
-                EditAction::make(),
-            ])
-            ->toolbarActions([
-                BulkActionGroup::make([
-                    DeleteBulkAction::make(),
-                ]),
             ]);
     }
 }

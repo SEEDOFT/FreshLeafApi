@@ -2,11 +2,8 @@
 
 namespace App\Filament\Vendor\Resources\Payouts;
 
-use App\Filament\Vendor\Resources\Payouts\Pages\CreatePayout;
-use App\Filament\Vendor\Resources\Payouts\Pages\EditPayout;
 use App\Filament\Vendor\Resources\Payouts\Pages\ListPayouts;
 use App\Filament\Vendor\Resources\Payouts\Pages\ViewPayout;
-use App\Filament\Vendor\Resources\Payouts\Schemas\PayoutForm;
 use App\Filament\Vendor\Resources\Payouts\Schemas\PayoutInfolist;
 use App\Filament\Vendor\Resources\Payouts\Tables\PayoutsTable;
 use App\Models\Payout;
@@ -15,16 +12,20 @@ use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
 
 class PayoutResource extends Resource
 {
     protected static ?string $model = Payout::class;
 
-    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
+    protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-banknotes';
 
-    public static function form(Schema $schema): Schema
+    public static function canCreate(): bool => false;
+
+    public static function getEloquentQuery(): Builder
     {
-        return PayoutForm::configure($schema);
+        return parent::getEloquentQuery()
+            ->where('vendor_user_id', auth()->id());
     }
 
     public static function infolist(Schema $schema): Schema
@@ -37,20 +38,11 @@ class PayoutResource extends Resource
         return PayoutsTable::configure($table);
     }
 
-    public static function getRelations(): array
-    {
-        return [
-            //
-        ];
-    }
-
     public static function getPages(): array
     {
         return [
             'index' => ListPayouts::route('/'),
-            'create' => CreatePayout::route('/create'),
             'view' => ViewPayout::route('/{record}'),
-            'edit' => EditPayout::route('/{record}/edit'),
         ];
     }
 }

@@ -1,16 +1,15 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Filament\Vendor\Resources\Products\Tables;
 
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
-use Filament\Actions\ForceDeleteBulkAction;
-use Filament\Actions\RestoreBulkAction;
 use Filament\Actions\ViewAction;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
-use Filament\Tables\Filters\TrashedFilter;
 use Filament\Tables\Table;
 
 class ProductsTable
@@ -19,50 +18,41 @@ class ProductsTable
     {
         return $table
             ->columns([
-                TextColumn::make('productCategory.name')
-                    ->searchable(),
-                TextColumn::make('product_type_id')
-                    ->numeric()
-                    ->sortable(),
-                TextColumn::make('defaultUnit.name')
-                    ->searchable(),
-                TextColumn::make('product_status_id')
-                    ->numeric()
-                    ->sortable(),
                 TextColumn::make('name')
-                    ->searchable(),
-                TextColumn::make('slug')
-                    ->searchable(),
-                TextColumn::make('shelf_life_days')
-                    ->numeric()
+                    ->searchable()
                     ->sortable(),
-                TextColumn::make('deleted_at')
-                    ->dateTime()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
-                TextColumn::make('created_at')
-                    ->dateTime()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
+                
+                TextColumn::make('category.name')
+                    ->label('Category')
+                    ->badge()
+                    ->sortable(),
+
+                TextColumn::make('defaultUnit.name')
+                    ->label('Base Unit'),
+
+                IconColumn::make('is_organic')
+                    ->label('Organic')
+                    ->boolean(),
+
+                TextColumn::make('status.name')
+                    ->label('Status')
+                    ->badge(),
+
                 TextColumn::make('updated_at')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
-                IconColumn::make('is_organic')
-                    ->boolean(),
             ])
             ->filters([
-                TrashedFilter::make(),
+                //
             ])
-            ->recordActions([
+            ->actions([
                 ViewAction::make(),
                 EditAction::make(),
             ])
-            ->toolbarActions([
+            ->bulkActions([
                 BulkActionGroup::make([
                     DeleteBulkAction::make(),
-                    ForceDeleteBulkAction::make(),
-                    RestoreBulkAction::make(),
                 ]),
             ]);
     }

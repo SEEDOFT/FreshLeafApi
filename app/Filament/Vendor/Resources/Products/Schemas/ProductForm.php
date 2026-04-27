@@ -1,12 +1,17 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Filament\Vendor\Resources\Products\Schemas;
 
+use Filament\Forms\Components\Grid;
+use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Select;
-use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Textarea;
+use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
 use Filament\Schemas\Schema;
+use Illuminate\Support\Str;
 
 class ProductForm
 {
@@ -14,30 +19,61 @@ class ProductForm
     {
         return $schema
             ->components([
-                Select::make('product_category_id')
-                    ->relationship('productCategory', 'name')
-                    ->required(),
-                TextInput::make('product_type_id')
-                    ->required()
-                    ->numeric(),
-                Select::make('default_unit_id')
-                    ->relationship('defaultUnit', 'name')
-                    ->required(),
-                TextInput::make('product_status_id')
-                    ->required()
-                    ->numeric(),
-                TextInput::make('name')
-                    ->required(),
-                TextInput::make('slug')
-                    ->required(),
-                Textarea::make('description')
-                    ->columnSpanFull(),
-                Textarea::make('nutrition_data')
-                    ->columnSpanFull(),
-                TextInput::make('shelf_life_days')
-                    ->numeric(),
-                Toggle::make('is_organic')
-                    ->required(),
+                Section::make('Basic Information')
+                    ->schema([
+                        Grid::make(2)
+                            ->schema([
+                                TextInput::make('name')
+                                    ->required()
+                                    ->live(onBlur: true)
+                                    ->afterStateUpdated(fn (string $state, $set) => $set('slug', Str::slug($state))),
+                                TextInput::make('slug')
+                                    ->disabled()
+                                    ->dehydrated()
+                                    ->required()
+                                    ->unique(ignoreRecord: true),
+                            ]),
+                        
+                        Grid::make(3)
+                            ->schema([
+                                Select::make('product_category_id')
+                                    ->label('Category')
+                                    ->relationship('category', 'name')
+                                    ->searchable()
+                                    ->preload()
+                                    ->required(),
+                                
+                                Select::make('product_type_id')
+                                    ->label('Type')
+                                    ->relationship('type', 'name')
+                                    ->required(),
+
+                                Select::make('default_unit_id')
+                                    ->label('Base Unit')
+                                    ->relationship('defaultUnit', 'name')
+                                    ->required(),
+                            ]),
+                    ]),
+
+                Section::make('Product Details')
+                    ->schema([
+                        Textarea::make('description')
+                            ->rows(3)
+                            ->columnSpanFull(),
+                        
+                        Grid::make(2)
+                            ->schema([
+                                TextInput::make('shelf_life_days')
+                                    ->label('Shelf Life (Days)')
+                                    ->numeric()
+                                    ->suffix('days'),
+                                
+                                Toggle::make('is_organic')
+                                    ->label('Certified Organic')
+                                    ->default(true)
+                                    ->inline(false),
+                            ]),
+                    ]),
             ]);
     }
 }

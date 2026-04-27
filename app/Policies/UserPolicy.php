@@ -45,7 +45,7 @@ class UserPolicy
     }
 
     /**
-     * Determine whether the authenticated user can restore the target profile.
+     * Determine whether the authenticated user can manage profiles.
      */
     private function ownsProfile(
         User $authenticatedUser,
@@ -72,16 +72,21 @@ class UserPolicy
             return Response::allow();
         }
 
+        // Ownership Check: Users can always manage their own data if the type matches the requested context
+        if ((int) $authenticatedUser->id === (int) $targetUser->id) {
+            if ((int) $authenticatedUser->user_type_id === $expectedType) {
+                return Response::allow();
+            }
+        }
+
+        // Strict cross-type prevention: Cannot view a profile if types don't match the expectation
         if ((int) $authenticatedUser->user_type_id !== $expectedType) {
             return Response::denyAsNotFound('Profile not found.');
         }
 
+        // Sub-profile existence check for non-ownership access (e.g. delegated management if ever implemented)
         if (! $this->hasProfileForType($targetUser, $expectedType)) {
             return Response::denyAsNotFound('Profile not found.');
-        }
-
-        if ((int) $authenticatedUser->id === (int) $targetUser->id) {
-            return Response::allow();
         }
 
         return Response::denyAsNotFound('Profile not found.');

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Filament\Resources\Payouts\Tables;
 
 use Filament\Actions\BulkActionGroup;
@@ -15,31 +17,33 @@ class PayoutsTable
     {
         return $table
             ->columns([
-                TextColumn::make('vendor_user_id')
-                    ->numeric()
+                TextColumn::make('vendor.vendorProfile.business_name')
+                    ->label('Business')
+                    ->searchable()
                     ->sortable(),
-                TextColumn::make('payout_status_id')
-                    ->numeric()
-                    ->sortable(),
-                TextColumn::make('payout_method_id')
-                    ->numeric()
-                    ->sortable(),
+                
                 TextColumn::make('amount')
-                    ->numeric()
+                    ->money('USD')
                     ->sortable(),
-                TextColumn::make('transaction_reference')
-                    ->searchable(),
+                
+                TextColumn::make('status.name')
+                    ->badge()
+                    ->color(fn (string $state): string => match ($state) {
+                        'Pending' => 'warning',
+                        'Processing' => 'info',
+                        'Completed' => 'success',
+                        'Failed' => 'danger',
+                        default => 'gray',
+                    }),
+                
+                TextColumn::make('method.name')
+                    ->label('Method'),
+                
                 TextColumn::make('processed_at')
                     ->dateTime()
                     ->sortable(),
-                TextColumn::make('processed_by_admin_id')
-                    ->numeric()
-                    ->sortable(),
+                
                 TextColumn::make('created_at')
-                    ->dateTime()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
-                TextColumn::make('updated_at')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
@@ -47,11 +51,11 @@ class PayoutsTable
             ->filters([
                 //
             ])
-            ->recordActions([
+            ->actions([
                 ViewAction::make(),
                 EditAction::make(),
             ])
-            ->toolbarActions([
+            ->bulkActions([
                 BulkActionGroup::make([
                     DeleteBulkAction::make(),
                 ]),

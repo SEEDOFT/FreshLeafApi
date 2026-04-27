@@ -44,6 +44,9 @@ class UserPolicy
         return $this->ownsProfile($authenticatedUser, $targetUser, $expectedType);
     }
 
+    /**
+     * Determine whether the authenticated user can restore the target profile.
+     */
     private function ownsProfile(
         User $authenticatedUser,
         User $targetUser,
@@ -84,6 +87,9 @@ class UserPolicy
         return Response::denyAsNotFound('Profile not found.');
     }
 
+    /**
+     * Check if the target user has a profile corresponding to the expected user type.
+     */
     private function hasProfileForType(User $targetUser, ?int $expectedType): bool
     {
         return match ($expectedType) {

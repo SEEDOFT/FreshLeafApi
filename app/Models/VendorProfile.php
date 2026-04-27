@@ -56,6 +56,34 @@ class VendorProfile extends Model
     }
 
     /**
+     * Get the verification status of the vendor.
+     */
+    public public(set) string $verificationStatus {
+        get {
+            if ($this->is_verified) {
+                return 'Verified';
+            }
+
+            if ($this->rejected_at) {
+                return 'Rejected';
+            }
+
+            if ($this->id_card_front) {
+                return 'Pending Review';
+            }
+
+            return 'Unverified';
+        }
+    }
+
+    /**
+     * Determine if the vendor is currently eligible to sell products.
+     */
+    public public(set) bool $canSell {
+        get => $this->is_verified && ! $this->rejected_at;
+    }
+
+    /**
      * Get the user that owns the vendor profile.
      *
      * @return BelongsTo<User, $this>

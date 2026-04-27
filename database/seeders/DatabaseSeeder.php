@@ -34,6 +34,7 @@ class DatabaseSeeder extends Seeder
             ProductVariantSeeder::class,
             ProductDiscountSeeder::class,
             ExchangeRateSeeder::class,
+            CommissionSettingSeeder::class,
             WalletTransactionSeeder::class,
         ]);
 

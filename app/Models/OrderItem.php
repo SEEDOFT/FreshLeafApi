@@ -7,7 +7,6 @@ namespace App\Models;
 use Database\Factories\OrderItemFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Table;
-use Illuminate\Database\Eloquent\Attributes\UseFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -20,9 +19,11 @@ use Illuminate\Support\Carbon;
  * @property int $product_variant_id
  * @property string $product_name_snapshot
  * @property string $unit_snapshot
- * @property numeric $unit_price_snapshot
- * @property numeric $quantity
- * @property numeric $subtotal
+ * @property float $unit_price_snapshot
+ * @property float $quantity
+ * @property float $subtotal
+ * @property float $commission_amount
+ * @property float $vendor_net_amount
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  * @property-read Order $order
@@ -39,17 +40,37 @@ use Illuminate\Support\Carbon;
     'unit_price_snapshot',
     'quantity',
     'subtotal',
+    'commission_amount',
+    'vendor_net_amount',
 ])]
-#[UseFactory(OrderItemFactory::class)]
 class OrderItem extends Model
 {
     /** @use HasFactory<OrderItemFactory> */
     use HasFactory;
 
     /**
-     * Get the order that owns the item.
+     * The "booted" method of the model.
      */
+    protected static function booted(): void
+    {
+        static::saving(static function (OrderItem $item): void {
+            $rate = Setting::get('commission_rate_percentage', 10.00);
+            
+            $item->commission_amount = $item->subtotal * ($rate / 100);
+            $item->vendor_net_amount = $item->subtotal - $item->commission_amount;
+        });
+    }
+
     /**
+     * Get the current commission percentage from settings.
+     */
+    public public(set) float $activeCommissionRate {
+        get => (float) Setting::get('commission_rate_percentage', 10.00);
+    }
+
+    /**
+     * Get the order that owns the item.
+     *
      * @return BelongsTo<Order, $this>
      */
     public function order(): BelongsTo
@@ -59,8 +80,7 @@ class OrderItem extends Model
 
     /**
      * Get the product for the item.
-     */
-    /**
+     *
      * @return BelongsTo<Product, $this>
      */
     public function product(): BelongsTo
@@ -70,8 +90,7 @@ class OrderItem extends Model
 
     /**
      * Get the product variant for the item.
-     */
-    /**
+     *
      * @return BelongsTo<ProductVariant, $this>
      */
     public function variant(): BelongsTo

@@ -8,7 +8,6 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\User\Profile\ReplaceUserRequest;
 use App\Http\Requests\User\Profile\UpdateUserRequest;
 use App\Http\Resources\User\UserResource;
-use App\Models\User;
 use App\Models\UserStatus;
 use App\Models\UserType;
 use Illuminate\Http\JsonResponse;

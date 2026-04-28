@@ -11,7 +11,15 @@ class AiAssistant extends Page
 {
     protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-sparkles';
 
-    protected static ?string $navigationLabel = 'AI Assistant';
+    public static function getNavigationLabel(): string
+    {
+        return __('admin.ai.assistant');
+    }
+
+    public function getHeading(): string
+    {
+        return __('admin.ai.assistant');
+    }
 
     protected static ?string $slug = 'ai-assistant';
 

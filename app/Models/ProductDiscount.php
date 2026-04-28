@@ -4,8 +4,10 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use Database\Factories\ProductDiscountFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Table;
+use Illuminate\Database\Eloquent\Attributes\UseFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -32,8 +34,10 @@ use Illuminate\Support\Carbon;
     'ends_at',
     'is_active',
 ])]
+#[UseFactory(ProductDiscountFactory::class)]
 class ProductDiscount extends Model
 {
+    /** @use HasFactory<ProductDiscountFactory> */
     use HasFactory;
 
     /**

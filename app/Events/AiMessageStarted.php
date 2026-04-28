@@ -9,6 +9,7 @@ use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Broadcasting\PrivateChannel;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcastNow;
 use Illuminate\Foundation\Events\Dispatchable;
+use Override;
 
 class AiMessageStarted implements ShouldBroadcastNow
 {
@@ -24,8 +25,11 @@ class AiMessageStarted implements ShouldBroadcastNow
     ) {}
 
     /**
+     * {@inheritDoc}
+     *
      * @return array<int, Channel>
      */
+    #[Override]
     public function broadcastOn(): array
     {
         return [
@@ -33,12 +37,19 @@ class AiMessageStarted implements ShouldBroadcastNow
         ];
     }
 
+    /**
+     * Broadcast the event with a custom name that the frontend can listen for,
+     * instead of the default class name.
+     */
     public function broadcastAs(): string
     {
         return 'AiMessageStarted';
     }
 
     /**
+     * Broadcast the event with the necessary data for the frontend
+     * to process and display the started AI message in real-time.
+     *
      * @return array<string, mixed>
      */
     public function broadcastWith(): array

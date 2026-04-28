@@ -32,7 +32,7 @@ class ProductResource extends Resource
     public static function getEloquentQuery(): Builder
     {
         return parent::getEloquentQuery()
-            ->byVendor(auth()->id())
+            ->where('user_id', auth()->id())
             ->withoutGlobalScopes([
                 SoftDeletingScope::class,
             ]);

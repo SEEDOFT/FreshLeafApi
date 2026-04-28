@@ -16,15 +16,27 @@ use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
 use Override;
-use UnitEnum;
 
 class UnitResource extends Resource
 {
     protected static ?string $model = Unit::class;
 
-    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedHashtag;
+    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedScale;
 
-    protected static UnitEnum|string|null $navigationGroup = 'Catalog';
+    public static function getNavigationGroup(): ?string
+    {
+        return __('admin.navigation.catalog');
+    }
+
+    public static function getModelLabel(): string
+    {
+        return __('admin.resources.unit.label');
+    }
+
+    public static function getPluralModelLabel(): string
+    {
+        return __('admin.resources.unit.plural_label');
+    }
 
     #[Override]
     public static function form(Schema $schema): Schema

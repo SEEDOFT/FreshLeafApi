@@ -27,8 +27,8 @@ class ViewVendor extends ViewRecord
                 ->label('Approve')
                 ->icon('heroicon-o-check-circle')
                 ->color('success')
-                ->visible(fn (User $record) => $record->isType(UserType::VENDOR) && $record->vendorProfile && ! $record->vendorProfile->is_verified)
-                ->action(function (User $record, array $data) {
+                ->visible(static fn (User $record) => $record->isType(UserType::VENDOR) && $record->vendorProfile && ! $record->vendorProfile->is_verified)
+                ->action(static function (User $record, array $data) {
                     $record->vendorProfile->update([
                         'is_verified' => true,
                         'approved_at' => now(),
@@ -52,8 +52,8 @@ class ViewVendor extends ViewRecord
                 ->label('Reject')
                 ->icon('heroicon-o-x-circle')
                 ->color('danger')
-                ->visible(fn (User $record) => $record->isType(UserType::VENDOR) && $record->vendorProfile && ! $record->vendorProfile->is_verified)
-                ->action(function (User $record, array $data) {
+                ->visible(static fn (User $record) => $record->isType(UserType::VENDOR) && $record->vendorProfile && ! $record->vendorProfile->is_verified)
+                ->action(static function (User $record, array $data) {
                     $record->vendorProfile->update([
                         'is_verified' => false,
                         'rejected_at' => now(),

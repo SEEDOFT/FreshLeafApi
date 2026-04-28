@@ -15,6 +15,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 #[Table('vendor_profiles', key: 'id')]
 #[Fillable([
     'user_id',
+    'locale',
     'business_name',
     'shop_description',
     'contact_phone',

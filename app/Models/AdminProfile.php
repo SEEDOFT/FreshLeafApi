@@ -16,6 +16,7 @@ use Illuminate\Support\Carbon;
 /**
  * @property int $id
  * @property int $user_id
+ * @property string $locale
  * @property string|null $department
  * @property string|null $job_title
  * @property string|null $office_phone
@@ -28,6 +29,7 @@ use Illuminate\Support\Carbon;
 #[Table('admin_profiles', key: 'id')]
 #[Fillable([
     'user_id',
+    'locale',
     'department',
     'job_title',
     'office_phone',

@@ -16,15 +16,27 @@ use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
 use Override;
-use UnitEnum;
 
 class WalletTransactionResource extends Resource
 {
     protected static ?string $model = WalletTransaction::class;
 
-    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedCurrencyDollar;
+    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedArrowsRightLeft;
 
-    protected static UnitEnum|string|null $navigationGroup = 'Financial';
+    public static function getNavigationGroup(): ?string
+    {
+        return __('admin.navigation.financial');
+    }
+
+    public static function getModelLabel(): string
+    {
+        return __('admin.resources.wallet_transaction.label');
+    }
+
+    public static function getPluralModelLabel(): string
+    {
+        return __('admin.resources.wallet_transaction.plural_label');
+    }
 
     #[Override]
     public static function form(Schema $schema): Schema

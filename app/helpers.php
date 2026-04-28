@@ -221,24 +221,28 @@ if (! function_exists('get_country_codes')) {
         ];
     }
 
-    /**
-     * Get a simple key-value list for select options.
-     *
-     * @return array<string, string>
-     */
-    function get_country_options(): array
-    {
-        return array_map(
-            fn ($item) => "{$item['code']} ({$item['name']})",
-            get_country_codes()
-        );
+    if (! function_exists('get_country_options')) {
+        /**
+         * Get a simple key-value list for select options.
+         *
+         * @return array<string, string>
+         */
+        function get_country_options(): array
+        {
+            return array_map(
+                static fn ($item) => "{$item['code']} ({$item['name']})",
+                get_country_codes()
+            );
+        }
     }
 
-    /**
-     * Get the numeric dial code for a country ISO key.
-     */
-    function get_dial_code(string $iso): string
-    {
-        return get_country_codes()[$iso]['code'] ?? '+855';
+    if (! function_exists('get_dial_code')) {
+        /**
+         * Get the numeric dial code for a country ISO key.
+         */
+        function get_dial_code(string $iso): string
+        {
+            return get_country_codes()[$iso]['code'] ?? '+855';
+        }
     }
 }

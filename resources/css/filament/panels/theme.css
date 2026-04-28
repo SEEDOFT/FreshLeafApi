@@ -2,6 +2,38 @@
 @import '../../tokens.css';
 @import './ai-chat.css';
 
+@font-face {
+    font-family: 'Noto Sans Khmer';
+    src: url('../../../fonts/noto_sans_khmer/NotoSansKhmer-Regular.ttf') format('truetype');
+    font-weight: 400;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Noto Sans Khmer';
+    src: url('../../../fonts/noto_sans_khmer/NotoSansKhmer-Medium.ttf') format('truetype');
+    font-weight: 500;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Noto Sans Khmer';
+    src: url('../../../fonts/noto_sans_khmer/NotoSansKhmer-SemiBold.ttf') format('truetype');
+    font-weight: 600;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Noto Sans Khmer';
+    src: url('../../../fonts/noto_sans_khmer/NotoSansKhmer-Bold.ttf') format('truetype');
+    font-weight: 700;
+    font-style: normal;
+    font-display: swap;
+}
+
 @source '../../../../app/Filament/**/*';
 @source '../../../../app/Livewire/**/*';
 @source '../../../../resources/views/filament/**/*';
@@ -12,6 +44,7 @@
  */
 
 :root {
+    --font-family: 'Noto Sans Khmer', 'Plus Jakarta Sans', sans-serif;
     --freshleaf-brand-50: #effaf2;
     --freshleaf-brand-100: #d9f2df;
     --freshleaf-brand-300: #7ccb8e;
@@ -28,6 +61,8 @@
 
 /* Modern App Body Background */
 .fi-body {
+    font-family: var(--font-family);
+    line-height: 1.6;
     background-color: var(--freshleaf-neutral-50);
     background-image: 
         radial-gradient(at 0% 0%, rgba(16, 185, 129, 0.05) 0px, transparent 50%),
@@ -186,4 +221,32 @@
 
 .fi-ta-content {
     flex-grow: 1 !important;
+}
+
+/* ============================================
+ * Stats Overview Widget - Remove Borders
+ * ============================================ */
+
+/* Target stat containers */
+.fi-wi-stats-overview [role="region"] > div {
+    border: none !important;
+    box-shadow: none !important;
+}
+
+/* Target individual stat cards */
+[class*="fi-stats-overview"] > * {
+    border: 0 !important;
+    outline: none !important;
+    box-shadow: none !important;
+}
+
+/* Filament v3 stat card selectors */
+.fi-stats-overview-stat {
+    border: none !important;
+    box-shadow: none !important;
+}
+
+/* Generic stat card without border */
+div[class*="stat"] {
+    border: none !important;
 }

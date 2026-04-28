@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Database\Seeders;
 
+use App\Models\PayoutMethod;
+use App\Models\PayoutStatus;
 use App\Models\Setting;
 use Illuminate\Database\Seeder;
 
@@ -31,7 +33,7 @@ class CommissionSettingSeeder extends Seeder
         ];
 
         foreach ($statuses as $status) {
-            \App\Models\PayoutStatus::updateOrCreate(['code' => $status['code']], $status);
+            PayoutStatus::updateOrCreate(['code' => $status['code']], $status);
         }
 
         $methods = [
@@ -41,7 +43,7 @@ class CommissionSettingSeeder extends Seeder
         ];
 
         foreach ($methods as $method) {
-            \App\Models\PayoutMethod::updateOrCreate(['code' => $method['code']], $method);
+            PayoutMethod::updateOrCreate(['code' => $method['code']], $method);
         }
     }
 }

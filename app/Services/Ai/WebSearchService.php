@@ -6,152 +6,165 @@ namespace App\Services\Ai;
 
 use DOMDocument;
 use DOMXPath;
+use Illuminate\Http\Client\ConnectionException;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
-use Throwable;
+
+use function array_slice;
+use function array_unique;
+use function config;
+use function count;
+use function implode;
+use function is_array;
+use function libxml_clear_errors;
+use function libxml_use_internal_errors;
+use function trim;
 
 class WebSearchService
 {
     /**
-     * Perform a web search and return a summary of the results.
+     * Search the web for the given query.
      */
     public function search(string $query): string
     {
-        if (! (bool) \config('ai.web_search.enabled', true)) {
-            return "Internet search is disabled for '{$query}'.";
+        if (! (bool) config('ai.web_search.enabled', true)) {
+            return '';
         }
 
-        Log::info("AI Bridge: Requesting web search for: {$query}");
-
         try {
-            $instantAnswer = $this->searchInstantAnswer($query);
-
-            if ($instantAnswer !== '') {
-                return "Live Search Results for '{$query}':\n\n".$instantAnswer;
+            // 1. Try DuckDuckGo Instant Answer (Quick API)
+            $quickResults = $this->searchQuick($query);
+            if ($quickResults !== '') {
+                return "Live Search Results:\n\n".$quickResults;
             }
 
-            $htmlResults = $this->searchDuckDuckGoHtml($query);
+            // 2. Fallback to DuckDuckGo HTML results
+            $response = Http::timeout(10)
+                ->withHeaders([
+                    'User-Agent' => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
+                ])
+                ->get('https://duckduckgo.com/html/', [
+                    'q' => $query,
+                ]);
 
-            if ($htmlResults !== '') {
-                return "Live Search Results for '{$query}':\n\n".$htmlResults;
+            if ($response->failed()) {
+                Log::error('Web search failed', [
+                    'query' => $query,
+                    'status' => $response->status(),
+                ]);
+
+                return '';
             }
 
-            return "The search for '{$query}' completed but no direct answer was found. Advise the user to check a trusted live source.";
-        } catch (Throwable $e) {
-            Log::error('AI Bridge: Web search failed: '.$e->getMessage(), [
+            return $this->parseResults($response->body());
+        } catch (ConnectionException $e) {
+            Log::error('Web search connection failed', [
                 'query' => $query,
+                'message' => $e->getMessage(),
             ]);
 
             return 'The internet connection is temporarily unavailable.';
         }
     }
 
-    private function searchInstantAnswer(string $query): string
+    /**
+     * Search using DuckDuckGo API (Instant Answer).
+     */
+    public function searchQuick(string $query): string
     {
-        $response = Http::acceptJson()
-            ->connectTimeout((int) \config('ai.web_search.connect_timeout', 5))
-            ->timeout((int) \config('ai.web_search.timeout', 15))
-            ->retry([200, 500, 1000], throw: false)
-            ->get('https://api.duckduckgo.com/', [
-                'q' => $query,
-                'format' => 'json',
-                'no_html' => 1,
-                'skip_disambig' => 1,
-            ]);
+        try {
+            $response = Http::connectTimeout((int) config('ai.web_search.connect_timeout', 5))
+                ->timeout((int) config('ai.web_search.timeout', 15))
+                ->get('https://api.duckduckgo.com/', [
+                    'q' => $query,
+                    'format' => 'json',
+                    'no_html' => 1,
+                    'skip_disambig' => 1,
+                ]);
 
-        if (! $response->successful()) {
-            return '';
-        }
-
-        $data = $response->json();
-
-        if (! \is_array($data)) {
-            return '';
-        }
-
-        $results = [];
-
-        foreach (['AbstractText', 'Answer', 'Definition'] as $key) {
-            $value = \trim((string) ($data[$key] ?? ''));
-
-            if ($value !== '') {
-                $results[] = $value;
+            if ($response->failed()) {
+                return '';
             }
-        }
 
-        foreach ($this->extractDuckDuckGoTopics($data['Results'] ?? []) as $topic) {
-            $results[] = $topic;
-        }
+            $data = $response->json();
 
-        foreach ($this->extractDuckDuckGoTopics($data['RelatedTopics'] ?? []) as $topic) {
-            $results[] = $topic;
-        }
+            if (! is_array($data)) {
+                return '';
+            }
 
-        return \implode("\n", \array_slice(\array_unique($results), 0, 5));
+            $results = [];
+
+            // Main abstract
+            $abstract = trim((string) ($data['AbstractText'] ?? ''));
+            if ($abstract !== '') {
+                $results[] = $abstract;
+            }
+
+            // Related topics
+            $topics = $data['RelatedTopics'] ?? [];
+            if (! is_array($topics)) {
+                return implode("\n", array_slice(array_unique($results), 0, 5));
+            }
+
+            foreach ($topics as $topic) {
+                if (! is_array($topic)) {
+                    continue;
+                }
+
+                $text = trim((string) ($topic['Text'] ?? ''));
+                $url = trim((string) ($topic['FirstURL'] ?? ''));
+
+                if ($text !== '') {
+                    $results[] = $text.($url !== '' ? " ({$url})" : '');
+                }
+
+                if (count($results) >= 5) {
+                    break;
+                }
+            }
+
+            return implode("\n", array_slice(array_unique($results), 0, 5));
+        } catch (ConnectionException) {
+            return '';
+        }
     }
 
     /**
-     * @return array<int, string>
+     * Search Wikipedia as a high-quality fallback.
      */
-    private function extractDuckDuckGoTopics(mixed $topics): array
+    public function searchWikipedia(string $query): string
     {
-        if (! \is_array($topics)) {
-            return [];
+        try {
+            $response = Http::connectTimeout((int) config('ai.web_search.connect_timeout', 5))
+                ->timeout((int) config('ai.web_search.timeout', 15))
+                ->get('https://en.wikipedia.org/api/rest_v1/page/summary/'.\urlencode($query));
+
+            if ($response->failed()) {
+                return '';
+            }
+
+            $data = $response->json();
+
+            return is_array($data) ? trim((string) ($data['extract'] ?? '')) : '';
+        } catch (ConnectionException) {
+            return '';
         }
-
-        $results = [];
-
-        foreach ($topics as $topic) {
-            if (! \is_array($topic)) {
-                continue;
-            }
-
-            if (isset($topic['Topics'])) {
-                $results = [...$results, ...$this->extractDuckDuckGoTopics($topic['Topics'])];
-
-                continue;
-            }
-
-            $text = \trim((string) ($topic['Text'] ?? ''));
-            $url = \trim((string) ($topic['FirstURL'] ?? ''));
-
-            if ($text !== '' && $url !== '') {
-                $results[] = "{$text} ({$url})";
-            } elseif ($text !== '') {
-                $results[] = $text;
-            }
-        }
-
-        return $results;
     }
 
-    private function searchDuckDuckGoHtml(string $query): string
+    /**
+     * Parse the search results from the HTML body.
+     */
+    private function parseResults(string $html): string
     {
-        $response = Http::connectTimeout((int) \config('ai.web_search.connect_timeout', 5))
-            ->timeout((int) \config('ai.web_search.timeout', 15))
-            ->retry([200, 500, 1000], throw: false)
-            ->withHeaders([
-                'User-Agent' => 'FreshLeafLocalAiSearch/1.0',
-            ])
-            ->get('https://duckduckgo.com/html/', [
-                'q' => $query,
-            ]);
-
-        if (! $response->successful()) {
+        if (trim($html) === '') {
             return '';
         }
 
-        $html = $response->body();
-
-        if (\trim($html) === '') {
-            return '';
-        }
-
-        $previous = \libxml_use_internal_errors(true);
+        $previous = libxml_use_internal_errors(true);
         $document = new DOMDocument;
         $document->loadHTML($html);
-        \libxml_clear_errors();
-        \libxml_use_internal_errors($previous);
+        libxml_clear_errors();
+        libxml_use_internal_errors($previous);
 
         $xpath = new DOMXPath($document);
         $nodes = $xpath->query("//*[contains(concat(' ', normalize-space(@class), ' '), ' result ')]");
@@ -163,23 +176,26 @@ class WebSearchService
         $results = [];
 
         foreach ($nodes as $node) {
-            $titleNode = $xpath->query(".//*[contains(concat(' ', normalize-space(@class), ' '), ' result__a ')]", $node)?->item(0);
-            $snippetNode = $xpath->query(".//*[contains(concat(' ', normalize-space(@class), ' '), ' result__snippet ')]", $node)?->item(0);
+            $titleQuery = $xpath->query(".//*[contains(concat(' ', normalize-space(@class), ' '), ' result__a ')]", $node);
+            $snippetQuery = $xpath->query(".//*[contains(concat(' ', normalize-space(@class), ' '), ' result__snippet ')]", $node);
 
-            $title = \trim((string) $titleNode?->textContent);
-            $snippet = \trim((string) $snippetNode?->textContent);
+            $titleNode = ($titleQuery !== false) ? $titleQuery->item(0) : null;
+            $snippetNode = ($snippetQuery !== false) ? $snippetQuery->item(0) : null;
+
+            $title = trim((string) ($titleNode ? $titleNode->textContent : ''));
+            $snippet = trim((string) ($snippetNode ? $snippetNode->textContent : ''));
 
             if ($title === '' && $snippet === '') {
                 continue;
             }
 
-            $results[] = \trim($title.($snippet !== '' ? ': '.$snippet : ''));
+            $results[] = trim($title.($snippet !== '' ? ': '.$snippet : ''));
 
-            if (\count($results) >= 5) {
+            if (count($results) >= 5) {
                 break;
             }
         }
 
-        return \implode("\n", \array_unique($results));
+        return implode("\n", array_unique($results));
     }
 }

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Filament\Resources\Payouts;
 
 use App\Filament\Resources\Payouts\Pages\CreatePayout;
@@ -15,28 +17,48 @@ use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
+use Override;
 
 class PayoutResource extends Resource
 {
     protected static ?string $model = Payout::class;
 
-    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
+    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedBanknotes;
 
+    public static function getNavigationGroup(): ?string
+    {
+        return __('admin.navigation.financial');
+    }
+
+    public static function getModelLabel(): string
+    {
+        return __('admin.resources.payout.label');
+    }
+
+    public static function getPluralModelLabel(): string
+    {
+        return __('admin.resources.payout.plural_label');
+    }
+
+    #[Override]
     public static function form(Schema $schema): Schema
     {
         return PayoutForm::configure($schema);
     }
 
+    #[Override]
     public static function infolist(Schema $schema): Schema
     {
         return PayoutInfolist::configure($schema);
     }
 
+    #[Override]
     public static function table(Table $table): Table
     {
         return PayoutsTable::configure($table);
     }
 
+    #[Override]
     public static function getRelations(): array
     {
         return [
@@ -44,6 +66,7 @@ class PayoutResource extends Resource
         ];
     }
 
+    #[Override]
     public static function getPages(): array
     {
         return [

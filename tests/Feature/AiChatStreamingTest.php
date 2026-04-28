@@ -111,9 +111,9 @@ class AiChatStreamingTest extends TestCase
         $mockAiService->shouldReceive('generateContentWithSystemPromptAndHistory')
             ->once()
             ->andReturnUsing(function (string $systemPrompt): string {
-                $this->assertStringContainsString('You are the FreshLeaf Assistant', $systemPrompt);
+                $this->assertStringContainsString('You are FreshLeaf Assistant', $systemPrompt);
                 $this->assertStringContainsString('FreshLeaf Marketplace - Authorized Project Context', $systemPrompt);
-                $this->assertStringContainsString('Treat the authorized FreshLeaf project context below as trusted business knowledge.', $systemPrompt);
+                $this->assertStringContainsString('Use the authorized FreshLeaf project context below as trusted business knowledge.', $systemPrompt);
 
                 return 'FreshLeaf can help with organic vegetable orders and support.';
             });

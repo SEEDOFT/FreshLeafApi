@@ -9,7 +9,6 @@ use App\Http\Requests\Product\StoreProductRequest;
 use App\Http\Requests\Product\UpdateProductRequest;
 use App\Http\Resources\Product\ProductResource;
 use App\Models\Product;
-use App\Models\ProductStatus;
 use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -17,20 +16,15 @@ use Illuminate\Http\Request;
 class ProductController extends Controller
 {
     /**
-     * Display a listing of the resource.
-     */
-    public function index(Request $request): JsonResponse
-    {
-        return $this->adminIndex($request);
-    }
-
-    /**
      * Display products for user mode (available for sale only).
      */
     public function userIndex(Request $request): JsonResponse
     {
         $products = Product::active()
-            ->with(['category', 'type', 'defaultUnit', 'status', 'vendor'])
+            ->when($request->integer('organic_category_id'), static function ($query, $id) {
+                $query->where('organic_category_id', $id);
+            })
+            ->with(['productCategory', 'organicCategory', 'type', 'defaultUnit', 'status', 'vendor'])
             ->orderByDesc('id')
             ->simplePaginate($request->integer('per_page', 15));
 
@@ -43,7 +37,10 @@ class ProductController extends Controller
     public function adminIndex(Request $request): JsonResponse
     {
         $products = Product::query()
-            ->with(['category', 'type', 'defaultUnit', 'status', 'vendor'])
+            ->when($request->integer('organic_category_id'), static function ($query, $id) {
+                $query->where('organic_category_id', $id);
+            })
+            ->with(['productCategory', 'organicCategory', 'type', 'defaultUnit', 'status', 'vendor'])
             ->orderByDesc('id')
             ->simplePaginate($request->integer('per_page', 15));
 
@@ -64,7 +61,7 @@ class ProductController extends Controller
         $vendorId = (int) $vendor->id;
 
         $products = Product::byVendor($vendorId)
-            ->with(['category', 'type', 'defaultUnit', 'status', 'vendor'])
+            ->with(['productCategory', 'organicCategory', 'type', 'defaultUnit', 'status', 'vendor'])
             ->orderByDesc('id')
             ->simplePaginate($request->integer('per_page', 15));
 
@@ -72,23 +69,27 @@ class ProductController extends Controller
     }
 
     /**
-     * Store a newly created resource in storage.
+     * Display the specified product.
      */
-    public function store(StoreProductRequest $request): JsonResponse
+    public function userShow(int $id): JsonResponse
     {
-        $product = Product::query()->create($request->validated());
+        $product = Product::active()->find($id);
+        if (! $product) {
+            \abort(404, 'Product not found.');
+        }
 
         return static::successResponse(
-            new ProductResource($product->load(['category', 'type', 'defaultUnit', 'status'])),
-            'Product created successfully',
-            201
+            new ProductResource($product->load([
+                'productCategory', 'organicCategory', 'type', 'defaultUnit', 'status', 'variants', 'vendor',
+            ])),
+            'Product loaded successfully'
         );
     }
 
     /**
-     * Display the specified resource.
+     * Display the specified product for admin.
      */
-    public function show(string $id): JsonResponse
+    public function adminShow(int $id): JsonResponse
     {
         $product = Product::query()->find($id);
         if (! $product) {
@@ -97,46 +98,16 @@ class ProductController extends Controller
 
         return static::successResponse(
             new ProductResource($product->load([
-                'category', 'type', 'defaultUnit', 'status', 'variants', 'vendor',
+                'productCategory', 'organicCategory', 'type', 'defaultUnit', 'status', 'variants', 'vendor',
             ])),
             'Product loaded successfully'
         );
     }
 
     /**
-     * Display a product for admin mode (all products).
+     * Display the specified product for vendor.
      */
-    public function adminShow(string $id): JsonResponse
-    {
-        return $this->show($id);
-    }
-
-    /**
-     * Display a product for user mode (must be available for sale).
-     */
-    public function userShow(string $id): JsonResponse
-    {
-        $product = Product::query()->find($id);
-        if (! $product) {
-            \abort(404, 'Product not found.');
-        }
-
-        if ((int) $product->product_status_id !== ProductStatus::ACTIVE) {
-            \abort(404, 'Product not found.');
-        }
-
-        return static::successResponse(
-            new ProductResource($product->load([
-                'category', 'type', 'defaultUnit', 'status', 'variants', 'vendor',
-            ])),
-            'Product loaded successfully'
-        );
-    }
-
-    /**
-     * Display a product for vendor mode (must belong to current vendor).
-     */
-    public function vendorShow(Request $request, string $id): JsonResponse
+    public function vendorShow(int $id, Request $request): JsonResponse
     {
         /** @var User|null $vendor */
         $vendor = $request->user();
@@ -144,48 +115,86 @@ class ProductController extends Controller
             return static::errorResponse('Unauthenticated', 401);
         }
 
+        $vendorId = (int) $vendor->id;
+
         $product = Product::query()->find($id);
         if (! $product) {
             \abort(404, 'Product not found.');
         }
-
-        $vendorId = (int) $vendor->getAuthIdentifier();
 
         if ((int) $product->vendor_user_id !== $vendorId) {
             \abort(404, 'Product not found.');
         }
 
         return static::successResponse(
-            new ProductResource($product->load(['category', 'type', 'defaultUnit', 'status', 'variants', 'vendor'])),
+            new ProductResource($product->load(['productCategory', 'organicCategory', 'type', 'defaultUnit', 'status', 'variants', 'vendor'])),
             'Product loaded successfully'
         );
     }
 
     /**
-     * Update the specified resource in storage.
+     * Store a newly created product in storage.
      */
-    public function update(UpdateProductRequest $request, string $id): JsonResponse
+    public function store(StoreProductRequest $request): JsonResponse
     {
+        $product = Product::query()->create($request->validated());
+
+        return static::successResponse(
+            new ProductResource($product->load(['productCategory', 'organicCategory', 'type', 'defaultUnit', 'status'])),
+            'Product created successfully',
+            201
+        );
+    }
+
+    /**
+     * Update the specified product in storage.
+     */
+    public function update(int $id, UpdateProductRequest $request): JsonResponse
+    {
+        /** @var User|null $vendor */
+        $vendor = $request->user();
+        if (! $vendor) {
+            return static::errorResponse('Unauthenticated', 401);
+        }
+
+        $vendorId = (int) $vendor->id;
+
         $product = Product::query()->find($id);
         if (! $product) {
+            \abort(404, 'Product not found.');
+        }
+
+        if ((int) $product->vendor_user_id !== $vendorId) {
             \abort(404, 'Product not found.');
         }
 
         $product->update($request->validated());
 
         return static::successResponse(
-            new ProductResource($product->fresh()->load(['category', 'type', 'defaultUnit', 'status', 'variants'])),
+            new ProductResource($product->fresh()->load(['productCategory', 'organicCategory', 'type', 'defaultUnit', 'status', 'variants'])),
             'Product updated successfully'
         );
     }
 
     /**
-     * Remove the specified resource from storage.
+     * Remove the specified product from storage.
      */
-    public function destroy(string $id): JsonResponse
+    public function destroy(int $id, Request $request): JsonResponse
     {
+        /** @var User|null $vendor */
+        $vendor = $request->user();
+        if (! $vendor) {
+            return static::errorResponse('Unauthenticated', 401);
+        }
+
+        $vendorId = (int) $vendor->id;
+
         $product = Product::query()->find($id);
         if (! $product) {
+            \abort(404, 'Product not found.');
+        }
+
+        if ((int) $product->vendor_user_id !== $vendorId) {
             \abort(404, 'Product not found.');
         }
 

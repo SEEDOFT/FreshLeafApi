@@ -55,7 +55,7 @@ class OrderItem extends Model
     {
         static::saving(static function (OrderItem $item): void {
             $rate = Setting::get('commission_rate_percentage', 10.00);
-            
+
             $item->commission_amount = $item->subtotal * ($rate / 100);
             $item->vendor_net_amount = $item->subtotal - $item->commission_amount;
         });

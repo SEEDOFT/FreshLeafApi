@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 use App\Http\Controllers\Api\Admin as AdminController;
 use App\Http\Controllers\Api\Ai\AiChatController;
+use App\Http\Controllers\Api\CategoryController;
 use App\Http\Controllers\Api\Product\ProductController;
 use App\Http\Controllers\Api\User as UserController;
 use App\Http\Controllers\Api\Vendor as VendorController;
@@ -12,6 +13,14 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Route;
 
 Route::prefix('v1')->name('v1.')->group(static function () {
+    Route::prefix('categories')
+        ->name('categories.')
+        ->controller(CategoryController::class)
+        ->group(static function () {
+            Route::get('/', 'index')->name('index');
+            Route::get('{category:slug}', 'show')->name('show');
+        });
+
     // Top-level Auth Routes (for User)
     Route::prefix('auth')
         ->name('auth.')

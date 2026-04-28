@@ -17,6 +17,7 @@ use Filament\Http\Middleware\AuthenticateSession;
 use Filament\Http\Middleware\DisableBladeIconComponents;
 use Filament\Http\Middleware\DispatchServingFilamentEvent;
 use Filament\Navigation\MenuItem;
+use Filament\Navigation\NavigationGroup;
 use Filament\Pages\Dashboard;
 use Filament\Panel;
 use Filament\PanelProvider;
@@ -38,6 +39,7 @@ class VendorPanelProvider extends PanelProvider
         return $panel
             ->id('vendor')
             ->path('vendor')
+            ->authGuard('web')
             ->login(Login::class)
             ->registration(Register::class)
             ->font('Plus Jakarta Sans')
@@ -62,6 +64,18 @@ class VendorPanelProvider extends PanelProvider
                 static fn (): string => view('filament.hooks.panel-assets')->render(),
             )
             ->colors(ThemeColors::getPalette())
+            ->navigationGroups([
+                NavigationGroup::make()
+                    ->label(static fn (): string => __('admin.navigation.shop')),
+                NavigationGroup::make()
+                    ->label(static fn (): string => __('admin.navigation.catalog')),
+                NavigationGroup::make()
+                    ->label(static fn (): string => __('admin.navigation.sales')),
+                NavigationGroup::make()
+                    ->label(static fn (): string => __('admin.navigation.financial')),
+                NavigationGroup::make()
+                    ->label(static fn (): string => __('admin.navigation.settings')),
+            ])
             ->discoverResources(in: app_path('Filament/Vendor/Resources'), for: 'App\Filament\Vendor\Resources')
             ->discoverPages(in: app_path('Filament/Vendor/Pages'), for: 'App\Filament\Vendor\Pages')
             ->discoverClusters(in: app_path('Filament/Vendor/Clusters'), for: 'App\Filament\Vendor\Clusters')

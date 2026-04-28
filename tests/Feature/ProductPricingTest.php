@@ -14,8 +14,6 @@ use App\Models\ProductType;
 use App\Models\ProductVariant;
 use App\Models\Unit;
 use App\Models\User;
-use App\Models\UserStatus;
-use App\Models\UserType;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -26,7 +24,11 @@ class ProductPricingTest extends TestCase
     public function test_product_variant_calculates_active_price_with_discount(): void
     {
         // 1. Setup Data
-        $category = ProductCategory::create(['name' => 'Vegetables', 'slug' => 'vegetables']);
+        $category = ProductCategory::create([
+            'name_en' => 'Vegetables',
+            'name_km' => 'Vegetables (KM)',
+            'slug' => 'vegetables',
+        ]);
         $type = ProductType::create(['name' => 'Organic', 'code' => 'organic']);
         $unit = Unit::create(['name' => 'Kilogram', 'symbol' => 'KG']);
         $status = ProductStatus::create(['name' => 'Active', 'code' => 'active']);
@@ -36,9 +38,11 @@ class ProductPricingTest extends TestCase
             'product_type_id' => $type->id,
             'default_unit_id' => $unit->id,
             'product_status_id' => $status->id,
-            'name' => 'Organic Tomato',
+            'name_en' => 'Organic Tomato',
+            'name_km' => 'Organic Tomato (KM)',
             'slug' => 'organic-tomato',
             'is_organic' => true,
+            'available_stock' => 100,
         ]);
 
         $variant = ProductVariant::create([

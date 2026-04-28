@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace App\Filament\Vendor\Resources\Products\Schemas;
 
-use Filament\Forms\Components\Grid;
-use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
+use Filament\Schemas\Components\Grid;
+use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 use Illuminate\Support\Str;
 
@@ -33,7 +33,7 @@ class ProductForm
                                     ->required()
                                     ->unique(ignoreRecord: true),
                             ]),
-                        
+
                         Grid::make(3)
                             ->schema([
                                 Select::make('product_category_id')
@@ -42,7 +42,7 @@ class ProductForm
                                     ->searchable()
                                     ->preload()
                                     ->required(),
-                                
+
                                 Select::make('product_type_id')
                                     ->label('Type')
                                     ->relationship('type', 'name')
@@ -60,14 +60,14 @@ class ProductForm
                         Textarea::make('description')
                             ->rows(3)
                             ->columnSpanFull(),
-                        
+
                         Grid::make(2)
                             ->schema([
                                 TextInput::make('shelf_life_days')
                                     ->label('Shelf Life (Days)')
                                     ->numeric()
                                     ->suffix('days'),
-                                
+
                                 Toggle::make('is_organic')
                                     ->label('Certified Organic')
                                     ->default(true)

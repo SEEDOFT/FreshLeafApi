@@ -16,16 +16,17 @@ class PayoutsTable
     public static function configure(Table $table): Table
     {
         return $table
+            ->recordAction('view')
             ->columns([
                 TextColumn::make('vendor.vendorProfile.business_name')
                     ->label('Business')
                     ->searchable()
                     ->sortable(),
-                
+
                 TextColumn::make('amount')
                     ->money('USD')
                     ->sortable(),
-                
+
                 TextColumn::make('status.name')
                     ->badge()
                     ->color(fn (string $state): string => match ($state) {
@@ -35,14 +36,14 @@ class PayoutsTable
                         'Failed' => 'danger',
                         default => 'gray',
                     }),
-                
+
                 TextColumn::make('method.name')
                     ->label('Method'),
-                
+
                 TextColumn::make('processed_at')
                     ->dateTime()
                     ->sortable(),
-                
+
                 TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()

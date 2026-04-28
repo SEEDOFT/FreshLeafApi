@@ -9,6 +9,7 @@ use App\Models\ProductCategory;
 use App\Models\ProductStatus;
 use App\Models\ProductType;
 use App\Models\Unit;
+use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Str;
 
@@ -31,14 +32,20 @@ class ProductFactory extends Factory
             'product_type_id' => ProductType::factory(),
             'default_unit_id' => Unit::factory(),
             'product_status_id' => ProductStatus::factory(),
-            'name' => $name,
+            'user_id' => User::factory(),
+            'name_en' => $name,
+            'name_km' => $name.' (Khmer)',
             'slug' => Str::slug($name),
-            'description' => $this->faker->sentence(),
+            'description_en' => $this->faker->sentence(),
+            'description_km' => $this->faker->sentence().' (Khmer)',
             'nutrition_data' => [
                 'calories' => $this->faker->numberBetween(10, 500),
                 'fat' => $this->faker->randomFloat(1, 0, 50),
             ],
             'shelf_life_days' => $this->faker->numberBetween(1, 365),
+            'available_stock' => $this->faker->randomFloat(2, 0, 1000),
+            'is_organic' => true,
+            'is_active' => true,
         ];
     }
 
@@ -49,6 +56,7 @@ class ProductFactory extends Factory
     {
         return $this->state(fn (array $attributes) => [
             'product_status_id' => ProductStatus::ACTIVE,
+            'is_active' => true,
         ]);
     }
 
@@ -59,6 +67,7 @@ class ProductFactory extends Factory
     {
         return $this->state(fn (array $attributes) => [
             'product_status_id' => ProductStatus::INACTIVE,
+            'is_active' => false,
         ]);
     }
 }

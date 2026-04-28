@@ -95,7 +95,8 @@ class ProductVariant extends Model
     public public(set) float $activePrice {
         get {
             $basePrice = (float) $this->price;
-            $discount = $this->product?->discountPercentage ?? 0;
+            $product = $this->product;
+            $discount = ($product !== null) ? $product->discountPercentage : 0;
 
             if ($discount <= 0) {
                 return $basePrice;
@@ -109,7 +110,7 @@ class ProductVariant extends Model
      * Get the current active price in KHR.
      */
     public public(set) float $activePriceKhr {
-        get => $this->activePrice |> (fn($price) => $price * ExchangeRate::getRate('USD', 'KHR'));
+        get => $this->activePrice |> (static fn ($price) => $price * ExchangeRate::getRate('USD', 'KHR'));
     }
 
     /**

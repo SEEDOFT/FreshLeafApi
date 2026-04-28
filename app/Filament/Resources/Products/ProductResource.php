@@ -18,7 +18,6 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Override;
-use UnitEnum;
 
 class ProductResource extends Resource
 {
@@ -26,7 +25,20 @@ class ProductResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
 
-    protected static UnitEnum|string|null $navigationGroup = 'Catalog';
+    public static function getNavigationGroup(): ?string
+    {
+        return __('admin.navigation.catalog');
+    }
+
+    public static function getModelLabel(): string
+    {
+        return __('admin.resources.product.label');
+    }
+
+    public static function getPluralModelLabel(): string
+    {
+        return __('admin.resources.product.plural_label');
+    }
 
     #[Override]
     public static function form(Schema $schema): Schema

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Http\Middleware;
 
 use App\Models\User;
+use App\Models\UserType;
 use App\Traits\ApiResponse;
 use Closure;
 use Illuminate\Http\Request;
@@ -49,21 +50,16 @@ class SetLocaleFromAcceptLanguage
             return $this->detectFromHeader($request);
         }
 
-        // 1. Check User direct locale field (Admin/Vendor/Consumer)
-        $preferredLocale = $user->locale;
+        // 1. Resolve from specific profile based on user type
+        $preferredLocale = match ($user->user_type_id) {
+            UserType::ADMIN => $user->adminProfile?->locale,
+            UserType::VENDOR => $user->vendorProfile?->locale,
+            UserType::USER => $user->userProfile?->locale,
+            default => null,
+        };
 
-        if (\in_array($preferredLocale, self::SUPPORTED_LOCALES, true)) {
+        if ($preferredLocale !== null && \in_array($preferredLocale, self::SUPPORTED_LOCALES, true)) {
             return $preferredLocale;
-        }
-
-        // 2. Check UserProfile (Consumer specific)
-        $profileLocale = $user->userProfile?->preferred_language;
-
-        if (
-            \is_string($profileLocale) &&
-            \in_array($profileLocale, self::SUPPORTED_LOCALES, true)
-        ) {
-            return $profileLocale;
         }
 
         return $this->detectFromHeader($request);

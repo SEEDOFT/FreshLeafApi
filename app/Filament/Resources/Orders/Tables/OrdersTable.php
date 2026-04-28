@@ -8,6 +8,7 @@ use App\Models\Order;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
+use Filament\Actions\ViewAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
@@ -18,6 +19,7 @@ class OrdersTable
     {
         return $table
             ->stackedOnMobile()
+            ->recordAction('view')
             ->columns([
                 TextColumn::make('order_number')
                     ->searchable()
@@ -64,6 +66,7 @@ class OrdersTable
                     ->relationship('paymentStatus', 'name'),
             ])
             ->recordActions([
+                ViewAction::make(),
                 EditAction::make(),
             ])
             ->toolbarActions([

@@ -35,7 +35,7 @@ class AdminCommissionTest extends TestCase
         // 3. Verify Calculations (15% of 200 = 30)
         $this->assertEquals(30.00, (float) $item->commission_amount);
         $this->assertEquals(170.00, (float) $item->vendor_net_amount);
-        
+
         // 4. Verify Property Hook
         $this->assertEquals(15.00, $item->activeCommissionRate);
     }

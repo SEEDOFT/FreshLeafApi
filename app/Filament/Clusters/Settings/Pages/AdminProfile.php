@@ -16,13 +16,21 @@ use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 use Illuminate\Support\Facades\Auth;
 
+use function __;
+use function is_array;
+use function is_string;
+use function reset;
+
 class AdminProfile extends Page
 {
     protected static ?string $cluster = Settings::class;
 
     protected static ?string $slug = 'profile';
 
-    protected static ?string $navigationLabel = 'My Profile';
+    public static function getNavigationLabel(): string
+    {
+        return __('admin.navigation.my_profile');
+    }
 
     protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-user-circle';
 
@@ -56,13 +64,13 @@ class AdminProfile extends Page
     {
         return $schema
             ->components([
-                Section::make('General Information')
-                    ->description('Update your basic profile information and avatar.')
+                Section::make(__('admin.profile.general_info'))
+                    ->description(__('admin.profile.general_info_desc'))
                     ->schema([
                         Grid::make(4)
                             ->schema([
                                 FileUpload::make('image')
-                                    ->label('Avatar')
+                                    ->label(__('admin.profile.avatar'))
                                     ->avatar()
                                     ->imageEditor()
                                     ->directory('avatars')
@@ -72,29 +80,31 @@ class AdminProfile extends Page
                                 Grid::make(2)
                                     ->schema([
                                         TextInput::make('first_name')
-                                            ->required()
+                                            ->label(__('admin.profile.first_name'))
+
                                             ->maxLength(255),
                                         TextInput::make('last_name')
-                                            ->required()
+                                            ->label(__('admin.profile.last_name'))
+
                                             ->maxLength(255),
                                         TextInput::make('email')
+                                            ->label(__('admin.profile.email'))
                                             ->email()
-                                            ->required()
+
                                             ->maxLength(255),
                                         TextInput::make('phone_number')
-                                            ->label('Phone Number')
-                                            ->tel()
-                                            ->required(),
+                                            ->label(__('admin.profile.phone'))
+                                            ->tel(),
                                     ])
                                     ->columnSpan(3),
                             ]),
                     ]),
 
-                Section::make('Preferences')
-                    ->description('Customize your dashboard language.')
+                Section::make(__('admin.profile.preferences'))
+                    ->description(__('admin.profile.preferences_desc'))
                     ->schema([
-                        Select::make('locale')
-                            ->label('Display Language')
+                        Select::make('adminProfile.locale')
+                            ->label(__('admin.profile.display_language'))
                             ->options([
                                 'km' => 'Khmer (ភាសាខ្មែរ)',
                                 'en' => 'English',
@@ -103,19 +113,19 @@ class AdminProfile extends Page
                             ->native(false),
                     ])->columns(2),
 
-                Section::make('Professional Details')
-                    ->description('Manage your role and position within the company.')
+                Section::make(__('admin.profile.professional_details'))
+                    ->description(__('admin.profile.professional_details_desc'))
                     ->schema([
                         TextInput::make('adminProfile.job_title')
-                            ->label('Job Title')
+                            ->label(__('admin.profile.job_title'))
                             ->placeholder('e.g. Operations Manager')
                             ->maxLength(255),
                         TextInput::make('adminProfile.department')
-                            ->label('Department')
+                            ->label(__('admin.profile.department'))
                             ->placeholder('e.g. Logistics')
                             ->maxLength(255),
                         TextInput::make('adminProfile.office_phone')
-                            ->label('Office Phone')
+                            ->label(__('admin.profile.office_phone'))
                             ->tel()
                             ->maxLength(255),
                     ])->columns(3),
@@ -147,11 +157,11 @@ class AdminProfile extends Page
         }
 
         Notification::make()
-            ->title('Profile updated successfully.')
+            ->title(__('admin.profile.success_notification'))
             ->success()
             ->send();
 
-        // Refresh to apply language change if locale changed
+        // Refresh to apply language change
         $this->redirect(static::getUrl());
     }
 

@@ -59,7 +59,6 @@ use Override;
     'password',
     'user_type_id',
     'user_status_id',
-    'locale',
 ])]
 #[Hidden(['password', 'remember_token'])]
 #[UseFactory(UserFactory::class)]
@@ -83,6 +82,22 @@ class User extends Authenticatable implements FilamentUser, HasName
         }
 
         return false;
+    }
+
+    /**
+     * Get the user's current locale from their profile.
+     */
+    public string $currentLocale {
+        get {
+            $profile = match ($this->user_type_id) {
+                UserType::ADMIN => $this->adminProfile,
+                UserType::VENDOR => $this->vendorProfile,
+                UserType::USER => $this->userProfile,
+                default => null,
+            };
+
+            return ($profile !== null) ? $profile->locale : (string) config('app.locale');
+        }
     }
 
     /**

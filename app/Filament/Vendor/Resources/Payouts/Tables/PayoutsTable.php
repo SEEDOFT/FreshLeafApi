@@ -17,7 +17,7 @@ class PayoutsTable
                 TextColumn::make('amount')
                     ->money('USD')
                     ->sortable(),
-                
+
                 TextColumn::make('status.name')
                     ->badge()
                     ->color(fn (string $state): string => match ($state) {
@@ -27,14 +27,14 @@ class PayoutsTable
                         'Failed' => 'danger',
                         default => 'gray',
                     }),
-                
+
                 TextColumn::make('method.name')
                     ->label('Method'),
-                
+
                 TextColumn::make('transaction_reference')
                     ->label('Reference')
                     ->searchable(),
-                
+
                 TextColumn::make('processed_at')
                     ->label('Paid On')
                     ->dateTime()

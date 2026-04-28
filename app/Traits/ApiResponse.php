@@ -6,94 +6,94 @@ namespace App\Traits;
 
 use Illuminate\Http\JsonResponse;
 
+use function response;
+
+/**
+ * Standardized API response trait.
+ */
 trait ApiResponse
 {
     /**
-     * Base Response Structure
-     *
-     * @return array{status: array{code: string, success: bool, message: ?string}, data: mixed}
+     * Return a success response.
      */
-    private static function baseResponse(
-        string $code,
-        bool $success,
-        ?string $message = null,
+    protected static function successResponse(
         mixed $data = [],
-    ): array {
-        return [
-            'status' => [
-                'code' => $code,
-                'success' => $success,
-                'message' => $message,
-            ],
-            'data' => $data,
-        ];
-    }
-
-    /**
-     * Return a success JSON response.
-     */
-    protected function successResponse(
-        mixed $data = [],
-        ?string $message = null,
+        string $message = 'Success',
         int $code = 200
     ): JsonResponse {
-        return \response()->json(
-            self::baseResponse(
-                code: (string) $code,
-                success: true,
-                message: $message,
-                data: $data
-            ), $code);
+        return response()->json(
+            [
+                'status' => [
+                    'code' => (string) $code,
+                    'success' => true,
+                    'message' => $message,
+                ],
+                'data' => $data,
+            ],
+            $code
+        );
     }
 
     /**
-     * Return an error JSON response.
+     * Return an error response.
      */
-    protected function errorResponse(
-        ?string $message = null,
+    protected static function errorResponse(
+        string $message = 'Error',
         int $code = 400,
         mixed $data = []
     ): JsonResponse {
-        return \response()->json(
-            self::baseResponse(
-                code: (string) $code,
-                success: false,
-                message: $message,
-                data: $data
-            ), $code);
+        return response()->json(
+            [
+                'status' => [
+                    'code' => (string) $code,
+                    'success' => false,
+                    'message' => $message,
+                ],
+                'data' => $data,
+            ],
+            $code
+        );
     }
 
     /**
-     * Return a forbidden JSON response (403).
+     * Return an unauthorized response.
      */
-    protected static function forbidden(
-        ?string $message = null,
-        int $code = 403,
+    protected static function unauthorizedResponse(
+        string $message = 'Unauthorized',
         mixed $data = []
     ): JsonResponse {
-        return \response()->json(
-            self::baseResponse(
-                code: (string) $code,
-                success: false,
-                message: $message,
-                data: $data
-            ), $code);
+        return static::errorResponse($message, 401, $data);
     }
 
     /**
-     * Return an unauthorized JSON response (401).
+     * Return a success response (Non-static version).
      */
-    protected static function unauthorized(
-        ?string $message = null,
-        int $code = 401,
+    protected function success(
+        mixed $data = [],
+        string $message = 'Success',
+        int $code = 200
+    ): JsonResponse {
+        return static::successResponse($data, $message, $code);
+    }
+
+    /**
+     * Return an error response (Non-static version).
+     */
+    protected function error(
+        string $message = 'Error',
+        int $code = 400,
         mixed $data = []
     ): JsonResponse {
-        return \response()->json(
-            self::baseResponse(
-                code: (string) $code,
-                success: false,
-                message: $message,
-                data: $data
-            ), $code);
+        return static::errorResponse($message, $code, $data);
+    }
+
+    /**
+     * Return an unauthorized response (Non-static version).
+     */
+    protected function unauthorized(
+        string $message = 'Unauthorized',
+        mixed $data = []
+    ): JsonResponse {
+        return static::unauthorizedResponse($message, $data);
     }
 }

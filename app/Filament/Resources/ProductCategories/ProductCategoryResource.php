@@ -16,7 +16,6 @@ use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
 use Override;
-use UnitEnum;
 
 class ProductCategoryResource extends Resource
 {
@@ -24,7 +23,20 @@ class ProductCategoryResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
 
-    protected static UnitEnum|string|null $navigationGroup = 'Catalog';
+    public static function getNavigationGroup(): ?string
+    {
+        return __('admin.navigation.catalog');
+    }
+
+    public static function getModelLabel(): string
+    {
+        return __('admin.resources.product_category.label');
+    }
+
+    public static function getPluralModelLabel(): string
+    {
+        return __('admin.resources.product_category.plural_label');
+    }
 
     #[Override]
     public static function form(Schema $schema): Schema

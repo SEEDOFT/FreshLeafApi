@@ -22,6 +22,7 @@ class UsersTable
     {
         return $table
             ->stackedOnMobile()
+            ->recordAction('view')
             ->columns([
                 TextColumn::make('name')
                     ->label('Full Name')

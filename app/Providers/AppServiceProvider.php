@@ -5,9 +5,11 @@ declare(strict_types=1);
 namespace App\Providers;
 
 use App\Models\Address;
+use App\Models\Order;
 use App\Models\PaymentMethod;
 use App\Models\User;
 use App\Models\Wallet;
+use App\Observers\OrderObserver;
 use App\Policies\AddressPolicy;
 use App\Policies\AuthActionPolicy;
 use App\Policies\PaymentMethodPolicy;
@@ -31,6 +33,8 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        Order::observe(OrderObserver::class);
+
         Gate::policy(Address::class, AddressPolicy::class);
         Gate::policy(PaymentMethod::class, PaymentMethodPolicy::class);
         Gate::policy(User::class, UserPolicy::class);

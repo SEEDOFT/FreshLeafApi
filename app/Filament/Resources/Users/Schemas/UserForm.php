@@ -42,7 +42,7 @@ class UserForm
 
                 Section::make('Vendor Profile')
                     ->relationship('vendorProfile')
-                    ->hidden(fn (callable $get) => (int) $get('user_type_id') !== UserType::VENDOR)
+                    ->hidden(static fn (callable $get) => (int) $get('user_type_id') !== UserType::VENDOR)
                     ->schema([
                         TextInput::make('business_name')
                             ->required(),
@@ -58,7 +58,7 @@ class UserForm
 
                 Section::make('Admin Profile')
                     ->relationship('adminProfile')
-                    ->hidden(fn (callable $get) => (int) $get('user_type_id') !== UserType::ADMIN)
+                    ->hidden(static fn (callable $get) => (int) $get('user_type_id') !== UserType::ADMIN)
                     ->schema([
                         TextInput::make('job_title'),
                         TextInput::make('department'),

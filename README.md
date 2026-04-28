@@ -7,7 +7,7 @@
 <a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
 </p>
 
-# FreshLeaf API (Multi-Vendor Organic Marketplace)
+# FreshLeaf Organics API (Multi-Vendor Organic Marketplace)
 
 A Laravel 13 REST API powering a multi-vendor organic vegetable marketplace. This backend manages the entire ecosystem:
 

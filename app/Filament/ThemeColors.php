@@ -28,8 +28,10 @@ class ThemeColors
 
     /**
      * Brand specific colors (Green palette).
+     *
+     * @return array<string, string>
      */
-    public const BRAND = [
+    public const array BRAND = [
         '50' => '#effaf2',
         '100' => '#d9f2df',
         '300' => '#7ccb8e',
@@ -39,8 +41,10 @@ class ThemeColors
 
     /**
      * Accent colors (Amber/Gold palette).
+     *
+     * @return array<string, string>
      */
-    public const ACCENT = [
+    public const array ACCENT = [
         '500' => '#f4b400',
         '600' => '#d89b00',
     ];
@@ -49,8 +53,10 @@ class ThemeColors
      * Neutral colors used for backgrounds and text.
      * '50' is usually for Light Mode backgrounds.
      * '900' is usually for Dark Mode backgrounds.
+     *
+     * @return array<string, string>
      */
-    public const NEUTRAL = [
+    public const array NEUTRAL = [
         '50' => '#f8faf8',
         '100' => '#eef2ef',
         '300' => '#c5cfc7',
@@ -61,7 +67,7 @@ class ThemeColors
     /**
      * Get all theme tokens as a combined array.
      *
-     * @return array<string, array<string|int, string>>
+     * @return array<string, array<string, string>>
      */
     public static function getTokens(): array
     {

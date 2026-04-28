@@ -12,11 +12,20 @@
     overflow: hidden;
     box-shadow: var(--shadow-xl);
     margin-top: 1rem;
+    transition: grid-template-columns 0.3s ease;
 }
 
 .dark .ai-chat-shell {
     background: rgba(24, 24, 27, 0.4);
     border-color: rgba(255, 255, 255, 0.05);
+}
+
+.ai-chat-shell.is-history-hidden {
+    grid-template-columns: 1fr;
+}
+
+.ai-chat-shell.is-history-hidden .ai-chat-sidebar {
+    display: none;
 }
 
 /* Sidebar Conversations */
@@ -61,16 +70,59 @@
     padding: 0.5rem;
 }
 
+.ai-session-item-wrap {
+    position: relative;
+    margin-bottom: 0.25rem;
+}
+
 .ai-session-item {
     width: 100%;
     text-align: left;
     padding: 1rem;
+    padding-right: 3rem;
     border-radius: 0.75rem;
-    margin-bottom: 0.25rem;
     transition: all 0.2s ease;
     display: flex;
     flex-direction: column;
     gap: 0.25rem;
+}
+
+.ai-session-delete-btn {
+    position: absolute;
+    right: 0.75rem;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 32px;
+    height: 32px;
+    border-radius: 0.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--freshleaf-neutral-400);
+    opacity: 0;
+    pointer-events: none;
+    transition: all 0.2s ease;
+    background: white;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+}
+
+.dark .ai-session-delete-btn {
+    background: #27272a;
+}
+
+.ai-session-item-wrap:hover .ai-session-delete-btn {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.ai-session-delete-btn:hover {
+    background: #fee2e2;
+    color: #ef4444;
+}
+
+.dark .ai-session-delete-btn:hover {
+    background: rgba(239, 68, 68, 0.2);
+    color: #f87171;
 }
 
 .ai-session-item:hover {
@@ -128,6 +180,35 @@
     display: flex;
     align-items: center;
     gap: 1rem;
+}
+
+.ai-drawer-toggle {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    background: rgba(0, 0, 0, 0.05);
+    border-radius: 0.75rem;
+    transition: all 0.2s ease;
+    border: 1px solid rgba(0, 0, 0, 0.05);
+    color: var(--freshleaf-neutral-500);
+    flex-shrink: 0;
+}
+
+.ai-drawer-toggle:hover {
+    background: rgba(0, 0, 0, 0.1);
+    color: var(--freshleaf-neutral-900);
+}
+
+.dark .ai-drawer-toggle {
+    background: rgba(255, 255, 255, 0.05);
+    border-color: rgba(255, 255, 255, 0.05);
+}
+
+.dark .ai-drawer-toggle:hover {
+    background: rgba(255, 255, 255, 0.1);
+    color: white;
 }
 
 .ai-logo-dot {

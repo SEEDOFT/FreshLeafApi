@@ -22,20 +22,33 @@ class ProductsTable
         return $table
             ->stackedOnMobile()
             ->columns([
-                TextColumn::make('name')
+                TextColumn::make('name_en')
+                    ->label(__('admin.resources.product.name_en'))
                     ->searchable()
                     ->sortable(),
-                TextColumn::make('category.name')
+                TextColumn::make('name_km')
+                    ->label(__('admin.resources.product.name_km'))
+                    ->searchable()
+                    ->sortable(),
+                TextColumn::make('productCategory.name_en')
+                    ->label(__('admin.resources.product.system_category'))
+                    ->sortable(),
+                TextColumn::make('organicCategory.name_en')
+                    ->label(__('admin.resources.product.organic_category'))
                     ->sortable(),
                 TextColumn::make('type.name')
+                    ->label(__('admin.resources.product.type'))
                     ->sortable(),
                 TextColumn::make('status.name')
+                    ->label(__('admin.resources.product.status'))
                     ->badge()
                     ->sortable(),
                 IconColumn::make('is_organic')
+                    ->label(__('admin.resources.product.is_organic'))
                     ->boolean()
                     ->sortable(),
                 TextColumn::make('shelf_life_days')
+                    ->label(__('admin.resources.product.shelf_life'))
                     ->numeric()
                     ->sortable()
                     ->suffix(' days'),
@@ -46,11 +59,14 @@ class ProductsTable
             ])
             ->filters([
                 SelectFilter::make('product_category_id')
-                    ->relationship('category', 'name')
-                    ->label('Category'),
+                    ->relationship('productCategory', 'name_en')
+                    ->label(__('admin.resources.product.system_category')),
+                SelectFilter::make('organic_category_id')
+                    ->relationship('organicCategory', 'name_en')
+                    ->label(__('admin.resources.product.organic_category')),
                 SelectFilter::make('product_status_id')
                     ->relationship('status', 'name')
-                    ->label('Status'),
+                    ->label(__('admin.resources.product.status')),
                 TrashedFilter::make(),
             ])
             ->recordActions([

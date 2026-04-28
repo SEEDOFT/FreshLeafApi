@@ -3,6 +3,7 @@
     wire:poll.2s="syncPendingResponse"
     x-data="{
         drawerOpen: false,
+        showHistory: @entangle('showHistory'),
         isPhone: false,
         mediaQuery: null,
         syncViewportState(event) {
@@ -24,6 +25,7 @@
         },
         toggleDrawer() {
             if (! this.isPhone) {
+                this.showHistory = ! this.showHistory;
                 return;
             }
 
@@ -49,6 +51,7 @@
     x-on:message-sent.window="setTimeout(() => scrollToBottom(), 50); if (isPhone) { closeDrawer(); }"
     x-on:freshleaf-realtime-status.window="$wire.handleRealtimeStatus(($event.detail && $event.detail.state) ? $event.detail.state : null, ($event.detail && $event.detail.reason) ? $event.detail.reason : null)"
     x-bind:data-drawer-open="drawerOpen ? 'true' : 'false'"
+    x-bind:class="{ 'ai-chat-shell': true, 'is-history-hidden': !showHistory }"
 >
     <button
         type="button"
@@ -56,7 +59,7 @@
         x-show="isPhone && drawerOpen"
         class="ai-chat-sidebar-drawer-overlay"
         x-on:click="closeDrawer()"
-        aria-label="Close conversations panel"
+        aria-label="{{ __('admin.ai.chats') }}"
     ></button>
 
     <aside id="ai-chat-sidebar" class="ai-chat-sidebar">
@@ -70,25 +73,37 @@
                 x-on:click="if (isPhone) { closeDrawer(); }"
             >
                 <x-filament::icon icon="heroicon-o-plus" class="h-4 w-4" />
-                <span>New chat</span>
+                <span>{{ __('admin.ai.new_chat') }}</span>
             </button>
         </div>
 
         <div class="ai-session-list">
             @forelse($sessions as $session)
-                <button
-                    type="button"
-                    class="ai-session-item {{ $this->isActiveSession($session['id']) ? 'is-active' : '' }}"
-                    wire:click="switchSession({{ $session['id'] }})"
-                    wire:key="session-{{ $session['id'] }}"
-                    x-on:click="if (isPhone) { closeDrawer(); }"
-                >
-                    <span class="ai-session-title">{{ $session['title'] }}</span>
-                    <span class="ai-session-meta">{{ $session['updated_at_human'] }}</span>
-                </button>
+                <div class="ai-session-item-wrap group">
+                    <button
+                        type="button"
+                        class="ai-session-item {{ $this->isActiveSession($session['id']) ? 'is-active' : '' }}"
+                        wire:click="switchSession({{ $session['id'] }})"
+                        wire:key="session-{{ $session['id'] }}"
+                        x-on:click="if (isPhone) { closeDrawer(); }"
+                    >
+                        <span class="ai-session-title line-clamp-1">{{ $session['title'] }}</span>
+                        <span class="ai-session-meta">{{ $session['updated_at_human'] }}</span>
+                    </button>
+                    
+                    <button
+                        type="button"
+                        class="ai-session-delete-btn"
+                        wire:click="deleteSession({{ $session['id'] }})"
+                        wire:confirm="{{ __('admin.ai.delete_confirm') }}"
+                        aria-label="{{ __('admin.ai.delete_chat') }}"
+                    >
+                        <x-filament::icon icon="heroicon-o-trash" class="h-4 w-4" />
+                    </button>
+                </div>
             @empty
                 <div class="ai-session-empty">
-                    <p>No conversations yet.</p>
+                    <p>{{ __('admin.ai.no_conversations') }}</p>
                 </div>
             @endforelse
         </div>
@@ -103,22 +118,21 @@
                     x-on:click="toggleDrawer()"
                     aria-controls="ai-chat-sidebar"
                     x-bind:aria-expanded="drawerOpen ? 'true' : 'false'"
+                    x-bind:title="showHistory ? 'Close sidebar' : 'Open sidebar'"
                 >
-                    <x-filament::icon icon="heroicon-o-bars-3" class="h-4 w-4" />
-                    <span>Chats</span>
-                    <span class="ai-drawer-toggle-count">{{ count($sessions) }}</span>
+                    <x-filament::icon icon="heroicon-o-bars-3" class="h-5 w-5" />
                 </button>
 
                 <span class="ai-logo-dot"></span>
                 <div>
-                    <h2>FreshLeaf Assistant</h2>
-                    <p>Chat-style support for operational tasks and store decisions.</p>
+                    <h2>{{ __('admin.ai.freshleaf_assistant') }}</h2>
+                    <p class="hidden sm:block">{{ __('admin.ai.description') }}</p>
                 </div>
             </div>
 
             <div class="ai-chat-status">
                 <span class="ai-status-pill {{ $isRealtimeConnected ? 'is-connected' : 'is-fallback' }}">
-                    {{ $isRealtimeConnected ? 'Realtime connected' : 'Fallback sync mode' }}
+                    {{ $isRealtimeConnected ? __('admin.ai.realtime_connected') : __('admin.ai.fallback_sync_mode') }}
                 </span>
             </div>
         </header>
@@ -134,8 +148,8 @@
             <div class="ai-thread-inner">
                 @if(count($messages) === 0)
                     <div class="ai-thread-empty">
-                        <h3>Start a new conversation</h3>
-                        <p>Ask about inventory, order flow, vendor onboarding, or operational decisions.</p>
+                        <h3>{{ __('admin.ai.start_new_conversation') }}</h3>
+                        <p>{{ __('admin.ai.empty_state_desc') }}</p>
                     </div>
                 @endif
 
@@ -153,7 +167,7 @@
                             </div>
 
                             <article class="ai-message-bubble is-assistant {{ ($messageItem['status'] ?? 'done') === 'failed' ? 'is-error' : '' }}">
-                                <div class="ai-message-author">FreshLeaf Assistant</div>
+                                <div class="ai-message-author">{{ __('admin.ai.freshleaf_assistant') }}</div>
                                 <div class="freshleaf-markdown">
                                     {!! $this->renderAssistantMessage($messageItem['content']) !!}
                                 </div>
@@ -169,7 +183,7 @@
                         </div>
 
                         <article class="ai-message-bubble is-assistant">
-                            <div class="ai-message-author">FreshLeaf Assistant</div>
+                            <div class="ai-message-author">{{ __('admin.ai.freshleaf_assistant') }}</div>
                             <div class="ai-typing-dots" aria-label="Assistant is typing">
                                 <span></span>
                                 <span></span>
@@ -206,31 +220,44 @@
                 x-on:submit.prevent="submit()"
                 class="ai-composer-form"
             >
-                <label for="ai-message" class="sr-only">Type your message</label>
+                <label for="ai-message" class="sr-only">{{ __('admin.ai.type_message') }}</label>
                 <textarea
                     id="ai-message"
                     x-ref="composerInput"
                     x-model="localMessage"
                     x-on:input="resize()"
                     rows="1"
-                    placeholder="Message FreshLeaf Assistant..."
+                    placeholder="{{ __('admin.ai.composer_placeholder') }}"
                     class="ai-composer-input"
                     style="overflow-y: auto; height: 44px; min-height: 44px;"
                     x-on:keydown.enter="if (! $event.shiftKey) { $event.preventDefault(); submit(); }"
-                    :disabled="$wire.isTyping"
+                    :disabled="false"
                 ></textarea>
 
-                <button
-                    type="submit"
-                    class="ai-send-button"
-                    wire:loading.attr="disabled"
-                    x-bind:disabled="$wire.isTyping || localMessage.trim() === ''"
-                >
-                    <x-filament::icon icon="heroicon-o-arrow-up" class="h-4 w-4" />
-                </button>
+                <div class="ai-composer-actions">
+                    @if($isTyping)
+                        <button
+                            type="button"
+                            class="ai-stop-button"
+                            wire:click="stopGenerating"
+                            title="Stop generating"
+                        >
+                            <x-filament::icon icon="heroicon-o-stop" class="h-4 w-4" />
+                        </button>
+                    @endif
+
+                    <button
+                        type="submit"
+                        class="ai-send-button"
+                        wire:loading.attr="disabled"
+                        x-bind:disabled="$wire.isTyping || localMessage.trim() === ''"
+                    >
+                        <x-filament::icon icon="heroicon-o-arrow-up" class="h-4 w-4" />
+                    </button>
+                </div>
             </form>
             <p class="ai-composer-hint">
-                Press Enter to send, Shift+Enter for a new line.
+                {{ __('admin.ai.composer_hint') }}
             </p>
         </div>
     </section>

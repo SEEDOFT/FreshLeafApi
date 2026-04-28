@@ -20,15 +20,15 @@ class VendorStatsOverview extends BaseWidget
     {
         $user = Auth::user();
 
-        $productCount = Product::where('vendor_user_id', $user->id)->count();
+        $productCount = Product::where('user_id', $user->id)->count();
 
-        $todayOrders = Order::whereHas('items.product', fn ($q) => $q->where('vendor_user_id', $user->id))
+        $todayOrders = Order::whereHas('items.product', fn ($q) => $q->where('user_id', $user->id))
             ->whereDate('created_at', now())
             ->count();
 
-        $walletBalance = Wallet::where('user_id', $user->id)
+        $walletBalance = (float) (Wallet::where('user_id', $user->id)
             ->whereHas('currency', fn ($q) => $q->where('code', 'USD'))
-            ->value('balance') ?? 0;
+            ->value('balance') ?? 0);
 
         return [
             Stat::make('My Products', $productCount)

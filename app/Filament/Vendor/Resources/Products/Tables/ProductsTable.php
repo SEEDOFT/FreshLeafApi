@@ -21,7 +21,7 @@ class ProductsTable
                 TextColumn::make('name')
                     ->searchable()
                     ->sortable(),
-                
+
                 TextColumn::make('category.name')
                     ->label('Category')
                     ->badge()

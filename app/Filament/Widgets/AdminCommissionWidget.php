@@ -10,21 +10,29 @@ use Filament\Widgets\StatsOverviewWidget\Stat;
 
 class AdminCommissionWidget extends BaseWidget
 {
+    protected string $view = 'filament.widgets.admin-commission-widget';
+
     protected function getStats(): array
     {
         $totalCommission = OrderItem::sum('commission_amount');
         $vendorNetTotal = OrderItem::sum('vendor_net_amount');
 
         return [
-            Stat::make('Total Platform Commission', '$' . number_format($totalCommission, 2))
+            Stat::make('Total Platform Commission', '$'.number_format($totalCommission, 2))
                 ->description('Total fees earned from vendor sales')
                 ->descriptionIcon('heroicon-m-banknotes')
-                ->color('success'),
-            
-            Stat::make('Pending Vendor Payouts', '$' . number_format($vendorNetTotal, 2))
+                ->color('success')
+                ->extraAttributes([
+                    'class' => '!border-0 !shadow-none !bg-transparent',
+                ]),
+
+            Stat::make('Pending Vendor Payouts', '$'.number_format($vendorNetTotal, 2))
                 ->description('Total net amount owed to vendors')
                 ->descriptionIcon('heroicon-m-users')
-                ->color('info'),
+                ->color('info')
+                ->extraAttributes([
+                    'class' => '!border-0 !shadow-none !bg-transparent',
+                ]),
         ];
     }
 }

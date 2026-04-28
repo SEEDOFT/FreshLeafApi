@@ -134,7 +134,7 @@ class Register extends BaseRegister
                                 ->directory('vendor-verification')
                                 ->required(),
                         ]),
-                ])->submitAction(new HtmlString(Blade::render('<x-filament::button type="submit" size="sm">Complete Registration</x-filament::button>'))),
+                ])->submitAction(new HtmlString(Blade::render('<x-filament::button type="submit" size="sm" wire:click="register">Complete Registration</x-filament::button>'))),
             ])->statePath('data');
     }
 
@@ -154,8 +154,8 @@ class Register extends BaseRegister
                     ->placeholder('12 345 678')
                     ->required()
                     ->tel()
-                    ->rule(function (Get $get) {
-                        return function (string $attribute, $value, \Closure $fail) use ($get) {
+                    ->rule(static function (Get $get) {
+                        return static function (string $attribute, $value, \Closure $fail) use ($get) {
                             $dialCode = get_dial_code($get('country_iso'));
                             $fullPhone = $dialCode.ltrim($value, '0');
                             $exists = User::where('phone_number', $fullPhone)

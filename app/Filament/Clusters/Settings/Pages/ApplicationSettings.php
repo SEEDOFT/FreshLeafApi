@@ -6,7 +6,6 @@ namespace App\Filament\Clusters\Settings\Pages;
 
 use App\Filament\Clusters\Settings;
 use App\Models\Setting;
-use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
 use Filament\Notifications\Notification;
@@ -20,7 +19,10 @@ class ApplicationSettings extends Page
 
     protected static ?string $slug = 'app-settings';
 
-    protected static ?string $navigationLabel = 'Application Control';
+    public static function getNavigationLabel(): string
+    {
+        return __('admin.navigation.app_control');
+    }
 
     protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-cog-8-tooth';
 
@@ -40,7 +42,6 @@ class ApplicationSettings extends Page
             'enable_ai_assistant_admin' => app_setting('enable_ai_assistant_admin', true),
             'enable_ai_assistant_vendor' => app_setting('enable_ai_assistant_vendor', true),
             'commission_percentage' => app_setting('commission_percentage', 10.00),
-            'default_locale' => app_setting('default_locale', 'km'),
         ];
     }
 
@@ -48,49 +49,41 @@ class ApplicationSettings extends Page
     {
         return $schema
             ->components([
-                Section::make('Revenue Model')
-                    ->description('Manage platform fees and commissions.')
+                Section::make(__('admin.settings.app_settings.revenue_model'))
+                    ->description(__('admin.settings.app_settings.revenue_model_desc'))
                     ->schema([
                         TextInput::make('commission_percentage')
-                            ->label('Commission Fee (%)')
+                            ->label(__('admin.settings.app_settings.commission_fee'))
                             ->numeric()
                             ->suffix('%')
-                            ->helperText('The percentage deducted from vendor sales upon completion.')
+                            ->helperText(__('admin.settings.app_settings.commission_fee_helper'))
                             ->required(),
                     ]),
 
-                Section::make('Localization')
-                    ->description('Default settings for the entire platform.')
+                Section::make(__('admin.settings.app_settings.localization'))
+                    ->description(__('admin.settings.app_settings.localization_desc'))
                     ->schema([
-                        Select::make('default_locale')
-                            ->label('Default Language')
-                            ->options([
-                                'km' => 'Khmer (ភាសាខ្មែរ)',
-                                'en' => 'English',
-                            ])
-                            ->required()
-                            ->native(false),
                         TextInput::make('timezone')
-                            ->label('System Timezone')
+                            ->label(__('admin.settings.app_settings.timezone'))
                             ->required(),
                     ])->columns(2),
 
-                Section::make('Notification Preferences')
-                    ->description('Global configuration for system alerts.')
+                Section::make(__('admin.settings.app_settings.notifications'))
+                    ->description(__('admin.settings.app_settings.notifications_desc'))
                     ->schema([
                         Toggle::make('email_notifications')
-                            ->label('Enable Email Notifications'),
+                            ->label(__('admin.settings.app_settings.enable_email')),
                         Toggle::make('sms_alerts')
-                            ->label('Enable SMS Alerts for New Vendors'),
+                            ->label(__('admin.settings.app_settings.enable_sms')),
                     ])->columns(2),
 
-                Section::make('AI Assistant Control')
-                    ->description('Enable or disable the floating AI assistant for panel users.')
+                Section::make(__('admin.settings.app_settings.ai_control'))
+                    ->description(__('admin.settings.app_settings.ai_control_desc'))
                     ->schema([
                         Toggle::make('enable_ai_assistant_admin')
-                            ->label('Enable Assistant for Admin Panel'),
+                            ->label(__('admin.settings.app_settings.ai_admin')),
                         Toggle::make('enable_ai_assistant_vendor')
-                            ->label('Enable Assistant for Vendor Panel'),
+                            ->label(__('admin.settings.app_settings.ai_vendor')),
                     ])->columns(2),
             ])
             ->statePath('data');
@@ -105,7 +98,7 @@ class ApplicationSettings extends Page
         }
 
         Notification::make()
-            ->title('Settings updated successfully.')
+            ->title(__('admin.settings.app_settings.success_notification'))
             ->success()
             ->send();
     }

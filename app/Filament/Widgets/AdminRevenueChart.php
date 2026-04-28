@@ -13,6 +13,10 @@ class AdminRevenueChart extends ChartWidget
 {
     protected ?string $heading = 'Revenue Trend (30 Days)';
 
+    protected string $color = 'success';
+
+    protected ?string $chartColor = 'success';
+
     #[Override]
     protected function getData(): array
     {
@@ -53,5 +57,57 @@ class AdminRevenueChart extends ChartWidget
     protected function getType(): string
     {
         return 'line';
+    }
+
+    #[Override]
+    protected function getOptions(): array
+    {
+        return [
+            'plugins' => [
+                'legend' => [
+                    'display' => true,
+                    'position' => 'top',
+                    'labels' => [
+                        'boxWidth' => 12,
+                        'padding' => 15,
+                        'font' => [
+                            'size' => 12,
+                            'weight' => '500',
+                        ],
+                    ],
+                ],
+                'filler' => [
+                    'propagate' => false,
+                ],
+            ],
+            'interaction' => [
+                'intersect' => false,
+                'mode' => 'index',
+            ],
+            'scales' => [
+                'y' => [
+                    'grid' => [
+                        'drawBorder' => false,
+                        'color' => 'rgba(0, 0, 0, 0.05)',
+                    ],
+                    'ticks' => [
+                        'font' => [
+                            'size' => 11,
+                        ],
+                    ],
+                ],
+                'x' => [
+                    'grid' => [
+                        'display' => false,
+                        'drawBorder' => false,
+                    ],
+                    'ticks' => [
+                        'font' => [
+                            'size' => 11,
+                        ],
+                    ],
+                ],
+            ],
+        ];
     }
 }

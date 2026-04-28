@@ -13,6 +13,8 @@ use Illuminate\Database\Eloquent\Model;
 class PayoutMethod extends Model
 {
     public const BANK_TRANSFER = 'bank_transfer';
+
     public const WALLET = 'wallet';
+
     public const CASH = 'cash';
 }

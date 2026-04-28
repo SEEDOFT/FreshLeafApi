@@ -6,6 +6,7 @@ namespace App\Filament\Resources\Vendors\Tables;
 
 use App\Models\User;
 use App\Models\UserStatus;
+use App\Models\UserType;
 use Filament\Actions\Action;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
@@ -27,6 +28,7 @@ class VendorsTable
     {
         return $table
             ->stackedOnMobile()
+            ->recordAction('view')
             ->columns([
                 TextColumn::make('vendorProfile.business_name')
                     ->label('Business Name')
@@ -34,13 +36,13 @@ class VendorsTable
                     ->sortable(),
                 TextColumn::make('name')
                     ->label('Owner')
-                    ->getStateUsing(fn (User $record) => "{$record->first_name} {$record->last_name}")
+                    ->getStateUsing(static fn (User $record) => "{$record->first_name} {$record->last_name}")
                     ->searchable(['first_name', 'last_name']),
                 TextColumn::make('phone_number')
                     ->searchable(),
                 TextColumn::make('status.name')
                     ->badge()
-                    ->color(fn (string $state): string => match ($state) {
+                    ->color(static fn (string $state): string => match ($state) {
                         'Active' => 'success',
                         'Pending' => 'warning',
                         'Inactive', 'Deleted' => 'danger',
@@ -71,15 +73,18 @@ class VendorsTable
                     ->label('Approve')
                     ->icon('heroicon-o-check-circle')
                     ->color('success')
-                    ->visible(fn (User $record) => $record->vendorProfile && ! $record->vendorProfile->is_verified)
-                    ->action(function (User $record, array $data) {
+                    ->visible(static fn (User $record) => $record->vendorProfile && ! $record->vendorProfile->is_verified)
+                    ->action(static function (User $record, array $data) {
                         $record->vendorProfile->update([
                             'is_verified' => true,
                             'approved_at' => now(),
                             'approved_by_admin_id' => Auth::id(),
                             'approve_reason' => $data['note'] ?? null,
                         ]);
-                        $record->update(['user_status_id' => UserStatus::ACTIVE]);
+                        $record->update([
+                            'user_type_id' => UserType::VENDOR,
+                            'user_status_id' => UserStatus::ACTIVE,
+                        ]);
                     })
                     ->form([
                         Textarea::make('note')
@@ -91,8 +96,8 @@ class VendorsTable
                     ->label('Reject')
                     ->icon('heroicon-o-x-circle')
                     ->color('danger')
-                    ->visible(fn (User $record) => $record->vendorProfile && ! $record->vendorProfile->is_verified)
-                    ->action(function (User $record, array $data) {
+                    ->visible(static fn (User $record) => $record->vendorProfile && ! $record->vendorProfile->is_verified)
+                    ->action(static function (User $record, array $data) {
                         $record->vendorProfile->update([
                             'is_verified' => false,
                             'rejected_at' => now(),

@@ -12,369 +12,338 @@ use App\Models\AiChatMessage;
 use App\Models\AiChatSession;
 use App\Services\Ai\AiService;
 use App\Services\Ai\WebSearchService;
-use Exception;
+use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
-use Illuminate\Foundation\Queue\Queueable;
+use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Log;
 
 class ProcessAiChatMessageJob implements ShouldQueue
 {
-    use InteractsWithQueue, Queueable, SerializesModels;
+    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
+
+    public private(set) int $userId;
+
+    public private(set) string $sessionId;
+
+    public private(set) string $messageId;
+
+    public private(set) string $prompt;
+
+    public private(set) ?string $language;
+
+    public private(set) ?float $temperature;
+
+    public private(set) ?int $maxOutputTokens;
+
+    public private(set) array $history;
 
     /**
      * Create a new job instance.
      */
     public function __construct(
-        public int $userId,
-        public string $sessionId,
-        public string $messageId,
-        public string $prompt,
-        public ?string $language = null,
-        public ?float $temperature = null,
-        public ?int $maxOutputTokens = null,
+        int|AiChatMessage $userId,
+        ?string $sessionId = null,
+        ?string $messageId = null,
+        ?string $prompt = null,
+        ?string $language = 'en',
+        ?float $temperature = null,
+        ?int $maxOutputTokens = null,
+        array $history = []
     ) {
-        $this->onQueue('ai-stream');
+        $this->queue = 'ai-stream';
+        if ($userId instanceof AiChatMessage) {
+            $this->userId = (int) $userId->user_id;
+            $this->sessionId = (string) $userId->session->session_id;
+            $this->messageId = (string) $userId->message_id;
+            $this->prompt = $prompt ?? '';
+            $this->language = $language;
+            $this->temperature = $temperature;
+            $this->maxOutputTokens = $maxOutputTokens;
+            $this->history = $history;
+        } else {
+            $this->userId = $userId;
+            $this->sessionId = $sessionId ?? '';
+            $this->messageId = $messageId ?? '';
+            $this->prompt = $prompt ?? '';
+            $this->language = $language;
+            $this->temperature = $temperature;
+            $this->maxOutputTokens = $maxOutputTokens;
+            $this->history = $history;
+        }
     }
 
     /**
-     * Handle the job.
+     * Execute the job.
      */
-    public function handle(AiService $aiService, WebSearchService $searchService): void
+    public function handle(AiService $aiService, WebSearchService $webSearchService): void
     {
-        $session = AiChatSession::where('session_id', $this->sessionId)
-            ->where('user_id', $this->userId)
-            ->first();
+        $assistantMessage = AiChatMessage::where('message_id', $this->messageId)->first();
+        $session = AiChatSession::where('session_id', $this->sessionId)->first();
 
-        $assistantMessage = AiChatMessage::where('message_id', $this->messageId)
-            ->where('ai_chat_session_id', $session?->id)
-            ->first();
-
-        if (! $session || ! $assistantMessage) {
-            Log::warning('AI Bridge: Session or message not found', [
-                'session_id' => $this->sessionId,
+        if (! $assistantMessage || ! $session) {
+            Log::error('AI Job failed: Message or Session not found', [
                 'message_id' => $this->messageId,
+                'session_id' => $this->sessionId,
             ]);
-
-            $this->broadcastFailure('Session not found');
 
             return;
         }
 
-        $sequence = \max(1, (int) $assistantMessage->sequence);
-        \event(new AiMessageStarted(
-            userId: $this->userId,
-            sessionId: $this->sessionId,
-            messageId: $this->messageId,
+        $userId = $this->userId;
+        $sessionId = $this->sessionId;
+
+        // 1. Initial Start Event
+        $sequence = max(1, (int) $assistantMessage->sequence);
+        event(new AiMessageStarted(
+            userId: $userId,
+            sessionId: $sessionId,
+            messageId: (string) $assistantMessage->message_id,
             role: 'assistant',
             sequence: $sequence,
-            timestamp: \now()->toIso8601String(),
+            timestamp: now()->toIso8601String(),
         ));
 
+        $fullResponse = '';
         try {
-            $history = AiChatMessage::where('ai_chat_session_id', $session->id)
-                ->where('id', '<', $assistantMessage->id)
-                ->whereIn('role', ['user', 'assistant'])
-                ->orderBy('id')
-                ->get(['role', 'content'])
-                ->map(static fn ($m) => ['role' => $m->role, 'content' => $m->content])
-                ->all();
+            // 2. Determine if initial search is needed
+            $searchQuery = $this->extractSearchQuery($this->prompt);
+            $context = '';
 
-            $options = ['temperature' => $this->temperature ?? 0.7, 'maxOutputTokens' => $this->maxOutputTokens ?? 4096];
-            $systemPrompt = $this->buildSystemPrompt();
+            if ($searchQuery !== '' && (bool) config('ai.web_search.enabled', true)) {
+                $this->broadcastChunk($assistantMessage, $userId, $sessionId, " [Accessing internet to search for: {$searchQuery}]... \n\n", ++$sequence);
+                $context = $webSearchService->search($searchQuery);
+            } elseif ($this->shouldPerformLiveSearch($this->prompt)) {
+                $this->broadcastChunk($assistantMessage, $userId, $sessionId, " [Performing live search]... \n\n", ++$sequence);
+                $context = $webSearchService->search($this->prompt);
+            }
 
-            $finalText = '';
+            $finalPrompt = $this->prompt;
+            if ($context !== '') {
+                $finalPrompt = "Context from web search:\n\n{$context}\n\nUser Question: {$this->prompt}";
+            }
 
-            if ($this->shouldSearchBeforeModel($this->prompt)) {
-                $finalText = $this->answerWithSearch(
-                    aiService: $aiService,
-                    searchService: $searchService,
-                    systemPrompt: $systemPrompt,
-                    history: $history,
-                    query: $this->prompt,
-                    options: $options,
-                    sequence: $sequence,
-                );
+            // 3. Get Response
+            if ($context !== '') {
+                // We have context, so we stream the response
+                $fullResponse = $this->streamAiResponse($aiService, $assistantMessage, $finalPrompt, $sequence);
             } else {
-                // 1. Ask local AI if it needs a search
-                $initialResponse = $aiService->generateContentWithSystemPromptAndHistory(
-                    systemPrompt: $systemPrompt,
-                    history: $history,
-                    prompt: $this->prompt,
-                    options: $options,
+                // No initial search, try generating first
+                $fullResponse = $aiService->generateContentWithSystemPromptAndHistory(
+                    systemPrompt: $this->getSystemPrompt($assistantMessage),
+                    history: $this->history,
+                    prompt: $finalPrompt
                 );
 
-                $finalText = $initialResponse;
-                $query = $this->extractSearchQuery($initialResponse);
+                // Check if the response contains a search tag
+                if (preg_match('/\[SEARCH_REQUIRED:\s*(.*?)\]/i', $fullResponse, $matches)) {
+                    $secondarySearchQuery = trim($matches[1]);
+                    $this->broadcastChunk($assistantMessage, $userId, $sessionId, " [Accessing internet to search for: {$secondarySearchQuery}]... \n\n", ++$sequence);
 
-                // 2. Handle Hybrid Search if requested
-                if ($query !== '') {
-                    if ($this->shouldHonorModelSearchRequest($query)) {
-                        $finalText = $this->answerWithSearch(
-                            aiService: $aiService,
-                            searchService: $searchService,
-                            systemPrompt: $systemPrompt,
-                            history: $history,
-                            query: $query,
-                            options: $options,
-                            sequence: $sequence,
-                        );
-                    } else {
-                        $normalPrompt = $this->buildNormalAnswerPrompt($query);
-                        $finalText = $aiService->streamContentWithSystemPromptAndHistory(
-                            systemPrompt: $systemPrompt,
-                            history: $history,
-                            prompt: $normalPrompt,
-                            onChunk: function (string $chunk) use (&$sequence): void {
-                                $this->broadcastAssistantChunk($chunk, $sequence);
-                            },
-                            options: $options,
-                        );
-                    }
+                    $secondaryContext = $webSearchService->search($secondarySearchQuery);
+                    $secondaryPrompt = "Context from web search:\n\n{$secondaryContext}\n\nUser Question: {$this->prompt}";
+
+                    // Now stream with the new context
+                    $fullResponse = $this->streamAiResponse($aiService, $assistantMessage, $secondaryPrompt, $sequence);
                 } else {
-                    // Regular response (no search needed)
-                    // BROADCAST the initial response so user actually sees it!
-                    $this->broadcastAssistantChunk($initialResponse, $sequence, trim: true);
+                    // Just a regular response, broadcast it
+                    $this->broadcastChunk($assistantMessage, $userId, $sessionId, $this->cleanResponse($fullResponse), ++$sequence);
                 }
             }
 
-            $finalText = $this->sanitizeAssistantOutput($finalText);
+            // Check if we stopped early
+            if (Cache::has("ai_stop_{$assistantMessage->message_id}")) {
+                throw new \Exception('STOP_SIGNAL');
+            }
 
+            // 4. Finalize Message
+            $cleanResponse = $this->cleanResponse($fullResponse);
             $assistantMessage->update([
-                'content' => $finalText,
+                'content' => $cleanResponse,
                 'status' => 'done',
-                'sequence' => $sequence + 1,
             ]);
 
-            \event(new AiMessageCompleted(
-                userId: $this->userId,
-                sessionId: $this->sessionId,
-                messageId: $this->messageId,
+            // 5. Completion Event
+            event(new AiMessageCompleted(
+                userId: $userId,
+                sessionId: $sessionId,
+                messageId: (string) $assistantMessage->message_id,
                 role: 'assistant',
-                fullText: $finalText,
-                sequence: $sequence + 1,
-                timestamp: \now()->toIso8601String(),
+                fullText: $cleanResponse,
+                sequence: $sequence,
+                timestamp: now()->toIso8601String(),
             ));
 
-        } catch (Exception $e) {
-            Log::error('AI Bridge: Chat message processing failed', [
-                'session_id' => $this->sessionId,
-                'message_id' => $this->messageId,
+        } catch (\Exception $e) {
+            // Re-throw PHPUnit exceptions so tests don't fail silently
+            if (str_starts_with(get_class($e), 'PHPUnit\\')) {
+                throw $e;
+            }
+
+            // Handle user-initiated stop separately
+            if ($e->getMessage() === 'STOP_SIGNAL') {
+                Cache::forget("ai_stop_{$assistantMessage->message_id}");
+                Log::info('AI Job stopped by user', ['message_id' => $assistantMessage->id]);
+
+                return;
+            }
+
+            Log::error('AI Processing failed', [
+                'message_id' => $assistantMessage->id,
                 'error' => $e->getMessage(),
             ]);
 
-            $clientError = $this->toClientSafeError($e->getMessage());
+            $error = $this->formatErrorMessage($e->getMessage());
 
             $assistantMessage->update([
                 'status' => 'failed',
-                'error' => $clientError,
-                'sequence' => $sequence + 1,
+                'error' => $error,
             ]);
 
-            $this->broadcastFailure($clientError);
+            event(new AiMessageFailed(
+                userId: $userId,
+                sessionId: $sessionId,
+                messageId: (string) $assistantMessage->message_id,
+                role: 'assistant',
+                error: $error,
+                sequence: $sequence,
+                timestamp: now()->toIso8601String(),
+            ));
         }
     }
 
     /**
-     * @param  array<int, array<string, mixed>>  $history
-     * @param  array<string, mixed>  $options
+     * Stream the AI response and return the full text.
      */
-    private function answerWithSearch(
-        AiService $aiService,
-        WebSearchService $searchService,
-        string $systemPrompt,
-        array $history,
-        string $query,
-        array $options,
-        int &$sequence,
-    ): string {
-        \event(new AiMessageChunk(
-            userId: $this->userId,
-            sessionId: $this->sessionId,
-            messageId: $this->messageId,
-            role: 'assistant',
-            textChunk: "\n*(Accessing internet for: {$query}...)*\n\n",
-            sequence: ++$sequence,
-            timestamp: \now()->toIso8601String(),
-        ));
-
-        $searchResult = $searchService->search($query);
-        $finalPrompt = "Internet Facts:\n\n{$searchResult}\n\nUser Question: '{$this->prompt}'. Use the facts to give a complete answer.";
-
-        return $aiService->streamContentWithSystemPromptAndHistory(
-            systemPrompt: $systemPrompt,
-            history: $history,
-            prompt: $finalPrompt,
-            onChunk: function (string $chunk) use (&$sequence): void {
-                $this->broadcastAssistantChunk($chunk, $sequence);
-            },
-            options: $options,
-        );
-    }
-
-    private function extractSearchQuery(string $text): string
+    private function streamAiResponse(AiService $aiService, AiChatMessage $assistantMessage, string $prompt, int &$sequence): string
     {
-        if (! \str_contains($text, '[SEARCH_REQUIRED:')) {
-            return '';
-        }
+        $buffer = '';
+        $fullResponse = $aiService->streamContentWithSystemPromptAndHistory(
+            systemPrompt: $this->getSystemPrompt($assistantMessage),
+            history: $this->history,
+            prompt: $prompt,
+            onChunk: function (string $chunk) use (&$sequence, &$buffer, $assistantMessage): void {
+                if (Cache::has("ai_stop_{$assistantMessage->message_id}")) {
+                    throw new \Exception('STOP_SIGNAL');
+                }
 
-        \preg_match('/\[SEARCH_REQUIRED:\s*(.*?)\]/', $text, $matches);
+                $buffer .= $chunk;
 
-        return \trim((string) ($matches[1] ?? ''));
-    }
-
-    private function shouldSearchBeforeModel(string $prompt): bool
-    {
-        if (! (bool) \config('ai.web_search.enabled', true)) {
-            return false;
-        }
-
-        $normalizedPrompt = \mb_strtolower($prompt);
-        /** @var array<int, string> $keywords */
-        $keywords = \config('ai.web_search.live_query_keywords', []);
-
-        foreach ($keywords as $keyword) {
-            $normalizedKeyword = \mb_strtolower(\trim($keyword));
-
-            if ($normalizedKeyword !== '' && \str_contains($normalizedPrompt, $normalizedKeyword)) {
-                return true;
+                if (str_contains($chunk, "\n") || count(preg_split('/(?<=[.!?])\s+/', $buffer)) > 1) {
+                    $this->broadcastChunk($assistantMessage, $this->userId, $this->sessionId, $buffer, ++$sequence);
+                    $buffer = '';
+                }
             }
-        }
-
-        return false;
-    }
-
-    private function shouldHonorModelSearchRequest(string $query): bool
-    {
-        if (! (bool) \config('ai.web_search.enabled', true)) {
-            Log::info('AI Bridge: Ignoring model search request because web search is disabled', [
-                'session_id' => $this->sessionId,
-                'message_id' => $this->messageId,
-                'prompt' => $this->prompt,
-                'query' => $query,
-            ]);
-
-            return false;
-        }
-
-        return true;
-    }
-
-    private function buildNormalAnswerPrompt(string $ignoredSearchQuery): string
-    {
-        return "The previous draft incorrectly requested internet search with: [SEARCH_REQUIRED: {$ignoredSearchQuery}]. "
-            .'Do not output any SEARCH_REQUIRED tag, no-search tag, or explanation of search routing. '
-            .'Use the FreshLeaf project context when relevant, then answer the original user message naturally with helpful detail: "'
-            .$this->prompt.'"';
-    }
-
-    private function sanitizeAssistantOutput(string $text, bool $trim = true): string
-    {
-        $text = (string) \preg_replace('/\s*\[SEARCH_REQUIRED:\s*.*?\]\s*/is', ' ', $text);
-        $text = (string) \preg_replace(
-            '/\s*\[(?=[^\]]*(?:no\s+search|search\s+tag\s+(?:not\s+)?required|query\s+can\s+be\s+(?:answered|addressed)\s+directly))[^\]]*\]\.?\s*/iu',
-            ' ',
-            $text,
         );
-        $text = (string) \preg_replace('/[ \t]+([.,!?;:])/', '$1', $text);
-        $text = (string) \preg_replace('/[ \t]+\r?\n/', "\n", $text);
-        $text = (string) \preg_replace('/\n{3,}/', "\n\n", $text);
-        $text = (string) \preg_replace('/ {2,}/', ' ', $text);
 
-        return $trim ? \trim($text) : $text;
+        if ($buffer !== '') {
+            $this->broadcastChunk($assistantMessage, $this->userId, $this->sessionId, $buffer, ++$sequence);
+        }
+
+        return $fullResponse;
     }
 
-    private function broadcastAssistantChunk(string $chunk, int &$sequence, bool $trim = false): void
+    /**
+     * Get the system prompt based on config and user locale.
+     */
+    private function getSystemPrompt(AiChatMessage $assistantMessage): string
     {
-        $chunk = $this->sanitizeAssistantOutput($chunk, $trim);
+        $systemPromptPath = (string) config('ai.system_prompt_file');
+        $projectContextPath = (string) config('ai.project_context_file');
 
-        if (\trim($chunk) === '') {
+        $prompt = '';
+        if ($systemPromptPath !== '' && File::exists($systemPromptPath)) {
+            $prompt = File::get($systemPromptPath);
+        }
+
+        if ($projectContextPath !== '' && File::exists($projectContextPath)) {
+            $context = File::get($projectContextPath);
+            $prompt .= "\n\n".$context;
+        }
+
+        $session = $assistantMessage->session;
+        $user = $session->user;
+
+        if (! $user) {
+            return $prompt;
+        }
+
+        $locale = $this->language ?: ($user->profile?->locale ?? config('app.locale', 'en'));
+        $languagePrompt = (string) config("ai.language_prompts.{$locale}", "Please respond in the following language: {$locale}");
+
+        return $prompt."\n\n".$languagePrompt;
+    }
+
+    /**
+     * Broadcast a chunk to the user via WebSocket.
+     */
+    private function broadcastChunk(AiChatMessage $message, int $userId, string $sessionId, string $content, int $sequence): void
+    {
+        if ($content === '') {
             return;
         }
 
-        \event(new AiMessageChunk(
-            userId: $this->userId,
-            sessionId: $this->sessionId,
-            messageId: $this->messageId,
+        broadcast(new AiMessageChunk(
+            userId: $userId,
+            sessionId: $sessionId,
+            messageId: (string) $message->message_id,
             role: 'assistant',
-            textChunk: $chunk,
-            sequence: ++$sequence,
-            timestamp: \now()->toIso8601String(),
+            textChunk: $content,
+            sequence: $sequence,
+            timestamp: now()->toIso8601String(),
         ));
     }
 
-    private function toClientSafeError(string $message): string
+    /**
+     * Clean the response content.
+     */
+    private function cleanResponse(string $content): string
     {
-        $normalized = \mb_strtolower($message);
+        $content = trim($content);
 
-        if (\str_contains($normalized, 'llama.cpp connection failed') || \str_contains($normalized, '127.0.0.1:9000')) {
-            return 'Local llama.cpp is not reachable at 127.0.0.1:9000. Start the local AI server and retry.';
+        // Remove internal notes often generated by model when search is discussed
+        $content = (string) preg_replace('/\[No search tag required[^\]]*\]\.?/i', '', $content);
+
+        return trim($content);
+    }
+
+    /**
+     * Format the error message for the user.
+     */
+    private function formatErrorMessage(string $message): string
+    {
+        if (str_contains($message, 'rate limit')) {
+            return 'AI rate limit reached. Please try again in a few minutes.';
         }
 
-        if (\str_contains($normalized, 'ollama connection failed') || \str_contains($normalized, '127.0.0.1:11434')) {
-            return 'Ollama is not reachable at 127.0.0.1:11434. Remove it from AI_PROVIDER or AI_FALLBACK_PROVIDERS, or start Ollama.';
-        }
-
-        if (\str_contains($normalized, 'no configured ai provider')) {
+        if (str_contains($message, 'No configured AI provider')) {
             return 'No configured AI provider is available. Check AI_PROVIDER and AI_FALLBACK_PROVIDERS.';
         }
 
-        if (\str_contains($normalized, 'timeout') || \str_contains($normalized, 'connection')) {
-            return 'AI service connection issue. Please retry shortly.';
+        return $message;
+    }
+
+    /**
+     * Extract a search query from the prompt if needed.
+     */
+    private function extractSearchQuery(string $prompt): string
+    {
+        // Simple heuristic: if prompt is long or asks for recent info
+        if (preg_match('/(current|latest|today|search|news|weather|price of)/i', $prompt)) {
+            return $prompt;
         }
 
-        return 'Failed to generate AI response. Please try again.';
+        return '';
     }
 
-    private function broadcastFailure(string $error): void
+    /**
+     * Determine if a live search should be performed.
+     */
+    private function shouldPerformLiveSearch(string $prompt): bool
     {
-        \event(new AiMessageFailed(
-            userId: $this->userId,
-            sessionId: $this->sessionId,
-            messageId: $this->messageId,
-            role: 'assistant',
-            error: $error,
-            sequence: 100,
-            timestamp: \now()->toIso8601String(),
-        ));
-    }
-
-    private function buildSystemPrompt(): string
-    {
-        $base = $this->readFileContent(\config('ai.system_prompt_file'));
-        $ctx = $this->readFileContent(\config('ai.project_context_file'));
-        $languagePrompt = $this->resolveLanguagePrompt();
-
-        return "{$base}\n\n{$languagePrompt}\n\n{$ctx}";
-    }
-
-    private function resolveLanguagePrompt(): string
-    {
-        if ($this->containsKhmerText($this->prompt)) {
-            return 'Current conversation language guidance: The user wrote Khmer. Reply in natural, fluent Khmer unless the user asks for another language.';
-        }
-
-        $language = \mb_strtolower((string) $this->language);
-
-        if (\str_contains($language, 'km') || \str_contains($language, 'kh')) {
-            return 'Current conversation language guidance: The request language is Khmer. Reply in natural, fluent Khmer unless the user asks for another language.';
-        }
-
-        if (\str_contains($language, 'en')) {
-            return 'Current conversation language guidance: The request language is English. Reply in fluent English unless the user asks for another language.';
-        }
-
-        return 'Current conversation language guidance: Match the user message language. Use Khmer for Khmer, English for English, and natural mixed Khmer-English when the user mixes both.';
-    }
-
-    private function containsKhmerText(string $text): bool
-    {
-        return \preg_match('/[\x{1780}-\x{17FF}]/u', $text) === 1;
-    }
-
-    private function readFileContent(string $path): string
-    {
-        return (\file_exists($path)) ? \trim(\file_get_contents($path)) : '';
+        return false;
     }
 }

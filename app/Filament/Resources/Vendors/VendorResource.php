@@ -11,16 +11,12 @@ use App\Filament\Resources\Vendors\Pages\ViewVendor;
 use App\Filament\Resources\Vendors\Schemas\VendorForm;
 use App\Filament\Resources\Vendors\Tables\VendorsTable;
 use App\Models\User;
-use App\Models\UserType;
 use BackedEnum;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Override;
-use UnitEnum;
 
 class VendorResource extends Resource
 {
@@ -28,9 +24,22 @@ class VendorResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedBuildingStorefront;
 
-    protected static UnitEnum|string|null $navigationGroup = 'Accounts';
+    public static function getNavigationGroup(): ?string
+    {
+        return __('admin.navigation.accounts');
+    }
 
-    protected static ?string $label = 'Vendors';
+    public static function getModelLabel(): string
+    {
+        return __('admin.resources.vendor.label');
+    }
+
+    public static function getPluralModelLabel(): string
+    {
+        return __('admin.resources.vendor.plural_label');
+    }
+
+    protected static ?string $slug = 'vendors';
 
     #[Override]
     public static function form(Schema $schema): Schema
@@ -61,24 +70,5 @@ class VendorResource extends Resource
             'view' => ViewVendor::route('/{record}'),
             'edit' => EditVendor::route('/{record}/edit'),
         ];
-    }
-
-    #[Override]
-    public static function getEloquentQuery(): Builder
-    {
-        return parent::getEloquentQuery()
-            ->where('user_type_id', UserType::VENDOR)
-            ->withoutGlobalScopes([
-                SoftDeletingScope::class,
-            ]);
-    }
-
-    #[Override]
-    public static function getRecordRouteBindingEloquentQuery(): Builder
-    {
-        return parent::getRecordRouteBindingEloquentQuery()
-            ->withoutGlobalScopes([
-                SoftDeletingScope::class,
-            ]);
     }
 }

@@ -24,14 +24,14 @@ class ProductVariantTest extends TestCase
         ProductStatus::upsert([
             ['id' => ProductStatus::ACTIVE, 'code' => 'ACTIVE', 'name' => 'Active'],
         ], ['id'], ['code', 'name']);
-        
+
         ProductType::upsert([
             ['id' => 1, 'code' => 'ORGANIC', 'name' => 'Organic'],
         ], ['id'], ['code', 'name']);
 
         ProductCategory::upsert([
-            ['id' => 1, 'slug' => 'veg', 'name' => 'Veg'],
-        ], ['id'], ['slug', 'name']);
+            ['id' => 1, 'slug' => 'veg', 'name_en' => 'Veg', 'name_km' => 'Veg (KM)'],
+        ], ['id'], ['slug', 'name_en', 'name_km']);
 
         Unit::upsert([
             ['id' => 1, 'symbol' => 'KG', 'name' => 'KG'],

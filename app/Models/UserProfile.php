@@ -19,7 +19,7 @@ use Illuminate\Support\Facades\Hash;
  * @property int $user_id
  * @property string|null $pin
  * @property string|null $gender
- * @property string|null $preferred_language
+ * @property string|null $locale
  * @property Carbon|null $date_of_birth
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
@@ -30,7 +30,7 @@ use Illuminate\Support\Facades\Hash;
     'user_id',
     'pin',
     'gender',
-    'preferred_language',
+    'locale',
 ])]
 #[UseFactory(UserProfileFactory::class)]
 class UserProfile extends Model
@@ -63,7 +63,7 @@ class UserProfile extends Model
     {
         return self::firstOrCreate(
             ['user_id' => $user->id],
-            ['preferred_language' => 'en'],
+            ['locale' => 'en'],
         );
     }
 

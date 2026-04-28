@@ -10,12 +10,14 @@ use App\Filament\Pages\Auth\Login;
 use App\Filament\ThemeColors;
 use App\Filament\Widgets\AdminRevenueChart;
 use App\Filament\Widgets\AdminStatsOverview;
+use App\Http\Middleware\SetLocaleFromAcceptLanguage;
 use Filament\Enums\ThemeMode;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\AuthenticateSession;
 use Filament\Http\Middleware\DisableBladeIconComponents;
 use Filament\Http\Middleware\DispatchServingFilamentEvent;
 use Filament\Navigation\MenuItem;
+use Filament\Navigation\NavigationGroup;
 use Filament\Pages\Dashboard;
 use Filament\Panel;
 use Filament\PanelProvider;
@@ -38,8 +40,9 @@ class AdminPanelProvider extends PanelProvider
             ->default()
             ->id('admin')
             ->path('admin')
+            ->authGuard('web')
             ->login(Login::class)
-            ->font('Plus Jakarta Sans')
+            ->font('Noto Sans Khmer')
             ->viteTheme('resources/css/filament/panels/theme.css')
             ->spa()
             ->maxContentWidth('full')
@@ -48,11 +51,11 @@ class AdminPanelProvider extends PanelProvider
             ->userMenuItems([
                 'profile' => MenuItem::make()->visible(false),
                 'my-account' => MenuItem::make()
-                    ->label('My Profile')
+                    ->label(static fn (): string => __('admin.navigation.my_profile'))
                     ->icon('heroicon-o-user-circle')
                     ->url(static fn (): string => AdminProfile::getUrl()),
                 'app-settings' => MenuItem::make()
-                    ->label('Settings')
+                    ->label(static fn (): string => __('admin.navigation.settings'))
                     ->icon('heroicon-o-cog-6-tooth')
                     ->url(static fn (): string => ApplicationSettings::getUrl()),
             ])
@@ -62,10 +65,22 @@ class AdminPanelProvider extends PanelProvider
             )
             ->colors(ThemeColors::getPalette())
             ->navigationGroups([
-                'Accounts',
-                'Catalog',
-                'Sales',
-                'Logistics',
+                NavigationGroup::make()
+                    ->label(static fn (): string => __('admin.navigation.accounts')),
+                NavigationGroup::make()
+                    ->label(static fn (): string => __('admin.navigation.catalog')),
+                NavigationGroup::make()
+                    ->label(static fn (): string => __('admin.navigation.shop')),
+                NavigationGroup::make()
+                    ->label(static fn (): string => __('admin.navigation.sales')),
+                NavigationGroup::make()
+                    ->label(static fn (): string => __('admin.navigation.logistics')),
+                NavigationGroup::make()
+                    ->label(static fn (): string => __('admin.navigation.financial')),
+                NavigationGroup::make()
+                    ->label(static fn (): string => __('admin.navigation.settings')),
+                NavigationGroup::make()
+                    ->label(static fn (): string => __('admin.navigation.app_control')),
             ])
             ->discoverResources(in: app_path('Filament/Resources'), for: 'App\Filament\Resources')
             ->discoverPages(in: app_path('Filament/Pages'), for: 'App\Filament\Pages')
@@ -89,6 +104,7 @@ class AdminPanelProvider extends PanelProvider
                 SubstituteBindings::class,
                 DisableBladeIconComponents::class,
                 DispatchServingFilamentEvent::class,
+                SetLocaleFromAcceptLanguage::class,
             ])
             ->authMiddleware([
                 Authenticate::class,

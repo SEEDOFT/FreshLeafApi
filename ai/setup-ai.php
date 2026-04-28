@@ -143,6 +143,7 @@ function cleanDirectory(string $dir, array $keep = []): void
         if (\is_dir($path)) {
             cleanDirectory($path);
             @\rmdir($path);
+
             continue;
         }
 
@@ -268,6 +269,7 @@ function downloadFile(string $url, string $path): bool
             if ($bytesMax > 0) {
                 $percent = (int) \floor(($bytesTransferred / $bytesMax) * 100);
                 \printf("\rProgress: %d%% (%d/%d MB)", $percent, $bytesTransferred / 1024 / 1024, $bytesMax / 1024 / 1024);
+
                 return;
             }
 

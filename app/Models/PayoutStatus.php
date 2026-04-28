@@ -13,7 +13,10 @@ use Illuminate\Database\Eloquent\Model;
 class PayoutStatus extends Model
 {
     public const PENDING = 'pending';
+
     public const PROCESSING = 'processing';
+
     public const COMPLETED = 'completed';
+
     public const FAILED = 'failed';
 }

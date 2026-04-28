@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Filament\Pages\Auth;
 
+use App\Models\User;
+use App\Models\UserStatus;
 use App\Models\UserType;
 use Filament\Auth\Pages\Login as BaseRegister;
 use Filament\Facades\Filament;
@@ -75,11 +77,24 @@ class Login extends BaseRegister
         $dialCode = get_dial_code($data['country_iso']);
         $fullPhone = $dialCode.ltrim($data['phone_number_input'], '0');
 
-        return array_filter([
+        $credentials = [
             'phone_number' => $fullPhone,
             'password' => $data['password'],
             'user_type_id' => $userTypeId,
-        ]);
+        ];
+
+        // Check if user exists and is pending
+        $user = User::where('phone_number', $fullPhone)
+            ->where('user_type_id', $userTypeId)
+            ->first();
+
+        if ($user && $user->user_status_id === UserStatus::PENDING) {
+            throw ValidationException::withMessages([
+                'data.phone_number_input' => 'Your account is pending approval. Please wait for an administrator to review your application.',
+            ]);
+        }
+
+        return array_filter($credentials);
     }
 
     #[Override]

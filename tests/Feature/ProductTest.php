@@ -29,13 +29,13 @@ class ProductTest extends TestCase
     public function test_product_can_be_created(): void
     {
         $product = Product::factory()->create([
-            'name' => 'Fresh Leaf Tea',
+            'name_en' => 'Fresh Leaf Tea',
             'slug' => 'fresh-leaf-tea',
         ]);
 
         $this->assertDatabaseHas('products', [
             'id' => $product->id,
-            'name' => 'Fresh Leaf Tea',
+            'name_en' => 'Fresh Leaf Tea',
             'slug' => 'fresh-leaf-tea',
         ]);
 
@@ -49,8 +49,8 @@ class ProductTest extends TestCase
     public function test_product_generates_slug_on_creation(): void
     {
         $product = Product::factory()->create([
-            'name' => 'Organic Green Tea',
-            'slug' => null,
+            'name_en' => 'Organic Green Tea',
+            'slug' => '', // Trigger slug generation
         ]);
 
         $this->assertEquals('organic-green-tea', $product->slug);

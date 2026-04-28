@@ -10,6 +10,7 @@ The Laravel Boost guidelines are specifically curated by Laravel maintainers for
 This application is a modern Laravel application powered by **PHP 8.5** features. Ensure you abide by these specific packages & versions.
 
 - php - 8.5 (Strictly use Property Hooks, Asymmetric Visibility, and Pipe Operator)
+- static callables - Use `static` for all anonymous functions (fn/function) that do not reference `$this`.
 - laravel/framework (LARAVEL) - v13
 - laravel/reverb (REVERB) - v1 (Real-time WebSockets)
 - filament/filament (FILAMENT) - v4 (Modern Glassmorphism UI)
@@ -28,6 +29,7 @@ This project has domain-specific skills available. You MUST activate the relevan
 ## Conventions
 
 - You must follow all existing code conventions used in this application. When creating or editing a file, check sibling files for the correct structure, approach, and naming.
+- **Localization**: User language preferences are stored in the `locale` field of individual profile tables (`admin_profiles`, `vendor_profiles`, `user_profiles`), not the `users` table. Use the `currentLocale` property hook on the `User` model to resolve the correct language.
 - Use descriptive names for variables and methods. For example, `isRegisteredForDiscounts`, not `discount()`.
 - Check for existing components to reuse before writing a new one.
 

@@ -14,6 +14,7 @@ class ExchangeRatesTable
     public static function configure(Table $table): Table
     {
         return $table
+            ->recordAction('view')
             ->columns([
                 TextColumn::make('fromCurrency.name')
                     ->label('Base Currency')

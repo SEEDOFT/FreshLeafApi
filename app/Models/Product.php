@@ -18,59 +18,71 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\App;
 use Illuminate\Support\Str;
 
 /**
  * @property int $id
  * @property int $product_category_id
+ * @property int|null $organic_category_id
  * @property int $product_type_id
  * @property int $default_unit_id
  * @property int $product_status_id
- * @property int|null $vendor_user_id
- * @property string $name
+ * @property int|null $user_id
+ * @property string $name_en
+ * @property string $name_km
  * @property string $slug
- * @property string|null $description
+ * @property string|null $description_en
+ * @property string|null $description_km
+ * @property string|null $selling_unit
+ * @property float|null $price_per_unit
+ * @property float $available_stock
+ * @property string|null $farm_name_location
+ * @property string|null $farming_method
+ * @property Carbon|null $harvest_date
+ * @property bool $is_active
+ * @property bool $is_organic
  * @property array<array-key, mixed>|null $nutrition_data
  * @property int|null $shelf_life_days
- * @property bool $is_organic
  * @property Carbon|null $deleted_at
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
- * @property-read ProductCategory $category
  * @property-read ProductCategory $productCategory
+ * @property-read Category|null $organicCategory
  * @property-read Unit $defaultUnit
  * @property-read ProductStatus $status
  * @property-read User|null $vendor
- * @property-read Collection<int, ProductSubstitution> $substitutions
- * @property-read int|null $substitutions_count
- * @property-read ProductType $type
  * @property-read Collection<int, ProductVariant> $variants
- * @property-read int|null $variants_count
- * @property-read Collection<int, PriceHistory> $priceHistories
- * @property-read Collection<int, OrderItem> $orderItems
- * @property-read Collection<int, CartItem> $cartItems
- * @property-read int|null $ai_recommendation_items_count
- * @property-read int|null $cart_items_count
- * @property-read int|null $order_items_count
- * @property-read int|null $price_histories_count
- * @property-read Collection<int, ProductSubstitution> $substitutionsFor
- * @property-read int|null $substitutions_for_count
- * @property-read int|null $user_behavior_events_count
- * @property int $category_id
+ * @property-read ProductDiscount|null $activeDiscount
+ *
+ * @method static Builder|Product active()
+ * @method static Builder|Product byCategory(int|ProductCategory $category)
+ * @method static Builder|Product byOrganicCategory(int|Category $category)
+ * @method static Builder|Product byVendor(int $userId)
  */
 #[Table('products', key: 'id')]
 #[Fillable([
     'product_category_id',
+    'organic_category_id',
     'product_type_id',
     'default_unit_id',
     'product_status_id',
-    'vendor_user_id',
-    'name',
+    'user_id',
+    'name_en',
+    'name_km',
     'slug',
-    'description',
+    'description_en',
+    'description_km',
+    'selling_unit',
+    'price_per_unit',
+    'available_stock',
+    'farm_name_location',
+    'farming_method',
+    'harvest_date',
+    'is_active',
+    'is_organic',
     'nutrition_data',
     'shelf_life_days',
-    'is_organic',
 ])]
 #[UseFactory(ProductFactory::class)]
 class Product extends Model
@@ -88,8 +100,26 @@ class Product extends Model
         return [
             'nutrition_data' => 'array',
             'is_organic' => 'boolean',
+            'is_active' => 'boolean',
+            'harvest_date' => 'date',
             'deleted_at' => 'datetime',
+            'price_per_unit' => 'float',
+            'available_stock' => 'float',
         ];
+    }
+
+    /**
+     * Get the localized name of the product.
+     */
+    public string $localizedName {
+        get => App::getLocale() === 'km' ? ($this->name_km ?? $this->name_en) : $this->name_en;
+    }
+
+    /**
+     * Get the localized description of the product.
+     */
+    public ?string $localizedDescription {
+        get => App::getLocale() === 'km' ? ($this->description_km ?? $this->description_en) : $this->description_en;
     }
 
     /**
@@ -97,9 +127,9 @@ class Product extends Model
      */
     protected static function booted(): void
     {
-        static::creating(function (Product $product) {
+        static::creating(static function (Product $product) {
             if (empty($product->slug)) {
-                $product->slug = Str::slug($product->name);
+                $product->slug = Str::slug($product->name_en);
             }
         });
     }
@@ -107,11 +137,21 @@ class Product extends Model
     /**
      * Get the category that owns the product.
      *
+     * @return BelongsTo<Category, $this>
+     */
+    public function organicCategory(): BelongsTo
+    {
+        return $this->belongsTo(Category::class, 'organic_category_id', 'id');
+    }
+
+    /**
+     * Get the category that owns the product (Alias for productCategory).
+     *
      * @return BelongsTo<ProductCategory, $this>
      */
     public function category(): BelongsTo
     {
-        return $this->belongsTo(ProductCategory::class, 'product_category_id', 'id');
+        return $this->productCategory();
     }
 
     /**
@@ -161,7 +201,7 @@ class Product extends Model
      */
     public function vendor(): BelongsTo
     {
-        return $this->belongsTo(User::class, 'vendor_user_id', 'id');
+        return $this->belongsTo(User::class, 'user_id', 'id');
     }
 
     /**
@@ -175,46 +215,6 @@ class Product extends Model
     }
 
     /**
-     * Get the substitutions for the product.
-     *
-     * @return HasMany<ProductSubstitution, $this>
-     */
-    public function substitutions(): HasMany
-    {
-        return $this->hasMany(ProductSubstitution::class, 'product_id', 'id');
-    }
-
-    /**
-     * Get the substitutions where this product is the substitute.
-     *
-     * @return HasMany<ProductSubstitution, $this>
-     */
-    public function substitutionsFor(): HasMany
-    {
-        return $this->hasMany(ProductSubstitution::class, 'substitute_product_id', 'id');
-    }
-
-    /**
-     * Get the price histories for the product.
-     *
-     * @return HasMany<PriceHistory, $this>
-     */
-    public function priceHistories(): HasMany
-    {
-        return $this->hasMany(PriceHistory::class, 'product_id', 'id');
-    }
-
-    /**
-     * Get the discounts for the product.
-     *
-     * @return HasMany<ProductDiscount, $this>
-     */
-    public function discounts(): HasMany
-    {
-        return $this->hasMany(ProductDiscount::class, 'product_id', 'id');
-    }
-
-    /**
      * Get the current active discount for the product.
      *
      * @return HasOne<ProductDiscount, $this>
@@ -223,11 +223,11 @@ class Product extends Model
     {
         return $this->hasOne(ProductDiscount::class, 'product_id', 'id')
             ->where('is_active', true)
-            ->where(function ($query) {
+            ->where(static function ($query) {
                 $query->whereNull('starts_at')
                     ->orWhere('starts_at', '<=', now());
             })
-            ->where(function ($query) {
+            ->where(static function ($query) {
                 $query->whereNull('ends_at')
                     ->orWhere('ends_at', '>=', now());
             });
@@ -237,17 +237,11 @@ class Product extends Model
      * Get the current discount percentage.
      */
     public public(set) int $discountPercentage {
-        get => $this->activeDiscount?->discount_percentage ?? 0;
-    }
+        get {
+            $discount = $this->activeDiscount;
 
-    /**
-     * Get the cart items for the product.
-     *
-     * @return HasMany<CartItem, $this>
-     */
-    public function cartItems(): HasMany
-    {
-        return $this->hasMany(CartItem::class, 'product_id', 'id');
+            return ($discount !== null) ? $discount->discount_percentage : 0;
+        }
     }
 
     /**
@@ -258,11 +252,12 @@ class Product extends Model
     #[Scope]
     protected function active(Builder $query): void
     {
-        $query->where('product_status_id', ProductStatus::ACTIVE);
+        $query->where('is_active', true)
+            ->where('product_status_id', ProductStatus::ACTIVE);
     }
 
     /**
-     * Scope a query to filter products by category.
+     * Scope a query to filter products by product category.
      *
      * @param  Builder<self>  $query
      */
@@ -276,13 +271,27 @@ class Product extends Model
     }
 
     /**
+     * Scope a query to filter products by organic category.
+     *
+     * @param  Builder<self>  $query
+     */
+    #[Scope]
+    protected function byOrganicCategory(Builder $query, int|Category $category): void
+    {
+        $categoryId = $category instanceof Category
+            ? $category->id : $category;
+
+        $query->where('organic_category_id', $categoryId);
+    }
+
+    /**
      * Scope a query by vendor owner.
      *
      * @param  Builder<self>  $query
      */
     #[Scope]
-    protected function byVendor(Builder $query, int $vendorUserId): void
+    protected function byVendor(Builder $query, int $userId): void
     {
-        $query->where('vendor_user_id', $vendorUserId);
+        $query->where('user_id', $userId);
     }
 }

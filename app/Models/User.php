@@ -101,6 +101,13 @@ class User extends Authenticatable implements FilamentUser, HasName
     }
 
     /**
+     * Get the user's full name.
+     */
+    public string $fullName {
+        get => "{$this->first_name} {$this->last_name}";
+    }
+
+    /**
      * Get the user's name for Filament.
      */
     #[Override]

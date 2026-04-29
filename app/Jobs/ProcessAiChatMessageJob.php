@@ -10,6 +10,7 @@ use App\Events\AiMessageFailed;
 use App\Events\AiMessageStarted;
 use App\Models\AiChatMessage;
 use App\Models\AiChatSession;
+use App\Models\Product;
 use App\Services\Ai\AiService;
 use App\Services\Ai\WebSearchService;
 use Illuminate\Bus\Queueable;
@@ -25,6 +26,10 @@ class ProcessAiChatMessageJob implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
+    private const float DEFAULT_TEMPERATURE = 0.7;
+
+    private const int DEFAULT_MAX_OUTPUT_TOKENS = 4096;
+
     public private(set) int $userId;
 
     public private(set) string $sessionId;
@@ -39,10 +44,13 @@ class ProcessAiChatMessageJob implements ShouldQueue
 
     public private(set) ?int $maxOutputTokens;
 
-    public private(set) array $history;
+    /** @var array<int, array<string, string>> */
+    public array $history;
 
     /**
      * Create a new job instance.
+     *
+     * @param  array<int, array<string, string>>  $history
      */
     public function __construct(
         int|AiChatMessage $userId,
@@ -76,6 +84,36 @@ class ProcessAiChatMessageJob implements ShouldQueue
         }
     }
 
+    private function needsProductContext(string $prompt): bool
+    {
+        $keywords = ['price', 'stock', 'available', 'product', 'carrot', 'lettuce', 'tomato', 'morning glory'];
+        foreach ($keywords as $keyword) {
+            if (stripos($prompt, $keyword) !== false) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private function fetchProductContext(string $prompt): string
+    {
+        $products = Product::where('is_active', true)
+            ->where(function ($query) use ($prompt) {
+                $query->where('name_en', 'LIKE', "%{$prompt}%")
+                    ->orWhere('name_km', 'LIKE', "%{$prompt}%");
+            })
+            ->limit(5)
+            ->get();
+
+        if ($products->isEmpty()) {
+            return '';
+        }
+
+        return $products->map(fn ($p) => "Product: {$p->name_en} ({$p->name_km}) - Price: \${$p->price_per_unit}, Stock: {$p->available_stock} {$p->selling_unit}, Farming: {$p->farming_method}")
+            ->implode("\n");
+    }
+
     /**
      * Execute the job.
      */
@@ -96,8 +134,22 @@ class ProcessAiChatMessageJob implements ShouldQueue
         $userId = $this->userId;
         $sessionId = $this->sessionId;
 
-        // 1. Initial Start Event
+        Log::info('AI chat job started', [
+            'message_id' => $assistantMessage->id,
+            'provider' => config('ai.default'),
+        ]);
+
         $sequence = max(1, (int) $assistantMessage->sequence);
+
+        $context = '';
+        if ($this->needsProductContext($this->prompt)) {
+            $context = $this->fetchProductContext($this->prompt);
+            if ($context !== '') {
+                $this->broadcastChunk($assistantMessage, $userId, $sessionId, " [Looking up product details] \n\n", ++$sequence);
+            }
+        }
+
+        // 1. Initial Start Event
         event(new AiMessageStarted(
             userId: $userId,
             sessionId: $sessionId,
@@ -114,10 +166,10 @@ class ProcessAiChatMessageJob implements ShouldQueue
             $context = '';
 
             if ($searchQuery !== '' && (bool) config('ai.web_search.enabled', true)) {
-                $this->broadcastChunk($assistantMessage, $userId, $sessionId, " [Accessing internet to search for: {$searchQuery}]... \n\n", ++$sequence);
+                $this->broadcastChunk($assistantMessage, $userId, $sessionId, " [Accessing internet to search for: {$searchQuery}] \n\n", ++$sequence);
                 $context = $webSearchService->search($searchQuery);
             } elseif ($this->shouldPerformLiveSearch($this->prompt)) {
-                $this->broadcastChunk($assistantMessage, $userId, $sessionId, " [Performing live search]... \n\n", ++$sequence);
+                $this->broadcastChunk($assistantMessage, $userId, $sessionId, " [Performing live search] \n\n", ++$sequence);
                 $context = $webSearchService->search($this->prompt);
             }
 
@@ -131,26 +183,27 @@ class ProcessAiChatMessageJob implements ShouldQueue
                 // We have context, so we stream the response
                 $fullResponse = $this->streamAiResponse($aiService, $assistantMessage, $finalPrompt, $sequence);
             } else {
-                // No initial search, try generating first
-                $fullResponse = $aiService->generateContentWithSystemPromptAndHistory(
-                    systemPrompt: $this->getSystemPrompt($assistantMessage),
-                    history: $this->history,
-                    prompt: $finalPrompt
-                );
+                // ALWAYS stream for local models to prevent blocking timeouts
+                $fullResponse = $this->streamAiResponse($aiService, $assistantMessage, $finalPrompt, $sequence);
 
-                // Check if the response contains a search tag
+                if (Cache::has("ai_stop_{$assistantMessage->message_id}")) {
+                    throw new \Exception('STOP_SIGNAL');
+                }
+
+                // Check if the streamed response contains a search tag
                 if (preg_match('/\[SEARCH_REQUIRED:\s*(.*?)\]/i', $fullResponse, $matches)) {
                     $secondarySearchQuery = trim($matches[1]);
-                    $this->broadcastChunk($assistantMessage, $userId, $sessionId, " [Accessing internet to search for: {$secondarySearchQuery}]... \n\n", ++$sequence);
+                    $assistantMessage->forceFill([
+                        'content' => '',
+                        'status' => 'processing',
+                    ])->save();
+                    $this->broadcastChunk($assistantMessage, $userId, $sessionId, "\n\n[Accessing internet to search for: {$secondarySearchQuery}] \n\n", ++$sequence);
 
                     $secondaryContext = $webSearchService->search($secondarySearchQuery);
                     $secondaryPrompt = "Context from web search:\n\n{$secondaryContext}\n\nUser Question: {$this->prompt}";
 
-                    // Now stream with the new context
-                    $fullResponse = $this->streamAiResponse($aiService, $assistantMessage, $secondaryPrompt, $sequence);
-                } else {
-                    // Just a regular response, broadcast it
-                    $this->broadcastChunk($assistantMessage, $userId, $sessionId, $this->cleanResponse($fullResponse), ++$sequence);
+                    // Replace the internal search marker with the final answer.
+                    $fullResponse = $this->streamAiResponse($aiService, $assistantMessage, $secondaryPrompt, $sequence, $secondaryContext);
                 }
             }
 
@@ -164,6 +217,11 @@ class ProcessAiChatMessageJob implements ShouldQueue
             $assistantMessage->update([
                 'content' => $cleanResponse,
                 'status' => 'done',
+            ]);
+
+            Log::info('AI chat job completed', [
+                'message_id' => $assistantMessage->id,
+                'characters' => \strlen($cleanResponse),
             ]);
 
             // 5. Completion Event
@@ -218,25 +276,40 @@ class ProcessAiChatMessageJob implements ShouldQueue
     /**
      * Stream the AI response and return the full text.
      */
-    private function streamAiResponse(AiService $aiService, AiChatMessage $assistantMessage, string $prompt, int &$sequence): string
+    private function streamAiResponse(AiService $aiService, AiChatMessage $assistantMessage, string $prompt, int &$sequence, string $context = ''): string
     {
         $buffer = '';
+        $persistedResponse = '';
+        $hasLoggedFirstChunk = false;
         $fullResponse = $aiService->streamContentWithSystemPromptAndHistory(
-            systemPrompt: $this->getSystemPrompt($assistantMessage),
+            systemPrompt: $this->getSystemPrompt($assistantMessage, $context),
             history: $this->history,
             prompt: $prompt,
-            onChunk: function (string $chunk) use (&$sequence, &$buffer, $assistantMessage): void {
+            onChunk: function (string $chunk) use (&$sequence, &$buffer, &$persistedResponse, &$hasLoggedFirstChunk, $assistantMessage): void {
                 if (Cache::has("ai_stop_{$assistantMessage->message_id}")) {
                     throw new \Exception('STOP_SIGNAL');
                 }
 
                 $buffer .= $chunk;
+                $persistedResponse .= $chunk;
+                $assistantMessage->forceFill([
+                    'content' => $persistedResponse,
+                    'status' => 'processing',
+                ])->save();
+
+                if (! $hasLoggedFirstChunk) {
+                    $hasLoggedFirstChunk = true;
+                    Log::info('AI chat first chunk streamed', [
+                        'message_id' => $assistantMessage->id,
+                    ]);
+                }
 
                 if (str_contains($chunk, "\n") || count(preg_split('/(?<=[.!?])\s+/', $buffer)) > 1) {
                     $this->broadcastChunk($assistantMessage, $this->userId, $this->sessionId, $buffer, ++$sequence);
                     $buffer = '';
                 }
-            }
+            },
+            options: $this->generationOptions(),
         );
 
         if ($buffer !== '') {
@@ -247,9 +320,20 @@ class ProcessAiChatMessageJob implements ShouldQueue
     }
 
     /**
+     * @return array{temperature: float, maxOutputTokens: int}
+     */
+    private function generationOptions(): array
+    {
+        return [
+            'temperature' => $this->temperature ?? self::DEFAULT_TEMPERATURE,
+            'maxOutputTokens' => $this->maxOutputTokens ?? self::DEFAULT_MAX_OUTPUT_TOKENS,
+        ];
+    }
+
+    /**
      * Get the system prompt based on config and user locale.
      */
-    private function getSystemPrompt(AiChatMessage $assistantMessage): string
+    private function getSystemPrompt(AiChatMessage $assistantMessage, string $context = ''): string
     {
         $systemPromptPath = (string) config('ai.system_prompt_file');
         $projectContextPath = (string) config('ai.project_context_file');
@@ -259,9 +343,9 @@ class ProcessAiChatMessageJob implements ShouldQueue
             $prompt = File::get($systemPromptPath);
         }
 
-        if ($projectContextPath !== '' && File::exists($projectContextPath)) {
-            $context = File::get($projectContextPath);
-            $prompt .= "\n\n".$context;
+        // Only inject context if requested or relevant
+        if ($context !== '' && File::exists($projectContextPath)) {
+            $prompt .= "\n\nContext from documentation:\n\n".$context;
         }
 
         $session = $assistantMessage->session;
@@ -271,7 +355,7 @@ class ProcessAiChatMessageJob implements ShouldQueue
             return $prompt;
         }
 
-        $locale = $this->language ?: ($user->profile?->locale ?? config('app.locale', 'en'));
+        $locale = $this->language ?: $user->currentLocale;
         $languagePrompt = (string) config("ai.language_prompts.{$locale}", "Please respond in the following language: {$locale}");
 
         return $prompt."\n\n".$languagePrompt;
@@ -317,10 +401,6 @@ class ProcessAiChatMessageJob implements ShouldQueue
     {
         if (str_contains($message, 'rate limit')) {
             return 'AI rate limit reached. Please try again in a few minutes.';
-        }
-
-        if (str_contains($message, 'No configured AI provider')) {
-            return 'No configured AI provider is available. Check AI_PROVIDER and AI_FALLBACK_PROVIDERS.';
         }
 
         return $message;

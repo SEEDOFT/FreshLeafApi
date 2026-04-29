@@ -65,25 +65,31 @@ composer run dev -- --host=192.168.0.108 --port=8000
 ```env
 # ... (existing reverb and payment keys)
 
-# AI provider selection: gemini, zen, or llama_cpp
-AI_PROVIDER=llama_cpp
-AI_FALLBACK_PROVIDERS=zen
-
-# Llama.cpp (Internal Local AI)
-LLAMA_CPP_BASE_URL=http://127.0.0.1:9000
-LLAMA_CPP_MODEL=phi-3-mini
-LLAMA_CPP_TIMEOUT=120
+# AI provider selection
+AI_PROVIDER=ollama
 ```
 
-## Offline AI (llama.cpp)
+# Local AI Setup (Ollama)
 
-This project includes a native integration with `llama.cpp`. Testers can run AI features entirely on their local CPU.
+This project uses [Ollama](https://ollama.com/) for fast, efficient, and GPU-accelerated local AI inference.
 
-1. Run `php ai/setup-ai.php` to download the engine and Phi-3 model (~2.4GB).
-2. Start the AI server:
-   - Windows: `ai\start-ai.bat`
-   - Mac/Linux: `./ai/start-ai.sh`
-3. Set `AI_PROVIDER=llama_cpp` in your `.env`.
+## 1. Install Ollama
+Download and install Ollama from [ollama.com](https://ollama.com/).
+
+## 2. Pull the Optimized Model
+Run the following command in your terminal to download the lightweight, high-speed 1.5b model:
+```bash
+ollama pull qwen2.5:1.5b
+```
+
+## 3. Configuration
+Ensure your `.env` is configured to use Ollama:
+```env
+AI_PROVIDER=ollama
+OLLAMA_MODEL=qwen2.5:1.5b
+```
+
+The system is pre-configured in `config/ai.php` to connect to `http://127.0.0.1:11434` by default.
 
 ## API Endpoints
 

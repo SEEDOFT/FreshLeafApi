@@ -3,29 +3,13 @@
 declare(strict_types=1);
 
 return [
-    'default' => env('AI_PROVIDER', 'gemini'),
-
-    'fallbacks' => array_values(array_filter(array_map(
-        'trim',
-        explode(',', (string) env('AI_FALLBACK_PROVIDERS', 'zen'))
-    ))),
+    'default' => env('AI_PROVIDER', 'ollama'),
 
     'providers' => [
-        'zen' => [
-            'api_key' => env('ZEN_API_KEY', ''),
-            'base_url' => env('ZEN_BASE_URL', ''),
-            'model' => env('ZEN_MODEL', 'zen-free'),
-            'timeout' => (int) env('ZEN_TIMEOUT', 40),
-        ],
         'ollama' => [
             'base_url' => env('OLLAMA_BASE_URL', 'http://127.0.0.1:11434'),
             'model' => env('OLLAMA_MODEL', 'qwen2.5:1.5b'),
             'timeout' => (int) env('OLLAMA_TIMEOUT', 60),
-        ],
-        'llama_cpp' => [
-            'base_url' => env('LLAMA_CPP_BASE_URL', 'http://127.0.0.1:9000'),
-            'model' => env('LLAMA_CPP_MODEL', 'phi-3-mini'),
-            'timeout' => (int) env('LLAMA_CPP_TIMEOUT', 120),
         ],
     ],
 

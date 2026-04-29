@@ -9,6 +9,7 @@ use App\Models\AiChatMessage;
 use App\Models\AiChatSession;
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\HtmlString;
 use Illuminate\Support\Str;
 use Livewire\Component;
@@ -34,7 +35,11 @@ class AiAssistantChat extends Component
     // Timeout Constants
     private const int REALTIME_FALLBACK_SECONDS = 8;
 
-    private const int REQUEST_TIMEOUT_SECONDS = 90;
+    private const int REQUEST_TIMEOUT_SECONDS = 300;
+
+    private const int HISTORY_MESSAGE_LIMIT = 8;
+
+    private const int HISTORY_CONTENT_LIMIT = 1200;
 
     public string $message = '';
 
@@ -128,7 +133,12 @@ class AiAssistantChat extends Component
     /** @param array{message_id: string} $event */
     public function handleStarted(array $event): void
     {
+        if ($this->isMessageFailed($event['message_id'])) {
+            return;
+        }
+
         $this->resetRealtimeState();
+        $this->isTyping = true;
         $this->updateOrAppendAssistantMessage(
             messageId: $event['message_id'],
             content: '',
@@ -139,6 +149,10 @@ class AiAssistantChat extends Component
     /** @param array{message_id: string, text_chunk: string} $event */
     public function handleChunk(array $event): void
     {
+        if ($this->isMessageFailed($event['message_id'])) {
+            return;
+        }
+
         $this->isTyping = true;
         $this->isRealtimeConnected = true;
         $messageId = $event['message_id'];
@@ -163,6 +177,10 @@ class AiAssistantChat extends Component
     /** @param array{message_id: string, full_text: string} $event */
     public function handleCompleted(array $event): void
     {
+        if ($this->isMessageFailed($event['message_id'])) {
+            return;
+        }
+
         $this->isRealtimeConnected = true;
         $this->realtimeStatusMessage = null;
         $this->updateOrAppendAssistantMessage(
@@ -263,6 +281,9 @@ class AiAssistantChat extends Component
                 content: (string) $assistantMessage->content,
                 status: self::STATUS_DONE,
             );
+            Log::info('AI chat polling finalized completed response', [
+                'message_id' => $assistantMessage->id,
+            ]);
             $this->finalizePendingMessage();
 
             return;
@@ -274,17 +295,29 @@ class AiAssistantChat extends Component
                 content: 'Error: '.($assistantMessage->error ?: 'Unable to generate response. Please try again.'),
                 status: self::STATUS_FAILED,
             );
+            Log::info('AI chat polling finalized failed response', [
+                'message_id' => $assistantMessage->id,
+            ]);
             $this->finalizePendingMessage();
 
             return;
         }
 
         if ($assistantMessage->content !== '') {
+            $messageIndex = $this->findMessageIndexById((string) $assistantMessage->message_id);
+            $currentContent = $messageIndex === null ? '' : (string) ($this->messages[$messageIndex]['content'] ?? '');
+
             $this->updateOrAppendAssistantMessage(
                 messageId: (string) $assistantMessage->message_id,
                 content: (string) $assistantMessage->content,
                 status: (string) ($assistantMessage->status ?: self::STATUS_PROCESSING),
             );
+            if ($currentContent !== (string) $assistantMessage->content) {
+                Log::info('AI chat polling recovered partial response', [
+                    'message_id' => $assistantMessage->id,
+                    'characters' => \strlen((string) $assistantMessage->content),
+                ]);
+            }
             $this->dispatch('message-sent');
         }
 
@@ -309,6 +342,12 @@ class AiAssistantChat extends Component
                 content: 'Request timed out while waiting for AI response. Please try sending again.',
                 status: self::STATUS_FAILED,
             );
+            AiChatMessage::query()
+                ->where('message_id', $this->pendingAssistantMessageId)
+                ->update([
+                    'status' => self::STATUS_FAILED,
+                    'error' => 'Request timed out while waiting for AI response.',
+                ]);
             $this->finalizePendingMessage();
         }
     }
@@ -353,6 +392,7 @@ class AiAssistantChat extends Component
         $userMessage = trim($this->message);
         $this->message = '';
         $this->resetRealtimeState();
+        $this->isTyping = true;
 
         // Create user message
         $userMsg = $this->createUserMessage($userMessage);
@@ -365,7 +405,7 @@ class AiAssistantChat extends Component
 
         // Create assistant message placeholder
         $assistantMsgId = (string) Str::ulid();
-        $this->createAssistantPlaceholder($assistantMsgId);
+        $assistantModel = $this->createAssistantPlaceholder($assistantMsgId);
         $this->messages[] = [
             'role' => 'assistant',
             'content' => '',
@@ -379,7 +419,7 @@ class AiAssistantChat extends Component
         // Update session title and dispatch job
         $this->updateSessionMetadata($userId, $userMessage);
         ProcessAiChatMessageJob::dispatch(
-            assistantMessage: AiChatMessage::find($assistantMsgId),
+            userId: $assistantModel,
             prompt: $userMessage,
             history: $this->getChatHistory($userId)
         );
@@ -392,6 +432,7 @@ class AiAssistantChat extends Component
     {
         return AiChatMessage::create([
             'ai_chat_session_id' => $this->activeDbSessionId,
+            'user_id' => auth()->id(),
             'message_id' => (string) Str::ulid(),
             'role' => 'user',
             'content' => $content,
@@ -404,6 +445,7 @@ class AiAssistantChat extends Component
     {
         return AiChatMessage::create([
             'ai_chat_session_id' => $this->activeDbSessionId,
+            'user_id' => auth()->id(),
             'message_id' => $messageId,
             'role' => 'assistant',
             'content' => '',
@@ -444,6 +486,13 @@ class AiAssistantChat extends Component
         return $this->activeDbSessionId === $sessionId;
     }
 
+    private function isMessageFailed(string $messageId): bool
+    {
+        $index = $this->findMessageIndexById($messageId);
+
+        return $index !== null && ($this->messages[$index]['status'] ?? null) === self::STATUS_FAILED;
+    }
+
     public function render(): View
     {
         return view('livewire.ai-assistant-chat');
@@ -451,7 +500,6 @@ class AiAssistantChat extends Component
 
     private function resetRealtimeState(): void
     {
-        $this->isTyping = true;
         $this->isRealtimeConnected = true;
         $this->realtimeStatusMessage = null;
     }
@@ -474,9 +522,11 @@ class AiAssistantChat extends Component
             ->where('status', self::STATUS_DONE)
             ->orderBy('sequence')
             ->get()
+            ->filter(static fn (AiChatMessage $message): bool => trim((string) $message->content) !== '')
+            ->take(-self::HISTORY_MESSAGE_LIMIT)
             ->map(static fn (AiChatMessage $message): array => [
                 'role' => (string) $message->role,
-                'content' => (string) $message->content,
+                'content' => Str::limit((string) $message->content, self::HISTORY_CONTENT_LIMIT, ''),
             ])
             ->values()
             ->toArray();
@@ -515,7 +565,7 @@ class AiAssistantChat extends Component
         $this->resetRealtimeState();
     }
 
-    /** @return array<array{id: int, session_id: string, title: string, updated_at_human: string, updated_at_iso: string}> */
+    /** @return void */
     private function loadSessions(int $userId): void
     {
         $this->sessions = AiChatSession::query()
@@ -537,7 +587,7 @@ class AiAssistantChat extends Component
             ->toArray();
     }
 
-    /** @return array<array{role: string, content: string, message_id: string, status: string}> */
+    /** @return void */
     private function loadActiveSessionMessages(): void
     {
         if (! $this->activeDbSessionId) {

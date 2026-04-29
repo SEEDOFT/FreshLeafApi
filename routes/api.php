@@ -154,6 +154,15 @@ Route::prefix('v1')->name('v1.')->group(static function () {
                             Route::post('messages', 'storeMessage')->name('messages.store');
                             Route::post('history', 'history')->name('history');
                         });
+
+                    Route::prefix('support')
+                        ->name('support.')
+                        ->controller(UserController\SupportChatController::class)
+                        ->group(static function () {
+                            Route::get('ticket', 'getActiveTicket')->name('ticket.active');
+                            Route::post('messages', 'sendMessage')->name('messages.store');
+                            Route::get('messages', 'getMessages')->name('messages.index');
+                        });
                 });
         });
     // Authenticated (any sanctum) routes

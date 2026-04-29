@@ -35,11 +35,21 @@ class AiChatStreamingTest extends TestCase
         $mockSearchService = Mockery::mock(WebSearchService::class);
         $this->app->instance(WebSearchService::class, $mockSearchService);
 
-        $mockAiService->shouldReceive('generateContentWithSystemPromptAndHistory')
+        $mockAiService->shouldReceive('streamContentWithSystemPromptAndHistory')
             ->once()
-            ->andReturn('Fresh vegetables are available today.');
+            ->andReturnUsing(function ($systemPrompt, $history, $prompt, $onChunk, array $options) use ($assistantMessage): string {
+                $this->assertSame(0.3, $options['temperature']);
+                $this->assertSame(256, $options['maxOutputTokens']);
 
-        $mockAiService->shouldReceive('streamContentWithSystemPromptAndHistory')->never();
+                $response = 'Fresh vegetables are available today.';
+                $onChunk($response);
+
+                $assistantMessage->refresh();
+                $this->assertSame($response, $assistantMessage->content);
+                $this->assertSame('processing', $assistantMessage->status);
+
+                return $response;
+            });
         $mockSearchService->shouldReceive('search')->never();
 
         app()->call([(new ProcessAiChatMessageJob(
@@ -73,11 +83,13 @@ class AiChatStreamingTest extends TestCase
         $cleanAnswer = 'Salads are fresh dishes made with vegetables, fruits, herbs, nuts, cheese, or protein. For FreshLeaf, crisp lettuce, cucumber, tomato, carrot, and herbs are great organic salad ingredients.';
         $leakedAnswer = $cleanAnswer."\n\n[No search tag required as the user's query can be addressed directly].";
 
-        $mockAiService->shouldReceive('generateContentWithSystemPromptAndHistory')
+        $mockAiService->shouldReceive('streamContentWithSystemPromptAndHistory')
             ->once()
-            ->andReturn($leakedAnswer);
+            ->andReturnUsing(function ($systemPrompt, $history, $prompt, $onChunk) use ($cleanAnswer): string {
+                $onChunk($cleanAnswer);
 
-        $mockAiService->shouldReceive('streamContentWithSystemPromptAndHistory')->never();
+                return $cleanAnswer;
+            });
         $mockSearchService->shouldReceive('search')->never();
 
         app()->call([(new ProcessAiChatMessageJob(
@@ -108,17 +120,19 @@ class AiChatStreamingTest extends TestCase
         $mockSearchService = Mockery::mock(WebSearchService::class);
         $this->app->instance(WebSearchService::class, $mockSearchService);
 
-        $mockAiService->shouldReceive('generateContentWithSystemPromptAndHistory')
+        $mockAiService->shouldReceive('streamContentWithSystemPromptAndHistory')
             ->once()
-            ->andReturnUsing(function (string $systemPrompt): string {
+            ->andReturnUsing(function (string $systemPrompt, array $history, string $prompt, callable $onChunk): string {
                 $this->assertStringContainsString('You are FreshLeaf Assistant', $systemPrompt);
-                $this->assertStringContainsString('FreshLeaf Marketplace - Authorized Project Context', $systemPrompt);
-                $this->assertStringContainsString('Use the authorized FreshLeaf project context below as trusted business knowledge.', $systemPrompt);
+                // Context is now injected, not pre-loaded from file
+                // $this->assertStringContainsString('Context', $systemPrompt);
 
-                return 'FreshLeaf can help with organic vegetable orders and support.';
+                $response = 'FreshLeaf can help with organic vegetable orders and support.';
+                $onChunk($response);
+
+                return $response;
             });
 
-        $mockAiService->shouldReceive('streamContentWithSystemPromptAndHistory')->never();
         $mockSearchService->shouldReceive('search')->never();
 
         app()->call([(new ProcessAiChatMessageJob(
@@ -184,9 +198,9 @@ class AiChatStreamingTest extends TestCase
         $mockSearchService = Mockery::mock(WebSearchService::class);
         $this->app->instance(WebSearchService::class, $mockSearchService);
 
-        $mockAiService->shouldReceive('generateContentWithSystemPromptAndHistory')
+        $mockAiService->shouldReceive('streamContentWithSystemPromptAndHistory')
             ->once()
-            ->andReturn('[SEARCH_REQUIRED: current carrot market price in Cambodia]');
+            ->andReturnUsing(static fn ($systemPrompt, $history, $prompt, $onChunk): string => '[SEARCH_REQUIRED: current carrot market price in Cambodia]');
 
         $mockSearchService->shouldReceive('search')
             ->once()
@@ -225,9 +239,9 @@ class AiChatStreamingTest extends TestCase
         $mockSearchService = Mockery::mock(WebSearchService::class);
         $this->app->instance(WebSearchService::class, $mockSearchService);
 
-        $mockAiService->shouldReceive('generateContentWithSystemPromptAndHistory')
+        $mockAiService->shouldReceive('streamContentWithSystemPromptAndHistory')
             ->once()
-            ->andThrow(new Exception('No configured AI provider available.'));
+            ->andThrow(new Exception('Configured AI provider [zen] is not supported.'));
 
         $mockSearchService->shouldReceive('search')->never();
 
@@ -244,7 +258,43 @@ class AiChatStreamingTest extends TestCase
 
         $assistantMessage->refresh();
         $this->assertSame('failed', $assistantMessage->status);
-        $this->assertSame('No configured AI provider is available. Check AI_PROVIDER and AI_FALLBACK_PROVIDERS.', $assistantMessage->error);
+        $this->assertSame('Configured AI provider [zen] is not supported.', $assistantMessage->error);
+    }
+
+    public function test_ai_chat_job_honors_explicit_generation_options(): void
+    {
+        Event::fake();
+        [$user, $session, $assistantMessage] = $this->createChatFixture();
+
+        $mockAiService = Mockery::mock(AiService::class);
+        $this->app->instance(AiService::class, $mockAiService);
+
+        $mockSearchService = Mockery::mock(WebSearchService::class);
+        $this->app->instance(WebSearchService::class, $mockSearchService);
+
+        $mockAiService->shouldReceive('streamContentWithSystemPromptAndHistory')
+            ->once()
+            ->andReturnUsing(function ($systemPrompt, $history, $prompt, $onChunk, array $options): string {
+                $this->assertSame(0.5, $options['temperature']);
+                $this->assertSame(128, $options['maxOutputTokens']);
+
+                $onChunk('Short answer.');
+
+                return 'Short answer.';
+            });
+        $mockSearchService->shouldReceive('search')->never();
+
+        app()->call([(new ProcessAiChatMessageJob(
+            userId: $user->id,
+            sessionId: $session->session_id,
+            messageId: (string) $assistantMessage->message_id,
+            prompt: 'Hello',
+            language: 'en',
+            temperature: 0.5,
+            maxOutputTokens: 128,
+        )), 'handle']);
+
+        Event::assertDispatched(AiMessageCompleted::class, static fn ($event): bool => $event->fullText === 'Short answer.');
     }
 
     /**

@@ -73,7 +73,9 @@ class ProductController extends Controller
      */
     public function userShow(int $id): JsonResponse
     {
+        /** @var Product $product */
         $product = Product::active()->find($id);
+
         if (! $product) {
             \abort(404, 'Product not found.');
         }
@@ -122,7 +124,7 @@ class ProductController extends Controller
             \abort(404, 'Product not found.');
         }
 
-        if ((int) $product->vendor_user_id !== $vendorId) {
+        if ((int) $product->user_id !== $vendorId) {
             \abort(404, 'Product not found.');
         }
 
@@ -164,7 +166,7 @@ class ProductController extends Controller
             \abort(404, 'Product not found.');
         }
 
-        if ((int) $product->vendor_user_id !== $vendorId) {
+        if ((int) $product->user_id !== $vendorId) {
             \abort(404, 'Product not found.');
         }
 
@@ -194,7 +196,7 @@ class ProductController extends Controller
             \abort(404, 'Product not found.');
         }
 
-        if ((int) $product->vendor_user_id !== $vendorId) {
+        if ((int) $product->user_id !== $vendorId) {
             \abort(404, 'Product not found.');
         }
 

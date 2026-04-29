@@ -67,7 +67,7 @@ class ThemeColors
     /**
      * Get all theme tokens as a combined array.
      *
-     * @return array<string, array<string, string>>
+     * @return array<string, array<int, string>>
      */
     public static function getTokens(): array
     {

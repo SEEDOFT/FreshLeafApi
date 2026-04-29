@@ -160,7 +160,7 @@
                                 <p>{{ $messageItem['content'] }}</p>
                             </article>
                         </div>
-                    @else
+                    @elseif(($messageItem['status'] ?? 'done') !== 'processing')
                         <div class="ai-message-row is-assistant">
                             <div class="ai-assistant-avatar">
                                 <x-filament::icon icon="heroicon-o-sparkles" class="h-4 w-4" />
@@ -184,10 +184,9 @@
 
                         <article class="ai-message-bubble is-assistant">
                             <div class="ai-message-author">{{ __('admin.ai.freshleaf_assistant') }}</div>
-                            <div class="ai-typing-dots" aria-label="Assistant is typing">
-                                <span></span>
-                                <span></span>
-                                <span></span>
+                            <div class="ai-thinking-wrapper">
+                                <span>{{ __('admin.ai.thinking') }}</span>
+                                <span class="ai-pulse-dot"></span>
                             </div>
                         </article>
                     </div>

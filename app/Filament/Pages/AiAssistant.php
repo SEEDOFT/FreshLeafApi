@@ -27,5 +27,10 @@ class AiAssistant extends Page
 
     protected string|Width|null $maxContentWidth = Width::Full;
 
+    public static function canAccess(): bool
+    {
+        return (bool) app_setting('enable_ai_assistant_admin', true);
+    }
+
     protected string $view = 'filament.pages.ai-assistant';
 }

@@ -40,15 +40,8 @@ use Illuminate\Support\Facades\App;
 ])]
 class ProductCategory extends Model
 {
+    /** @use HasFactory<\Database\Factories\ProductCategoryFactory> */
     use HasFactory;
-
-    /**
-     * Virtual name property for backward compatibility.
-     */
-    public string $name {
-        get => $this->name_en;
-        set => $this->name_en = $value;
-    }
 
     /**
      * Get the localized name of the category.

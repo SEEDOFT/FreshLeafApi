@@ -267,19 +267,18 @@ class OllamaService implements AiProviderContract
      */
     private function readLine(StreamInterface $stream): string
     {
-        $buffer = '';
+        $line = '';
 
         while (! $stream->eof()) {
             $char = $stream->read(1);
+            $line .= $char;
 
             if ($char === "\n") {
                 break;
             }
-
-            $buffer .= $char;
         }
 
-        return \trim($buffer);
+        return \trim($line);
     }
 
     /**

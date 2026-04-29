@@ -411,27 +411,26 @@
 .freshleaf-markdown code { background: rgba(0,0,0,0.05); padding: 0.2rem 0.4rem; border-radius: 0.25rem; font-family: monospace; }
 .dark .freshleaf-markdown code { background: rgba(255,255,255,0.1); }
 
-/* Typing Animation */
-.ai-typing-dots {
+/* Thinking Animation */
+.ai-thinking-wrapper {
     display: flex;
-    gap: 4px;
-    padding: 4px 0;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.95rem;
+    font-weight: 500;
 }
 
-.ai-typing-dots span {
+.ai-pulse-dot {
     width: 6px;
     height: 6px;
-    background: currentColor;
+    background: var(--freshleaf-brand-500);
     border-radius: 50%;
-    animation: ai-bounce 1.4s infinite ease-in-out both;
+    animation: ai-pulse 1.2s infinite ease-in-out;
 }
 
-.ai-typing-dots span:nth-child(1) { animation-delay: -0.32s; }
-.ai-typing-dots span:nth-child(2) { animation-delay: -0.16s; }
-
-@keyframes ai-bounce {
-    0%, 80%, 100% { transform: scale(0); }
-    40% { transform: scale(1.0); }
+@keyframes ai-pulse {
+    0%, 100% { opacity: 0.3; transform: scale(0.8); }
+    50% { opacity: 1; transform: scale(1.1); }
 }
 
 /* Mobile Responsive */

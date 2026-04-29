@@ -101,10 +101,15 @@ class AiAssistantChatLivewireTest extends TestCase
         $this->actingAs($user);
         $component = Livewire::test(AiAssistantChat::class);
 
+        $pendingSinceUnix = time() - 20;
+        $component->set('pendingSinceUnix', $pendingSinceUnix);
+
         $component->call('handleChunk', [
             'message_id' => 'assistant-stream',
             'text_chunk' => 'Hello',
-        ])->assertSet('isTyping', true);
+        ])
+            ->assertSet('isTyping', true)
+            ->assertSet('pendingSinceUnix', $pendingSinceUnix);
 
         $component->call('handleChunk', [
             'message_id' => 'assistant-stream',
@@ -175,6 +180,51 @@ class AiAssistantChatLivewireTest extends TestCase
         $this->assertSame('Recovered response content', $recoveredMessage['content']);
     }
 
+    public function test_pending_message_displays_partial_database_content_while_processing(): void
+    {
+        $user = User::factory()->create();
+
+        $session = AiChatSession::create([
+            'user_id' => $user->id,
+            'session_id' => 'partial-session',
+            'title' => 'Partial Session',
+            'last_message_at' => now(),
+        ]);
+
+        $assistantMessage = AiChatMessage::create([
+            'ai_chat_session_id' => $session->id,
+            'message_id' => 'assistant-partial',
+            'role' => 'assistant',
+            'content' => '',
+            'status' => 'processing',
+            'sequence' => 1,
+        ]);
+
+        $this->actingAs($user);
+        $component = Livewire::test(AiAssistantChat::class)
+            ->set('pendingAssistantMessageId', 'assistant-partial')
+            ->set('pendingSinceUnix', time() - 12)
+            ->set('isTyping', true)
+            ->set('isRealtimeConnected', false);
+
+        $assistantMessage->update([
+            'content' => 'Partial response content',
+            'status' => 'processing',
+        ]);
+
+        $component->call('syncPendingResponse')
+            ->assertSet('isTyping', true)
+            ->assertSet('pendingAssistantMessageId', 'assistant-partial');
+
+        /** @var array<array{message_id?: string, content: string, status?: string}> $messages */
+        $messages = $component->get('messages');
+        $partialMessage = collect($messages)->firstWhere('message_id', 'assistant-partial');
+
+        $this->assertNotNull($partialMessage);
+        $this->assertSame('Partial response content', $partialMessage['content']);
+        $this->assertSame('processing', $partialMessage['status'] ?? null);
+    }
+
     public function test_pending_message_times_out_and_marks_failed_in_fallback_mode(): void
     {
         $user = User::factory()->create();
@@ -198,7 +248,7 @@ class AiAssistantChatLivewireTest extends TestCase
         $this->actingAs($user);
         $component = Livewire::test(AiAssistantChat::class)
             ->set('pendingAssistantMessageId', 'assistant-timeout')
-            ->set('pendingSinceUnix', time() - 120)
+            ->set('pendingSinceUnix', time() - 301)
             ->set('isTyping', true)
             ->set('isRealtimeConnected', false);
 

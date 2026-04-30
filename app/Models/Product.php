@@ -24,7 +24,6 @@ use Illuminate\Support\Str;
 /**
  * @property int $id
  * @property int $product_category_id
- * @property int|null $organic_category_id
  * @property int $product_type_id
  * @property int $default_unit_id
  * @property int $product_status_id
@@ -48,7 +47,6 @@ use Illuminate\Support\Str;
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  * @property-read ProductCategory $productCategory
- * @property-read Category|null $organicCategory
  * @property-read Unit $defaultUnit
  * @property-read ProductStatus $status
  * @property-read User|null $vendor
@@ -57,13 +55,11 @@ use Illuminate\Support\Str;
  *
  * @method static Builder|Product active()
  * @method static Builder|Product byCategory(int|ProductCategory $category)
- * @method static Builder|Product byOrganicCategory(int|Category $category)
  * @method static Builder|Product byVendor(int $userId)
  */
 #[Table('products', key: 'id')]
 #[Fillable([
     'product_category_id',
-    'organic_category_id',
     'product_type_id',
     'default_unit_id',
     'product_status_id',
@@ -83,6 +79,11 @@ use Illuminate\Support\Str;
     'is_organic',
     'nutrition_data',
     'shelf_life_days',
+    'province_of_origin',
+    'certification_type',
+    'storage_instructions_en',
+    'storage_instructions_km',
+    'packaging_type',
 ])]
 #[UseFactory(ProductFactory::class)]
 class Product extends Model
@@ -132,16 +133,6 @@ class Product extends Model
                 $product->slug = Str::slug($product->name_en);
             }
         });
-    }
-
-    /**
-     * Get the category that owns the product.
-     *
-     * @return BelongsTo<Category, $this>
-     */
-    public function organicCategory(): BelongsTo
-    {
-        return $this->belongsTo(Category::class, 'organic_category_id', 'id');
     }
 
     /**
@@ -268,20 +259,6 @@ class Product extends Model
             ? $category->id : $category;
 
         $query->where('product_category_id', $categoryId);
-    }
-
-    /**
-     * Scope a query to filter products by organic category.
-     *
-     * @param  Builder<self>  $query
-     */
-    #[Scope]
-    protected function byOrganicCategory(Builder $query, int|Category $category): void
-    {
-        $categoryId = $category instanceof Category
-            ? $category->id : $category;
-
-        $query->where('organic_category_id', $categoryId);
     }
 
     /**

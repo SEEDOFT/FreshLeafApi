@@ -21,10 +21,7 @@ class ProductController extends Controller
     public function userIndex(Request $request): JsonResponse
     {
         $products = Product::active()
-            ->when($request->integer('organic_category_id'), static function ($query, $id) {
-                $query->where('organic_category_id', $id);
-            })
-            ->with(['productCategory', 'organicCategory', 'type', 'defaultUnit', 'status', 'vendor'])
+            ->with(['productCategory', 'type', 'defaultUnit', 'status', 'vendor'])
             ->orderByDesc('id')
             ->simplePaginate($request->integer('per_page', 15));
 
@@ -37,10 +34,7 @@ class ProductController extends Controller
     public function adminIndex(Request $request): JsonResponse
     {
         $products = Product::query()
-            ->when($request->integer('organic_category_id'), static function ($query, $id) {
-                $query->where('organic_category_id', $id);
-            })
-            ->with(['productCategory', 'organicCategory', 'type', 'defaultUnit', 'status', 'vendor'])
+            ->with(['productCategory', 'type', 'defaultUnit', 'status', 'vendor'])
             ->orderByDesc('id')
             ->simplePaginate($request->integer('per_page', 15));
 
@@ -61,7 +55,7 @@ class ProductController extends Controller
         $vendorId = (int) $vendor->id;
 
         $products = Product::byVendor($vendorId)
-            ->with(['productCategory', 'organicCategory', 'type', 'defaultUnit', 'status', 'vendor'])
+            ->with(['productCategory', 'type', 'defaultUnit', 'status', 'vendor'])
             ->orderByDesc('id')
             ->simplePaginate($request->integer('per_page', 15));
 
@@ -129,7 +123,7 @@ class ProductController extends Controller
         }
 
         return static::successResponse(
-            new ProductResource($product->load(['productCategory', 'organicCategory', 'type', 'defaultUnit', 'status', 'variants', 'vendor'])),
+            new ProductResource($product->load(['productCategory', 'type', 'defaultUnit', 'status', 'variants', 'vendor'])),
             'Product loaded successfully'
         );
     }
@@ -173,7 +167,7 @@ class ProductController extends Controller
         $product->update($request->validated());
 
         return static::successResponse(
-            new ProductResource($product->fresh()->load(['productCategory', 'organicCategory', 'type', 'defaultUnit', 'status', 'variants'])),
+            new ProductResource($product->fresh()->load(['productCategory', 'type', 'defaultUnit', 'status', 'variants'])),
             'Product updated successfully'
         );
     }

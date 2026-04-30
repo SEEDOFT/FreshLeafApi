@@ -29,7 +29,6 @@ class UpdateProductRequest extends FormRequest
 
         return [
             'product_category_id' => ['sometimes', 'integer', 'exists:product_categories,id'],
-            'organic_category_id' => ['sometimes', 'nullable', 'integer', 'exists:categories,id'],
             'product_type_id' => ['sometimes', 'integer', 'exists:product_types,id'],
             'default_unit_id' => ['sometimes', 'integer', 'exists:units,id'],
             'product_status_id' => ['sometimes', 'integer', 'exists:product_statuses,id'],

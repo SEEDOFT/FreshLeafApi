@@ -42,7 +42,6 @@ class ProductResource extends JsonResource
             'shelf_life_days' => $this->shelf_life_days,
             'nutrition_data' => $this->nutrition_data,
             'product_category_id' => $this->product_category_id,
-            'organic_category_id' => $this->organic_category_id,
             'product_type_id' => $this->product_type_id,
             'default_unit_id' => $this->default_unit_id,
             'product_status_id' => $this->product_status_id,
@@ -53,15 +52,7 @@ class ProductResource extends JsonResource
                 'localized_name' => $this->productCategory->localizedName,
                 'slug' => $this->productCategory->slug,
             ]),
-            'organic_category' => $this->whenLoaded('organicCategory', fn () => [
-                'id' => $this->organicCategory->id,
-                'name_en' => $this->organicCategory->name_en,
-                'name_km' => $this->organicCategory->name_km,
-                'localized_name' => $this->organicCategory->localizedName,
-                'slug' => $this->organicCategory->slug,
-            ]),
             'type' => $this->whenLoaded('type', fn () => [
-                'id' => $this->type->id,
                 'name' => $this->type->name,
             ]),
             'default_unit' => $this->whenLoaded('defaultUnit', fn () => [

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use Database\Factories\ProductCategoryFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Table;
 use Illuminate\Database\Eloquent\Collection;
@@ -29,7 +30,6 @@ use Illuminate\Support\Facades\App;
  */
 #[Table('product_categories')]
 #[Fillable([
-    'name',
     'name_en',
     'name_km',
     'description_en',
@@ -40,7 +40,7 @@ use Illuminate\Support\Facades\App;
 ])]
 class ProductCategory extends Model
 {
-    /** @use HasFactory<\Database\Factories\ProductCategoryFactory> */
+    /** @use HasFactory<ProductCategoryFactory> */
     use HasFactory;
 
     /**

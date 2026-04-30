@@ -23,10 +23,12 @@ class ProductForm
                     ->schema([
                         Grid::make(2)
                             ->schema([
-                                TextInput::make('name')
+                                TextInput::make('name_en')
                                     ->required()
                                     ->live(onBlur: true)
                                     ->afterStateUpdated(fn (string $state, $set) => $set('slug', Str::slug($state))),
+                                TextInput::make('name_km')
+                                    ->required(),
                                 TextInput::make('slug')
                                     ->disabled()
                                     ->dehydrated()
@@ -38,7 +40,7 @@ class ProductForm
                             ->schema([
                                 Select::make('product_category_id')
                                     ->label('Category')
-                                    ->relationship('category', 'name')
+                                    ->relationship('productCategory', 'name_en')
                                     ->searchable()
                                     ->preload()
                                     ->required(),
@@ -57,7 +59,10 @@ class ProductForm
 
                 Section::make('Product Details')
                     ->schema([
-                        Textarea::make('description')
+                        Textarea::make('description_en')
+                            ->rows(3)
+                            ->columnSpanFull(),
+                        Textarea::make('description_km')
                             ->rows(3)
                             ->columnSpanFull(),
 

@@ -28,7 +28,7 @@ class DatabaseSeeder extends Seeder
             ProductStatusSeeder::class,
             ProductTypeSeeder::class,
             UnitSeeder::class,
-            CategorySeeder::class,
+            ProductCategorySeeder::class,
             ProductSeeder::class,
             ProductSampleSeeder::class,
             ProductVariantSeeder::class,

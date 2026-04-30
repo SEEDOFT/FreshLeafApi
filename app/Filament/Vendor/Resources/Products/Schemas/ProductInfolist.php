@@ -13,7 +13,7 @@ class ProductInfolist
     {
         return $schema
             ->components([
-                TextEntry::make('productCategory.name')
+                TextEntry::make('productCategory.name_en')
                     ->label('Product category'),
                 TextEntry::make('product_type_id')
                     ->numeric(),
@@ -21,9 +21,13 @@ class ProductInfolist
                     ->label('Default unit'),
                 TextEntry::make('product_status_id')
                     ->numeric(),
-                TextEntry::make('name'),
+                TextEntry::make('name_en'),
+                TextEntry::make('name_km'),
                 TextEntry::make('slug'),
-                TextEntry::make('description')
+                TextEntry::make('description_en')
+                    ->placeholder('-')
+                    ->columnSpanFull(),
+                TextEntry::make('description_km')
                     ->placeholder('-')
                     ->columnSpanFull(),
                 TextEntry::make('nutrition_data')

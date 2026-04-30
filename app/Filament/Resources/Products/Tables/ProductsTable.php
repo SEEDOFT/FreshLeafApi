@@ -33,9 +33,6 @@ class ProductsTable
                 TextColumn::make('productCategory.name_en')
                     ->label(__('admin.resources.product.system_category'))
                     ->sortable(),
-                TextColumn::make('organicCategory.name_en')
-                    ->label(__('admin.resources.product.organic_category'))
-                    ->sortable(),
                 TextColumn::make('type.name')
                     ->label(__('admin.resources.product.type'))
                     ->sortable(),
@@ -61,9 +58,6 @@ class ProductsTable
                 SelectFilter::make('product_category_id')
                     ->relationship('productCategory', 'name_en')
                     ->label(__('admin.resources.product.system_category')),
-                SelectFilter::make('organic_category_id')
-                    ->relationship('organicCategory', 'name_en')
-                    ->label(__('admin.resources.product.organic_category')),
                 SelectFilter::make('product_status_id')
                     ->relationship('status', 'name')
                     ->label(__('admin.resources.product.status')),

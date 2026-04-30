@@ -18,11 +18,14 @@ class ProductsTable
     {
         return $table
             ->columns([
-                TextColumn::make('name')
+                TextColumn::make('name_en')
+                    ->searchable()
+                    ->sortable(),
+                TextColumn::make('name_km')
                     ->searchable()
                     ->sortable(),
 
-                TextColumn::make('category.name')
+                TextColumn::make('category.name_en')
                     ->label('Category')
                     ->badge()
                     ->sortable(),

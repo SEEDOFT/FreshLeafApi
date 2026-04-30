@@ -25,7 +25,6 @@ class StoreProductRequest extends FormRequest
     {
         return [
             'product_category_id' => ['required', 'integer', 'exists:product_categories,id'],
-            'organic_category_id' => ['sometimes', 'nullable', 'integer', 'exists:categories,id'],
             'product_type_id' => ['required', 'integer', 'exists:product_types,id'],
             'default_unit_id' => ['required', 'integer', 'exists:units,id'],
             'product_status_id' => ['required', 'integer', 'exists:product_statuses,id'],

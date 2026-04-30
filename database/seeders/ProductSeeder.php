@@ -25,44 +25,34 @@ class ProductSeeder extends Seeder
 
         $catalog = [
             'leafy-vegetables' => [
-                ['name' => 'Morning Glory', 'unit' => 'KG', 'type' => 'Fresh Produce', 'detail' => 'Popular stir-fry leafy vegetable in Cambodia'],
-                ['name' => 'Bok Choy', 'unit' => 'KG', 'type' => 'Fresh Produce', 'detail' => 'Crunchy leafy vegetable for soups and stir-fry'],
-                ['name' => 'Chinese Kale', 'unit' => 'KG', 'type' => 'Fresh Produce', 'detail' => 'Firm leaves and stems, common in local markets'],
-                ['name' => 'Water Spinach Bunch', 'unit' => 'qty', 'type' => 'Fresh Produce', 'detail' => 'Sold by bunch quantity for quick retail turnover'],
-                ['name' => 'Lettuce Head', 'unit' => 'qty', 'type' => 'Fresh Produce', 'detail' => 'Sold per head for salad and fresh serving'],
-                ['name' => 'Mustard Green', 'unit' => 'KG', 'type' => 'Fresh Produce', 'detail' => 'Suitable for soup and salted vegetable dishes'],
+                ['name_en' => 'Morning Glory', 'name_km' => 'ត្រកួន', 'unit' => 'KG', 'type' => 'Fresh Produce', 'detail_en' => 'Popular stir-fry leafy vegetable in Cambodia', 'detail_km' => 'បន្លែស្លឹកដែលពេញនិយមនៅកម្ពុជា'],
+                ['name_en' => 'Bok Choy', 'name_km' => 'ស្ពៃតឿ', 'unit' => 'KG', 'type' => 'Fresh Produce', 'detail_en' => 'Crunchy leafy vegetable for soups and stir-fry', 'detail_km' => 'ស្ពៃសម្រាប់ស្លនិងឆា'],
+                ['name_en' => 'Chinese Kale', 'name_km' => 'ខាត់ណា', 'unit' => 'KG', 'type' => 'Fresh Produce', 'detail_en' => 'Firm leaves and stems, common in local markets', 'detail_km' => 'ខាត់ណាស្រស់'],
+                ['name_en' => 'Lettuce', 'name_km' => 'សាលាដ', 'unit' => 'KG', 'type' => 'Fresh Produce', 'detail_en' => 'Fresh lettuce for salads', 'detail_km' => 'សាលាដស្រស់សម្រាប់ញ៉ាំឆៅ'],
             ],
-            'fruiting-vegetables' => [
-                ['name' => 'Tomato', 'unit' => 'KG', 'type' => 'Fresh Produce', 'detail' => 'Core ingredient for sauces and soups'],
-                ['name' => 'Cucumber', 'unit' => 'KG', 'type' => 'Fresh Produce', 'detail' => 'Fresh salad vegetable, high daily demand'],
-                ['name' => 'Eggplant', 'unit' => 'KG', 'type' => 'Fresh Produce', 'detail' => 'Used in soups and grilled dishes'],
-                ['name' => 'Bitter Melon', 'unit' => 'KG', 'type' => 'Fresh Produce', 'detail' => 'Traditional bitter flavor vegetable'],
-                ['name' => 'Pumpkin', 'unit' => 'qty', 'type' => 'Fresh Produce', 'detail' => 'Sold per fruit for household and restaurant use'],
-                ['name' => 'Bottle Gourd', 'unit' => 'qty', 'type' => 'Fresh Produce', 'detail' => 'Commonly sold per piece in fresh markets'],
+            'fruit-vegetables' => [
+                ['name_en' => 'Tomato', 'name_km' => 'ប៉េងប៉ោះ', 'unit' => 'KG', 'type' => 'Fresh Produce', 'detail_en' => 'Core ingredient for sauces and soups', 'detail_km' => 'ប៉េងប៉ោះស្រស់'],
+                ['name_en' => 'Cucumber', 'name_km' => 'ត្រសក់', 'unit' => 'KG', 'type' => 'Fresh Produce', 'detail_en' => 'Fresh salad vegetable, high daily demand', 'detail_km' => 'ត្រសក់ស្រស់'],
+                ['name_en' => 'Eggplant', 'name_km' => 'ត្រប់', 'unit' => 'KG', 'type' => 'Fresh Produce', 'detail_en' => 'Used in soups and grilled dishes', 'detail_km' => 'ត្រប់វែងស្រស់'],
+                ['name_en' => 'Bitter Melon', 'name_km' => 'ម្រះ', 'unit' => 'KG', 'type' => 'Fresh Produce', 'detail_en' => 'Traditional bitter flavor vegetable', 'detail_km' => 'ម្រះស្រស់'],
             ],
-            'root-vegetables' => [
-                ['name' => 'Carrot', 'unit' => 'KG', 'type' => 'Fresh Produce', 'detail' => 'Used in stir-fry, soup, and salad'],
-                ['name' => 'White Radish', 'unit' => 'KG', 'type' => 'Fresh Produce', 'detail' => 'Popular in soups and pickled dishes'],
-                ['name' => 'Sweet Potato', 'unit' => 'KG', 'type' => 'Fresh Produce', 'detail' => 'Root crop with stable demand'],
-                ['name' => 'Cassava Root', 'unit' => 'KG', 'type' => 'Fresh Produce', 'detail' => 'Used for boiling, steaming, and flour processing'],
-                ['name' => 'Turmeric Root', 'unit' => 'KG', 'type' => 'Fresh Produce', 'detail' => 'Cooking and medicinal aromatic root'],
-                ['name' => 'Galangal Root', 'unit' => 'KG', 'type' => 'Fresh Produce', 'detail' => 'Essential aromatic root in Khmer cuisine'],
+            'root-and-tuber-vegetables' => [
+                ['name_en' => 'Carrot', 'name_km' => 'ការ៉ុត', 'unit' => 'KG', 'type' => 'Fresh Produce', 'detail_en' => 'Used in stir-fry, soup, and salad', 'detail_km' => 'ការ៉ុតស្រស់'],
+                ['name_en' => 'White Radish', 'name_km' => 'ឆៃថាវ', 'unit' => 'KG', 'type' => 'Fresh Produce', 'detail_en' => 'Popular in soups and pickled dishes', 'detail_km' => 'ឆៃថាវស្រស់'],
+                ['name_en' => 'Sweet Potato', 'name_km' => 'ដំឡូងជ្វា', 'unit' => 'KG', 'type' => 'Fresh Produce', 'detail_en' => 'Root crop with stable demand', 'detail_km' => 'ដំឡូងជ្វាស្រស់'],
             ],
-            'herbs-aromatic-plants' => [
-                ['name' => 'Lemongrass', 'unit' => 'qty', 'type' => 'Fresh Produce', 'detail' => 'Aromatic herb sold as stalk bundles'],
-                ['name' => 'Kaffir Lime Leaves', 'unit' => 'qty', 'type' => 'Fresh Produce', 'detail' => 'Fragrant leaves used in soup and curry'],
-                ['name' => 'Holy Basil', 'unit' => 'qty', 'type' => 'Fresh Produce', 'detail' => 'Fresh aromatic herb sold in bunches'],
-                ['name' => 'Mint', 'unit' => 'qty', 'type' => 'Fresh Produce', 'detail' => 'Used in fresh rolls and salads'],
-                ['name' => 'Coriander', 'unit' => 'qty', 'type' => 'Fresh Produce', 'detail' => 'Garnish and seasoning herb'],
-                ['name' => 'Spring Onion', 'unit' => 'qty', 'type' => 'Fresh Produce', 'detail' => 'Daily cooking aromatic sold by bundle'],
+            'bulb-and-stem-vegetables' => [
+                ['name_en' => 'Onion', 'name_km' => 'ខ្ទឹមបារាំង', 'unit' => 'KG', 'type' => 'Fresh Produce', 'detail_en' => 'Essential bulb vegetable for cooking', 'detail_km' => 'ខ្ទឹមបារាំងស្រស់'],
+                ['name_en' => 'Garlic', 'name_km' => 'ខ្ទឹមស', 'unit' => 'KG', 'type' => 'Fresh Produce', 'detail_en' => 'Aromatic bulb used in mostly all dishes', 'detail_km' => 'ខ្ទឹមស'],
+                ['name_en' => 'Celery', 'name_km' => 'ស៊ែលឺរី', 'unit' => 'KG', 'type' => 'Fresh Produce', 'detail_en' => 'Crunchy stem vegetable', 'detail_km' => 'ស៊ែលឺរីស្រស់'],
             ],
-            'legumes' => [
-                ['name' => 'Long Bean', 'unit' => 'KG', 'type' => 'Fresh Produce', 'detail' => 'Main legume in Cambodian stir-fry dishes'],
-                ['name' => 'Yardlong Bean', 'unit' => 'KG', 'type' => 'Fresh Produce', 'detail' => 'High-volume fresh market legume'],
-                ['name' => 'Green Bean', 'unit' => 'KG', 'type' => 'Fresh Produce', 'detail' => 'Short-cycle vegetable with steady demand'],
-                ['name' => 'Snow Pea', 'unit' => 'KG', 'type' => 'Fresh Produce', 'detail' => 'Crisp legume for premium menu items'],
-                ['name' => 'Soybean Sprout Pack', 'unit' => 'qty', 'type' => 'Fresh Produce', 'detail' => 'Ready-to-cook sprouts sold by pack quantity'],
-                ['name' => 'Peanut Fresh Pod', 'unit' => 'KG', 'type' => 'Fresh Produce', 'detail' => 'Local snack and ingredient legume'],
+            'legume-vegetables' => [
+                ['name_en' => 'Long Bean', 'name_km' => 'សណ្តែកកួរ', 'unit' => 'KG', 'type' => 'Fresh Produce', 'detail_en' => 'Main legume in Cambodian stir-fry dishes', 'detail_km' => 'សណ្តែកកួរស្រស់'],
+                ['name_en' => 'Snow Pea', 'name_km' => 'សណ្តែកបារាំង', 'unit' => 'KG', 'type' => 'Fresh Produce', 'detail_en' => 'Crisp legume for premium menu items', 'detail_km' => 'សណ្តែកបារាំងស្រស់'],
+            ],
+            'indigenous-and-wild-vegetables' => [
+                ['name_en' => 'Water Lily', 'name_km' => 'ព្រលិត', 'unit' => 'KG', 'type' => 'Fresh Produce', 'detail_en' => 'Edible stems of water lily', 'detail_km' => 'ព្រលិតស្រស់'],
+                ['name_en' => 'Bamboo Shoot', 'name_km' => 'ទំពាំង', 'unit' => 'KG', 'type' => 'Fresh Produce', 'detail_en' => 'Edible shoots of bamboo species', 'detail_km' => 'ទំពាំងស្រស់'],
             ],
         ];
 
@@ -85,15 +75,17 @@ class ProductSeeder extends Seeder
                     continue;
                 }
 
-                $slug = Str::slug($item['name']);
+                $slug = Str::slug($item['name_en']);
 
                 $attributes = [
                     'product_category_id' => $categoryId,
                     'product_type_id' => $typeId,
                     'default_unit_id' => $unitId,
                     'product_status_id' => $defaultStatusId,
-                    'name' => $item['name'],
-                    'description' => $item['detail'],
+                    'name_en' => $item['name_en'],
+                    'name_km' => $item['name_km'],
+                    'description_en' => $item['detail_en'],
+                    'description_km' => $item['detail_km'],
                     'nutrition_data' => [
                         'source' => 'seed',
                         'market' => 'cambodia',
@@ -101,6 +93,8 @@ class ProductSeeder extends Seeder
                         'catalog_category' => $categorySlug,
                     ],
                     'shelf_life_days' => $this->defaultShelfLifeDays($item['type']),
+                    'is_active' => true,
+                    'is_organic' => true,
                 ];
 
                 $product = Product::withTrashed()->firstWhere('slug', $slug);

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Filament\Resources\Products\Schemas;
 
+use App\Models\ProductCategory;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\KeyValue;
 use Filament\Forms\Components\Select;
@@ -56,12 +57,37 @@ class ProductForm
                                     ->relationship('productCategory', 'name_en')
                                     ->searchable()
                                     ->preload()
-                                    ->required(),
-                                Select::make('organic_category_id')
-                                    ->label(__('admin.resources.product.organic_category'))
-                                    ->relationship('organicCategory', 'name_en')
-                                    ->searchable()
-                                    ->preload(),
+                                    ->required()
+                                    ->helperText(function ($state) {
+                                        $helpers = __('admin.resources.product.category_helpers');
+                                        if (! $state) {
+                                            return null;
+                                        }
+                                        $cat = ProductCategory::find($state);
+                                        if (! $cat) {
+                                            return null;
+                                        }
+                                        if (str_contains(strtolower($cat->slug), 'leafy')) {
+                                            return $helpers['leafy'];
+                                        }
+                                        if (str_contains(strtolower($cat->slug), 'fruit')) {
+                                            return $helpers['fruit'];
+                                        }
+                                        if (str_contains(strtolower($cat->slug), 'root')) {
+                                            return $helpers['root'];
+                                        }
+                                        if (str_contains(strtolower($cat->slug), 'bulb')) {
+                                            return $helpers['bulb'];
+                                        }
+                                        if (str_contains(strtolower($cat->slug), 'legume')) {
+                                            return $helpers['legume'];
+                                        }
+                                        if (str_contains(strtolower($cat->slug), 'indigenous')) {
+                                            return $helpers['indigenous'];
+                                        }
+
+                                        return null;
+                                    }),
                                 Select::make('product_type_id')
                                     ->label(__('admin.resources.product.type'))
                                     ->relationship('type', 'name')
@@ -104,9 +130,18 @@ class ProductForm
                 Section::make(__('admin.resources.product.organic_traceability'))
                     ->columns(2)
                     ->schema([
+                        TextInput::make('province_of_origin')
+                            ->label(__('admin.resources.product.province_of_origin')),
+                        TextInput::make('certification_type')
+                            ->label(__('admin.resources.product.certification_type')),
+                        Textarea::make('storage_instructions_en')
+                            ->label(__('admin.resources.product.storage_instructions').' (EN)'),
+                        Textarea::make('storage_instructions_km')
+                            ->label(__('admin.resources.product.storage_instructions').' (KM)'),
+                        TextInput::make('packaging_type')
+                            ->label(__('admin.resources.product.packaging_type')),
                         TextInput::make('farm_name_location')
-                            ->label(__('admin.resources.product.farm_location'))
-                            ->placeholder('e.g. Kandal Organic Farm'),
+                            ->label(__('admin.resources.product.farm_location')),
                         Select::make('farming_method')
                             ->label(__('admin.resources.product.farming_method'))
                             ->options([

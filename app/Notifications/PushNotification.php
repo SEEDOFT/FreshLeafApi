@@ -48,11 +48,22 @@ class PushNotification extends Notification implements ShouldQueue
             ->data($this->data)
             ->custom([
                 'android' => [
+                    'priority' => 'high',
                     'notification' => [
+                        'channel_id' => 'high_importance_channel',
                         'color' => '#4ade80',
+                        'sound' => 'default',
                     ],
                 ],
                 'apns' => [
+                    'headers' => [
+                        'apns-priority' => '10',
+                    ],
+                    'payload' => [
+                        'aps' => [
+                            'sound' => 'default',
+                        ],
+                    ],
                     'fcm_options' => [
                         'analytics_label' => 'freshleaf_push',
                     ],

@@ -16,7 +16,7 @@ Broadcast::channel('ai-chat.{userId}.{sessionId}', static function (User $user, 
     return AiChatSession::where('session_id', $sessionId)
         ->where('user_id', (int) $user->id)
         ->exists();
-});
+}, ['guards' => ['web', 'api', 'sanctum']]);
 
 Broadcast::channel('support.ticket.{ticketId}', static function (User $user, string $ticketId): bool {
     $ticket = SupportTicket::find((int) $ticketId);
@@ -26,8 +26,8 @@ Broadcast::channel('support.ticket.{ticketId}', static function (User $user, str
     }
 
     return (int) $user->id === (int) $ticket->user_id || $user->isType(UserType::ADMIN);
-});
+}, ['guards' => ['web', 'api', 'sanctum']]);
 
 Broadcast::channel('support.admin', static function (User $user): bool {
     return $user->isType(UserType::ADMIN);
-});
+}, ['guards' => ['web', 'api', 'sanctum']]);

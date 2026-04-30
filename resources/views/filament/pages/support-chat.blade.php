@@ -4,25 +4,66 @@
         x-data="{
             isUserTyping: false,
             typingTimeout: null,
+            currentTicketId: null,
             scrollToBottom() {
                 const container = document.getElementById('support-thread');
                 if (container) {
                     container.scrollTop = container.scrollHeight;
                 }
+            },
+            listenToTicket(ticketId) {
+                if (typeof window.Echo === 'undefined') return;
+                
+                if (this.currentTicketId) {
+                    window.Echo.leave('support.ticket.' + this.currentTicketId);
+                }
+                
+                if (ticketId) {
+                    this.currentTicketId = ticketId;
+                    const channel = 'support.ticket.' + ticketId;
+                    
+                    window.Echo.private(channel)
+                        .listen('.SupportMessageSent', (e) => {
+                            $wire.handleIncomingMessage(e);
+                        })
+                        .listen('.SupportTyping', (e) => {
+                            if (e.sender_type === 'user') {
+                                this.isUserTyping = true;
+                                setTimeout(() => this.scrollToBottom(), 50);
+                                clearTimeout(this.typingTimeout);
+                                this.typingTimeout = setTimeout(() => { this.isUserTyping = false; }, 3000);
+                            }
+                        });
+                }
+            },
+            initEcho() {
+                const setup = () => {
+                    if (typeof window.Echo !== 'undefined') {
+                        // Listen for global admin updates (new tickets, any user message)
+                        window.Echo.private('support.admin')
+                            .listen('.NewSupportTicket', (e) => {
+                                $wire.$refresh();
+                            })
+                            .listen('.SupportMessageSent', (e) => {
+                                // If the message is for the active ticket, the specific listener handles it.
+                                // If not, we just refresh to update the sidebar's unread counts/latest message.
+                                if (parseInt(e.support_ticket_id) !== parseInt($wire.activeTicketId)) {
+                                    $wire.$refresh();
+                                }
+                            });
+                        
+                        this.listenToTicket($wire.activeTicketId);
+                    } else {
+                        setTimeout(setup, 1000);
+                    }
+                };
+                setup();
             }
         }"
-        x-init="scrollToBottom()"
+        x-init="scrollToBottom(); initEcho();"
         x-on:message-sent.window="setTimeout(() => scrollToBottom(), 50)"
         x-on:message-received.window="isUserTyping = false; setTimeout(() => scrollToBottom(), 50)"
-        x-on:ticket-selected.window="isUserTyping = false; setTimeout(() => scrollToBottom(), 50)"
-        x-on:user-typing.window="
-            if ($event.detail.senderType === 'user') {
-                isUserTyping = true;
-                setTimeout(() => scrollToBottom(), 50);
-                clearTimeout(typingTimeout);
-                typingTimeout = setTimeout(() => { isUserTyping = false; }, 3000);
-            }
-        "
+        x-on:ticket-selected.window="isUserTyping = false; setTimeout(() => scrollToBottom(), 50); listenToTicket($wire.activeTicketId);"
     >
         <!-- Sidebar: Ticket List -->
         <aside class="w-80 flex-shrink-0 border-r border-gray-200 dark:border-white/5 flex flex-col">
@@ -34,6 +75,7 @@
             
             <div class="flex-1 overflow-y-auto">
                 @forelse($this->getTickets() as $ticket)
+                    @php $latestMessage = $ticket->latestMessage; @endphp
                     <button
                         wire:click="selectTicket({{ $ticket->id }})"
                         class="w-full text-left p-4 hover:bg-gray-50 dark:hover:bg-white/5 transition-colors border-b border-gray-100 dark:border-white/5 {{ $activeTicketId === $ticket->id ? 'bg-primary-50 dark:bg-primary-500/10' : '' }}"
@@ -47,7 +89,7 @@
                             </span>
                         </div>
                         <p class="text-xs text-gray-500 truncate">
-                            {{ $ticket->messages->last()?->message ?? ($ticket->messages->last()?->file_path ? 'File attached' : 'No messages yet') }}
+                            {{ $latestMessage?->message ?: ($latestMessage?->file_path ? 'File attached' : 'No messages yet') }}
                         </p>
                     </button>
                 @empty

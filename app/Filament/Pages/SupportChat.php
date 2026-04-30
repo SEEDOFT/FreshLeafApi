@@ -33,6 +33,7 @@ class SupportChat extends Page
 
     public string $message = '';
 
+    /** @var mixed */
     public $file;
 
     public function getHeading(): string
@@ -59,7 +60,7 @@ class SupportChat extends Page
      */
     public function getTickets(): Collection
     {
-        return SupportTicket::with(['user'])
+        return SupportTicket::with(['latestMessage', 'user'])
             ->where('status', 'open')
             ->latest('updated_at')
             ->get();
@@ -108,7 +109,7 @@ class SupportChat extends Page
         broadcast(new SupportMessageSent($msg))->toOthers();
 
         // Notify user
-        Notification::send($ticket->user, new NewSupportMessageNotification($msg));
+        Notification::sendNow($ticket->user, new NewSupportMessageNotification($msg));
 
         $this->message = '';
         $this->file = null;
@@ -127,27 +128,25 @@ class SupportChat extends Page
      */
     public function getListeners(): array
     {
-        $listeners = [
-            'echo-private:support.admin,.NewSupportTicket' => '$refresh',
-        ];
-
-        if ($this->activeTicketId) {
-            $listeners["echo-private:support.ticket.{$this->activeTicketId},.SupportMessageSent"] = 'handleIncomingMessage';
-            $listeners["echo-private:support.ticket.{$this->activeTicketId},.SupportTyping"] = 'handleTypingEvent';
-        }
-
-        return $listeners;
-    }
-
-    public function handleTypingEvent(array $event): void
-    {
-        $this->dispatch('user-typing', senderType: $event['sender_type']);
+        return [];
     }
 
     /** @param array<string, mixed> $event */
     public function handleIncomingMessage(array $event): void
     {
-        $this->dispatch('message-received');
+        $ticketId = (int) ($event['support_ticket_id'] ?? 0);
+        $isActiveTicket = $this->activeTicketId !== null
+            && $ticketId === $this->activeTicketId;
+
+        if ($isActiveTicket) {
+            $this->dispatch('message-received');
+
+            SupportMessage::where('support_ticket_id', $ticketId)
+                ->where('sender_type', 'user')
+                ->where('is_read', false)
+                ->update(['is_read' => true]);
+        }
+
         $this->dispatch('$refresh');
     }
 

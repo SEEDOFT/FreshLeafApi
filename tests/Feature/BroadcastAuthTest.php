@@ -9,6 +9,8 @@ use App\Models\User;
 use App\Models\UserStatus;
 use App\Models\UserType;
 use Illuminate\Foundation\Testing\LazilyRefreshDatabase;
+use Illuminate\Support\Facades\Broadcast;
+use Laravel\Sanctum\Sanctum;
 use Tests\TestCase;
 
 class BroadcastAuthTest extends TestCase
@@ -30,6 +32,14 @@ class BroadcastAuthTest extends TestCase
             ['id' => UserType::VENDOR, 'code' => 'VENDOR', 'name' => 'Vendor'],
             ['id' => UserType::ADMIN, 'code' => 'ADMIN', 'name' => 'Admin'],
         ], ['id'], ['code', 'name']);
+
+        config()->set('broadcasting.default', 'reverb');
+        config()->set('broadcasting.connections.reverb.key', 'test-key');
+        config()->set('broadcasting.connections.reverb.secret', 'test-secret');
+        config()->set('broadcasting.connections.reverb.app_id', 'test-app');
+        Broadcast::forgetDrivers();
+
+        require base_path('routes/channels.php');
     }
 
     public function test_broadcast_auth_succeeds_for_session_owner(): void
@@ -46,14 +56,47 @@ class BroadcastAuthTest extends TestCase
             'last_message_at' => now(),
         ]);
 
-        $token = $user->createToken('broadcast_auth')->plainTextToken;
+        Sanctum::actingAs($user);
 
-        $response = $this->withHeader('Authorization', 'Bearer '.$token)
-            ->postJson('/api/v1/broadcasting/auth', [
-                'socket_id' => '999.999',
-                'channel_name' => 'private-ai-chat.'.$user->id.'.'.$session->session_id,
-            ]);
+        $response = $this->postJson('/api/v1/broadcasting/auth', [
+            'socket_id' => '999.999',
+            'channel_name' => 'private-ai-chat.'.$user->id.'.'.$session->session_id,
+        ]);
 
         $response->assertOk();
+    }
+
+    public function test_support_admin_broadcast_auth_succeeds_for_admin(): void
+    {
+        $admin = User::factory()->create([
+            'user_status_id' => UserStatus::ACTIVE,
+            'user_type_id' => UserType::ADMIN,
+        ]);
+
+        Sanctum::actingAs($admin);
+
+        $response = $this->postJson('/api/v1/broadcasting/auth', [
+            'socket_id' => '999.999',
+            'channel_name' => 'private-support.admin',
+        ]);
+
+        $response->assertOk();
+    }
+
+    public function test_support_admin_broadcast_auth_rejects_normal_user(): void
+    {
+        $user = User::factory()->create([
+            'user_status_id' => UserStatus::ACTIVE,
+            'user_type_id' => UserType::USER,
+        ]);
+
+        Sanctum::actingAs($user);
+
+        $response = $this->postJson('/api/v1/broadcasting/auth', [
+            'socket_id' => '999.999',
+            'channel_name' => 'private-support.admin',
+        ]);
+
+        $response->assertForbidden();
     }
 }

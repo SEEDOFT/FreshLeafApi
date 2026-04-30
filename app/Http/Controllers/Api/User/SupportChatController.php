@@ -103,6 +103,8 @@ class SupportChatController extends Controller
             'file_path' => $filePath,
         ]);
 
+        $ticket->touch();
+
         broadcast(new SupportMessageSent($message))->toOthers();
 
         // Notify admins

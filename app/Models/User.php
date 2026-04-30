@@ -318,7 +318,7 @@ class User extends Authenticatable implements FilamentUser, HasName
      */
     public function isType(int $userTypeId): bool
     {
-        return $this->user_type_id === $userTypeId;
+        return (int) $this->user_type_id === $userTypeId;
     }
 
     /**
@@ -326,6 +326,6 @@ class User extends Authenticatable implements FilamentUser, HasName
      */
     public function isActive(): bool
     {
-        return $this->user_status_id === UserStatus::ACTIVE;
+        return (int) $this->user_status_id === UserStatus::ACTIVE;
     }
 }

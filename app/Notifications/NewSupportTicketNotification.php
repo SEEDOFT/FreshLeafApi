@@ -4,52 +4,33 @@ declare(strict_types=1);
 
 namespace App\Notifications;
 
-use App\Filament\Pages\SupportChat;
 use App\Models\SupportTicket;
-use Filament\Actions\Action;
-use Filament\Notifications\Notification as FilamentNotification;
-use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldQueue;
-use Illuminate\Notifications\Notification;
+use NotificationChannels\Fcm\FcmMessage;
 
-class NewSupportTicketNotification extends Notification implements ShouldQueue
+class NewSupportTicketNotification extends PushNotification
 {
-    use Queueable;
-
     /**
      * Create a new notification instance.
      */
     public function __construct(
         public SupportTicket $ticket
-    ) {}
-
-    /**
-     * Get the notification's delivery channels.
-     *
-     * @return array<int, string>
-     */
-    public function via(object $notifiable): array
-    {
-        return ['database'];
+    ) {
+        parent::__construct(
+            title: 'New Support Ticket',
+            body: "User {$this->ticket->user->fullName} has started a new support chat.",
+            data: [
+                'type' => 'support_chat',
+                'ticket_id' => (string) $this->ticket->id,
+                'route' => '/support_chat',
+            ]
+        );
     }
 
     /**
-     * Get the database representation of the notification.
-     *
-     * @return array<string, mixed>
+     * Create the FCM message representation.
      */
-    public function toDatabase(object $notifiable): array
+    public function toFcm(object $notifiable): FcmMessage
     {
-        return FilamentNotification::make()
-            ->title('New Support Ticket')
-            ->body("User {$this->ticket->user->fullName} has started a new support chat.")
-            ->icon('heroicon-o-chat-bubble-left-right')
-            ->iconColor('info')
-            ->actions([
-                Action::make('view')
-                    ->label('View Chat')
-                    ->url(fn () => SupportChat::getUrl(['activeTicketId' => $this->ticket->id])),
-            ])
-            ->getDatabaseMessage();
+        return parent::toFcm($notifiable);
     }
 }

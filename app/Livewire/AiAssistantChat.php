@@ -246,8 +246,7 @@ class AiAssistantChat extends Component
             return;
         }
 
-        $session = AiChatSession::query()
-            ->where('id', $sessionId)
+        $session = AiChatSession::where('id', $sessionId)
             ->where('user_id', $userId)
             ->first();
 
@@ -266,8 +265,7 @@ class AiAssistantChat extends Component
             return;
         }
 
-        $assistantMessage = AiChatMessage::query()
-            ->where('ai_chat_session_id', $this->activeDbSessionId)
+        $assistantMessage = AiChatMessage::where('ai_chat_session_id', $this->activeDbSessionId)
             ->where('message_id', $this->pendingAssistantMessageId)
             ->first();
 
@@ -362,8 +360,7 @@ class AiAssistantChat extends Component
         Cache::put("ai_stop_{$this->pendingAssistantMessageId}", true, 60);
 
         // Update database status
-        AiChatMessage::query()
-            ->where('message_id', $this->pendingAssistantMessageId)
+        AiChatMessage::where('message_id', $this->pendingAssistantMessageId)
             ->update([
                 'status' => self::STATUS_FAILED,
                 'error' => 'Generation stopped by user.',
@@ -456,8 +453,7 @@ class AiAssistantChat extends Component
 
     private function updateSessionMetadata(int $userId, string $userMessage): void
     {
-        $session = AiChatSession::query()
-            ->where('id', $this->activeDbSessionId)
+        $session = AiChatSession::where('id', $this->activeDbSessionId)
             ->where('user_id', $userId)
             ->first();
 
@@ -534,8 +530,7 @@ class AiAssistantChat extends Component
 
     private function initializeActiveSession(int $userId): void
     {
-        $latestSession = AiChatSession::query()
-            ->where('user_id', $userId)
+        $latestSession = AiChatSession::where('user_id', $userId)
             ->orderByRaw('COALESCE(last_message_at, updated_at) DESC')
             ->first();
 
@@ -565,11 +560,9 @@ class AiAssistantChat extends Component
         $this->resetRealtimeState();
     }
 
-    /** @return void */
     private function loadSessions(int $userId): void
     {
-        $this->sessions = AiChatSession::query()
-            ->where('user_id', $userId)
+        $this->sessions = AiChatSession::where('user_id', $userId)
             ->orderByRaw('COALESCE(last_message_at, updated_at) DESC')
             ->get(['id', 'session_id', 'title', 'last_message_at', 'updated_at'])
             ->map(static function (AiChatSession $session): array {
@@ -587,7 +580,6 @@ class AiAssistantChat extends Component
             ->toArray();
     }
 
-    /** @return void */
     private function loadActiveSessionMessages(): void
     {
         if (! $this->activeDbSessionId) {

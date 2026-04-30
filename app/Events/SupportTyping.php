@@ -31,9 +31,15 @@ class SupportTyping implements ShouldBroadcastNow
     #[Override]
     public function broadcastOn(): array
     {
-        return [
+        $channels = [
             new PrivateChannel('support.ticket.'.$this->ticketId),
         ];
+
+        if ($this->senderType === 'user') {
+            $channels[] = new PrivateChannel('support.admin');
+        }
+
+        return $channels;
     }
 
     /**
@@ -52,6 +58,7 @@ class SupportTyping implements ShouldBroadcastNow
     public function broadcastWith(): array
     {
         return [
+            'ticket_id' => $this->ticketId,
             'sender_type' => $this->senderType,
         ];
     }

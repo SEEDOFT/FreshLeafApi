@@ -31,9 +31,17 @@ class SupportMessageSent implements ShouldBroadcastNow
     #[Override]
     public function broadcastOn(): array
     {
-        return [
+        $channels = [
             new PrivateChannel('support.ticket.'.$this->message->support_ticket_id),
         ];
+
+        // Only broadcast to the admin channel if it's from a user
+        // (Admins don't need to notify other admins about their own replies via the admin channel)
+        if ($this->message->sender_type === 'user') {
+            $channels[] = new PrivateChannel('support.admin');
+        }
+
+        return $channels;
     }
 
     /**
@@ -57,7 +65,9 @@ class SupportMessageSent implements ShouldBroadcastNow
             'sender_type' => $this->message->sender_type,
             'sender_id' => $this->message->sender_id,
             'message' => $this->message->message,
+            'file_path' => $this->message->file_path,
             'created_at' => $this->message->created_at?->toIso8601String(),
+            'updated_at' => $this->message->updated_at?->toIso8601String(),
         ];
     }
 }

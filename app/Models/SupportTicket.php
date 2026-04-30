@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Support\Carbon;
 
 /**
@@ -20,6 +21,7 @@ use Illuminate\Support\Carbon;
  * @property Carbon|null $updated_at
  * @property-read User $user
  * @property-read Collection|SupportMessage[] $messages
+ * @property-read SupportMessage|null $latestMessage
  */
 #[Table('support_tickets', key: 'id', keyType: 'int')]
 #[Fillable(['user_id', 'status'])]
@@ -43,5 +45,15 @@ class SupportTicket extends Model
     public function messages(): HasMany
     {
         return $this->hasMany(SupportMessage::class)->orderBy('created_at');
+    }
+
+    /**
+     * The newest message for sidebar previews.
+     *
+     * @return HasOne<SupportMessage, $this>
+     */
+    public function latestMessage(): HasOne
+    {
+        return $this->hasOne(SupportMessage::class)->latestOfMany();
     }
 }

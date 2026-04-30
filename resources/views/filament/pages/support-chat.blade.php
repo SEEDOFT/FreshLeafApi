@@ -2,6 +2,8 @@
     <div 
         class="flex h-[calc(100vh-14rem)] overflow-hidden bg-white dark:bg-gray-900 rounded-xl shadow-sm border border-gray-200 dark:border-white/5"
         x-data="{
+            isUserTyping: false,
+            typingTimeout: null,
             scrollToBottom() {
                 const container = document.getElementById('support-thread');
                 if (container) {
@@ -11,8 +13,16 @@
         }"
         x-init="scrollToBottom()"
         x-on:message-sent.window="setTimeout(() => scrollToBottom(), 50)"
-        x-on:message-received.window="setTimeout(() => scrollToBottom(), 50)"
-        x-on:ticket-selected.window="setTimeout(() => scrollToBottom(), 50)"
+        x-on:message-received.window="isUserTyping = false; setTimeout(() => scrollToBottom(), 50)"
+        x-on:ticket-selected.window="isUserTyping = false; setTimeout(() => scrollToBottom(), 50)"
+        x-on:user-typing.window="
+            if ($event.detail.senderType === 'user') {
+                isUserTyping = true;
+                setTimeout(() => scrollToBottom(), 50);
+                clearTimeout(typingTimeout);
+                typingTimeout = setTimeout(() => { isUserTyping = false; }, 3000);
+            }
+        "
     >
         <!-- Sidebar: Ticket List -->
         <aside class="w-80 flex-shrink-0 border-r border-gray-200 dark:border-white/5 flex flex-col">
@@ -37,7 +47,7 @@
                             </span>
                         </div>
                         <p class="text-xs text-gray-500 truncate">
-                            {{ $ticket->messages->last()?->message ?? 'No messages yet' }}
+                            {{ $ticket->messages->last()?->message ?? ($ticket->messages->last()?->file_path ? 'File attached' : 'No messages yet') }}
                         </p>
                     </button>
                 @empty
@@ -85,24 +95,82 @@
                                     <span class="text-[10px] opacity-30">{{ $msg->created_at->format('H:i') }}</span>
                                 </div>
                                 <div class="p-4 rounded-2xl {{ $msg->sender_type === 'admin' ? 'bg-primary-600 text-white rounded-tr-none shadow-md shadow-primary-500/20' : 'bg-gray-100 dark:bg-white/10 text-gray-900 dark:text-white rounded-tl-none border border-gray-200 dark:border-white/5' }}">
-                                    <p class="text-sm leading-relaxed">{{ $msg->message }}</p>
+                                    @if($msg->file_path)
+                                        @if(preg_match('/\.(jpg|jpeg|png)$/i', $msg->file_path))
+                                            <a href="{{ Storage::url($msg->file_path) }}" target="_blank">
+                                                <img src="{{ Storage::url($msg->file_path) }}" class="rounded-lg mb-2 max-w-full h-auto max-h-48 object-cover border border-black/10 dark:border-white/10" alt="Attachment">
+                                            </a>
+                                        @else
+                                            <a href="{{ Storage::url($msg->file_path) }}" target="_blank" class="flex items-center gap-2 p-2 mb-2 rounded bg-black/5 dark:bg-white/5 hover:bg-black/10 dark:hover:bg-white/10 transition-colors">
+                                                <x-filament::icon icon="heroicon-o-document" class="w-5 h-5 opacity-70" />
+                                                <span class="text-sm font-medium underline truncate">Download Attachment</span>
+                                            </a>
+                                        @endif
+                                    @endif
+                                    
+                                    @if($msg->message)
+                                        <p class="text-sm leading-relaxed">{{ $msg->message }}</p>
+                                    @endif
                                 </div>
                             </div>
                         </div>
                     @endforeach
+
+                    <!-- Typing Indicator -->
+                    <div x-show="isUserTyping" style="display: none;" class="flex justify-start">
+                        <div class="max-w-[70%]">
+                            <div class="flex items-center gap-2 mb-1">
+                                <span class="text-[10px] font-bold uppercase tracking-widest opacity-50">
+                                    {{ $activeTicket->user->fullName }}
+                                </span>
+                            </div>
+                            <div class="p-4 rounded-2xl bg-gray-100 dark:bg-white/10 rounded-tl-none border border-gray-200 dark:border-white/5">
+                                <div class="flex items-center gap-1.5 h-5">
+                                    <span class="w-1.5 h-1.5 bg-gray-400 dark:bg-gray-500 rounded-full animate-bounce"></span>
+                                    <span class="w-1.5 h-1.5 bg-gray-400 dark:bg-gray-500 rounded-full animate-bounce" style="animation-delay: 0.2s"></span>
+                                    <span class="w-1.5 h-1.5 bg-gray-400 dark:bg-gray-500 rounded-full animate-bounce" style="animation-delay: 0.4s"></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
                 <footer class="p-4 border-t border-gray-200 dark:border-white/5 bg-gray-50/50 dark:bg-white/5">
-                    <form wire:submit.prevent="sendMessage" class="flex gap-4">
+                    @if ($file)
+                        <div class="mb-3 p-3 bg-gray-100 dark:bg-white/10 rounded-lg flex justify-between items-center text-sm border border-gray-200 dark:border-white/5">
+                            <div class="flex items-center gap-2 truncate">
+                                <x-filament::icon icon="heroicon-o-paper-clip" class="w-4 h-4 text-gray-500" />
+                                <span class="truncate">{{ $file->getClientOriginalName() }}</span>
+                            </div>
+                            <button type="button" wire:click="$set('file', null)" class="text-danger-500 hover:text-danger-600 ml-2 shrink-0">
+                                <x-filament::icon icon="heroicon-o-x-mark" class="w-4 h-4" />
+                            </button>
+                        </div>
+                    @endif
+                    <form wire:submit.prevent="sendMessage" class="flex gap-4 items-end">
+                        <div class="pb-1 shrink-0 relative">
+                            <label class="cursor-pointer text-gray-400 hover:text-primary-500 transition-colors p-2 block">
+                                <x-filament::icon icon="heroicon-o-paper-clip" class="w-6 h-6" />
+                                <input type="file" wire:model="file" class="hidden" accept=".jpg,.jpeg,.png,.pdf,.doc,.docx">
+                            </label>
+                            <!-- Livewire upload progress -->
+                            <div wire:loading wire:target="file" class="absolute top-0 right-0 -mt-2 -mr-2">
+                                <span class="flex h-3 w-3 relative">
+                                  <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary-400 opacity-75"></span>
+                                  <span class="relative inline-flex rounded-full h-3 w-3 bg-primary-500"></span>
+                                </span>
+                            </div>
+                        </div>
                         <div class="flex-1">
                             <x-filament::input
                                 wire:model="message"
+                                wire:keyup="sendTyping"
                                 placeholder="{{ __('admin.support.type_reply') }}"
                                 autocomplete="off"
                                 autofocus
                             />
                         </div>
-                        <x-filament::button type="submit" icon="heroicon-o-paper-airplane">
+                        <x-filament::button type="submit" icon="heroicon-o-paper-airplane" class="mb-0.5">
                             {{ __('admin.support.send') }}
                         </x-filament::button>
                     </form>

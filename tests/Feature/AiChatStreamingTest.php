@@ -38,8 +38,8 @@ class AiChatStreamingTest extends TestCase
         $mockAiService->shouldReceive('streamContentWithSystemPromptAndHistory')
             ->once()
             ->andReturnUsing(function ($systemPrompt, $history, $prompt, $onChunk, array $options) use ($assistantMessage): string {
-                $this->assertSame(0.3, $options['temperature']);
-                $this->assertSame(256, $options['maxOutputTokens']);
+                $this->assertSame(0.7, $options['temperature']);
+                $this->assertSame(4096, $options['maxOutputTokens']);
 
                 $response = 'Fresh vegetables are available today.';
                 $onChunk($response);

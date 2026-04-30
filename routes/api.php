@@ -160,8 +160,10 @@ Route::prefix('v1')->name('v1.')->group(static function () {
                         ->controller(UserController\SupportChatController::class)
                         ->group(static function () {
                             Route::get('ticket', 'getActiveTicket')->name('ticket.active');
+                            Route::get('unread-count', 'getUnreadCount')->name('unread.count');
                             Route::post('messages', 'sendMessage')->name('messages.store');
                             Route::get('messages', 'getMessages')->name('messages.index');
+                            Route::post('typing', 'sendTyping')->name('typing');
                         });
                 });
         });

@@ -12,6 +12,9 @@ use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Notification;
 use Illuminate\Support\Str;
+use NotificationChannels\Fcm\FcmChannel;
+use NotificationChannels\Fcm\FcmMessage;
+use NotificationChannels\Fcm\Resources\Notification as FcmNotification;
 
 class NewSupportMessageNotification extends Notification implements ShouldQueue
 {
@@ -31,7 +34,22 @@ class NewSupportMessageNotification extends Notification implements ShouldQueue
      */
     public function via(object $notifiable): array
     {
-        return ['database'];
+        return ['database', FcmChannel::class];
+    }
+
+    /**
+     * Create the FCM message representation.
+     */
+    public function toFcm(object $notifiable): FcmMessage
+    {
+        return (new FcmMessage(notification: new FcmNotification(
+            title: 'New Support Message',
+            body: Str::limit($this->supportMessage->message, 50),
+        )))
+            ->data([
+                'type' => 'support_chat',
+                'ticket_id' => (string) $this->supportMessage->support_ticket_id,
+            ]);
     }
 
     /**

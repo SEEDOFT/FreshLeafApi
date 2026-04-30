@@ -61,12 +61,19 @@ All models are built using PHP 8.3 features, including Attributes for property d
 - **PushNotification:** Base notification class implementing `FcmChannel` to send rich push notifications to Android and APNS (iOS) devices.
 - **User Model Integration:** Includes `routeNotificationForFcm()` to dynamically route notifications to all active user devices.
 
-### 6. Database Seeders
+### 6. Real-Time Customer Support Chat
+- **Models:** `SupportTicket` and `SupportMessage` with file attachment capabilities (`file_path`).
+- **Real-Time Sync:** Native Reverb integration with `SupportMessageSent`, `SupportTyping`, and `NewSupportTicket` events.
+- **Admin Dashboard:** Custom Filament Livewire page with a dual-pane layout, auto-refreshing ticket list, active thread syncing, and dynamic unread notification badge.
+- **Mobile Experience:** Telegram-style UI, bidirectional typing indicators, and file attachments via `multipart/form-data`.
+- **Push Notifications:** FCM integration for `NewSupportMessageNotification` alerting mobile users of admin replies even when the app is backgrounded.
+
+### 7. Database Seeders
 - **PaymentMethodTypeSeeder:** Seeds 4 core payment method types (Wallet, Credit/Debit, ABA, ACLEDA).
 - **PaymentMethodStatusSeeder:** Seeds all 3 payment method statuses using model constants.
 - **DatabaseSeeder:** Updated to call seeders.
 
-### 7. API-Only Migration (User + Admin + Vendor)
+### 8. API-Only Migration (User + Admin + Vendor)
 - **Runtime is API-only:** Removed web route runtime from `bootstrap/app.php` and decommissioned `routes/web.php`.
 - **Web UI removed:** Removed `app/Http/Controllers/Web/**`, `resources/views/**`, and web-only middleware (`AuthenticatePanel`, `EnsureCorrectGuard`, `SetPanelPreferences`).
 - **New admin API namespace (`/api/v1/admin/*`):**
@@ -96,7 +103,7 @@ All models are built using PHP 8.3 features, including Attributes for property d
   - `Admin` and `Vendor` models now use `HasApiTokens` (Sanctum lifecycle).
   - API middleware enforces role/status via `role:*` and `active.status:*`.
 
-### 8. Security Utilities
+### 9. Security Utilities
 - **Key Generation:** Added `php artisan make:key` command to generate high-entropy secure keys (using `random_bytes`). It can automatically update or add keys to the `.env` file for variables like `REVERB_APP_KEY` or `ADMIN_REGISTRATION_KEY`.
 
 ---

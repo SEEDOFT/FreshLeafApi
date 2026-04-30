@@ -22,7 +22,7 @@ use Illuminate\Support\Carbon;
  * @property-read User $sender
  */
 #[Table('support_messages')]
-#[Fillable(['support_ticket_id', 'sender_type', 'sender_id', 'message'])]
+#[Fillable(['support_ticket_id', 'sender_type', 'sender_id', 'message', 'is_read', 'file_path'])]
 class SupportMessage extends Model
 {
     /**

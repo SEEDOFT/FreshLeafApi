@@ -23,14 +23,16 @@ class ProductForm
                     ->schema([
                         Grid::make(2)
                             ->schema([
-                                TextInput::make('name_en')
+                                TextInput::make('name_km')
+                                    ->label('Name (Khmer)')
                                     ->required()
                                     ->live(onBlur: true)
                                     ->afterStateUpdated(fn (string $state, $set) => $set('slug', Str::slug($state))),
-                                TextInput::make('name_km')
+                                TextInput::make('name_en')
+                                    ->label('Name (English)')
                                     ->required(),
                                 TextInput::make('slug')
-                                    ->disabled()
+                                    ->hidden()
                                     ->dehydrated()
                                     ->required()
                                     ->unique(ignoreRecord: true),

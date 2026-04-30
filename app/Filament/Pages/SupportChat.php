@@ -128,13 +128,22 @@ class SupportChat extends Page
      */
     public function getListeners(): array
     {
-        return [];
+        return [
+            'echo-private:support.admin,.NewSupportTicket' => '$refresh',
+            'echo-private:support.admin,.SupportMessageSent' => 'handleIncomingMessage',
+            'echo-private:support.admin,.SupportTyping' => 'handleTypingEvent',
+        ];
     }
 
-    /** @param array<string, mixed> $event */
-    public function handleIncomingMessage(array $event): void
+    public function handleIncomingMessage(mixed $event): void
     {
-        $ticketId = (int) ($event['support_ticket_id'] ?? 0);
+        $data = is_array($event) ? $event : [];
+
+        if (is_object($event) && method_exists($event, 'getData')) {
+            $data = $event->getData();
+        }
+
+        $ticketId = (int) ($data['support_ticket_id'] ?? 0);
         $isActiveTicket = $this->activeTicketId !== null
             && $ticketId === $this->activeTicketId;
 
@@ -148,6 +157,16 @@ class SupportChat extends Page
         }
 
         $this->dispatch('$refresh');
+    }
+
+    public function handleTypingEvent(array $event): void
+    {
+        $ticketId = (int) ($event['ticket_id'] ?? 0);
+        $senderType = $event['sender_type'] ?? '';
+
+        if ($senderType === 'user' && $this->activeTicketId === $ticketId) {
+            $this->dispatch('user-typing');
+        }
     }
 
     public function resolveTicket(int $id): void

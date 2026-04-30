@@ -1,5 +1,6 @@
 <x-filament-panels::page>
     <div 
+        wire:poll.5s="getTickets"
         class="flex h-[calc(100vh-14rem)] overflow-hidden bg-white dark:bg-gray-900 rounded-xl shadow-sm border border-gray-200 dark:border-white/5"
         x-data="{
             isUserTyping: false,
@@ -63,6 +64,7 @@
         x-init="scrollToBottom(); initEcho();"
         x-on:message-sent.window="setTimeout(() => scrollToBottom(), 50)"
         x-on:message-received.window="isUserTyping = false; setTimeout(() => scrollToBottom(), 50)"
+        x-on:user-typing.window="isUserTyping = true; clearTimeout(this.typingTimeout); this.typingTimeout = setTimeout(() => { isUserTyping = false; }, 3000); setTimeout(() => scrollToBottom(), 50)"
         x-on:ticket-selected.window="isUserTyping = false; setTimeout(() => scrollToBottom(), 50); listenToTicket($wire.activeTicketId);"
     >
         <!-- Sidebar: Ticket List -->

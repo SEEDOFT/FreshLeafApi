@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Notifications;
 
 use Illuminate\Notifications\Notification;
+use Illuminate\Support\Facades\Log;
 use NotificationChannels\Fcm\FcmChannel;
 use NotificationChannels\Fcm\FcmMessage;
 use NotificationChannels\Fcm\Resources\Notification as FcmNotification;
@@ -29,6 +30,11 @@ class PushNotification extends Notification
      */
     public function via(object $notifiable): array
     {
+        Log::info('PushNotification via() called', [
+            'notifiable_id' => method_exists($notifiable, 'getKey') ? $notifiable->getKey() : 'unknown',
+            'title' => $this->title,
+        ]);
+
         return [FcmChannel::class];
     }
 
@@ -37,6 +43,13 @@ class PushNotification extends Notification
      */
     public function toFcm(object $notifiable): FcmMessage
     {
+        Log::info('PushNotification toFcm() called', [
+            'notifiable_id' => method_exists($notifiable, 'getKey') ? $notifiable->getKey() : 'unknown',
+            'title' => $this->title,
+            'body' => $this->body,
+            'data' => $this->data,
+        ]);
+
         return (new FcmMessage(notification: new FcmNotification(
             title: $this->title,
             body: $this->body,

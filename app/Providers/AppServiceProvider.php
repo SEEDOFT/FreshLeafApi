@@ -35,6 +35,9 @@ class AppServiceProvider extends ServiceProvider
     {
         Order::observe(OrderObserver::class);
 
+        // Load channel authorization callbacks
+        require base_path('routes/channels.php');
+
         Gate::policy(Address::class, AddressPolicy::class);
         Gate::policy(PaymentMethod::class, PaymentMethodPolicy::class);
         Gate::policy(User::class, UserPolicy::class);

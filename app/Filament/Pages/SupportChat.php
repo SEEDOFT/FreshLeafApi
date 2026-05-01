@@ -17,6 +17,13 @@ use Illuminate\Support\Facades\Notification;
 use Livewire\Attributes\Url;
 use Livewire\WithFileUploads;
 
+use function auth;
+use function is_array;
+use function is_object;
+use function method_exists;
+use function trim;
+use function gettype;
+
 class SupportChat extends Page
 {
     use WithFileUploads;
@@ -175,6 +182,11 @@ class SupportChat extends Page
         $this->dispatch('$refresh');
     }
 
+    /**
+     * Handle typing event from WebSocket.
+     *
+     * @param  array{ticket_id?: int|string, sender_type?: string}  $event
+     */
     public function handleTypingEvent(array $event): void
     {
         Log::info('SupportChat: handleTypingEvent called', [

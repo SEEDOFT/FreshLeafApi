@@ -8,6 +8,7 @@ use App\Http\Controllers\Api\CategoryController;
 use App\Http\Controllers\Api\Product\ProductController;
 use App\Http\Controllers\Api\User as UserController;
 use App\Http\Controllers\Api\Vendor as VendorController;
+// use App\Http\Controllers\BroadcastController;
 use Illuminate\Broadcasting\BroadcastController;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Route;
@@ -168,7 +169,7 @@ Route::prefix('v1')->name('v1.')->group(static function () {
                 });
         });
     // Authenticated (any sanctum) routes
-    Route::post('broadcasting/auth', [BroadcastController::class, 'authenticate'])
+    Route::match(['GET', 'POST'], 'broadcasting/auth', [BroadcastController::class, 'authenticate'])
         ->middleware('auth:sanctum')
         ->name('broadcasting.auth');
 

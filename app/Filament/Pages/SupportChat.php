@@ -18,11 +18,11 @@ use Livewire\Attributes\Url;
 use Livewire\WithFileUploads;
 
 use function auth;
+use function gettype;
 use function is_array;
 use function is_object;
 use function method_exists;
 use function trim;
-use function gettype;
 
 class SupportChat extends Page
 {
@@ -117,7 +117,15 @@ class SupportChat extends Page
         broadcast(new SupportMessageSent($msg))->toOthers();
 
         // Notify user
+        Log::info('Sending notification to user', [
+            'user_id' => $ticket->user->id,
+            'user_email' => $ticket->user->email,
+            'message_id' => $msg->id,
+        ]);
+
         Notification::sendNow($ticket->user, new NewSupportMessageNotification($msg));
+
+        Log::info('Notification sent successfully', ['user_id' => $ticket->user->id]);
 
         $this->message = '';
         $this->file = null;

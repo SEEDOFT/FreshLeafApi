@@ -49,8 +49,10 @@ class VendorEarningsChart extends ChartWidget
                 [
                     'label' => 'Earnings (USD)',
                     'data' => $values,
-                    'backgroundColor' => '#4ade80',
+                    'backgroundColor' => 'rgba(74, 222, 128, 0.1)',
                     'borderColor' => '#22c55e',
+                    'fill' => 'start',
+                    'tension' => 0.4,
                 ],
             ],
             'labels' => $labels,
@@ -60,6 +62,58 @@ class VendorEarningsChart extends ChartWidget
     #[Override]
     protected function getType(): string
     {
-        return 'bar';
+        return 'line';
+    }
+
+    #[Override]
+    protected function getOptions(): array
+    {
+        return [
+            'plugins' => [
+                'legend' => [
+                    'display' => true,
+                    'position' => 'top',
+                    'labels' => [
+                        'boxWidth' => 12,
+                        'padding' => 15,
+                        'font' => [
+                            'size' => 12,
+                            'weight' => '500',
+                        ],
+                    ],
+                ],
+                'filler' => [
+                    'propagate' => false,
+                ],
+            ],
+            'interaction' => [
+                'intersect' => false,
+                'mode' => 'index',
+            ],
+            'scales' => [
+                'y' => [
+                    'grid' => [
+                        'drawBorder' => false,
+                        'color' => 'rgba(0, 0, 0, 0.05)',
+                    ],
+                    'ticks' => [
+                        'font' => [
+                            'size' => 11,
+                        ],
+                    ],
+                ],
+                'x' => [
+                    'grid' => [
+                        'display' => false,
+                        'drawBorder' => false,
+                    ],
+                    'ticks' => [
+                        'font' => [
+                            'size' => 11,
+                        ],
+                    ],
+                ],
+            ],
+        ];
     }
 }

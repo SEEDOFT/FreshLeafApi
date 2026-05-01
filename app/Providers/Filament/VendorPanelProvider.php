@@ -11,6 +11,7 @@ use App\Filament\Vendor\Clusters\Settings\Pages\BusinessProfile;
 use App\Filament\Vendor\Clusters\Settings\Pages\VendorProfile;
 use App\Filament\Vendor\Widgets\VendorEarningsChart;
 use App\Filament\Vendor\Widgets\VendorStatsOverview;
+use App\Http\Middleware\SetLocaleFromAcceptLanguage;
 use Filament\Enums\ThemeMode;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\AuthenticateSession;
@@ -42,7 +43,7 @@ class VendorPanelProvider extends PanelProvider
             ->authGuard('web')
             ->login(Login::class)
             ->registration(Register::class)
-            ->font('Plus Jakarta Sans')
+            ->font('Noto Sans Khmer')
             ->viteTheme('resources/css/filament/panels/theme.css')
             ->spa()
             ->maxContentWidth('full')
@@ -98,6 +99,7 @@ class VendorPanelProvider extends PanelProvider
                 SubstituteBindings::class,
                 DisableBladeIconComponents::class,
                 DispatchServingFilamentEvent::class,
+                SetLocaleFromAcceptLanguage::class,
             ])
             ->authMiddleware([
                 Authenticate::class,

@@ -18,11 +18,13 @@ use Override;
 
 class Login extends BaseRegister
 {
+    #[Override]
     public function getHeading(): string
     {
-        return 'Welcome back';
+        return 'Welcome back, Admin!';
     }
 
+    #[Override]
     public function getSubHeading(): ?string
     {
         return 'Sign in to manage your FreshLeaf dashboard.';

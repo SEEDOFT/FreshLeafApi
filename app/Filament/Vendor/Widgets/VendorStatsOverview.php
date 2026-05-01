@@ -15,6 +15,25 @@ use Override;
 
 class VendorStatsOverview extends BaseWidget
 {
+    protected string $view = 'filament.widgets.admin-stats-overview';
+
+    #[Override]
+    public function getViewData(): array
+    {
+        return [
+            'stats' => $this->getStats(),
+            'columns' => $this->getColumns(),
+        ];
+    }
+
+    #[Override]
+    protected function getColumns(): int|array|null
+    {
+        return [
+            'default' => 3,
+        ];
+    }
+
     #[Override]
     protected function getStats(): array
     {

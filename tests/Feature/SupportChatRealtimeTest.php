@@ -90,15 +90,15 @@ class SupportChatRealtimeTest extends TestCase
 
         $this->assertSame(
             '$refresh',
-            $listeners['echo-private:support.admin,.NewSupportTicket']
+            $listeners['echo-private:support.admin,NewSupportTicket']
         );
         $this->assertSame(
             'handleIncomingMessage',
-            $listeners['echo-private:support.admin,.SupportMessageSent']
+            $listeners['echo-private:support.admin,SupportMessageSent']
         );
         $this->assertSame(
             'handleTypingEvent',
-            $listeners['echo-private:support.admin,.SupportTyping']
+            $listeners['echo-private:support.admin,SupportTyping']
         );
     }
 

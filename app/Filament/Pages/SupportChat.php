@@ -12,6 +12,7 @@ use App\Notifications\NewSupportMessageNotification;
 use Filament\Pages\Page;
 use Filament\Support\Enums\Width;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Notification;
 use Livewire\Attributes\Url;
 use Livewire\WithFileUploads;
@@ -128,15 +129,30 @@ class SupportChat extends Page
      */
     public function getListeners(): array
     {
+        Log::info('SupportChat: Setting up echo listeners', [
+            'user_id' => auth()->id(),
+            'user_type' => auth()->user()?->user_type_id,
+            'listeners' => [
+                'echo-private:support.admin,NewSupportTicket' => '$refresh',
+                'echo-private:support.admin,SupportMessageSent' => 'handleIncomingMessage',
+                'echo-private:support.admin,SupportTyping' => 'handleTypingEvent',
+            ],
+        ]);
+
         return [
-            'echo-private:support.admin,.NewSupportTicket' => '$refresh',
-            'echo-private:support.admin,.SupportMessageSent' => 'handleIncomingMessage',
-            'echo-private:support.admin,.SupportTyping' => 'handleTypingEvent',
+            'echo-private:support.admin,NewSupportTicket' => '$refresh',
+            'echo-private:support.admin,SupportMessageSent' => 'handleIncomingMessage',
+            'echo-private:support.admin,SupportTyping' => 'handleTypingEvent',
         ];
     }
 
     public function handleIncomingMessage(mixed $event): void
     {
+        Log::info('SupportChat: handleIncomingMessage called', [
+            'event_type' => gettype($event),
+            'active_ticket_id' => $this->activeTicketId,
+        ]);
+
         $data = is_array($event) ? $event : [];
 
         if (is_object($event) && method_exists($event, 'getData')) {
@@ -161,6 +177,11 @@ class SupportChat extends Page
 
     public function handleTypingEvent(array $event): void
     {
+        Log::info('SupportChat: handleTypingEvent called', [
+            'event' => $event,
+            'active_ticket_id' => $this->activeTicketId,
+        ]);
+
         $ticketId = (int) ($event['ticket_id'] ?? 0);
         $senderType = $event['sender_type'] ?? '';
 

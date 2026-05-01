@@ -5,67 +5,18 @@
         x-data="{
             isUserTyping: false,
             typingTimeout: null,
-            currentTicketId: null,
             scrollToBottom() {
                 const container = document.getElementById('support-thread');
                 if (container) {
                     container.scrollTop = container.scrollHeight;
                 }
-            },
-            listenToTicket(ticketId) {
-                if (typeof window.Echo === 'undefined') return;
-                
-                if (this.currentTicketId) {
-                    window.Echo.leave('support.ticket.' + this.currentTicketId);
-                }
-                
-                if (ticketId) {
-                    this.currentTicketId = ticketId;
-                    const channel = 'support.ticket.' + ticketId;
-                    
-                    window.Echo.private(channel)
-                        .listen('.SupportMessageSent', (e) => {
-                            $wire.handleIncomingMessage(e);
-                        })
-                        .listen('.SupportTyping', (e) => {
-                            if (e.sender_type === 'user') {
-                                this.isUserTyping = true;
-                                setTimeout(() => this.scrollToBottom(), 50);
-                                clearTimeout(this.typingTimeout);
-                                this.typingTimeout = setTimeout(() => { this.isUserTyping = false; }, 3000);
-                            }
-                        });
-                }
-            },
-            initEcho() {
-                const setup = () => {
-                    if (typeof window.Echo !== 'undefined') {
-                        // Listen for global admin updates (new tickets, any user message)
-                        window.Echo.private('support.admin')
-                            .listen('.NewSupportTicket', (e) => {
-                                $wire.$refresh();
-                            })
-                            .listen('.SupportMessageSent', (e) => {
-                                // If the message is for the active ticket, the specific listener handles it.
-                                // If not, we just refresh to update the sidebar's unread counts/latest message.
-                                if (parseInt(e.support_ticket_id) !== parseInt($wire.activeTicketId)) {
-                                    $wire.$refresh();
-                                }
-                            });
-                        
-                        this.listenToTicket($wire.activeTicketId);
-                    } else {
-                        setTimeout(setup, 1000);
-                    }
-                };
-                setup();
             }
         }"
-        x-init="scrollToBottom(); initEcho();"
+        x-init="scrollToBottom()"
         x-on:message-sent.window="setTimeout(() => scrollToBottom(), 50)"
         x-on:message-received.window="isUserTyping = false; setTimeout(() => scrollToBottom(), 50)"
         x-on:user-typing.window="isUserTyping = true; clearTimeout(this.typingTimeout); this.typingTimeout = setTimeout(() => { isUserTyping = false; }, 3000); setTimeout(() => scrollToBottom(), 50)"
-        x-on:ticket-selected.window="isUserTyping = false; setTimeout(() => scrollToBottom(), 50); listenToTicket($wire.activeTicketId);"
+        x-on:ticket-selected.window="isUserTyping = false; setTimeout(() => scrollToBottom(), 50)"
     >
         <!-- Sidebar: Ticket List -->
         <aside class="w-80 flex-shrink-0 border-r border-gray-200 dark:border-white/5 flex flex-col">

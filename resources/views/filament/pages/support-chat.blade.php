@@ -5,18 +5,106 @@
         x-data="{
             isUserTyping: false,
             typingTimeout: null,
+            currentTicketId: null,
             scrollToBottom() {
                 const container = document.getElementById('support-thread');
                 if (container) {
                     container.scrollTop = container.scrollHeight;
                 }
+            },
+            initEcho() {
+                console.log('[SupportChat] Initializing Echo...');
+                
+                if (typeof window.Echo === 'undefined') {
+                    console.error('[SupportChat] Echo NOT available! Waiting...');
+                    setTimeout(() => this.initEcho(), 2000);
+                    return;
+                }
+                
+                console.log('[SupportChat] Echo is available');
+                
+                // Check connection status
+                const connection = window.Echo?.connector?.pusher?.connection;
+                console.log('[SupportChat] Echo connection state:', connection?.state);
+                
+                // Listen for connection events
+                window.Echo.connector.pusher.connection.bind('connected', () => {
+                    console.log('[SupportChat] ✅ Reverb connected!');
+                });
+                window.Echo.connector.pusher.connection.bind('disconnected', () => {
+                    console.warn('[SupportChat] ❌ Reverb disconnected');
+                });
+                window.Echo.connector.pusher.connection.bind('error', (err) => {
+                    console.error('[SupportChat] ❌ Reverb error:', err);
+                });
+                
+                // Subscribe to admin channel
+                console.log('[SupportChat] Subscribing to support.admin channel...');
+                
+                const adminChannel = window.Echo.private('support.admin');
+                
+                adminChannel.listen('.NewSupportTicket', (e) => {
+                    console.log('[SupportChat] ✅ NewSupportTicket received:', e);
+                    $wire.$refresh();
+                });
+                
+                adminChannel.listen('.SupportMessageSent', (e) => {
+                    console.log('[SupportChat] ✅ SupportMessageSent received:', e);
+                    $wire.$refresh();
+                });
+                
+                adminChannel.listen('.SupportTyping', (e) => {
+                    console.log('[SupportChat] ✅ SupportTyping received:', e);
+                    if (e.sender_type === 'user') {
+                        this.isUserTyping = true;
+                        clearTimeout(this.typingTimeout);
+                        this.typingTimeout = setTimeout(() => { this.isUserTyping = false; }, 3000);
+                        setTimeout(() => this.scrollToBottom(), 50);
+                    }
+                });
+                
+                adminChannel.subscribed(() => {
+                    console.log('[SupportChat] ✅ Successfully subscribed to support.admin');
+                });
+                
+                adminChannel.error((err) => {
+                    console.error('[SupportChat] ❌ Channel subscription error:', err);
+                });
+                
+                // Also listen to specific ticket channel if active
+                this.listenToTicket($wire.activeTicketId);
+            },
+            listenToTicket(ticketId) {
+                if (!ticketId) return;
+                
+                if (this.currentTicketId) {
+                    window.Echo.leave('support.ticket.' + this.currentTicketId);
+                }
+                
+                this.currentTicketId = ticketId;
+                console.log('[SupportChat] Subscribing to ticket channel:', ticketId);
+                
+                const ticketChannel = window.Echo.private('support.ticket.' + ticketId);
+                
+                ticketChannel.listen('.SupportMessageSent', (e) => {
+                    console.log('[SupportChat] ✅ Ticket message received:', e);
+                    $wire.handleIncomingMessage(e);
+                });
+                
+                ticketChannel.listen('.SupportTyping', (e) => {
+                    console.log('[SupportChat] ✅ Ticket typing received:', e);
+                });
+                
+                ticketChannel.subscribed(() => {
+                    console.log('[SupportChat] ✅ Subscribed to support.ticket.' + ticketId);
+                });
             }
         }"
-        x-init="scrollToBottom()"
+        x-init="scrollToBottom(); initEcho()"
         x-on:message-sent.window="setTimeout(() => scrollToBottom(), 50)"
         x-on:message-received.window="isUserTyping = false; setTimeout(() => scrollToBottom(), 50)"
         x-on:user-typing.window="isUserTyping = true; clearTimeout(this.typingTimeout); this.typingTimeout = setTimeout(() => { isUserTyping = false; }, 3000); setTimeout(() => scrollToBottom(), 50)"
-        x-on:ticket-selected.window="isUserTyping = false; setTimeout(() => scrollToBottom(), 50)"
+        x-on:ticket-selected.window="isUserTyping = false; setTimeout(() => scrollToBottom(), 50); listenToTicket($wire.activeTicketId)"
     >
         <!-- Sidebar: Ticket List -->
         <aside class="w-80 flex-shrink-0 border-r border-gray-200 dark:border-white/5 flex flex-col">
@@ -159,7 +247,7 @@
                         <div class="flex-1">
                             <x-filament::input
                                 wire:model="message"
-                                wire:keyup="sendTyping"
+                                wire:keyup.debounce.500ms="sendTyping"
                                 placeholder="{{ __('admin.support.type_reply') }}"
                                 autocomplete="off"
                                 autofocus

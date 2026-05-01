@@ -10,6 +10,7 @@ use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Broadcasting\PrivateChannel;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcastNow;
 use Illuminate\Foundation\Events\Dispatchable;
+use Illuminate\Support\Facades\Log;
 use Override;
 
 class SupportMessageSent implements ShouldBroadcastNow
@@ -40,6 +41,13 @@ class SupportMessageSent implements ShouldBroadcastNow
         if ($this->message->sender_type === 'user') {
             $channels[] = new PrivateChannel('support.admin');
         }
+
+        Log::info('[SupportMessageSent] Broadcasting to channels', [
+            'message_id' => $this->message->id,
+            'sender_type' => $this->message->sender_type,
+            'ticket_id' => $this->message->support_ticket_id,
+            'channels' => array_map(fn ($c) => $c->name, $channels),
+        ]);
 
         return $channels;
     }

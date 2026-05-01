@@ -29,5 +29,11 @@ Broadcast::channel('support.ticket.{ticketId}', static function (User $user, str
 }, ['guards' => ['web', 'api', 'sanctum']]);
 
 Broadcast::channel('support.admin', static function (User $user): bool {
+    Log::info('[Channels] support.admin authorization', [
+        'user_id' => $user->id,
+        'user_type_id' => $user->user_type_id,
+        'is_admin' => $user->isType(UserType::ADMIN),
+    ]);
+
     return $user->isType(UserType::ADMIN);
 }, ['guards' => ['web', 'api', 'sanctum']]);

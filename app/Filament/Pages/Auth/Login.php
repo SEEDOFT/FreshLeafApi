@@ -22,13 +22,13 @@ class Login extends BaseLogin
     #[Override]
     public function getHeading(): string | Htmlable
     {
-        return 'Welcome back, Admin!';
+        return 'Welcome back';
     }
 
     #[Override]
     public function getSubHeading(): string | Htmlable | null
     {
-        return 'Sign in to manage your FreshLeaf dashboard.';
+        return 'Sign in to manage your FreshLeaf';
     }
 
     #[Override]

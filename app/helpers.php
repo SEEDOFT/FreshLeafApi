@@ -230,7 +230,7 @@ if (! function_exists('get_country_codes')) {
         function get_country_options(): array
         {
             return array_map(
-                static fn ($item) => "{$item['code']} ({$item['name']})",
+                static fn ($item) => "{$item['name']} {$item['code']}",
                 get_country_codes()
             );
         }

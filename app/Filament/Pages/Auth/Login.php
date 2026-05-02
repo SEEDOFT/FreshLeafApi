@@ -7,25 +7,27 @@ namespace App\Filament\Pages\Auth;
 use App\Models\User;
 use App\Models\UserStatus;
 use App\Models\UserType;
-use Filament\Auth\Pages\Login as BaseRegister;
+use Filament\Auth\Pages\Login as BaseLogin;
 use Filament\Facades\Filament;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Schema;
+use Illuminate\Contracts\Support\Htmlable;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\ValidationException;
 use Override;
 
-class Login extends BaseRegister
+class Login extends BaseLogin
 {
     #[Override]
-    public function getHeading(): string
+    public function getHeading(): string|Htmlable
     {
         return 'Welcome back, Admin!';
     }
 
     #[Override]
-    public function getSubHeading(): ?string
+    public function getSubHeading(): string|Htmlable|null
     {
         return 'Sign in to manage your FreshLeaf dashboard.';
     }
@@ -55,7 +57,7 @@ class Login extends BaseRegister
                     ->columnSpan(2),
                 TextInput::make('phone_number_input')
                     ->label(__('custom.phone_number'))
-                    ->placeholder('12 345 678')
+                    ->placeholder('012 345 678')
                     ->required()
                     ->tel()
                     ->autofocus()
@@ -67,7 +69,10 @@ class Login extends BaseRegister
     #[Override]
     protected function getCredentialsFromFormData(array $data): array
     {
+        Log::info('[AdminLogin] Form submitted', ['keys' => array_keys($data)]);
+
         $panelId = Filament::getCurrentOrDefaultPanel()->getId();
+        Log::info('[AdminLogin] Panel: '.$panelId);
 
         $userTypeId = match ($panelId) {
             'admin' => UserType::ADMIN,
@@ -76,8 +81,12 @@ class Login extends BaseRegister
         };
 
         // Combine dial code and number
-        $dialCode = get_dial_code($data['country_iso']);
-        $fullPhone = $dialCode.ltrim($data['phone_number_input'], '0');
+        $countryIso = $data['country_iso'] ?? 'KH';
+        $phoneInput = $data['phone_number_input'] ?? '';
+        $dialCode = get_dial_code($countryIso);
+        $fullPhone = $dialCode.ltrim($phoneInput, '0');
+
+        Log::info('[AdminLogin] Country: '.$countryIso.', Dial: '.$dialCode.', Phone: '.$phoneInput.', Full: '.$fullPhone);
 
         $credentials = [
             'phone_number' => $fullPhone,
@@ -90,11 +99,15 @@ class Login extends BaseRegister
             ->where('user_type_id', $userTypeId)
             ->first();
 
+        Log::info('[AdminLogin] User found: '.($user ? $user->first_name.' (ID:'.$user->id.')' : 'NONE'));
+
         if ($user && $user->user_status_id === UserStatus::PENDING) {
             throw ValidationException::withMessages([
                 'data.phone_number_input' => 'Your account is pending approval. Please wait for an administrator to review your application.',
             ]);
         }
+
+        Log::info('[AdminLogin] Returning credentials for: '.$fullPhone);
 
         return array_filter($credentials);
     }
@@ -102,8 +115,9 @@ class Login extends BaseRegister
     #[Override]
     protected function throwFailureValidationException(): never
     {
+        Log::error('[AdminLogin] LOGIN FAILED - Invalid credentials');
         throw ValidationException::withMessages([
-            'data.phone_number_input' => __('filament-panels::auth/pages/login.messages.failed'),
+            'data.phone_number_input' => 'Invalid credentials or user not authorized for this panel.',
         ]);
     }
 }

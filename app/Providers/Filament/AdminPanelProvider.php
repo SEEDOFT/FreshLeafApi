@@ -44,7 +44,7 @@ class AdminPanelProvider extends PanelProvider
             ->login(Login::class)
             ->font('Noto Sans Khmer')
             ->viteTheme('resources/css/filament/panels/theme.css')
-            ->spa()
+            // ->spa() // Disabled - requires Vite network access
             ->maxContentWidth('full')
             ->defaultThemeMode(ThemeMode::Light)
             ->sidebarCollapsibleOnDesktop()
@@ -89,12 +89,12 @@ class AdminPanelProvider extends PanelProvider
                 Dashboard::class,
             ])
             ->discoverWidgets(in: app_path('Filament/Widgets'), for: 'App\Filament\Widgets')
-            ->widgets([
+            ->widgets(widgets: [
                 AccountWidget::class,
                 AdminStatsOverview::class,
                 AdminRevenueChart::class,
             ])
-            ->middleware([
+            ->middleware(middleware: [
                 EncryptCookies::class,
                 AddQueuedCookiesToResponse::class,
                 StartSession::class,

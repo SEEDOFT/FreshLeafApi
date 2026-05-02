@@ -43,12 +43,30 @@ class PushNotification extends Notification
      */
     public function toFcm(object $notifiable): FcmMessage
     {
+        $notifiableId = method_exists($notifiable, 'getKey') ? $notifiable->getKey() : 'unknown';
+
         Log::info('PushNotification toFcm() called', [
-            'notifiable_id' => method_exists($notifiable, 'getKey') ? $notifiable->getKey() : 'unknown',
+            'notifiable_id' => $notifiableId,
             'title' => $this->title,
             'body' => $this->body,
             'data' => $this->data,
+            'notifiable_class' => get_class($notifiable),
         ]);
+
+        // Check if notifiable has routeNotificationForFcm method
+        if (method_exists($notifiable, 'routeNotificationForFcm')) {
+            $fcmTokens = $notifiable->routeNotificationForFcm();
+            Log::info('PushNotification FCM tokens', [
+                'notifiable_id' => $notifiableId,
+                'tokens' => $fcmTokens,
+                'token_count' => count($fcmTokens),
+            ]);
+        } else {
+            Log::warning('PushNotification: Notifiable does not have routeNotificationForFcm method', [
+                'notifiable_id' => $notifiableId,
+                'notifiable_class' => get_class($notifiable),
+            ]);
+        }
 
         return (new FcmMessage(notification: new FcmNotification(
             title: $this->title,

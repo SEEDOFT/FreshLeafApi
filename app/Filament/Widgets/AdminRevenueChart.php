@@ -11,8 +11,10 @@ use Override;
 
 class AdminRevenueChart extends ChartWidget
 {
+    #[Override]
     protected ?string $heading = 'Revenue Trend (30 Days)';
 
+    #[Override]
     protected string $color = 'success';
 
     protected ?string $chartColor = 'success';
@@ -20,7 +22,7 @@ class AdminRevenueChart extends ChartWidget
     #[Override]
     protected function getData(): array
     {
-        $data = Order::whereHas('paymentStatus', fn ($query) => $query->where('code', 'paid'))
+        $data = Order::whereHas('paymentStatus', static fn ($query) => $query->where('code', 'paid'))
             ->where('created_at', '>=', now()->subDays(30))
             ->select(
                 DB::raw('DATE(created_at) as date'),

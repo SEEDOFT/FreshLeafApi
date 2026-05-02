@@ -30,6 +30,8 @@ class UpdateVendorProfileRequest extends FormRequest
             'province' => ['sometimes', 'nullable', 'string', 'max:100'],
             'address' => ['sometimes', 'nullable', 'string', 'max:1000'],
             'meta' => ['sometimes', 'nullable', 'array'],
+            'locale' => ['sometimes', 'string', 'in:en,km'],
+            'prefer_theme' => ['sometimes', 'string', 'in:system,light,dark'],
         ];
     }
 }

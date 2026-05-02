@@ -16,6 +16,7 @@ use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Components\Wizard;
 use Filament\Schemas\Components\Wizard\Step;
 use Filament\Schemas\Schema;
+use Illuminate\Contracts\Support\Htmlable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Blade;
@@ -24,21 +25,25 @@ use Override;
 
 class Register extends BaseRegister
 {
-    public function getHeading(): string
+    #[Override]
+    public function getHeading(): string|Htmlable
     {
         return 'Create vendor account';
     }
 
-    public function getSubHeading(): ?string
+    #[Override]
+    public function getSubHeading(): string|Htmlable|null
     {
         return 'Complete your business profile to start selling.';
     }
 
+    #[Override]
     public function getMaxWidth(): string
     {
         return '4xl';
     }
 
+    #[Override]
     protected function getFormActions(): array
     {
         return []; // Hide default buttons

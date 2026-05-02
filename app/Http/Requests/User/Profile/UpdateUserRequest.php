@@ -47,6 +47,8 @@ class UpdateUserRequest extends FormRequest
                 'max:20',
                 Rule::unique('users', 'phone_number')->ignore($userId),
             ],
+            'locale' => ['sometimes', 'string', 'in:en,km'],
+            'prefer_theme' => ['sometimes', 'string', 'in:system,light,dark'],
             'password' => ['sometimes', 'string', 'min:8', 'confirmed'],
         ];
     }

@@ -2,12 +2,11 @@
 
 declare(strict_types=1);
 
-namespace App\Http\Controllers\Api\User;
+namespace App\Http\Controllers\Api\Shared;
 
 use App\Http\Controllers\Controller;
 use App\Http\Resources\Shared\WalletHistoryResource;
 use App\Http\Resources\Shared\WalletResource;
-use App\Models\UserType;
 use App\Models\Wallet;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -20,9 +19,9 @@ class WalletController extends Controller
      */
     public function index(Request $request): JsonResponse
     {
-        Gate::authorize('viewAny', [Wallet::class, UserType::USER]);
-
         $user = $this->authenticatedUser($request);
+
+        Gate::authorize('viewAny', [Wallet::class, $user->user_type_id]);
 
         $wallets = $user->wallets()
             ->with('currency')
@@ -38,16 +37,17 @@ class WalletController extends Controller
     /**
      * Display the specified wallet.
      */
-    public function show(string $id): JsonResponse
+    public function show(string $id, Request $request): JsonResponse
     {
-        $wallet = Wallet::with('currency')
-            ->find($id);
+        $user = $this->authenticatedUser($request);
+
+        $wallet = Wallet::with('currency')->find($id);
 
         if (! $wallet) {
             return static::errorResponse('Wallet not found', 404);
         }
 
-        Gate::authorize('view', [$wallet, UserType::USER]);
+        Gate::authorize('view', [$wallet, $user->user_type_id]);
 
         return static::successResponse(
             new WalletResource($wallet),
@@ -60,13 +60,15 @@ class WalletController extends Controller
      */
     public function history(string $id, Request $request): JsonResponse
     {
+        $user = $this->authenticatedUser($request);
+
         $wallet = Wallet::query()->find($id);
 
         if (! $wallet) {
             return static::errorResponse('Wallet not found', 404);
         }
 
-        Gate::authorize('view', [$wallet, UserType::USER]);
+        Gate::authorize('view', [$wallet, $user->user_type_id]);
 
         $histories = $wallet->histories()
             ->with('currency')

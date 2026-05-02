@@ -27,6 +27,8 @@ class UpdateAdminProfileRequest extends FormRequest
             'department' => ['sometimes', 'nullable', 'string', 'max:120'],
             'job_title' => ['sometimes', 'nullable', 'string', 'max:120'],
             'office_phone' => ['sometimes', 'nullable', 'string', 'max:40'],
+            'locale' => ['sometimes', 'string', 'in:en,km'],
+            'prefer_theme' => ['sometimes', 'string', 'in:system,light,dark'],
         ];
     }
 }

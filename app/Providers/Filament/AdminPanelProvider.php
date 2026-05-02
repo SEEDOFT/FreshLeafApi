@@ -44,7 +44,7 @@ class AdminPanelProvider extends PanelProvider
             ->login(Login::class)
             ->font('Noto Sans Khmer')
             ->viteTheme('resources/css/filament/panels/theme.css')
-            // ->spa() // Disabled - requires Vite network access
+            ->spa()
             ->maxContentWidth('full')
             ->defaultThemeMode(ThemeMode::Light)
             ->sidebarCollapsibleOnDesktop()

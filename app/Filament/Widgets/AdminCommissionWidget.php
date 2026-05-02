@@ -7,11 +7,14 @@ namespace App\Filament\Widgets;
 use App\Models\OrderItem;
 use Filament\Widgets\StatsOverviewWidget as BaseWidget;
 use Filament\Widgets\StatsOverviewWidget\Stat;
+use Override;
 
 class AdminCommissionWidget extends BaseWidget
 {
+    #[Override]
     protected string $view = 'filament.widgets.admin-commission-widget';
 
+    #[Override]
     protected function getStats(): array
     {
         $totalCommission = OrderItem::sum('commission_amount');

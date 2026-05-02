@@ -31,6 +31,8 @@ class UserResource extends JsonResource
             'phone_number' => $this->phone_number,
             'image' => Storage::url('users/'.$this->image),
             'set_pin' => (bool) $this->userProfile->pin,
+            'locale' => $this->userProfile->locale,
+            'prefer_theme' => $this->userProfile->prefer_theme,
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
         ];

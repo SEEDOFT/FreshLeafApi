@@ -14,20 +14,19 @@ use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Schema;
 use Illuminate\Contracts\Support\Htmlable;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\ValidationException;
 use Override;
 
 class Login extends BaseLogin
 {
     #[Override]
-    public function getHeading(): string|Htmlable
+    public function getHeading(): string | Htmlable
     {
         return 'Welcome back, Admin!';
     }
 
     #[Override]
-    public function getSubHeading(): string|Htmlable|null
+    public function getSubHeading(): string | Htmlable | null
     {
         return 'Sign in to manage your FreshLeaf dashboard.';
     }
@@ -69,10 +68,7 @@ class Login extends BaseLogin
     #[Override]
     protected function getCredentialsFromFormData(array $data): array
     {
-        Log::info('[AdminLogin] Form submitted', ['keys' => array_keys($data)]);
-
         $panelId = Filament::getCurrentOrDefaultPanel()->getId();
-        Log::info('[AdminLogin] Panel: '.$panelId);
 
         $userTypeId = match ($panelId) {
             'admin' => UserType::ADMIN,
@@ -86,8 +82,6 @@ class Login extends BaseLogin
         $dialCode = get_dial_code($countryIso);
         $fullPhone = $dialCode.ltrim($phoneInput, '0');
 
-        Log::info('[AdminLogin] Country: '.$countryIso.', Dial: '.$dialCode.', Phone: '.$phoneInput.', Full: '.$fullPhone);
-
         $credentials = [
             'phone_number' => $fullPhone,
             'password' => $data['password'],
@@ -99,15 +93,11 @@ class Login extends BaseLogin
             ->where('user_type_id', $userTypeId)
             ->first();
 
-        Log::info('[AdminLogin] User found: '.($user ? $user->first_name.' (ID:'.$user->id.')' : 'NONE'));
-
         if ($user && $user->user_status_id === UserStatus::PENDING) {
             throw ValidationException::withMessages([
                 'data.phone_number_input' => 'Your account is pending approval. Please wait for an administrator to review your application.',
             ]);
         }
-
-        Log::info('[AdminLogin] Returning credentials for: '.$fullPhone);
 
         return array_filter($credentials);
     }
@@ -115,9 +105,8 @@ class Login extends BaseLogin
     #[Override]
     protected function throwFailureValidationException(): never
     {
-        Log::error('[AdminLogin] LOGIN FAILED - Invalid credentials');
         throw ValidationException::withMessages([
-            'data.phone_number_input' => 'Invalid credentials or user not authorized for this panel.',
+            'data.phone_number_input' => __('filament-panels::auth/pages/login.messages.failed'),
         ]);
     }
 }

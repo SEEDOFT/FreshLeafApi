@@ -20,6 +20,7 @@ use Illuminate\Support\Facades\Hash;
  * @property string|null $pin
  * @property string|null $gender
  * @property string|null $locale
+ * @property string $prefer_theme
  * @property Carbon|null $date_of_birth
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
@@ -31,6 +32,7 @@ use Illuminate\Support\Facades\Hash;
     'pin',
     'gender',
     'locale',
+    'prefer_theme',
 ])]
 #[UseFactory(UserProfileFactory::class)]
 class UserProfile extends Model

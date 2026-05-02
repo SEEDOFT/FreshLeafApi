@@ -10,11 +10,42 @@ use App\Http\Requests\Product\UpdateProductRequest;
 use App\Http\Resources\Product\ProductResource;
 use App\Models\Product;
 use App\Models\User;
+use App\Models\UserType;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 class ProductController extends Controller
 {
+    /**
+     * Display a listing of products based on user type.
+     */
+    public function index(Request $request): JsonResponse
+    {
+        /** @var User $user */
+        $user = $request->user();
+
+        return match ((int) $user?->user_type_id) {
+            UserType::ADMIN => $this->adminIndex($request),
+            UserType::VENDOR => $this->vendorIndex($request),
+            default => $this->userIndex($request),
+        };
+    }
+
+    /**
+     * Display the specified product based on user type.
+     */
+    public function show(int $id, Request $request): JsonResponse
+    {
+        /** @var User $user */
+        $user = $request->user();
+
+        return match ((int) $user?->user_type_id) {
+            UserType::ADMIN => $this->adminShow($id),
+            UserType::VENDOR => $this->vendorShow($id, $request),
+            default => $this->userShow($id),
+        };
+    }
+
     /**
      * Display products for user mode (available for sale only).
      */

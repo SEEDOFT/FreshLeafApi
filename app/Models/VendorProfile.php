@@ -16,6 +16,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 #[Fillable([
     'user_id',
     'locale',
+    'prefer_theme',
     'business_name',
     'shop_description',
     'contact_phone',

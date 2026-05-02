@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Http\Controllers\Api\User;
+namespace App\Http\Controllers\Api\Shared;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\User\Address\ReplaceAddressRequest;
@@ -10,7 +10,6 @@ use App\Http\Requests\User\Address\StoreAddressRequest;
 use App\Http\Requests\User\Address\UpdateAddressRequest;
 use App\Http\Resources\User\AddressResource;
 use App\Models\Address;
-use App\Models\UserType;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
@@ -18,46 +17,48 @@ use Illuminate\Support\Facades\Gate;
 class AddressController extends Controller
 {
     /**
-     * List user addresses
+     * List user/vendor addresses.
      */
     public function index(Request $request): JsonResponse
     {
-        Gate::authorize('viewAny', [Address::class, UserType::USER]);
-
         $user = $this->authenticatedUser($request);
 
+        Gate::authorize('viewAny', [Address::class, $user->user_type_id]);
+
         $addresses = $user->addresses()
-            ->active()->latest()
+            ->active()
+            ->latest()
             ->simplePaginate($request->integer('per_page', 10));
 
         return static::successResponse(AddressResource::collection($addresses), 'Addresses retrieved successfully');
     }
 
     /**
-     * Get a specific user address
+     * Get a specific address.
      */
     public function show(string $id, Request $request): JsonResponse
     {
         $user = $this->authenticatedUser($request);
-        $userAddress = $user->addresses()->active()->find($id);
 
-        if (! $userAddress) {
+        $address = $user->addresses()->active()->find($id);
+
+        if (! $address) {
             return static::errorResponse('Address not found', 404);
         }
 
-        Gate::authorize('view', [$userAddress, UserType::USER]);
+        Gate::authorize('view', [$address, $user->user_type_id]);
 
-        return static::successResponse(new AddressResource($userAddress), 'Address retrieved successfully');
+        return static::successResponse(new AddressResource($address), 'Address retrieved successfully');
     }
 
     /**
-     * Create a new user address
+     * Create a new address.
      */
     public function store(StoreAddressRequest $request): JsonResponse
     {
-        Gate::authorize('create', [Address::class, UserType::USER]);
-
         $user = $this->authenticatedUser($request);
+
+        Gate::authorize('create', [Address::class, $user->user_type_id]);
 
         $validatedData = $request->validated();
 
@@ -66,38 +67,27 @@ class AddressController extends Controller
                 "https://www.google.com/maps?q={$validatedData['lat']},{$validatedData['long']}";
         }
 
-        $address = $user->addresses()->create([
+        $address = $user->addresses()->create(\array_merge($validatedData, [
             'user_id' => $user->id,
-            'label' => $validatedData['label'],
-            'recipient_name' => $validatedData['recipient_name'],
-            'phone' => $validatedData['phone'],
-            'address_line_1' => $validatedData['address_line_1'],
-            'address_line_2' => $validatedData['address_line_2'] ?? null,
-            'city' => $validatedData['city'],
-            'province' => $validatedData['province'],
-            'postal_code' => $validatedData['postal_code'],
-            'lat' => $validatedData['lat'],
-            'long' => $validatedData['long'],
-            'address_map' => $validatedData['address_map'],
-        ]);
+        ]));
 
         return static::successResponse(new AddressResource($address), 'Address created successfully', 201);
     }
 
     /**
-     * Update an existing user address
+     * Update an existing address.
      */
     public function update(string $id, UpdateAddressRequest $request): JsonResponse
     {
         $user = $this->authenticatedUser($request);
 
-        $userAddress = $user->addresses()->active()->find($id);
+        $address = $user->addresses()->active()->find($id);
 
-        if (! $userAddress) {
+        if (! $address) {
             return static::errorResponse('Address not found', 404);
         }
 
-        Gate::authorize('update', [$userAddress, UserType::USER]);
+        Gate::authorize('update', [$address, $user->user_type_id]);
 
         $validatedData = $request->validated();
 
@@ -112,25 +102,25 @@ class AddressController extends Controller
             $validatedData['label'] = strtoupper($validatedData['label']);
         }
 
-        $userAddress->update($validatedData);
+        $address->update($validatedData);
 
-        return static::successResponse(new AddressResource($userAddress), 'Address updated successfully');
+        return static::successResponse(new AddressResource($address), 'Address updated successfully');
     }
 
     /**
-     * Replace an existing user address
+     * Replace an existing address.
      */
     public function replace(string $id, ReplaceAddressRequest $request): JsonResponse
     {
         $user = $this->authenticatedUser($request);
 
-        $userAddress = $user->addresses()->active()->find($id);
+        $address = $user->addresses()->active()->find($id);
 
-        if (! $userAddress) {
+        if (! $address) {
             return static::errorResponse('Address not found', 404);
         }
 
-        Gate::authorize('update', [$userAddress, UserType::USER]);
+        Gate::authorize('update', [$address, $user->user_type_id]);
 
         $validatedData = $request->validated();
 
@@ -141,27 +131,27 @@ class AddressController extends Controller
             $validatedData['address_map'] = null;
         }
 
-        $userAddress->update($validatedData);
+        $address->update($validatedData);
 
-        return static::successResponse(new AddressResource($userAddress), 'Address replaced successfully');
+        return static::successResponse(new AddressResource($address), 'Address replaced successfully');
     }
 
     /**
-     * Delete a user address
+     * Delete an address.
      */
     public function destroy(string $id, Request $request): JsonResponse
     {
         $user = $this->authenticatedUser($request);
 
-        $userAddress = $user->addresses()->active()->find($id);
+        $address = $user->addresses()->active()->find($id);
 
-        if (! $userAddress) {
+        if (! $address) {
             return static::errorResponse('Address not found', 404);
         }
 
-        Gate::authorize('delete', [$userAddress, UserType::USER]);
+        Gate::authorize('delete', [$address, $user->user_type_id]);
 
-        $userAddress->delete();
+        $address->delete();
 
         return static::successResponse(message: 'Address deleted successfully');
     }

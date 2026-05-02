@@ -101,6 +101,22 @@ class User extends Authenticatable implements FilamentUser, HasName
     }
 
     /**
+     * Get the user's current theme from their profile.
+     */
+    public string $currentTheme {
+        get {
+            $profile = match ($this->user_type_id) {
+                UserType::ADMIN => $this->adminProfile,
+                UserType::VENDOR => $this->vendorProfile,
+                UserType::USER => $this->userProfile,
+                default => null,
+            };
+
+            return ($profile !== null) ? $profile->prefer_theme : 'system';
+        }
+    }
+
+    /**
      * Get the user's full name.
      */
     public string $fullName {

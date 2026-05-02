@@ -9,6 +9,7 @@ use App\Events\SupportTyping;
 use App\Models\SupportMessage;
 use App\Models\SupportTicket;
 use App\Notifications\NewSupportMessageNotification;
+use BackedEnum;
 use Filament\Pages\Page;
 use Filament\Support\Enums\Width;
 use Illuminate\Support\Collection;
@@ -16,6 +17,7 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Notification;
 use Livewire\Attributes\Url;
 use Livewire\WithFileUploads;
+use Override;
 
 use function auth;
 use function gettype;
@@ -28,12 +30,16 @@ class SupportChat extends Page
 {
     use WithFileUploads;
 
-    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-chat-bubble-left-right';
+    #[Override]
+    protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-chat-bubble-left-right';
 
+    #[Override]
     protected string $view = 'filament.pages.support-chat';
 
+    #[Override]
     protected static ?string $slug = 'support-chat';
 
+    #[Override]
     protected string|Width|null $maxContentWidth = Width::Full;
 
     #[Url]
@@ -44,16 +50,19 @@ class SupportChat extends Page
     /** @var mixed */
     public $file;
 
+    #[Override]
     public function getHeading(): string
     {
         return __('admin.support.title');
     }
 
+    #[Override]
     public static function getNavigationLabel(): string
     {
         return __('admin.support.nav_label');
     }
 
+    #[Override]
     public static function getNavigationBadge(): ?string
     {
         $unreadCount = SupportMessage::where('sender_type', 'user')
@@ -142,6 +151,7 @@ class SupportChat extends Page
     /**
      * @return array<string, string>
      */
+    #[Override]
     public function getListeners(): array
     {
         Log::info('SupportChat: Setting up echo listeners', [

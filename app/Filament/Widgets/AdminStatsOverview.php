@@ -16,8 +16,10 @@ use Override;
 
 class AdminStatsOverview extends BaseWidget
 {
+    #[Override]
     protected ?string $pollingInterval = null;
 
+    #[Override]
     protected string $view = 'filament.widgets.admin-stats-overview';
 
     #[Override]

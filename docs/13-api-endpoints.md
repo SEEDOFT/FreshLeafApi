@@ -6,7 +6,9 @@
 http://localhost:8000/api/v1
 ```
 
-## Authentication
+## Authentication Strategy
+
+The API uses **Token-Based Identification**. When an Admin, Vendor, or User logs in, they receive a Sanctum authentication token. Shared routes use this token to identify the user type and return appropriate data.
 
 All authenticated endpoints require:
 ```
@@ -14,30 +16,67 @@ Authorization: Bearer {sanctum_token}
 Accept: application/json
 ```
 
-## Endpoints by Feature
-
-### Categories
-
-| Method | Endpoint | Description |
-|--------|----------|--------------|
-| GET | `/categories` | List all categories |
-| GET | `/categories/{slug}` | Get category by slug |
-
 ---
 
-### Authentication
+## Shared Endpoints (Admin, Vendor, User)
 
-#### User Auth
+These endpoints are shared across all user types. The system identifies your account type from the token.
+
+### Authentication (Shared)
 
 | Method | Endpoint | Description | Auth |
 |--------|----------|-------------|------|
-| POST | `/user/auth/register` | Register user | No |
-| POST | `/user/auth/login` | Login | No |
-| POST | `/user/auth/logout` | Logout | Yes |
-| POST | `/user/auth/password/verify` | Verify password | Yes |
-| POST | `/user/auth/password/update` | Update password | Yes |
+| POST | `/auth/logout` | Logout (Revoke token) | Yes |
+| POST | `/auth/password/verify` | Verify current password | Yes |
+| POST | `/auth/password/update` | Update password | Yes |
 
-#### PIN Security
+### Profile
+
+| Method | Endpoint | Description | Auth |
+|--------|----------|-------------|------|
+| GET | `/profile` | Get profile info (Admin/Vendor/User) | Yes |
+| PUT | `/profile` | Replace profile info | Yes |
+| PATCH | `/profile` | Update profile info | Yes |
+| DELETE | `/profile` | Delete account | Yes |
+
+### Wallets
+
+| Method | Endpoint | Description | Auth |
+|--------|----------|-------------|------|
+| GET | `/wallets` | List own wallets | Yes |
+| GET | `/wallets/{id}` | Get wallet details | Yes |
+| GET | `/wallets/{id}/histories` | Get wallet history | Yes |
+
+### Products (Shared)
+
+| Method | Endpoint | Description | Auth |
+|--------|----------|-------------|------|
+| GET | `/products` | List products (Admin: all, Vendor: own, User: active) | Yes |
+| GET | `/products/{id}` | Get product details | Yes |
+
+### Addresses (Shared - User & Vendor)
+
+| Method | Endpoint | Description | Auth |
+|--------|----------|-------------|------|
+| GET | `/addresses` | List addresses | Yes |
+| POST | `/addresses` | Create address | Yes |
+| GET | `/addresses/{id}` | Get address | Yes |
+| PUT | `/addresses/{id}` | Full update | Yes |
+| PATCH | `/addresses/{id}` | Partial update | Yes |
+| DELETE | `/addresses/{id}` | Delete address | Yes |
+
+---
+
+## User-Specific Endpoints
+
+### User Auth
+
+| Method | Endpoint | Description | Auth |
+|--------|----------|-------------|------|
+| POST | `/auth/register` | Register consumer | No |
+| POST | `/auth/login` | Login consumer | No |
+
+### PIN Security
 
 | Method | Endpoint | Description | Auth |
 |--------|----------|-------------|------|
@@ -45,57 +84,6 @@ Accept: application/json
 | POST | `/user/pin/update` | Update PIN | Yes |
 | POST | `/user/pin/reset` | Reset PIN | Yes |
 | POST | `/user/pin/verify` | Verify PIN | Yes |
-
-#### Admin Auth
-
-| Method | Endpoint | Description | Auth |
-|--------|----------|-------------|------|
-| POST | `/admin/auth/login` | Login admin | No |
-| POST | `/admin/auth/logout` | Logout | Yes |
-
-#### Vendor Auth
-
-| Method | Endpoint | Description | Auth |
-|--------|----------|-------------|------|
-| POST | `/vendor/auth/register` | Register vendor | No |
-| POST | `/vendor/auth/login` | Login vendor | No |
-
----
-
-### User Profile
-
-| Method | Endpoint | Description | Auth |
-|--------|----------|-------------|------|
-| GET | `/user/profile` | Get profile | Yes |
-| PUT | `/user/profile` | Full update | Yes |
-| PATCH | `/user/profile` | Partial update | Yes |
-| DELETE | `/user/profile` | Delete account | Yes |
-
-### User Addresses
-
-| Method | Endpoint | Description | Auth |
-|--------|----------|-------------|------|
-| GET | `/user/addresses` | List addresses | Yes |
-| POST | `/user/addresses` | Create address | Yes |
-| GET | `/user/addresses/{id}` | Get address | Yes |
-| PUT | `/user/addresses/{id}` | Full update | Yes |
-| PATCH | `/user/addresses/{id}` | Partial update | Yes |
-| DELETE | `/user/addresses/{id}` | Delete address | Yes |
-
-### User Products
-
-| Method | Endpoint | Description | Auth |
-|--------|----------|-------------|------|
-| GET | `/user/products` | List products | Yes |
-| GET | `/user/products/{id}` | Get product | Yes |
-
-### User Wallets
-
-| Method | Endpoint | Description | Auth |
-|--------|----------|-------------|------|
-| GET | `/user/wallets` | List wallets | Yes |
-| GET | `/user/wallets/{id}` | Get wallet | Yes |
-| GET | `/user/wallets/{id}/histories` | Get history | Yes |
 
 ### Wallet Transactions
 
@@ -123,17 +111,13 @@ Accept: application/json
 | POST | `/user/devices` | Register FCM token | Yes |
 | DELETE | `/user/devices/{token}` | Remove token | Yes |
 
----
-
 ### AI Chat
 
 | Method | Endpoint | Description | Auth |
 |--------|----------|-------------|------|
-| POST | `/ai/chat/sessions` | Create session | Yes |
-| POST | `/ai/chat/messages` | Send message | Yes |
-| POST | `/ai/chat/history` | Get history | Yes |
-
----
+| POST | `/user/ai/chat/sessions` | Create session | Yes |
+| POST | `/user/ai/chat/messages` | Send message | Yes |
+| POST | `/user/ai/chat/history` | Get history | Yes |
 
 ### Support Chat
 
@@ -147,28 +131,21 @@ Accept: application/json
 
 ---
 
-### Admin Products
+## Admin-Specific Endpoints
+
+### Admin Auth
 
 | Method | Endpoint | Description | Auth |
 |--------|----------|-------------|------|
-| GET | `/admin/products` | List all products | Yes |
-| GET | `/admin/products/{id}` | Get product | Yes |
+| POST | `/admin/auth/login` | Login admin | No |
 
 ### Admin Vendors
 
 | Method | Endpoint | Description | Auth |
 |--------|----------|-------------|------|
-| GET | `/admin/vendors/pending` | List pending | Yes |
-| GET | `/admin/vendors/pending/{id}` | View pending | Yes |
-| PATCH | `/admin/vendors/pending/{id}` | Approve/reject | Yes |
-
-### Admin Wallets
-
-| Method | Endpoint | Description | Auth |
-|--------|----------|-------------|------|
-| GET | `/admin/wallets` | List all wallets | Yes |
-| GET | `/admin/wallets/{id}` | Get wallet | Yes |
-| GET | `/admin/wallets/{id}/histories` | Get history | Yes |
+| GET | `/admin/vendors/pending` | List pending approvals | Yes |
+| GET | `/admin/vendors/pending/{id}` | View pending details | Yes |
+| PATCH | `/admin/vendors/pending/{id}` | Approve/reject vendor | Yes |
 
 ### Admin Payment Types
 
@@ -180,43 +157,25 @@ Accept: application/json
 
 ---
 
-### Vendor Profile
+## Vendor-Specific Endpoints
+
+### Vendor Auth
 
 | Method | Endpoint | Description | Auth |
 |--------|----------|-------------|------|
-| GET | `/vendor/profile` | Get profile | Yes |
-| PATCH | `/vendor/profile` | Update profile | Yes |
-
-### Vendor Products
-
-| Method | Endpoint | Description | Auth |
-|--------|----------|-------------|------|
-| GET | `/vendor/products` | List own products | Yes |
-| GET | `/vendor/products/{id}` | Get product | Yes |
-
-### Vendor Addresses
-
-| Method | Endpoint | Description | Auth |
-|--------|----------|-------------|------|
-| GET | `/vendor/addresses` | List addresses | Yes |
-| POST | `/vendor/addresses` | Create address | Yes |
-| GET/PUT/PATCH/DELETE | `/vendor/addresses/{id}` | Manage address | Yes |
-
-### Vendor Wallets
-
-| Method | Endpoint | Description | Auth |
-|--------|----------|-------------|------|
-| GET | `/vendor/wallets` | List wallets | Yes |
-| GET | `/vendor/wallets/{id}` | Get wallet | Yes |
-| GET | `/vendor/wallets/{id}/histories` | Get history | Yes |
+| POST | `/vendor/auth/register` | Register vendor | No |
+| POST | `/vendor/auth/login` | Login vendor | No |
 
 ---
 
-### Broadcasting
+## Public Endpoints
+
+### Categories
 
 | Method | Endpoint | Description | Auth |
 |--------|----------|-------------|------|
-| POST | `/broadcasting/auth` | Channel auth | Yes |
+| GET | `/categories` | List all categories | No |
+| GET | `/categories/{slug}` | Get category by slug | No |
 
 ---
 

@@ -6,7 +6,7 @@ namespace App\Filament;
 
 use Filament\Support\Colors\Color;
 
-class ThemeColors
+final class ThemeColors
 {
     /**
      * Get the standard Filament palette colors.

@@ -34,6 +34,8 @@ class VendorProfileResource extends JsonResource
             'address' => $profile?->address,
             'is_verified' => (bool) $profile?->is_verified,
             'meta' => $profile?->meta,
+            'locale' => $profile?->locale,
+            'prefer_theme' => $profile?->prefer_theme,
             'status_id' => $this->user_status_id,
             'type_id' => $this->user_type_id,
             'created_at' => $this->created_at,

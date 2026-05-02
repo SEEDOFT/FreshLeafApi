@@ -34,6 +34,8 @@ class AdminProfileResource extends JsonResource
             'office_phone' => $profile?->office_phone,
             'super_admin' => (bool) $profile?->super_admin,
             'permissions' => $profile?->permissions,
+            'locale' => $profile?->locale,
+            'prefer_theme' => $profile?->prefer_theme,
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
         ];

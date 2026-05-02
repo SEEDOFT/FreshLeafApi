@@ -49,6 +49,34 @@ Location: `routes/channels.php`
 
 Endpoint: `POST /api/v1/broadcasting/auth`
 
+**Implementation**: `app/Http/Controllers/BroadcastController.php`
+
+```php
+class BroadcastController extends Controller
+{
+    public function authenticate(Request $request)
+    {
+        $pusher = new Pusher(
+            config('broadcasting.connections.pusher.key'),
+            config('broadcasting.connections.pusher.secret'),
+            config('broadcasting.connections.pusher.app_id'),
+            [
+                'cluster' => config('broadcasting.connections.pusher.options.cluster'),
+                'useTLS' => true,
+            ]
+        );
+
+        $socketId = $request->input('socket_id');
+        $channelName = $request->input('channel_name');
+
+        // Authorize using current authenticated user
+        $auth = $pusher->socket_auth($channelName, $socketId);
+
+        return response()->json(json_decode($auth, true));
+    }
+}
+```
+
 Required headers:
 ```
 Authorization: Bearer {token}

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Filament\Resources\Users\Schemas;
 
 use App\Models\Wallet;
+use Filament\Infolists\Components\ImageEntry;
 use Filament\Infolists\Components\RepeatableEntry;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Schemas\Components\Section;
@@ -53,6 +54,12 @@ class UserInfolist
 
                 Section::make('Personal Information')
                     ->schema([
+                        ImageEntry::make('image')
+                            ->label('Profile')
+                            ->disk('public')
+                            ->circular()
+                            ->imageSize(200)
+                            ->defaultImageUrl('user.png'),
                         TextEntry::make('userProfile.gender')
                             ->label('Gender')
                             ->placeholder('-'),

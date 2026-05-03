@@ -40,12 +40,16 @@ class UserForm
                             ->relationship('type', 'name')
                             ->default(UserType::USER)
                             ->required(static fn (string $operation): bool => $operation === 'create')->dehydrated(static fn ($state): bool => filled($state))
+                            ->searchable()
+                            ->preload()
                             ->live(),
                         Select::make('user_status_id')
                             ->label('Account Status')
                             ->relationship('status', 'name')
                             ->default(UserStatus::ACTIVE)
-                            ->required(static fn (string $operation): bool => $operation === 'create')->dehydrated(static fn ($state): bool => filled($state)),
+                            ->required(static fn (string $operation): bool => $operation === 'create')->dehydrated(static fn ($state): bool => filled($state))
+                            ->searchable()
+                            ->preload(),
                     ]),
             ]);
     }

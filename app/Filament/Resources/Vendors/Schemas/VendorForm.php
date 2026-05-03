@@ -59,20 +59,24 @@ class VendorForm
                         FileUpload::make('id_card_front')
                             ->label('ID Card (Front)')
                             ->image()
+                            ->disk('local')
                             ->directory('vendor-verification')
                             ->required(static fn (string $operation): bool => $operation === 'create'),
                         FileUpload::make('id_card_back')
                             ->label('ID Card (Back)')
                             ->image()
+                            ->disk('local')
                             ->directory('vendor-verification')
                             ->required(static fn (string $operation): bool => $operation === 'create'),
                         FileUpload::make('store_front_image')
                             ->label('Farm / Store Photo')
                             ->image()
+                            ->disk('local')
                             ->directory('vendor-verification')
                             ->required(static fn (string $operation): bool => $operation === 'create'),
                         FileUpload::make('organic_certificate_url')
                             ->label('Organic Certificate (Optional)')
+                            ->disk('local')
                             ->directory('vendor-verification'),
                     ])->columns(2),
 
@@ -101,6 +105,7 @@ class VendorForm
                         FileUpload::make('bank_qr_code')
                             ->label('Bank QR Code')
                             ->image()
+                            ->disk('local')
                             ->directory('vendor-verification')
                             ->columnSpanFull(),
                     ]),

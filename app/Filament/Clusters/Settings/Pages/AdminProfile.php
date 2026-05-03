@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Filament\Clusters\Settings\Pages;
 
 use App\Filament\Clusters\Settings;
+use BackedEnum;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
@@ -24,8 +25,10 @@ use function reset;
 
 class AdminProfile extends Page
 {
+    #[Override]
     protected static ?string $cluster = Settings::class;
 
+    #[Override]
     protected static ?string $slug = 'profile';
 
     #[Override]
@@ -34,8 +37,10 @@ class AdminProfile extends Page
         return __('admin.navigation.my_profile');
     }
 
-    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-user-circle';
+    #[Override]
+    protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-user-circle';
 
+    #[Override]
     protected string $view = 'filament.pages.admin-profile';
 
     /**
@@ -109,7 +114,7 @@ class AdminProfile extends Page
                             ->label(__('admin.profile.display_language'))
                             ->options([
                                 'km' => 'Khmer (ភាសាខ្មែរ)',
-                                'en' => 'English',
+                                'en' => 'English (ភាសាអង់គ្លេស)',
                             ])
                             ->required(static fn (string $operation): bool => $operation === 'create')->dehydrated(static fn ($state): bool => filled($state))
                             ->native(false),

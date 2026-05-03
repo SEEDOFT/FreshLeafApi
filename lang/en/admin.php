@@ -93,6 +93,13 @@ return [
         'payout' => [
             'label' => 'Payout',
             'plural_label' => 'Payouts',
+            'vendor' => 'Vendor',
+            'status' => 'Status',
+            'method' => 'Method',
+            'amount' => 'Amount',
+            'transaction_ref' => 'Transaction Ref #',
+            'processed_date' => 'Processed Date',
+            'admin_notes' => 'Admin Notes',
         ],
         'user' => [
             'label' => 'User',

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Filament\Vendor\Clusters\Settings\Pages;
 
 use App\Filament\Vendor\Clusters\Settings;
+use Filament\Actions\Action;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\TextInput;
 use Filament\Notifications\Notification;
@@ -22,7 +23,7 @@ class FinancialDetails extends Page
     #[Override]
     protected static ?string $slug = 'financials';
 
-#[Override]
+    #[Override]
     protected static ?string $navigationLabel = 'Financials';
 
     #[Override]
@@ -83,11 +84,10 @@ class FinancialDetails extends Page
     protected function getFormActions(): array
     {
         return [
-            \Filament\Actions\Action::make('save')
+            Action::make('save')
                 ->label(__('admin.profile.save_changes'))
                 ->submit('save')
                 ->keyBindings(['mod+s']),
         ];
     }
-
 }

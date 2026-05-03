@@ -150,19 +150,8 @@ return [
                 'account_number' => 'Account Number',
                 'qr_code' => 'Bank QR Code',
             ],
-            'vendor_profile' => [
-                'label' => 'Vendor Profile',
-                'nav_label' => 'My Profile',
-                'avatar' => 'Store / Owner Avatar',
-                'first_name' => 'First Name',
-                'last_name' => 'Last Name',
-                'email' => 'Email',
-                'phone' => 'Phone Number',
-                'general_info' => 'General Information',
-                'preferences' => 'Preferences',
-                'preferences_desc' => 'Customize your store dashboard language.',
-                'language' => 'Display Language',
-                'success_notification' => 'Profile updated successfully.',
+            'vendor_security' => [
+                'label' => 'Security',
             ],
             'verification_docs' => [
                 'label' => 'Verification Documents',

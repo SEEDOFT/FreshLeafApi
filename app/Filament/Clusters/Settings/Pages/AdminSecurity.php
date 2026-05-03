@@ -26,7 +26,7 @@ class AdminSecurity extends Page
     #[Override]
     public static function getNavigationLabel(): string
     {
-        return 'Security';
+        return __('admin.resources.security.label');
     }
 
     #[Override]
@@ -49,18 +49,21 @@ class AdminSecurity extends Page
     {
         return $schema
             ->components([
-                Section::make('Change Password')
-                    ->description('Ensure your account is using a long, random password to stay secure.')
+                Section::make(__('admin.resources.security.change_password'))
+                    ->description(__('admin.resources.security.change_password_desc'))
                     ->schema([
                         TextInput::make('current_password')
+                            ->label(__('admin.resources.security.current_password'))
                             ->password()
                             ->required(static fn (string $operation): bool => $operation === 'create')->dehydrated(static fn ($state): bool => filled($state))
                             ->currentPassword(),
                         TextInput::make('password')
+                            ->label(__('admin.resources.security.password'))
                             ->password()
                             ->required(static fn (string $operation): bool => $operation === 'create')->dehydrated(static fn ($state): bool => filled($state))
                             ->confirmed(),
                         TextInput::make('password_confirmation')
+                            ->label(__('admin.resources.security.password_confirmation'))
                             ->password()
                             ->required(static fn (string $operation): bool => $operation === 'create')->dehydrated(static fn ($state): bool => filled($state)),
                     ])->columns(2),
@@ -80,7 +83,7 @@ class AdminSecurity extends Page
         $this->data = [];
 
         Notification::make()
-            ->title('Password updated successfully.')
+            ->title(__('admin.resources.security.success_notification'))
             ->success()
             ->send();
     }
@@ -92,7 +95,7 @@ class AdminSecurity extends Page
     {
         return [
             Action::make('save')
-                ->label('Update Password')
+                ->label(__('admin.resources.security.update_password'))
                 ->submit('save')
                 ->keyBindings(['mod+s']),
         ];

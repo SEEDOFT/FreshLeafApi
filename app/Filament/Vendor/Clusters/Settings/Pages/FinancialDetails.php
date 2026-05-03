@@ -21,9 +21,10 @@ class FinancialDetails extends Page
 
     protected static ?string $navigationLabel = 'Financials';
 
-    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-banknotes';
+    protected static ?string $navigationLabel = 'Financials';
 
-    protected string $view = 'filament.vendor.pages.financial-details';
+    #[Override]
+    protected string $view = 'filament.pages.shared.form-page';
 
     /**
      * @var array<string, mixed> | null
@@ -39,23 +40,24 @@ class FinancialDetails extends Page
     {
         return $schema
             ->components([
-                Section::make('Bank Account Details')
+                Section::make(__('admin.vendor_settings.financial_details.label'))
                     ->description('Used for weekly earnings payouts.')
                     ->schema([
                         TextInput::make('bank_name')
-                            ->label('Bank Name')
+                            ->label(__('admin.vendor_settings.financial_details.bank_name'))
                             ->placeholder('e.g. ABA Bank')
                             ->maxLength(255),
                         TextInput::make('bank_account_name')
-                            ->label('Account Holder Name')
+                            ->label(__('admin.vendor_settings.financial_details.account_holder'))
                             ->placeholder('e.g. KOY YOTRABOTH')
                             ->maxLength(255),
                         TextInput::make('bank_account_number')
-                            ->label('Account Number')
+                            ->label(__('admin.vendor_settings.financial_details.account_number'))
                             ->maxLength(255),
                         FileUpload::make('bank_qr_code')
-                            ->label('Bank QR Code')
+                            ->label(__('admin.vendor_settings.financial_details.qr_code'))
                             ->image()
+                            ->disk('local')
                             ->directory('vendor-verification')
                             ->columnSpanFull(),
                     ])->columns(3),
@@ -75,4 +77,15 @@ class FinancialDetails extends Page
             ->success()
             ->send();
     }
+
+    protected function getFormActions(): array
+    {
+        return [
+            \Filament\Actions\Action::make('save')
+                ->label(__('admin.profile.save_changes'))
+                ->submit('save')
+                ->keyBindings(['mod+s']),
+        ];
+    }
+
 }

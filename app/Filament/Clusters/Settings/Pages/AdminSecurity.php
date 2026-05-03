@@ -33,6 +33,7 @@ class AdminSecurity extends Page
     protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-lock-closed';
 
     #[Override]
+    #[Override]
     protected string $view = 'filament.pages.shared.form-page';
 
     /**
@@ -83,6 +84,19 @@ class AdminSecurity extends Page
             ->title('Password updated successfully.')
             ->success()
             ->send();
+    }
+
+    /**
+     * @return array<Action>
+     */
+    protected function getFormActions(): array
+    {
+        return [
+            Action::make('save')
+                ->label('Update Password')
+                ->submit('save')
+                ->keyBindings(['mod+s']),
+        ];
     }
 
     /**

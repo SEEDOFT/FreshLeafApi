@@ -62,17 +62,17 @@ class BusinessProfile extends Page
                             ->columnSpanFull()
                             ->maxLength(255),
                         Textarea::make('shop_description')
-                            ->label('Shop Description')
+                            ->label(__('admin.vendor_settings.business_profile.description'))
                             ->placeholder('Describe your farm or organic vegetables...')
                             ->columnSpanFull(),
                         Grid::make(3)
                             ->schema([
                                 TimePicker::make('opening_time')
-                                    ->label('Opening Time'),
+                                    ->label(__('admin.vendor_settings.business_profile.opening_time')),
                                 TimePicker::make('closing_time')
-                                    ->label('Closing Time'),
+                                    ->label(__('admin.vendor_settings.business_profile.closing_time')),
                                 Toggle::make('is_open')
-                                    ->label('Store Open')
+                                    ->label(__('admin.vendor_settings.business_profile.is_open'))
                                     ->inline(false),
                             ]),
                     ]),

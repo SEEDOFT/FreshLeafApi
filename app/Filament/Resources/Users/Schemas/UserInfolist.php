@@ -18,21 +18,21 @@ class UserInfolist
     {
         return $schema
             ->components([
-                Section::make('Account Information')
+                Section::make(__('admin.resources.user.account_info'))
                     ->columns(2)
                     ->schema([
                         TextEntry::make('first_name')
-                            ->label('First Name'),
+                            ->label(__('admin.profile.first_name')),
                         TextEntry::make('last_name')
-                            ->label('Last Name'),
+                            ->label(__('admin.profile.last_name')),
                         TextEntry::make('email')
-                            ->label('Email')
+                            ->label(__('admin.profile.email'))
                             ->placeholder('-'),
                         TextEntry::make('phone_number')
-                            ->label('Phone Number')
+                            ->label(__('admin.profile.phone'))
                             ->placeholder('-'),
                         TextEntry::make('type.name')
-                            ->label('Account Type')
+                            ->label(__('admin.resources.user.type'))
                             ->badge()
                             ->placeholder('-')
                             ->color(static fn (string $state): string => match ($state) {
@@ -42,7 +42,7 @@ class UserInfolist
                                 default => 'gray',
                             }),
                         TextEntry::make('status.name')
-                            ->label('Account Status')
+                            ->label(__('admin.resources.user.status'))
                             ->placeholder('-')
                             ->badge()
                             ->color(static fn (string $state): string => match ($state) {
@@ -53,43 +53,43 @@ class UserInfolist
                             }),
                     ]),
 
-                Section::make('Personal Information')
+                Section::make(__('admin.resources.user.personal_info'))
                     ->schema([
                         ImageEntry::make('image')
-                            ->label('Profile')
+                            ->label(__('admin.profile.avatar'))
                             ->disk('public')
                             ->circular()
                             ->imageSize(200)
                             ->defaultImageUrl(Storage::disk('public')->url('users/user.png')),
 
                         TextEntry::make('userProfile.gender')
-                            ->label('Gender')
+                            ->label(__('admin.profile.gender'))
                             ->placeholder('-'),
                     ]),
 
-                Section::make('Wallets Information')
+                Section::make(__('admin.resources.user.wallets_info'))
                     ->schema([
                         RepeatableEntry::make('wallets')
                             ->schema([
                                 TextEntry::make('currency.name')
-                                    ->label('Currency')
+                                    ->label(__('admin.resources.wallet.currency'))
                                     ->placeholder('-'),
                                 TextEntry::make('balance')
-                                    ->label('Balance')
+                                    ->label(__('admin.resources.wallet.balance'))
                                     ->placeholder('0.00')
                                     ->money(static fn (Wallet $record) => $record->currency->code),
                             ])
                             ->columns(2),
                     ]),
 
-                Section::make('System Information')
+                Section::make(__('admin.resources.user.system_info'))
                     ->columns(2)
                     ->schema([
                         TextEntry::make('created_at')
-                            ->label('Created At')
+                            ->label(__('admin.resources.created_at'))
                             ->dateTime('d M Y, h:i A'),
                         TextEntry::make('updated_at')
-                            ->label('Last Updated')
+                            ->label(__('admin.resources.updated_at'))
                             ->dateTime('d M Y, h:i A'),
                     ]),
             ]);

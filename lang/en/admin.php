@@ -67,6 +67,10 @@ return [
         'exchange_rate' => [
             'label' => 'Exchange Rate',
             'plural_label' => 'Exchange Rates',
+            'base_currency' => 'Base Currency',
+            'target_currency' => 'Target Currency',
+            'rate' => 'Conversion Rate',
+            'rate_helper' => 'e.g. 1 USD = 4100 KHR',
         ],
         'order' => [
             'label' => 'Order',

@@ -12,15 +12,17 @@ use Filament\Pages\Page;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 use Illuminate\Support\Facades\Auth;
+use Override;
 
 class FinancialDetails extends Page
 {
+    #[Override]
     protected static ?string $cluster = Settings::class;
 
+    #[Override]
     protected static ?string $slug = 'financials';
 
-    protected static ?string $navigationLabel = 'Financials';
-
+#[Override]
     protected static ?string $navigationLabel = 'Financials';
 
     #[Override]

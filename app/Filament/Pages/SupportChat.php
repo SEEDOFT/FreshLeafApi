@@ -30,16 +30,12 @@ class SupportChat extends Page
 {
     use WithFileUploads;
 
-    #[Override]
     protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-chat-bubble-left-right';
 
-    #[Override]
-    protected string $view = 'filament.pages.support-chat';
+    protected static string $view = 'filament.pages.support-chat';
 
-    #[Override]
     protected static ?string $slug = 'support-chat';
 
-    #[Override]
     protected string|Width|null $maxContentWidth = Width::Full;
 
     #[Url]

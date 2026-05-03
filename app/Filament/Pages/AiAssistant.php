@@ -41,6 +41,5 @@ class AiAssistant extends Page
         return (bool) app_setting('enable_ai_assistant_admin', true);
     }
 
-    #[Override]
     protected string $view = 'filament.pages.ai-assistant';
 }

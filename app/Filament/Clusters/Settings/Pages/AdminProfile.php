@@ -15,6 +15,7 @@ use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 use Illuminate\Support\Facades\Auth;
+use Override;
 
 use function __;
 use function is_array;
@@ -27,6 +28,7 @@ class AdminProfile extends Page
 
     protected static ?string $slug = 'profile';
 
+    #[Override]
     public static function getNavigationLabel(): string
     {
         return __('admin.navigation.my_profile');

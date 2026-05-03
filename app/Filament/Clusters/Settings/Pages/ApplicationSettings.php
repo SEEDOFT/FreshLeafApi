@@ -12,6 +12,7 @@ use Filament\Notifications\Notification;
 use Filament\Pages\Page;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
+use Override;
 
 class ApplicationSettings extends Page
 {
@@ -19,6 +20,7 @@ class ApplicationSettings extends Page
 
     protected static ?string $slug = 'app-settings';
 
+    #[Override]
     public static function getNavigationLabel(): string
     {
         return __('admin.navigation.app_control');

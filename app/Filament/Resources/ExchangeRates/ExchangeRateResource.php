@@ -25,16 +25,19 @@ class ExchangeRateResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
 
+    #[Override]
     public static function getNavigationGroup(): ?string
     {
         return __('admin.navigation.financial');
     }
 
+    #[Override]
     public static function getModelLabel(): string
     {
         return __('admin.resources.exchange_rate.label');
     }
 
+    #[Override]
     public static function getPluralModelLabel(): string
     {
         return __('admin.resources.exchange_rate.plural_label');

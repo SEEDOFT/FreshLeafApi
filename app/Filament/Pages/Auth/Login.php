@@ -20,13 +20,13 @@ use Override;
 class Login extends BaseLogin
 {
     #[Override]
-    public function getHeading(): string | Htmlable
+    public function getHeading(): string|Htmlable
     {
         return 'Welcome back';
     }
 
     #[Override]
-    public function getSubHeading(): string | Htmlable | null
+    public function getSubHeading(): string|Htmlable|null
     {
         return 'Sign in to manage your FreshLeaf';
     }
@@ -78,7 +78,7 @@ class Login extends BaseLogin
 
         // Combine dial code and number
         $countryIso = $data['country_iso'] ?? 'KH';
-        $phoneInput = $data['phone_number_input'] ?? '';
+        $phoneInput = preg_replace('/[^0-9]/', '', $data['phone_number_input'] ?? '');
         $dialCode = get_dial_code($countryIso);
         $fullPhone = $dialCode.ltrim($phoneInput, '0');
 

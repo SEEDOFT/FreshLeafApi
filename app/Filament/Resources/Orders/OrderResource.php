@@ -25,16 +25,19 @@ class OrderResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedShoppingBag;
 
+    #[Override]
     public static function getNavigationGroup(): ?string
     {
         return __('admin.navigation.sales');
     }
 
+    #[Override]
     public static function getModelLabel(): string
     {
         return __('admin.resources.order.label');
     }
 
+    #[Override]
     public static function getPluralModelLabel(): string
     {
         return __('admin.resources.order.plural_label');

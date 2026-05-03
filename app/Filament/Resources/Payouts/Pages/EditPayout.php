@@ -6,11 +6,13 @@ use App\Filament\Resources\Payouts\PayoutResource;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\ViewAction;
 use Filament\Resources\Pages\EditRecord;
+use Override;
 
 class EditPayout extends EditRecord
 {
     protected static string $resource = PayoutResource::class;
 
+    #[Override]
     protected function getHeaderActions(): array
     {
         return [

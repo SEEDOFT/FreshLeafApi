@@ -188,7 +188,8 @@ class Register extends BaseRegister
 
         // Combine fields and strip leading zero
         $dialCode = get_dial_code($data['country_iso']);
-        $data['phone_number'] = $dialCode.ltrim($data['phone_number_input'], '0');
+        $phoneInput = preg_replace('/[^0-9]/', '', $data['phone_number_input'] ?? '');
+        $data['phone_number'] = $dialCode.ltrim($phoneInput, '0');
         unset($data['country_iso'], $data['phone_number_input']);
 
         $data['user_type_id'] = UserType::VENDOR;

@@ -23,16 +23,19 @@ class UnitResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedScale;
 
+    #[Override]
     public static function getNavigationGroup(): ?string
     {
         return __('admin.navigation.catalog');
     }
 
+    #[Override]
     public static function getModelLabel(): string
     {
         return __('admin.resources.unit.label');
     }
 
+    #[Override]
     public static function getPluralModelLabel(): string
     {
         return __('admin.resources.unit.plural_label');

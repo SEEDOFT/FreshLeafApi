@@ -24,16 +24,19 @@ class VendorResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedBuildingStorefront;
 
+    #[Override]
     public static function getNavigationGroup(): ?string
     {
         return __('admin.navigation.accounts');
     }
 
+    #[Override]
     public static function getModelLabel(): string
     {
         return __('admin.resources.vendor.label');
     }
 
+    #[Override]
     public static function getPluralModelLabel(): string
     {
         return __('admin.resources.vendor.plural_label');

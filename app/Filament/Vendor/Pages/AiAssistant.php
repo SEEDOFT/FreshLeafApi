@@ -6,16 +6,19 @@ namespace App\Filament\Vendor\Pages;
 
 use Filament\Pages\Page;
 use Filament\Support\Enums\Width;
+use Override;
 
 class AiAssistant extends Page
 {
     protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-sparkles';
 
+    #[Override]
     public static function getNavigationLabel(): string
     {
         return __('admin.ai.assistant');
     }
 
+    #[Override]
     public function getHeading(): string
     {
         return __('admin.ai.assistant');
@@ -27,6 +30,7 @@ class AiAssistant extends Page
 
     protected string|Width|null $maxContentWidth = Width::Full;
 
+    #[Override]
     public static function canAccess(): bool
     {
         return (bool) app_setting('enable_ai_assistant_vendor', true);

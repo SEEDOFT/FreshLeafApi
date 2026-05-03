@@ -24,7 +24,7 @@ class ProductController extends Controller
         /** @var User $user */
         $user = $request->user();
 
-        return match ((int) $user?->user_type_id) {
+        return match ((int) $user->user_type_id) {
             UserType::ADMIN => $this->adminIndex($request),
             UserType::VENDOR => $this->vendorIndex($request),
             default => $this->userIndex($request),
@@ -39,7 +39,7 @@ class ProductController extends Controller
         /** @var User $user */
         $user = $request->user();
 
-        return match ((int) $user?->user_type_id) {
+        return match ((int) $user->user_type_id) {
             UserType::ADMIN => $this->adminShow($id),
             UserType::VENDOR => $this->vendorShow($id, $request),
             default => $this->userShow($id),

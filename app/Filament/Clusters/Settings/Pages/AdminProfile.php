@@ -6,6 +6,7 @@ namespace App\Filament\Clusters\Settings\Pages;
 
 use App\Filament\Clusters\Settings;
 use BackedEnum;
+use Filament\Actions\Action;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
@@ -41,7 +42,7 @@ class AdminProfile extends Page
     protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-user-circle';
 
     #[Override]
-    protected string $view = 'filament.pages.admin-profile';
+    protected string $view = 'filament.pages.shared.form-page';
 
     /**
      * @var array<string, mixed> | null
@@ -88,16 +89,16 @@ class AdminProfile extends Page
                                     ->schema([
                                         TextInput::make('first_name')
                                             ->label(__('admin.profile.first_name'))
-
+                                            ->required(static fn (string $operation): bool => $operation === 'create')->dehydrated(static fn ($state): bool => filled($state))
                                             ->maxLength(255),
                                         TextInput::make('last_name')
                                             ->label(__('admin.profile.last_name'))
-
+                                            ->required(static fn (string $operation): bool => $operation === 'create')->dehydrated(static fn ($state): bool => filled($state))
                                             ->maxLength(255),
                                         TextInput::make('email')
                                             ->label(__('admin.profile.email'))
                                             ->email()
-
+                                            ->required(static fn (string $operation): bool => $operation === 'create')->dehydrated(static fn ($state): bool => filled($state))
                                             ->maxLength(255),
                                         TextInput::make('phone_number')
                                             ->label(__('admin.profile.phone'))
@@ -117,7 +118,9 @@ class AdminProfile extends Page
                                 'en' => 'English (ភាសាអង់គ្លេស)',
                             ])
                             ->required(static fn (string $operation): bool => $operation === 'create')->dehydrated(static fn ($state): bool => filled($state))
-                            ->native(false),
+                            ->native(false)
+                            ->searchable()
+                            ->preload(),
                     ])->columns(2),
 
                 Section::make(__('admin.profile.professional_details'))
@@ -170,6 +173,19 @@ class AdminProfile extends Page
 
         // Refresh to apply language change
         $this->redirect(static::getUrl());
+    }
+
+    /**
+     * @return array<Action>
+     */
+    protected function getFormActions(): array
+    {
+        return [
+            Action::make('save')
+                ->label(__('admin.profile.save_changes'))
+                ->submit('save')
+                ->keyBindings(['mod+s']),
+        ];
     }
 
     protected function getNameFormComponent(): Component

@@ -11,7 +11,6 @@ use Illuminate\Database\Eloquent\Attributes\UseFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Override;
 
 #[Table('vendor_profiles', key: 'id')]
 #[Fillable([
@@ -55,7 +54,6 @@ class VendorProfile extends Model
      *
      * @return array<string, mixed>
      */
-
     protected function casts(): array
     {
         return [

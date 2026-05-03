@@ -6,6 +6,7 @@ namespace App\Filament\Clusters\Settings\Pages;
 
 use App\Filament\Clusters\Settings;
 use App\Models\Setting;
+use Filament\Actions\Action;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
 use Filament\Notifications\Notification;
@@ -16,8 +17,10 @@ use Override;
 
 class ApplicationSettings extends Page
 {
+    #[Override]
     protected static ?string $cluster = Settings::class;
 
+    #[Override]
     protected static ?string $slug = 'app-settings';
 
     #[Override]
@@ -26,9 +29,11 @@ class ApplicationSettings extends Page
         return __('admin.navigation.app_control');
     }
 
+    #[Override]
     protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-cog-8-tooth';
 
-    protected string $view = 'filament.pages.application-settings';
+    #[Override]
+    protected string $view = 'filament.pages.shared.form-page';
 
     /**
      * @var array<string, mixed> | null
@@ -103,5 +108,18 @@ class ApplicationSettings extends Page
             ->title(__('admin.settings.app_settings.success_notification'))
             ->success()
             ->send();
+    }
+
+    /**
+     * @return array<Action>
+     */
+    protected function getFormActions(): array
+    {
+        return [
+            Action::make('save')
+                ->label(__('admin.profile.save_changes'))
+                ->submit('save')
+                ->keyBindings(['mod+s']),
+        ];
     }
 }

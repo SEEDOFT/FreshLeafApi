@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Filament\Clusters\Settings\Pages;
 
 use App\Filament\Clusters\Settings;
+use Filament\Actions\Action;
 use Filament\Forms\Components\TextInput;
 use Filament\Notifications\Notification;
 use Filament\Pages\Page;
@@ -12,18 +13,27 @@ use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Override;
 
 class AdminSecurity extends Page
 {
+    #[Override]
     protected static ?string $cluster = Settings::class;
 
+    #[Override]
     protected static ?string $slug = 'security';
 
-    protected static ?string $navigationLabel = 'Security';
+    #[Override]
+    public static function getNavigationLabel(): string
+    {
+        return 'Security';
+    }
 
+    #[Override]
     protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-lock-closed';
 
-    protected string $view = 'filament.pages.admin-security';
+    #[Override]
+    protected string $view = 'filament.pages.shared.form-page';
 
     /**
      * @var array<string, mixed> | null
@@ -73,5 +83,18 @@ class AdminSecurity extends Page
             ->title('Password updated successfully.')
             ->success()
             ->send();
+    }
+
+    /**
+     * @return array<Action>
+     */
+    protected function getFormActions(): array
+    {
+        return [
+            Action::make('save')
+                ->label('Update Password')
+                ->submit('save')
+                ->keyBindings(['mod+s']),
+        ];
     }
 }

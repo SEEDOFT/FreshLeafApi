@@ -10,6 +10,7 @@ use Filament\Infolists\Components\RepeatableEntry;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
+use Illuminate\Support\Facades\Storage;
 
 class UserInfolist
 {
@@ -59,7 +60,8 @@ class UserInfolist
                             ->disk('public')
                             ->circular()
                             ->imageSize(200)
-                            ->defaultImageUrl('user.png'),
+                            ->defaultImageUrl(Storage::disk('public')->url('users/user.png')),
+
                         TextEntry::make('userProfile.gender')
                             ->label('Gender')
                             ->placeholder('-'),

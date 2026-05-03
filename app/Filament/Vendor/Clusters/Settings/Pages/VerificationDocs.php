@@ -22,7 +22,8 @@ class VerificationDocs extends Page
 
     protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-shield-check';
 
-    protected string $view = 'filament.vendor.pages.verification-docs';
+    #[Override]
+    protected string $view = 'filament.pages.shared.form-page';
 
     /**
      * @var array<string, mixed> | null
@@ -38,26 +39,30 @@ class VerificationDocs extends Page
     {
         return $schema
             ->components([
-                Section::make('Identity & Store Verification')
-                    ->description('Upload documents to verify your identity and organic status. These cannot be changed once verified.')
+                Section::make(__('admin.vendor_settings.verification_docs.section_title'))
+                    ->description(__('admin.vendor_settings.verification_docs.section_desc'))
                     ->schema([
                         FileUpload::make('id_card_front')
-                            ->label('ID Card (Front)')
+                            ->label(__('admin.vendor_settings.verification_docs.id_front'))
                             ->image()
+                            ->disk('local')
                             ->directory('vendor-verification')
                             ->disabled(fn ($record) => Auth::user()->vendorProfile?->is_verified),
                         FileUpload::make('id_card_back')
-                            ->label('ID Card (Back)')
+                            ->label(__('admin.vendor_settings.verification_docs.id_back'))
                             ->image()
+                            ->disk('local')
                             ->directory('vendor-verification')
                             ->disabled(fn ($record) => Auth::user()->vendorProfile?->is_verified),
                         FileUpload::make('store_front_image')
-                            ->label('Farm / Store Photo')
+                            ->label(__('admin.vendor_settings.verification_docs.store_photo'))
                             ->image()
+                            ->disk('local')
                             ->directory('vendor-verification')
                             ->disabled(fn ($record) => Auth::user()->vendorProfile?->is_verified),
                         FileUpload::make('organic_certificate_url')
-                            ->label('Organic Certificate (Optional)')
+                            ->label(__('admin.vendor_settings.verification_docs.organic_cert'))
+                            ->disk('local')
                             ->directory('vendor-verification')
                             ->disabled(fn ($record) => Auth::user()->vendorProfile?->is_verified),
                     ])->columns(2),
@@ -71,8 +76,8 @@ class VerificationDocs extends Page
 
         if ($user->vendorProfile?->is_verified) {
             Notification::make()
-                ->title('Verification Lock')
-                ->body('You cannot change verification documents once verified.')
+                ->title(__('admin.vendor_settings.verification_docs.lock_title'))
+                ->body(__('admin.vendor_settings.verification_docs.lock_body'))
                 ->danger()
                 ->send();
 
@@ -83,8 +88,21 @@ class VerificationDocs extends Page
         $user->vendorProfile()->update($state);
 
         Notification::make()
-            ->title('Verification documents updated.')
+            ->title(__('admin.vendor_settings.verification_docs.success_notification'))
             ->success()
             ->send();
+    }
+
+    /**
+     * @return array<Action>
+     */
+    protected function getFormActions(): array
+    {
+        return [
+            \Filament\Actions\Action::make('save')
+                ->label(__('admin.profile.save_changes'))
+                ->submit('save')
+                ->keyBindings(['mod+s']),
+        ];
     }
 }

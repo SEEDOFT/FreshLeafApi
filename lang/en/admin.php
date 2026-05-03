@@ -154,11 +154,16 @@ return [
                 'label' => 'Security',
             ],
             'verification_docs' => [
-                'label' => 'Verification Documents',
+                'label' => 'Verification',
+                'section_title' => 'Identity & Store Verification',
+                'section_desc' => 'Upload documents to verify your identity and organic status. These cannot be changed once verified.',
                 'id_front' => 'ID Card (Front)',
                 'id_back' => 'ID Card (Back)',
                 'store_photo' => 'Farm / Store Photo',
                 'organic_cert' => 'Organic Certificate (Optional)',
+                'lock_title' => 'Verification Lock',
+                'lock_body' => 'You cannot change verification documents once verified.',
+                'success_notification' => 'Verification documents updated.',
             ],
         ],
         'unit' => [

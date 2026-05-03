@@ -18,23 +18,23 @@ class VendorInfolist
         return $schema
             ->components([
 
-                Section::make('Account Information')
+                Section::make(__('admin.resources.vendor.account_info'))
                     ->columns(2)
                     ->schema([
                         TextEntry::make('first_name')
-                            ->label('First Name')
+                            ->label(__('admin.profile.first_name'))
                             ->placeholder('-'),
                         TextEntry::make('last_name')
-                            ->label('Last Name')
+                            ->label(__('admin.profile.last_name'))
                             ->placeholder('-'),
                         TextEntry::make('email')
-                            ->label('Email')
+                            ->label(__('admin.profile.email'))
                             ->placeholder('-'),
                         TextEntry::make('phone_number')
-                            ->label('Phone Number')
+                            ->label(__('admin.profile.phone'))
                             ->placeholder('-'),
                         TextEntry::make('type.name')
-                            ->label('Account Type')
+                            ->label(__('admin.resources.user.type'))
                             ->badge()
                             ->color(static fn (string $state): string => match ($state) {
                                 'Admin' => 'danger',
@@ -43,7 +43,7 @@ class VendorInfolist
                                 default => 'gray',
                             }),
                         TextEntry::make('status.name')
-                            ->label('Account Status')
+                            ->label(__('admin.resources.user.status'))
                             ->badge()
                             ->color(static fn (string $state): string => match ($state) {
                                 'Active' => 'success',
@@ -53,95 +53,96 @@ class VendorInfolist
                             }),
                     ]),
 
-                Section::make('Profile Information')
+                Section::make(__('admin.resources.vendor.profile_info'))
                     ->relationship('vendorProfile')
                     ->columns(2)
                     ->schema([
                         TextEntry::make('business_name')
-                            ->label('Business Name')
+                            ->label(__('admin.resources.vendor.business_name'))
                             ->placeholder('-'),
                         TextEntry::make('contact_phone')
-                            ->label('Contact Phone')
+                            ->label(__('admin.resources.vendor.contact_phone'))
                             ->placeholder('-'),
                         TextEntry::make('city')
-                            ->label('City')
+                            ->label(__('admin.resources.vendor.city'))
                             ->placeholder('-'),
                         TextEntry::make('province')
-                            ->label('Province')
+                            ->label(__('admin.resources.vendor.province'))
                             ->placeholder('-'),
                         TextEntry::make('address')
-                            ->label('Address')
+                            ->label(__('admin.resources.vendor.address'))
                             ->columnSpanFull()
                             ->color('info')
                             ->placeholder('-')
                             ->url(static fn (string $state): string => 'https://maps.google.com/?q='.urlencode($state))
                             ->openUrlInNewTab(),
                         IconEntry::make('is_verified')
-                            ->label('Verification Status')
+                            ->label(__('admin.resources.vendor.verification_status'))
                             ->boolean(),
 
                     ]),
 
-                Section::make('Verification Documents')
+                Section::make(__('admin.resources.vendor.verification_docs'))
                     ->relationship('vendorProfile')
                     ->columns(2)
                     ->schema([
                         ImageEntry::make('id_card_front')
-                            ->label('ID Card (Front)')
+                            ->label(__('admin.resources.vendor.id_card_front'))
                             ->imageUrl(static fn ($state) => $state ? route('admin.documents.show', ['path' => $state]) : null)
                             ->height(200),
                         ImageEntry::make('id_card_back')
-                            ->label('ID Card (Back)')
+                            ->label(__('admin.resources.vendor.id_card_back'))
                             ->imageUrl(static fn ($state) => $state ? route('admin.documents.show', ['path' => $state]) : null)
                             ->height(200),
                         ImageEntry::make('store_front_image')
-                            ->label('Farm / Store Photo')
+                            ->label(__('admin.resources.vendor.store_photo'))
                             ->imageUrl(static fn ($state) => $state ? route('admin.documents.show', ['path' => $state]) : null)
                             ->height(200),
                         TextEntry::make('organic_certificate_url')
-                            ->label('Organic Certificate')
-                            ->placeholder('Not Provided')
+                            ->label(__('admin.resources.vendor.organic_cert'))
+                            ->placeholder(__('admin.general.not_provided'))
                             ->url(static fn ($state) => $state ? route('admin.documents.show', ['path' => $state]) : null)
                             ->openUrlInNewTab()
                             ->color('primary'),
                     ]),
 
-                Section::make('Financial Details')
+                Section::make(__('admin.resources.vendor.financial_details'))
                     ->relationship('vendorProfile')
                     ->columns(2)
                     ->schema([
                         TextEntry::make('bank_name')
-                            ->label('Bank Name'),
+                            ->label(__('admin.resources.vendor.bank_name')),
                         TextEntry::make('bank_account_name')
-                            ->label('Account Holder'),
+                            ->label(__('admin.resources.vendor.account_holder')),
                         TextEntry::make('bank_account_number')
-                            ->label('Account Number'),
+                            ->label(__('admin.resources.vendor.account_number')),
                         ImageEntry::make('bank_qr_code')
-                            ->label('Bank QR Code')
-                            ->url(static fn ($state) => $state ? route('admin.documents.show', ['path' => $state]) : null)
-                            ->imageSize(200),
+                            ->label(__('admin.resources.vendor.qr_code'))
+                            ->imageUrl(static fn ($state) => $state ? route('admin.documents.show', ['path' => $state]) : null)
+                            ->height(200),
                     ]),
 
-                Section::make('Wallets Information')
+                Section::make(__('admin.resources.vendor.wallets_info'))
                     ->schema([
                         RepeatableEntry::make('wallets')
                             ->schema([
                                 TextEntry::make('currency.name')
-                                    ->label('Currency'),
+                                    ->label(__('admin.resources.wallet.currency')),
                                 TextEntry::make('balance')
+                                    ->label(__('admin.resources.wallet.balance'))
                                     ->money(static fn ($record) => $record->currency->code),
                             ])
                             ->columns(2),
                     ]),
 
-                Section::make('System Information')
+                Section::make(__('admin.resources.vendor.system_info'))
                     ->columns(2)
                     ->schema([
                         TextEntry::make('created_at')
-                            ->label('Created At')
+                            ->label(__('admin.resources.created_at'))
                             ->dateTime('d M Y, h:i A'),
                         TextEntry::make('updated_at')
-                            ->label('Last Updated')
+                            ->label(__('admin.resources.updated_at'))
                             ->dateTime('d M Y, h:i A'),
                     ]),
             ]);

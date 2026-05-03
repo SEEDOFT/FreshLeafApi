@@ -64,13 +64,15 @@ return [
             'basic_info' => 'Basic Information',
             'visuals' => 'Visuals',
         ],
-        'exchange_rate' => [
-            'label' => 'Exchange Rate',
-            'plural_label' => 'Exchange Rates',
-            'base_currency' => 'Base Currency',
-            'target_currency' => 'Target Currency',
-            'rate' => 'Conversion Rate',
-            'rate_helper' => 'e.g. 1 USD = 4100 KHR',
+        'security' => [
+            'label' => 'Security',
+            'change_password' => 'Change Password',
+            'change_password_desc' => 'Ensure your account is using a long, random password to stay secure.',
+            'current_password' => 'Current Password',
+            'password' => 'New Password',
+            'password_confirmation' => 'Confirm New Password',
+            'update_password' => 'Update Password',
+            'success_notification' => 'Password updated successfully.',
         ],
         'order' => [
             'label' => 'Order',

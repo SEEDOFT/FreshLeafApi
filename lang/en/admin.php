@@ -128,10 +128,22 @@ return [
         'wallet' => [
             'label' => 'Wallet',
             'plural_label' => 'Wallets',
+            'details' => 'Wallet Details',
+            'user' => 'User',
+            'currency' => 'Currency',
+            'balance' => 'Balance',
         ],
         'wallet_transaction' => [
             'label' => 'Wallet Transaction',
             'plural_label' => 'Wallet Transactions',
+            'details' => 'Transaction Details',
+            'wallet' => 'Wallet',
+            'type' => 'Type',
+            'status' => 'Status',
+            'amount' => 'Amount',
+            'ref_type' => 'Reference Type',
+            'ref_id' => 'Reference ID',
+            'description' => 'Description',
         ],
         'unit' => [
             'label' => 'Unit',

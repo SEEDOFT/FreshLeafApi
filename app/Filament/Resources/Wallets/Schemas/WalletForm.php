@@ -15,19 +15,22 @@ class WalletForm
     {
         return $schema
             ->components([
-                Section::make('Wallet Details')
+                Section::make(__('admin.resources.wallet.details'))
                     ->columns(2)
                     ->schema([
                         Select::make('user_id')
+                            ->label(__('admin.resources.wallet.user'))
                             ->relationship('user', 'first_name')
                             ->getOptionLabelFromRecordUsing(static fn ($record) => "{$record->first_name} {$record->last_name}")
                             ->searchable()
                             ->preload()
                             ->required(static fn (string $operation): bool => $operation === 'create')->dehydrated(static fn ($state): bool => filled($state)),
                         Select::make('currency_id')
+                            ->label(__('admin.resources.wallet.currency'))
                             ->relationship('currency', 'name')
                             ->required(static fn (string $operation): bool => $operation === 'create')->dehydrated(static fn ($state): bool => filled($state)),
                         TextInput::make('balance')
+                            ->label(__('admin.resources.wallet.balance'))
                             ->numeric()
                             ->required(static fn (string $operation): bool => $operation === 'create')->dehydrated(static fn ($state): bool => filled($state))
                             ->default(0),

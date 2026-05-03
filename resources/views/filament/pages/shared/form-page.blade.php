@@ -1,7 +1,7 @@
 <x-filament-panels::page>
     {{ $this->form }}
 
-    <x-filament-panels::form.actions
+    <x-filament-actions::actions
         :actions="$this->getFormActions()"
     />
 </x-filament-panels::page>

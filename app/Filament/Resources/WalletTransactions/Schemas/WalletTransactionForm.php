@@ -23,16 +23,16 @@ class WalletTransactionForm
                             ->relationship('wallet.user', 'first_name')
                             ->getOptionLabelFromRecordUsing(fn ($record) => "{$record->first_name} {$record->last_name} ({$record->wallets->first()?->currency->code})")
                             ->searchable()
-                            ->required(),
+                            ->required(static fn (string $operation): bool => $operation === 'create')->dehydrated(static fn ($state): bool => filled($state)),
                         Select::make('wallet_transaction_type_id')
                             ->relationship('type', 'name')
-                            ->required(),
+                            ->required(static fn (string $operation): bool => $operation === 'create')->dehydrated(static fn ($state): bool => filled($state)),
                         Select::make('wallet_transaction_status_id')
                             ->relationship('status', 'name')
-                            ->required(),
+                            ->required(static fn (string $operation): bool => $operation === 'create')->dehydrated(static fn ($state): bool => filled($state)),
                         TextInput::make('amount')
                             ->numeric()
-                            ->required()
+                            ->required(static fn (string $operation): bool => $operation === 'create')->dehydrated(static fn ($state): bool => filled($state))
                             ->prefix('$'),
                         TextInput::make('reference_type'),
                         TextInput::make('reference_id')

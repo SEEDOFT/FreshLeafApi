@@ -59,7 +59,7 @@ class ApplicationSettings extends Page
                             ->numeric()
                             ->suffix('%')
                             ->helperText(__('admin.settings.app_settings.commission_fee_helper'))
-                            ->required(),
+                            ->required(static fn (string $operation): bool => $operation === 'create')->dehydrated(static fn ($state): bool => filled($state)),
                     ]),
 
                 Section::make(__('admin.settings.app_settings.localization'))
@@ -67,7 +67,7 @@ class ApplicationSettings extends Page
                     ->schema([
                         TextInput::make('timezone')
                             ->label(__('admin.settings.app_settings.timezone'))
-                            ->required(),
+                            ->required(static fn (string $operation): bool => $operation === 'create')->dehydrated(static fn ($state): bool => filled($state)),
                     ])->columns(2),
 
                 Section::make(__('admin.settings.app_settings.notifications'))

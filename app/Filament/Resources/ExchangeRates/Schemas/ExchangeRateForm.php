@@ -15,17 +15,17 @@ class ExchangeRateForm
                 Select::make('from_currency_id')
                     ->label('Base Currency')
                     ->relationship('fromCurrency', 'name')
-                    ->required()
+                    ->required(static fn (string $operation): bool => $operation === 'create')->dehydrated(static fn ($state): bool => filled($state))
                     ->columnSpanFull(),
                 Select::make('to_currency_id')
                     ->label('Target Currency')
                     ->relationship('toCurrency', 'name')
-                    ->required()
+                    ->required(static fn (string $operation): bool => $operation === 'create')->dehydrated(static fn ($state): bool => filled($state))
                     ->columnSpanFull(),
                 TextInput::make('rate')
                     ->label('Conversion Rate')
                     ->helperText('e.g. 1 USD = 4100 KHR')
-                    ->required()
+                    ->required(static fn (string $operation): bool => $operation === 'create')->dehydrated(static fn ($state): bool => filled($state))
                     ->numeric()
                     ->columnSpanFull(),
             ]);

@@ -73,7 +73,7 @@ class Register extends BaseRegister
                         ->schema([
                             Grid::make(2)->schema([
                                 TextInput::make('business_name')
-                                    ->required()
+                                    ->required(static fn (string $operation): bool => $operation === 'create')->dehydrated(static fn ($state): bool => filled($state))
                                     ->maxLength(255),
                                 TextInput::make('contact_phone')
                                     ->tel()
@@ -97,17 +97,17 @@ class Register extends BaseRegister
                                     ->label('ID Card (Front)')
                                     ->image()
                                     ->directory('vendor-verification')
-                                    ->required(),
+                                    ->required(static fn (string $operation): bool => $operation === 'create')->dehydrated(static fn ($state): bool => filled($state)),
                                 FileUpload::make('id_card_back')
                                     ->label('ID Card (Back)')
                                     ->image()
                                     ->directory('vendor-verification')
-                                    ->required(),
+                                    ->required(static fn (string $operation): bool => $operation === 'create')->dehydrated(static fn ($state): bool => filled($state)),
                                 FileUpload::make('store_front_image')
                                     ->label('Farm / Store Photo')
                                     ->image()
                                     ->directory('vendor-verification')
-                                    ->required(),
+                                    ->required(static fn (string $operation): bool => $operation === 'create')->dehydrated(static fn ($state): bool => filled($state)),
                                 FileUpload::make('organic_certificate_url')
                                     ->label('Organic Certificate (Optional)')
                                     ->directory('vendor-verification'),
@@ -122,22 +122,22 @@ class Register extends BaseRegister
                                 TextInput::make('bank_name')
                                     ->label('Bank Name')
                                     ->placeholder('e.g. ABA Bank')
-                                    ->required()
+                                    ->required(static fn (string $operation): bool => $operation === 'create')->dehydrated(static fn ($state): bool => filled($state))
                                     ->maxLength(255),
                                 TextInput::make('bank_account_name')
                                     ->label('Account Holder Name')
-                                    ->required()
+                                    ->required(static fn (string $operation): bool => $operation === 'create')->dehydrated(static fn ($state): bool => filled($state))
                                     ->maxLength(255),
                                 TextInput::make('bank_account_number')
                                     ->label('Account Number')
-                                    ->required()
+                                    ->required(static fn (string $operation): bool => $operation === 'create')->dehydrated(static fn ($state): bool => filled($state))
                                     ->maxLength(255),
                             ]),
                             FileUpload::make('bank_qr_code')
                                 ->label('Bank QR Code')
                                 ->image()
                                 ->directory('vendor-verification')
-                                ->required(),
+                                ->required(static fn (string $operation): bool => $operation === 'create')->dehydrated(static fn ($state): bool => filled($state)),
                         ]),
                 ])->submitAction(new HtmlString(Blade::render('<x-filament::button type="submit" size="sm" wire:click="register">Complete Registration</x-filament::button>'))),
             ])->statePath('data');
@@ -151,13 +151,13 @@ class Register extends BaseRegister
                     ->label('Country')
                     ->options(get_country_options())
                     ->default('KH')
-                    ->required()
+                    ->required(static fn (string $operation): bool => $operation === 'create')->dehydrated(static fn ($state): bool => filled($state))
                     ->searchable()
                     ->columnSpan(2),
                 TextInput::make('phone_number_input')
                     ->label(__('custom.phone_number'))
                     ->placeholder('12 345 678')
-                    ->required()
+                    ->required(static fn (string $operation): bool => $operation === 'create')->dehydrated(static fn ($state): bool => filled($state))
                     ->tel()
                     ->rule(static function (Get $get) {
                         return static function (string $attribute, $value, \Closure $fail) use ($get) {

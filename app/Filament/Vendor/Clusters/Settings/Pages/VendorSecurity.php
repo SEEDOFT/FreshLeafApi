@@ -44,15 +44,15 @@ class VendorSecurity extends Page
                     ->schema([
                         TextInput::make('current_password')
                             ->password()
-                            ->required()
+                            ->required(static fn (string $operation): bool => $operation === 'create')->dehydrated(static fn ($state): bool => filled($state))
                             ->currentPassword(),
                         TextInput::make('password')
                             ->password()
-                            ->required()
+                            ->required(static fn (string $operation): bool => $operation === 'create')->dehydrated(static fn ($state): bool => filled($state))
                             ->confirmed(),
                         TextInput::make('password_confirmation')
                             ->password()
-                            ->required(),
+                            ->required(static fn (string $operation): bool => $operation === 'create')->dehydrated(static fn ($state): bool => filled($state)),
                     ])->columns(2),
             ])
             ->statePath('data');

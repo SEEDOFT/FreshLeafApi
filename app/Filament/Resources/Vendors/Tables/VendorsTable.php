@@ -108,7 +108,7 @@ class VendorsTable
                     ->form([
                         Textarea::make('reason')
                             ->label('Rejection Reason')
-                            ->required(),
+                            ->required(static fn (string $operation): bool => $operation === 'create')->dehydrated(static fn ($state): bool => filled($state)),
                     ])
                     ->requiresConfirmation(),
             ])

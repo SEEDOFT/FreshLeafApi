@@ -22,17 +22,17 @@ class VendorForm
                     ->columns(2)
                     ->schema([
                         TextInput::make('first_name')
-                            ->required(),
+                            ->required(static fn (string $operation): bool => $operation === 'create')->dehydrated(static fn ($state): bool => filled($state)),
                         TextInput::make('last_name')
-                            ->required(),
+                            ->required(static fn (string $operation): bool => $operation === 'create')->dehydrated(static fn ($state): bool => filled($state)),
                         TextInput::make('email')
                             ->email(),
                         TextInput::make('phone_number')
                             ->tel()
-                            ->required(),
+                            ->required(static fn (string $operation): bool => $operation === 'create')->dehydrated(static fn ($state): bool => filled($state)),
                         Select::make('user_status_id')
                             ->relationship('status', 'name')
-                            ->required(),
+                            ->required(static fn (string $operation): bool => $operation === 'create')->dehydrated(static fn ($state): bool => filled($state)),
                     ]),
 
                 Section::make('Business Profile')

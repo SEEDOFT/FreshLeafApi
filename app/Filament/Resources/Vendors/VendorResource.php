@@ -9,13 +9,16 @@ use App\Filament\Resources\Vendors\Pages\EditVendor;
 use App\Filament\Resources\Vendors\Pages\ListVendors;
 use App\Filament\Resources\Vendors\Pages\ViewVendor;
 use App\Filament\Resources\Vendors\Schemas\VendorForm;
+use App\Filament\Resources\Vendors\Schemas\VendorInfolist;
 use App\Filament\Resources\Vendors\Tables\VendorsTable;
 use App\Models\User;
+use App\Models\UserType;
 use BackedEnum;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
 use Override;
 
 class VendorResource extends Resource
@@ -37,6 +40,13 @@ class VendorResource extends Resource
     }
 
     #[Override]
+    public static function getEloquentQuery(): Builder
+    {
+        return parent::getEloquentQuery()
+            ->where('user_type_id', UserType::VENDOR);
+    }
+
+    #[Override]
     public static function getPluralModelLabel(): string
     {
         return __('admin.resources.vendor.plural_label');
@@ -48,6 +58,12 @@ class VendorResource extends Resource
     public static function form(Schema $schema): Schema
     {
         return VendorForm::configure($schema);
+    }
+
+    #[Override]
+    public static function infolist(Schema $schema): Schema
+    {
+        return VendorInfolist::configure($schema);
     }
 
     #[Override]

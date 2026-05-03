@@ -28,19 +28,19 @@ class OrderForm
                             ->getOptionLabelFromRecordUsing(fn ($record) => "{$record->first_name} {$record->last_name}")
                             ->searchable()
                             ->preload()
-                            ->required(),
+                            ->required(static fn (string $operation): bool => $operation === 'create')->dehydrated(static fn ($state): bool => filled($state)),
                         Select::make('order_type_id')
                             ->relationship('type', 'name')
-                            ->required(),
+                            ->required(static fn (string $operation): bool => $operation === 'create')->dehydrated(static fn ($state): bool => filled($state)),
                         Select::make('order_status_id')
                             ->relationship('status', 'name')
-                            ->required(),
+                            ->required(static fn (string $operation): bool => $operation === 'create')->dehydrated(static fn ($state): bool => filled($state)),
                         Select::make('payment_status_id')
                             ->relationship('paymentStatus', 'name')
-                            ->required(),
+                            ->required(static fn (string $operation): bool => $operation === 'create')->dehydrated(static fn ($state): bool => filled($state)),
                         Select::make('address_id')
                             ->relationship('address', 'label')
-                            ->required(),
+                            ->required(static fn (string $operation): bool => $operation === 'create')->dehydrated(static fn ($state): bool => filled($state)),
                     ]),
 
                 Section::make('Logistics')
@@ -70,7 +70,7 @@ class OrderForm
                         TextInput::make('total_amount')
                             ->numeric()
                             ->prefix('$')
-                            ->required(),
+                            ->required(static fn (string $operation): bool => $operation === 'create')->dehydrated(static fn ($state): bool => filled($state)),
                     ]),
             ]);
     }

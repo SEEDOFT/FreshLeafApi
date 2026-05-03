@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace App\Filament\Resources\Users\Schemas;
 
+use App\Models\UserStatus;
 use App\Models\UserType;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
-use Filament\Forms\Components\Toggle;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 
@@ -21,48 +21,31 @@ class UserForm
                     ->columns(2)
                     ->schema([
                         TextInput::make('first_name')
-                            ->required(),
+                            ->label('First Name')
+                            ->required(static fn (string $operation): bool => $operation === 'create')->dehydrated(static fn ($state): bool => filled($state)),
                         TextInput::make('last_name')
-                            ->required(),
+                            ->label('Last Name')
+                            ->required(static fn (string $operation): bool => $operation === 'create')->dehydrated(static fn ($state): bool => filled($state)),
                         TextInput::make('email')
+                            ->label('Email')
                             ->email()
                             ->unique(ignoreRecord: true),
                         TextInput::make('phone_number')
+                            ->label('Phone Number')
                             ->tel()
-                            ->required()
+                            ->required(static fn (string $operation): bool => $operation === 'create')->dehydrated(static fn ($state): bool => filled($state))
                             ->unique(ignoreRecord: true),
                         Select::make('user_type_id')
+                            ->label('Account Type')
                             ->relationship('type', 'name')
-                            ->required()
+                            ->default(UserType::USER)
+                            ->required(static fn (string $operation): bool => $operation === 'create')->dehydrated(static fn ($state): bool => filled($state))
                             ->live(),
                         Select::make('user_status_id')
+                            ->label('Account Status')
                             ->relationship('status', 'name')
-                            ->required(),
-                    ]),
-
-                Section::make('Vendor Profile')
-                    ->relationship('vendorProfile')
-                    ->hidden(static fn (callable $get) => (int) $get('user_type_id') !== UserType::VENDOR)
-                    ->schema([
-                        TextInput::make('business_name')
-                            ->required(),
-                        TextInput::make('contact_phone'),
-                        TextInput::make('city'),
-                        TextInput::make('province'),
-                        TextInput::make('address')
-                            ->columnSpanFull(),
-                        Toggle::make('is_verified')
-                            ->disabled()
-                            ->dehydrated(false),
-                    ]),
-
-                Section::make('Admin Profile')
-                    ->relationship('adminProfile')
-                    ->hidden(static fn (callable $get) => (int) $get('user_type_id') !== UserType::ADMIN)
-                    ->schema([
-                        TextInput::make('job_title'),
-                        TextInput::make('department'),
-                        Toggle::make('super_admin'),
+                            ->default(UserStatus::ACTIVE)
+                            ->required(static fn (string $operation): bool => $operation === 'create')->dehydrated(static fn ($state): bool => filled($state)),
                     ]),
             ]);
     }

@@ -67,19 +67,19 @@ class VendorProfile extends Page
                                 Grid::make(2)
                                     ->schema([
                                         TextInput::make('first_name')
-                                            ->required()
+                                            ->required(static fn (string $operation): bool => $operation === 'create')->dehydrated(static fn ($state): bool => filled($state))
                                             ->maxLength(255),
                                         TextInput::make('last_name')
-                                            ->required()
+                                            ->required(static fn (string $operation): bool => $operation === 'create')->dehydrated(static fn ($state): bool => filled($state))
                                             ->maxLength(255),
                                         TextInput::make('email')
                                             ->email()
-                                            ->required()
+                                            ->required(static fn (string $operation): bool => $operation === 'create')->dehydrated(static fn ($state): bool => filled($state))
                                             ->maxLength(255),
                                         TextInput::make('phone_number')
                                             ->label('Phone Number')
                                             ->tel()
-                                            ->required(),
+                                            ->required(static fn (string $operation): bool => $operation === 'create')->dehydrated(static fn ($state): bool => filled($state)),
                                     ])
                                     ->columnSpan(3),
                             ]),
@@ -94,7 +94,7 @@ class VendorProfile extends Page
                                 'km' => 'Khmer (ភាសាខ្មែរ)',
                                 'en' => 'English',
                             ])
-                            ->required()
+                            ->required(static fn (string $operation): bool => $operation === 'create')->dehydrated(static fn ($state): bool => filled($state))
                             ->native(false),
                     ])->columns(2),
             ])
@@ -131,10 +131,10 @@ class VendorProfile extends Page
         return Grid::make(2)
             ->schema([
                 TextInput::make('first_name')
-                    ->required()
+                    ->required(static fn (string $operation): bool => $operation === 'create')->dehydrated(static fn ($state): bool => filled($state))
                     ->maxLength(255),
                 TextInput::make('last_name')
-                    ->required()
+                    ->required(static fn (string $operation): bool => $operation === 'create')->dehydrated(static fn ($state): bool => filled($state))
                     ->maxLength(255),
             ]);
     }

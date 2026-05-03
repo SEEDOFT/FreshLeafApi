@@ -25,16 +25,16 @@ class ProductForm
                             ->schema([
                                 TextInput::make('name_km')
                                     ->label('Name (Khmer)')
-                                    ->required()
+                                    ->required(static fn (string $operation): bool => $operation === 'create')->dehydrated(static fn ($state): bool => filled($state))
                                     ->live(onBlur: true)
                                     ->afterStateUpdated(fn (string $state, $set) => $set('slug', Str::slug($state))),
                                 TextInput::make('name_en')
                                     ->label('Name (English)')
-                                    ->required(),
+                                    ->required(static fn (string $operation): bool => $operation === 'create')->dehydrated(static fn ($state): bool => filled($state)),
                                 TextInput::make('slug')
                                     ->hidden()
                                     ->dehydrated()
-                                    ->required()
+                                    ->required(static fn (string $operation): bool => $operation === 'create')->dehydrated(static fn ($state): bool => filled($state))
                                     ->unique(ignoreRecord: true),
                             ]),
 
@@ -45,17 +45,17 @@ class ProductForm
                                     ->relationship('productCategory', 'name_en')
                                     ->searchable()
                                     ->preload()
-                                    ->required(),
+                                    ->required(static fn (string $operation): bool => $operation === 'create')->dehydrated(static fn ($state): bool => filled($state)),
 
                                 Select::make('product_type_id')
                                     ->label('Type')
                                     ->relationship('type', 'name')
-                                    ->required(),
+                                    ->required(static fn (string $operation): bool => $operation === 'create')->dehydrated(static fn ($state): bool => filled($state)),
 
                                 Select::make('default_unit_id')
                                     ->label('Base Unit')
                                     ->relationship('defaultUnit', 'name')
-                                    ->required(),
+                                    ->required(static fn (string $operation): bool => $operation === 'create')->dehydrated(static fn ($state): bool => filled($state)),
                             ]),
                     ]),
 

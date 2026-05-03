@@ -14,11 +14,11 @@ class UnitForm
         return $schema
             ->components([
                 TextInput::make('name')
-                    ->required(),
+                    ->required(static fn (string $operation): bool => $operation === 'create')->dehydrated(static fn ($state): bool => filled($state)),
                 TextInput::make('symbol')
-                    ->required(),
+                    ->required(static fn (string $operation): bool => $operation === 'create')->dehydrated(static fn ($state): bool => filled($state)),
                 TextInput::make('conversion_to_base')
-                    ->required()
+                    ->required(static fn (string $operation): bool => $operation === 'create')->dehydrated(static fn ($state): bool => filled($state))
                     ->numeric()
                     ->default(1),
             ]);

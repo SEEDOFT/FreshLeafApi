@@ -23,13 +23,13 @@ class WalletForm
                             ->getOptionLabelFromRecordUsing(static fn ($record) => "{$record->first_name} {$record->last_name}")
                             ->searchable()
                             ->preload()
-                            ->required(),
+                            ->required(static fn (string $operation): bool => $operation === 'create')->dehydrated(static fn ($state): bool => filled($state)),
                         Select::make('currency_id')
                             ->relationship('currency', 'name')
-                            ->required(),
+                            ->required(static fn (string $operation): bool => $operation === 'create')->dehydrated(static fn ($state): bool => filled($state)),
                         TextInput::make('balance')
                             ->numeric()
-                            ->required()
+                            ->required(static fn (string $operation): bool => $operation === 'create')->dehydrated(static fn ($state): bool => filled($state))
                             ->default(0),
                     ]),
             ]);

@@ -22,22 +22,22 @@ class PayoutForm
                     ->relationship('vendor', 'first_name', fn ($query) => $query->where('user_type_id', UserType::VENDOR))
                     ->getOptionLabelFromRecordUsing(fn ($record) => "{$record->first_name} {$record->last_name} ({$record->vendorProfile?->business_name})")
                     ->searchable()
-                    ->required(),
+                    ->required(static fn (string $operation): bool => $operation === 'create')->dehydrated(static fn ($state): bool => filled($state)),
 
                 Select::make('payout_status_id')
                     ->label('Status')
                     ->relationship('status', 'name')
-                    ->required(),
+                    ->required(static fn (string $operation): bool => $operation === 'create')->dehydrated(static fn ($state): bool => filled($state)),
 
                 Select::make('payout_method_id')
                     ->label('Method')
                     ->relationship('method', 'name')
-                    ->required(),
+                    ->required(static fn (string $operation): bool => $operation === 'create')->dehydrated(static fn ($state): bool => filled($state)),
 
                 TextInput::make('amount')
                     ->numeric()
                     ->prefix('$')
-                    ->required(),
+                    ->required(static fn (string $operation): bool => $operation === 'create')->dehydrated(static fn ($state): bool => filled($state)),
 
                 TextInput::make('transaction_reference')
                     ->label('Transaction Ref #')

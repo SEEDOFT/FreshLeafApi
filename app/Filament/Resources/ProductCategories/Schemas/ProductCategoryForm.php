@@ -28,15 +28,15 @@ class ProductCategoryForm
                             ->schema([
                                 TextInput::make('name_en')
                                     ->label(__('admin.resources.product_category.name_en'))
-                                    ->required()
+                                    ->required(static fn (string $operation): bool => $operation === 'create')->dehydrated(static fn ($state): bool => filled($state))
                                     ->live(onBlur: true)
                                     ->afterStateUpdated(fn (Set $set, ?string $state) => $set('slug', Str::slug($state))),
                                 TextInput::make('name_km')
                                     ->label(__('admin.resources.product_category.name_km'))
-                                    ->required(),
+                                    ->required(static fn (string $operation): bool => $operation === 'create')->dehydrated(static fn ($state): bool => filled($state)),
                                 TextInput::make('slug')
                                     ->label(__('admin.resources.product_category.slug'))
-                                    ->required()
+                                    ->required(static fn (string $operation): bool => $operation === 'create')->dehydrated(static fn ($state): bool => filled($state))
                                     ->unique(ignoreRecord: true),
                                 Toggle::make('is_active')
                                     ->label(__('admin.resources.product_category.is_active'))

@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Filament\Resources\Users\Schemas;
 
-use App\Models\UserType;
-use Filament\Infolists\Components\IconEntry;
+use App\Models\Wallet;
+use Filament\Infolists\Components\RepeatableEntry;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
@@ -19,13 +19,20 @@ class UserInfolist
                 Section::make('Account Information')
                     ->columns(2)
                     ->schema([
-                        TextEntry::make('first_name'),
-                        TextEntry::make('last_name'),
+                        TextEntry::make('first_name')
+                            ->label('First Name'),
+                        TextEntry::make('last_name')
+                            ->label('Last Name'),
                         TextEntry::make('email')
+                            ->label('Email')
                             ->placeholder('-'),
-                        TextEntry::make('phone_number'),
+                        TextEntry::make('phone_number')
+                            ->label('Phone Number')
+                            ->placeholder('-'),
                         TextEntry::make('type.name')
+                            ->label('Account Type')
                             ->badge()
+                            ->placeholder('-')
                             ->color(static fn (string $state): string => match ($state) {
                                 'Admin' => 'danger',
                                 'Vendor' => 'warning',
@@ -33,6 +40,8 @@ class UserInfolist
                                 default => 'gray',
                             }),
                         TextEntry::make('status.name')
+                            ->label('Account Status')
+                            ->placeholder('-')
                             ->badge()
                             ->color(static fn (string $state): string => match ($state) {
                                 'Active' => 'success',
@@ -42,45 +51,37 @@ class UserInfolist
                             }),
                     ]),
 
-                Section::make('Vendor Profile')
-                    ->relationship('vendorProfile')
-                    ->hidden(static fn ($record) => $record->user_type_id !== UserType::VENDOR)
-                    ->columns(2)
+                Section::make('Personal Information')
                     ->schema([
-                        TextEntry::make('business_name'),
-                        TextEntry::make('contact_phone')
+                        TextEntry::make('userProfile.gender')
+                            ->label('Gender')
                             ->placeholder('-'),
-                        TextEntry::make('city')
-                            ->placeholder('-'),
-                        TextEntry::make('province')
-                            ->placeholder('-'),
-                        TextEntry::make('address')
-                            ->columnSpanFull()
-                            ->placeholder('-'),
-                        IconEntry::make('is_verified')
-                            ->boolean(),
                     ]),
 
-                Section::make('Admin Profile')
-                    ->relationship('adminProfile')
-                    ->hidden(static fn ($record) => $record->user_type_id !== UserType::ADMIN)
-                    ->columns(2)
+                Section::make('Wallets Information')
                     ->schema([
-                        TextEntry::make('job_title')
-                            ->placeholder('-'),
-                        TextEntry::make('department')
-                            ->placeholder('-'),
-                        IconEntry::make('super_admin')
-                            ->boolean(),
+                        RepeatableEntry::make('wallets')
+                            ->schema([
+                                TextEntry::make('currency.name')
+                                    ->label('Currency')
+                                    ->placeholder('-'),
+                                TextEntry::make('balance')
+                                    ->label('Balance')
+                                    ->placeholder('0.00')
+                                    ->money(static fn (Wallet $record) => $record->currency->code),
+                            ])
+                            ->columns(2),
                     ]),
 
                 Section::make('System Information')
                     ->columns(2)
                     ->schema([
                         TextEntry::make('created_at')
-                            ->dateTime(),
+                            ->label('Created At')
+                            ->dateTime('d M Y, h:i A'),
                         TextEntry::make('updated_at')
-                            ->dateTime(),
+                            ->label('Last Updated')
+                            ->dateTime('d M Y, h:i A'),
                     ]),
             ]);
     }

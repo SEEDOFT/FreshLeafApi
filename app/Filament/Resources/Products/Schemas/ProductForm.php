@@ -28,15 +28,15 @@ class ProductForm
                     ->schema([
                         TextInput::make('name_en')
                             ->label(__('admin.resources.product.name_en'))
-                            ->required()
+                            ->required(static fn (string $operation): bool => $operation === 'create')->dehydrated(static fn ($state): bool => filled($state))
                             ->live(onBlur: true)
                             ->afterStateUpdated(fn (Set $set, ?string $state) => $set('slug', Str::slug($state))),
                         TextInput::make('name_km')
                             ->label(__('admin.resources.product.name_km'))
-                            ->required(),
+                            ->required(static fn (string $operation): bool => $operation === 'create')->dehydrated(static fn ($state): bool => filled($state)),
                         TextInput::make('slug')
                             ->label(__('admin.resources.product.slug'))
-                            ->required()
+                            ->required(static fn (string $operation): bool => $operation === 'create')->dehydrated(static fn ($state): bool => filled($state))
                             ->unique(ignoreRecord: true),
                         Textarea::make('description_en')
                             ->label(__('admin.resources.product.description_en'))
@@ -57,7 +57,7 @@ class ProductForm
                                     ->relationship('productCategory', 'name_en')
                                     ->searchable()
                                     ->preload()
-                                    ->required()
+                                    ->required(static fn (string $operation): bool => $operation === 'create')->dehydrated(static fn ($state): bool => filled($state))
                                     ->helperText(function ($state) {
                                         $helpers = __('admin.resources.product.category_helpers');
                                         if (! $state) {
@@ -91,15 +91,15 @@ class ProductForm
                                 Select::make('product_type_id')
                                     ->label(__('admin.resources.product.type'))
                                     ->relationship('type', 'name')
-                                    ->required(),
+                                    ->required(static fn (string $operation): bool => $operation === 'create')->dehydrated(static fn ($state): bool => filled($state)),
                                 Select::make('product_status_id')
                                     ->label(__('admin.resources.product.status'))
                                     ->relationship('status', 'name')
-                                    ->required(),
+                                    ->required(static fn (string $operation): bool => $operation === 'create')->dehydrated(static fn ($state): bool => filled($state)),
                                 Select::make('default_unit_id')
                                     ->label(__('admin.resources.product.unit'))
                                     ->relationship('defaultUnit', 'name')
-                                    ->required(),
+                                    ->required(static fn (string $operation): bool => $operation === 'create')->dehydrated(static fn ($state): bool => filled($state)),
                                 TextInput::make('selling_unit')
                                     ->label(__('admin.resources.product.selling_unit'))
                                     ->placeholder('e.g. kg, bunch'),

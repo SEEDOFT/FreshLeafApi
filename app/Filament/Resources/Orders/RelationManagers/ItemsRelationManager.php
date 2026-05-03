@@ -28,20 +28,20 @@ class ItemsRelationManager extends RelationManager
             ->components([
                 Select::make('product_id')
                     ->relationship('product', 'name')
-                    ->required()
+                    ->required(static fn (string $operation): bool => $operation === 'create')->dehydrated(static fn ($state): bool => filled($state))
                     ->live(),
                 Select::make('product_variant_id')
                     ->relationship('productVariant', 'name', fn ($query, $get) => $query->where('product_id', $get('product_id')))
-                    ->required(),
+                    ->required(static fn (string $operation): bool => $operation === 'create')->dehydrated(static fn ($state): bool => filled($state)),
                 TextInput::make('quantity')
-                    ->required()
+                    ->required(static fn (string $operation): bool => $operation === 'create')->dehydrated(static fn ($state): bool => filled($state))
                     ->numeric(),
                 TextInput::make('unit_price_snapshot')
-                    ->required()
+                    ->required(static fn (string $operation): bool => $operation === 'create')->dehydrated(static fn ($state): bool => filled($state))
                     ->numeric()
                     ->prefix('$'),
                 TextInput::make('subtotal')
-                    ->required()
+                    ->required(static fn (string $operation): bool => $operation === 'create')->dehydrated(static fn ($state): bool => filled($state))
                     ->numeric()
                     ->prefix('$'),
             ]);

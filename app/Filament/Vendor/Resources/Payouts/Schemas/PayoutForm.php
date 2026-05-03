@@ -14,16 +14,16 @@ class PayoutForm
         return $schema
             ->components([
                 TextInput::make('vendor_user_id')
-                    ->required()
+                    ->required(static fn (string $operation): bool => $operation === 'create')->dehydrated(static fn ($state): bool => filled($state))
                     ->numeric(),
                 TextInput::make('payout_status_id')
-                    ->required()
+                    ->required(static fn (string $operation): bool => $operation === 'create')->dehydrated(static fn ($state): bool => filled($state))
                     ->numeric(),
                 TextInput::make('payout_method_id')
-                    ->required()
+                    ->required(static fn (string $operation): bool => $operation === 'create')->dehydrated(static fn ($state): bool => filled($state))
                     ->numeric(),
                 TextInput::make('amount')
-                    ->required()
+                    ->required(static fn (string $operation): bool => $operation === 'create')->dehydrated(static fn ($state): bool => filled($state))
                     ->numeric(),
                 TextInput::make('transaction_reference'),
                 DateTimePicker::make('processed_at'),

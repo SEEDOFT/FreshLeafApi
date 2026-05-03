@@ -48,7 +48,7 @@ class BusinessProfile extends Page
                         Grid::make(2)
                             ->schema([
                                 TextInput::make('business_name')
-                                    ->required()
+                                    ->required(static fn (string $operation): bool => $operation === 'create')->dehydrated(static fn ($state): bool => filled($state))
                                     ->maxLength(255),
                                 TextInput::make('contact_phone')
                                     ->tel()

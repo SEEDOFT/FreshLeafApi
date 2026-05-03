@@ -28,15 +28,15 @@ class VariantsRelationManager extends RelationManager
             ->components([
                 Select::make('unit_id')
                     ->relationship('unit', 'name')
-                    ->required(),
+                    ->required(static fn (string $operation): bool => $operation === 'create')->dehydrated(static fn ($state): bool => filled($state)),
                 TextInput::make('name')
                     ->placeholder('e.g. 500g Pack, Bulk 5kg')
-                    ->required(),
+                    ->required(static fn (string $operation): bool => $operation === 'create')->dehydrated(static fn ($state): bool => filled($state)),
                 TextInput::make('quantity_in_unit')
-                    ->required()
+                    ->required(static fn (string $operation): bool => $operation === 'create')->dehydrated(static fn ($state): bool => filled($state))
                     ->numeric(),
                 TextInput::make('price')
-                    ->required()
+                    ->required(static fn (string $operation): bool => $operation === 'create')->dehydrated(static fn ($state): bool => filled($state))
                     ->numeric()
                     ->prefix('$'),
             ]);

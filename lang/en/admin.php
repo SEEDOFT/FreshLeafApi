@@ -136,6 +136,9 @@ return [
         'unit' => [
             'label' => 'Unit',
             'plural_label' => 'Units',
+            'name' => 'Name',
+            'symbol' => 'Symbol',
+            'conversion' => 'Conversion to Base',
         ],
         'product' => [
             'label' => 'Product',

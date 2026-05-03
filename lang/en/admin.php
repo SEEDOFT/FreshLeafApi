@@ -240,6 +240,7 @@ return [
         'department' => 'Department',
         'office_phone' => 'Office Phone',
         'success_notification' => 'Profile updated successfully.',
+        'save_changes' => 'Save Changes'
     ],
     'ai' => [
         'assistant' => 'AI Assistant',

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Http\Controllers\Api\Shared;
+namespace App\Http\Controllers\Api\User;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\User\Address\ReplaceAddressRequest;
@@ -13,7 +13,6 @@ use App\Models\Address;
 use App\Services\AddressService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Gate;
 
 class AddressController extends Controller
 {
@@ -28,8 +27,6 @@ class AddressController extends Controller
     {
         $user = $this->authenticatedUser($request);
 
-        Gate::authorize('viewAny', [Address::class, $user->user_type_id]);
-
         $addresses = $this->addressService->getUserAddresses($user, $request->integer('per_page', 10));
 
         return static::successResponse(AddressResource::collection($addresses), 'Addresses retrieved successfully');
@@ -41,14 +38,11 @@ class AddressController extends Controller
     public function show(string $id, Request $request): JsonResponse
     {
         $user = $this->authenticatedUser($request);
-
         $address = $user->addresses()->active()->find($id);
 
         if (! $address) {
             return static::errorResponse('Address not found', 404);
         }
-
-        Gate::authorize('view', [$address, $user->user_type_id]);
 
         return static::successResponse(new AddressResource($address), 'Address retrieved successfully');
     }
@@ -59,9 +53,6 @@ class AddressController extends Controller
     public function store(StoreAddressRequest $request): JsonResponse
     {
         $user = $this->authenticatedUser($request);
-
-        Gate::authorize('create', [Address::class, $user->user_type_id]);
-
         $address = $this->addressService->createAddress($user, $request->validated());
 
         return static::successResponse(new AddressResource($address), 'Address created successfully', 201);
@@ -78,8 +69,6 @@ class AddressController extends Controller
         if (! $address) {
             return static::errorResponse('Address not found', 404);
         }
-
-        Gate::authorize('update', [$address, $user->user_type_id]);
 
         $address = $this->addressService->updateAddress($address, $request->validated());
 
@@ -98,8 +87,6 @@ class AddressController extends Controller
             return static::errorResponse('Address not found', 404);
         }
 
-        Gate::authorize('update', [$address, $user->user_type_id]);
-
         $address = $this->addressService->replaceAddress($address, $request->validated());
 
         return static::successResponse(new AddressResource($address), 'Address replaced successfully');
@@ -116,8 +103,6 @@ class AddressController extends Controller
         if (! $address) {
             return static::errorResponse('Address not found', 404);
         }
-
-        Gate::authorize('delete', [$address, $user->user_type_id]);
 
         $this->addressService->deleteAddress($address);
 

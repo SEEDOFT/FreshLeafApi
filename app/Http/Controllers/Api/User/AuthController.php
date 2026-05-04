@@ -15,7 +15,6 @@ use App\Models\UserType;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Hash;
 
 class AuthController extends Controller
@@ -40,10 +39,6 @@ class AuthController extends Controller
             return static::errorResponse('Your account is not active', 403);
         }
 
-        if (! $user->isType(UserType::USER)) {
-            return static::errorResponse('Invalid login details', 401);
-        }
-
         $token = $user->createToken('user_auth_token')->plainTextToken;
 
         return static::successResponse([
@@ -59,6 +54,7 @@ class AuthController extends Controller
     {
         $validatedData = $request->validated();
 
+        /** @var User $user */
         $user = DB::transaction(static function () use ($validatedData): User {
             $user = User::create([
                 'first_name' => $validatedData['first_name'],
@@ -94,8 +90,6 @@ class AuthController extends Controller
     {
         $user = $this->authenticatedUser($request);
 
-        Gate::authorize('auth.logout');
-
         $user->tokens()->delete();
 
         return static::successResponse(message: 'Tokens Revoked');
@@ -106,11 +100,8 @@ class AuthController extends Controller
      */
     public function verifyPassword(VerifyPasswordRequest $request): JsonResponse
     {
-        $user = $this->authenticatedUser($request);
-
-        Gate::authorize('auth.verifyPassword');
-
         $validatedData = $request->validated();
+        $user = $this->authenticatedUser($request);
 
         if (! Hash::check($validatedData['password'], $user->password)) {
             return static::errorResponse('Invalid password', 401);
@@ -124,11 +115,8 @@ class AuthController extends Controller
      */
     public function updatePassword(UpdatePasswordRequest $request): JsonResponse
     {
-        $user = $this->authenticatedUser($request);
-
-        Gate::authorize('auth.updatePassword');
-
         $validatedData = $request->validated();
+        $user = $this->authenticatedUser($request);
 
         $user->update([
             'password' => Hash::make($validatedData['password']),

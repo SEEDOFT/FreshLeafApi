@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use Database\Factories\VendorInventoryFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Table;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -26,7 +27,6 @@ use Illuminate\Support\Carbon;
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  * @property Carbon|null $deleted_at
- *
  * @property-read User $vendor
  * @property-read Product $product
  * @property-read Unit $unit
@@ -45,7 +45,7 @@ use Illuminate\Support\Carbon;
 ])]
 class VendorInventory extends Model
 {
-    /** @use HasFactory<\Database\Factories\VendorInventoryFactory> */
+    /** @use HasFactory<VendorInventoryFactory> */
     use HasFactory, SoftDeletes;
 
     /**

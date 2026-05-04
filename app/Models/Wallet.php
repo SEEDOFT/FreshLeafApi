@@ -7,17 +7,19 @@ namespace App\Models;
 use Database\Factories\WalletFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Table;
+use Illuminate\Database\Eloquent\Attributes\UseFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
-#[Table('wallets', key: 'id')]
+#[Table('wallets', key: 'id', keyType: 'int')]
 #[Fillable([
     'user_id',
     'balance',
     'currency_id',
 ])]
+#[UseFactory(WalletFactory::class)]
 class Wallet extends Model
 {
     /** @use HasFactory<WalletFactory> */

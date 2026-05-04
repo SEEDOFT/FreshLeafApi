@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Http\Controllers\Api;
+namespace App\Http\Controllers\Api\Product;
 
 use App\Http\Controllers\Controller;
 use App\Models\ProductCategory;
@@ -14,10 +14,10 @@ class CategoryController extends Controller
     /**
      * Get all active product categories.
      */
-    public function index(): JsonResponse
+    public function index(Request $request): JsonResponse
     {
         $categories = ProductCategory::where('is_active', true)
-            ->get();
+            ->simplePaginate($request->integer('per_page', 10));
 
         return static::successResponse($categories);
     }

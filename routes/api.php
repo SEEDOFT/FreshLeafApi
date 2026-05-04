@@ -5,8 +5,14 @@ declare(strict_types=1);
 use App\Http\Controllers\Api\Ai\AiChatController;
 use App\Http\Controllers\Api\CategoryController;
 use App\Http\Controllers\Api\Product\ProductController;
+use App\Http\Controllers\Api\Shared\AddressController;
 use App\Http\Controllers\Api\Shared as SharedController;
+use App\Http\Controllers\Api\Shared\ProfileController;
+use App\Http\Controllers\Api\Shared\WalletController;
 use App\Http\Controllers\Api\User as UserController;
+use App\Http\Controllers\Api\User\DeviceController;
+use App\Http\Controllers\Api\User\SupportChatController;
+use App\Http\Controllers\Api\User\WalletTransactionController;
 use Illuminate\Broadcasting\BroadcastController;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Route;
@@ -38,7 +44,7 @@ Route::prefix('v1')->name('v1.')->group(static function () {
         // Shared Profile
         Route::prefix('profile')
             ->name('profile.')
-            ->controller(SharedController\ProfileController::class)
+            ->controller(ProfileController::class)
             ->group(static function () {
                 Route::get('/', 'show')->name('show');
                 Route::put('/', 'replace')->name('replace');
@@ -49,7 +55,7 @@ Route::prefix('v1')->name('v1.')->group(static function () {
         // Shared Wallets
         Route::prefix('wallets')
             ->name('wallets.')
-            ->controller(SharedController\WalletController::class)
+            ->controller(WalletController::class)
             ->group(static function () {
                 Route::get('/', 'index')->name('index');
                 Route::get('{id}', 'show')->name('show');
@@ -59,7 +65,7 @@ Route::prefix('v1')->name('v1.')->group(static function () {
         // Shared Addresses (User & Vendor)
         Route::prefix('addresses')
             ->name('addresses.')
-            ->controller(SharedController\AddressController::class)
+            ->controller(AddressController::class)
             ->group(static function () {
                 Route::get('/', 'index')->name('index');
                 Route::get('{id}', 'show')->name('show');
@@ -109,7 +115,7 @@ Route::prefix('v1')->name('v1.')->group(static function () {
 
             Route::prefix('devices')
                 ->name('devices.')
-                ->controller(UserController\DeviceController::class)
+                ->controller(DeviceController::class)
                 ->group(static function () {
                     Route::post('/', 'store')->name('store');
                     Route::delete('{token}', 'destroy')->name('destroy');
@@ -117,7 +123,7 @@ Route::prefix('v1')->name('v1.')->group(static function () {
 
             Route::prefix('wallet-transactions')
                 ->name('wallet-transactions.')
-                ->controller(UserController\WalletTransactionController::class)
+                ->controller(WalletTransactionController::class)
                 ->group(static function () {
                     Route::get('/', 'index')->name('index');
                     Route::get('{id}', 'show')->name('show');
@@ -137,7 +143,7 @@ Route::prefix('v1')->name('v1.')->group(static function () {
 
             Route::prefix('support')
                 ->name('support.')
-                ->controller(UserController\SupportChatController::class)
+                ->controller(SupportChatController::class)
                 ->group(static function () {
                     Route::get('ticket', 'getActiveTicket')->name('ticket.active');
                     Route::get('unread-count', 'getUnreadCount')->name('unread.count');

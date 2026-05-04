@@ -8,12 +8,17 @@ use App\Http\Controllers\Controller;
 use App\Http\Resources\Shared\WalletHistoryResource;
 use App\Http\Resources\Shared\WalletResource;
 use App\Models\Wallet;
+use App\Services\WalletService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
 
 class WalletController extends Controller
 {
+    public function __construct(
+        protected WalletService $walletService
+    ) {}
+
     /**
      * Display a listing of the user's wallets.
      */
@@ -23,10 +28,7 @@ class WalletController extends Controller
 
         Gate::authorize('viewAny', [Wallet::class, $user->user_type_id]);
 
-        $wallets = $user->wallets()
-            ->with('currency')
-            ->orderByDesc('id')
-            ->simplePaginate($request->integer('per_page', 10));
+        $wallets = $this->walletService->getUserWallets($user, $request->integer('per_page', 10));
 
         return static::successResponse(
             WalletResource::collection($wallets),
@@ -70,10 +72,7 @@ class WalletController extends Controller
 
         Gate::authorize('view', [$wallet, $user->user_type_id]);
 
-        $histories = $wallet->histories()
-            ->with('currency')
-            ->orderByDesc('id')
-            ->simplePaginate($request->integer('per_page', 10));
+        $histories = $this->walletService->getWalletHistory($wallet, $request->integer('per_page', 10));
 
         return static::successResponse(
             WalletHistoryResource::collection($histories),

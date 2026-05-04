@@ -108,24 +108,12 @@ class ProductForm
                         Section::make(__('admin.resources.product.pricing_inventory'))
                             ->columnSpan(1)
                             ->schema([
-                                TextInput::make('price_per_unit')
-                                    ->label(__('admin.resources.product.price'))
-                                    ->numeric()
-                                    ->prefix('KHR')
-                                    ->minValue(0),
-                                TextInput::make('available_stock')
-                                    ->label(__('admin.resources.product.stock'))
-                                    ->numeric()
-                                    ->minValue(0)
-                                    ->default(0),
-                                Toggle::make('is_active')
-                                    ->label(__('admin.resources.product.is_active'))
-                                    ->default(true),
+                                // price_per_unit, available_stock, is_active removed for Admin panel
+                                // These are now handled in VendorInventory.
                                 Toggle::make('is_organic')
                                     ->label(__('admin.resources.product.is_organic'))
                                     ->default(true),
-                            ]),
-                    ]),
+                            ]),                    ]),
 
                 Section::make(__('admin.resources.product.organic_traceability'))
                     ->columns(2)

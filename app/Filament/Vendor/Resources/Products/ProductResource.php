@@ -10,7 +10,6 @@ use App\Filament\Vendor\Resources\Products\Schemas\ProductForm;
 use App\Filament\Vendor\Resources\Products\Schemas\ProductInfolist;
 use App\Filament\Vendor\Resources\Products\Tables\ProductsTable;
 use App\Models\VendorInventory;
-use App\Models\Product;
 use BackedEnum;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;

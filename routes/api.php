@@ -209,14 +209,12 @@ Route::prefix('v1')->name('v1.')->group(static function () {
         });
 
     // Fallback Route - 404
-    Route::fallback(
-        static fn (): JsonResponse => response()->json([
+    Route::fallback(static fn (): JsonResponse => response()->json([
             'status' => [
                 'code' => '404',
                 'success' => false,
                 'message' => 'Endpoint not found',
             ],
             'data' => [],
-        ], 404)
-    )->name('fallback');
+        ], 404))->name('fallback');
 });

@@ -21,16 +21,16 @@ class AdminCommissionWidget extends BaseWidget
         $vendorNetTotal = OrderItem::sum('vendor_net_amount');
 
         return [
-            Stat::make('Total Platform Commission', '$'.number_format($totalCommission, 2))
-                ->description('Total fees earned from vendor sales')
+            Stat::make(__('admin.widgets.commission.platform_commission'), '$'.number_format($totalCommission, 2))
+                ->description(__('admin.widgets.commission.platform_commission_desc'))
                 ->descriptionIcon('heroicon-m-banknotes')
                 ->color('success')
                 ->extraAttributes([
                     'class' => '!border-0 !shadow-none !bg-transparent',
                 ]),
 
-            Stat::make('Pending Vendor Payouts', '$'.number_format($vendorNetTotal, 2))
-                ->description('Total net amount owed to vendors')
+            Stat::make(__('admin.widgets.commission.pending_payouts'), '$'.number_format($vendorNetTotal, 2))
+                ->description(__('admin.widgets.commission.pending_payouts_desc'))
                 ->descriptionIcon('heroicon-m-users')
                 ->color('info')
                 ->extraAttributes([

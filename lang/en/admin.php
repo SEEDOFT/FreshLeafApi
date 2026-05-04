@@ -407,4 +407,16 @@ return [
         'type_reply' => 'Type your reply...',
         'send' => 'Send',
     ],
+    'widgets' => [
+        'commission' => [
+            'platform_commission' => 'Total Platform Commission',
+            'platform_commission_desc' => 'Total fees earned from vendor sales',
+            'pending_payouts' => 'Pending Vendor Payouts',
+            'pending_payouts_desc' => 'Total net amount owed to vendors',
+        ],
+        'revenue_chart' => [
+            'heading' => 'Revenue Trend (30 Days)',
+            'dataset_label' => 'Daily Revenue (USD)',
+        ],
+    ],
 ];

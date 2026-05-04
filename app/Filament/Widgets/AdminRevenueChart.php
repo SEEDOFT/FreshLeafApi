@@ -12,7 +12,10 @@ use Override;
 class AdminRevenueChart extends ChartWidget
 {
     #[Override]
-    protected ?string $heading = 'Revenue Trend (30 Days)';
+    protected function getHeading(): ?string
+    {
+        return __('admin.widgets.revenue_chart.heading');
+    }
 
     #[Override]
     protected string $color = 'success';
@@ -45,7 +48,7 @@ class AdminRevenueChart extends ChartWidget
         return [
             'datasets' => [
                 [
-                    'label' => 'Daily Revenue (USD)',
+                    'label' => __('admin.widgets.revenue_chart.dataset_label'),
                     'data' => $values,
                     'fill' => 'start',
                     'tension' => 0.4,

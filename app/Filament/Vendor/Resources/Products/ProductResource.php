@@ -9,6 +9,7 @@ use App\Filament\Vendor\Resources\Products\Pages\ViewProduct;
 use App\Filament\Vendor\Resources\Products\Schemas\ProductForm;
 use App\Filament\Vendor\Resources\Products\Schemas\ProductInfolist;
 use App\Filament\Vendor\Resources\Products\Tables\ProductsTable;
+use App\Models\VendorInventory;
 use App\Models\Product;
 use BackedEnum;
 use Filament\Resources\Resource;
@@ -21,7 +22,7 @@ use Override;
 
 class ProductResource extends Resource
 {
-    protected static ?string $model = Product::class;
+    protected static ?string $model = VendorInventory::class;
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
 
@@ -35,10 +36,7 @@ class ProductResource extends Resource
     public static function getEloquentQuery(): Builder
     {
         return parent::getEloquentQuery()
-            ->where('user_id', auth()->id())
-            ->withoutGlobalScopes([
-                SoftDeletingScope::class,
-            ]);
+            ->where('vendor_id', auth()->id());
     }
 
     #[Override]

@@ -25,12 +25,11 @@ class WalletService
 
     /**
      * Get wallet history.
-     * @return Paginator<int, WalletTransactionHistory>
+     * @return Paginator<int, \App\Models\WalletTransaction>
      */
     public function getWalletHistory(Wallet $wallet, int $perPage): Paginator
     {
         return $wallet->transactions()
-            ->with('currency')
             ->orderByDesc('id')
             ->simplePaginate($perPage);
     }

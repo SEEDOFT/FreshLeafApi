@@ -81,6 +81,9 @@ class FinancialDetails extends Page
             ->send();
     }
 
+    /**
+     * @return Action[]
+     */
     protected function getFormActions(): array
     {
         return [

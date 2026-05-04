@@ -11,6 +11,7 @@ use App\Http\Controllers\Controller;
 use App\Models\SupportMessage;
 use App\Models\SupportTicket;
 use App\Models\User;
+use App\Models\UserStatus;
 use App\Models\UserType;
 use App\Notifications\NewSupportMessageNotification;
 use App\Notifications\NewSupportTicketNotification;
@@ -25,7 +26,7 @@ class SupportChatController extends Controller
      */
     public function getActiveTicket(Request $request): JsonResponse
     {
-        $user = $request->user();
+        $user = $this->authenticatedUser($request);
 
         $ticket = SupportTicket::where('user_id', $user->id)
             ->where('status', 'open')
@@ -40,22 +41,17 @@ class SupportChatController extends Controller
             broadcast(new NewSupportTicket($ticket))->toOthers();
 
             // Notify admins
-            $admins = User::where('user_type_id', UserType::ADMIN)->get();
+            $admins = User::where('user_type_id', UserType::ADMIN)
+                ->where('user_status_id', UserStatus::ACTIVE)
+                ->get();
             Notification::send($admins, new NewSupportTicketNotification($ticket));
         }
 
-        return response()->json([
-            'status' => [
-                'code' => '200',
-                'success' => true,
-                'message' => 'Active ticket retrieved',
-            ],
-            'data' => [
-                'id' => $ticket->id,
-                'status' => $ticket->status,
-                'created_at' => $ticket->created_at?->toIso8601String(),
-            ],
-        ]);
+        return static::successResponse([
+            'id' => $ticket->id,
+            'status' => $ticket->status,
+            'created_at' => $ticket->created_at?->toIso8601String(),
+        ], 'Active ticket retrieved');
     }
 
     /**
@@ -63,13 +59,13 @@ class SupportChatController extends Controller
      */
     public function sendTyping(Request $request): JsonResponse
     {
-        $request->validate([
+        $validatedData = $request->validate([
             'ticket_id' => ['required', 'exists:support_tickets,id'],
         ]);
 
-        broadcast(new SupportTyping((int) $request->ticket_id, 'user'))->toOthers();
+        broadcast(new SupportTyping((int) $validatedData['ticket_id'], 'user'))->toOthers();
 
-        return response()->json(['status' => 'success']);
+        return static::successResponse(message: 'Typing indicator sent');
     }
 
     /**
@@ -77,17 +73,17 @@ class SupportChatController extends Controller
      */
     public function sendMessage(Request $request): JsonResponse
     {
-        $request->validate([
-            'ticket_id' => ['required', 'exists:support_tickets,id'],
-            'message' => ['nullable', 'string'],
+        $validatedData = $request->validate([
+            'ticket_id' => ['required', 'string', 'exists:support_tickets,id'],
+            'message' => ['nullable', 'string', 'max:1200'],
             'file' => ['nullable', 'file', 'max:5120'],
         ]);
 
-        $user = $request->user();
-        $ticket = SupportTicket::findOrFail($request->ticket_id);
+        $user = $this->authenticatedUser($request);
+        $ticket = SupportTicket::findOrFail((int) $validatedData['ticket_id']);
 
         if ($ticket->user_id !== $user->id) {
-            return response()->json(['message' => 'Unauthorized'], 403);
+            return static::errorResponse('Unauthorized access to ticket history', 403);
         }
 
         $filePath = null;
@@ -99,7 +95,7 @@ class SupportChatController extends Controller
             'support_ticket_id' => $ticket->id,
             'sender_type' => 'user',
             'sender_id' => $user->id,
-            'message' => $request->message ?? '',
+            'message' => $validatedData['message'] ?? '',
             'file_path' => $filePath,
         ]);
 
@@ -108,10 +104,15 @@ class SupportChatController extends Controller
         broadcast(new SupportMessageSent($message))->toOthers();
 
         // Notify admins
-        $admins = User::where('user_type_id', UserType::ADMIN)->get();
+        $admins = User::where('user_type_id', UserType::ADMIN)
+            ->where('user_status_id', UserStatus::ACTIVE)
+            ->get();
         Notification::send($admins, new NewSupportMessageNotification($message));
 
-        return response()->json(['data' => $message], 201);
+        return static::successResponse(
+            $message,
+            'Message sent',
+        );
     }
 
     /**
@@ -119,22 +120,15 @@ class SupportChatController extends Controller
      */
     public function getMessages(Request $request): JsonResponse
     {
-        $request->validate([
-            'ticket_id' => ['required', 'exists:support_tickets,id'],
+        $validatedData = $request->validate([
+            'ticket_id' => ['required', 'string', 'exists:support_tickets,id'],
         ]);
 
-        $user = $request->user();
-        $ticket = SupportTicket::findOrFail($request->ticket_id);
+        $user = $this->authenticatedUser($request);
+        $ticket = SupportTicket::findOrFail((int) $validatedData['ticket_id']);
 
         if ($ticket->user_id !== $user->id) {
-            return response()->json([
-                'status' => [
-                    'code' => '403',
-                    'success' => false,
-                    'message' => 'Unauthorized access to ticket history',
-                ],
-                'data' => [],
-            ], 403);
+            return static::errorResponse('Unauthorized access to ticket history', 403);
         }
 
         // Mark admin messages as read
@@ -145,14 +139,10 @@ class SupportChatController extends Controller
 
         $messages = $ticket->messages()->oldest()->get();
 
-        return response()->json([
-            'status' => [
-                'code' => '200',
-                'success' => true,
-                'message' => 'Messages retrieved',
-            ],
-            'data' => $messages,
-        ]);
+        return static::successResponse(
+            $messages,
+            'Messages retrieved',
+        );
     }
 
     /**
@@ -160,14 +150,14 @@ class SupportChatController extends Controller
      */
     public function getUnreadCount(Request $request): JsonResponse
     {
-        $user = $request->user();
+        $user = $this->authenticatedUser($request);
 
         $ticket = SupportTicket::where('user_id', $user->id)
             ->where('status', 'open')
             ->first();
 
         if (! $ticket) {
-            return response()->json(['count' => 0]);
+            return static::successResponse(['count' => 0], 'No unread messages');
         }
 
         $count = $ticket->messages()
@@ -175,6 +165,9 @@ class SupportChatController extends Controller
             ->where('is_read', false)
             ->count();
 
-        return response()->json(['count' => $count]);
+        return static::successResponse(
+            ['count' => $count],
+            'Unread count retrieved',
+        );
     }
 }

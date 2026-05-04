@@ -88,16 +88,16 @@ class VendorInfolist
                     ->schema([
                         ImageEntry::make('id_card_front')
                             ->label(__('admin.resources.vendor.id_card_front'))
-                            ->imageUrl(static fn ($state) => $state ? route('admin.documents.show', ['path' => $state]) : null)
-                            ->height(200),
+                            ->url(static fn ($state) => $state ? route('admin.documents.show', ['path' => $state]) : null)
+                            ->imageSize(200),
                         ImageEntry::make('id_card_back')
                             ->label(__('admin.resources.vendor.id_card_back'))
-                            ->imageUrl(static fn ($state) => $state ? route('admin.documents.show', ['path' => $state]) : null)
-                            ->height(200),
+                            ->url(static fn ($state) => $state ? route('admin.documents.show', ['path' => $state]) : null)
+                            ->imageSize(200),
                         ImageEntry::make('store_front_image')
                             ->label(__('admin.resources.vendor.store_photo'))
-                            ->imageUrl(static fn ($state) => $state ? route('admin.documents.show', ['path' => $state]) : null)
-                            ->height(200),
+                            ->url(static fn ($state) => $state ? route('admin.documents.show', ['path' => $state]) : null)
+                            ->imageSize(200),
                         TextEntry::make('organic_certificate_url')
                             ->label(__('admin.resources.vendor.organic_cert'))
                             ->placeholder(__('admin.general.not_provided'))
@@ -118,8 +118,8 @@ class VendorInfolist
                             ->label(__('admin.resources.vendor.account_number')),
                         ImageEntry::make('bank_qr_code')
                             ->label(__('admin.resources.vendor.qr_code'))
-                            ->imageUrl(static fn ($state) => $state ? route('admin.documents.show', ['path' => $state]) : null)
-                            ->height(200),
+                            ->url(static fn ($state) => $state ? route('admin.documents.show', ['path' => $state]) : null)
+                            ->imageSize(200),
                     ]),
 
                 Section::make(__('admin.resources.vendor.wallets_info'))

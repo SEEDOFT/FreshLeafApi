@@ -12,7 +12,7 @@ use Override;
 class AdminRevenueChart extends ChartWidget
 {
     #[Override]
-    protected function getHeading(): ?string
+    public function getHeading(): ?string
     {
         return __('admin.widgets.revenue_chart.heading');
     }

@@ -16,6 +16,7 @@ use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 use Illuminate\Support\Facades\Auth;
+use Override;
 
 class BusinessProfile extends Page
 {
@@ -99,6 +100,9 @@ class BusinessProfile extends Page
             ->send();
     }
 
+    /**
+     * @return Action[]
+     */
     protected function getFormActions(): array
     {
         return [

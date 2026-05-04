@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace App\Filament\Vendor\Clusters\Settings\Pages;
 
 use App\Filament\Vendor\Clusters\Settings;
+use BackedEnum;
+use Filament\Actions\Action;
 use Filament\Forms\Components\TextInput;
 use Filament\Notifications\Notification;
 use Filament\Pages\Page;
@@ -12,16 +14,21 @@ use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Override;
 
 class VendorSecurity extends Page
 {
+    #[Override]
     protected static ?string $cluster = Settings::class;
 
+    #[Override]
     protected static ?string $slug = 'security';
 
+    #[Override]
     protected static ?string $navigationLabel = 'Security';
 
-    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-lock-closed';
+    #[Override]
+    protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-lock-closed';
 
     #[Override]
     protected string $view = 'filament.pages.shared.form-page';
@@ -80,12 +87,12 @@ class VendorSecurity extends Page
     }
 
     /**
-     * @return array<Action>
+     * @return Action[]
      */
     protected function getFormActions(): array
     {
         return [
-            \Filament\Actions\Action::make('save')
+            Action::make('save')
                 ->label(__('admin.security.update_password'))
                 ->submit('save')
                 ->keyBindings(['mod+s']),

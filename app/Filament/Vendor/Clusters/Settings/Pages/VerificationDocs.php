@@ -5,22 +5,28 @@ declare(strict_types=1);
 namespace App\Filament\Vendor\Clusters\Settings\Pages;
 
 use App\Filament\Vendor\Clusters\Settings;
+use BackedEnum;
+use Filament\Actions\Action;
 use Filament\Forms\Components\FileUpload;
 use Filament\Notifications\Notification;
 use Filament\Pages\Page;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 use Illuminate\Support\Facades\Auth;
+use Override;
 
 class VerificationDocs extends Page
 {
     protected static ?string $cluster = Settings::class;
 
+    #[Override]
     protected static ?string $slug = 'verification';
 
+    #[Override]
     protected static ?string $navigationLabel = 'Verification';
 
-    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-shield-check';
+    #[Override]
+    protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-shield-check';
 
     #[Override]
     protected string $view = 'filament.pages.shared.form-page';
@@ -47,24 +53,24 @@ class VerificationDocs extends Page
                             ->image()
                             ->disk('local')
                             ->directory('vendor-verification')
-                            ->disabled(fn ($record) => Auth::user()->vendorProfile?->is_verified),
+                            ->disabled(static fn ($record) => Auth::user()->vendorProfile?->is_verified),
                         FileUpload::make('id_card_back')
                             ->label(__('admin.vendor_settings.verification_docs.id_back'))
                             ->image()
                             ->disk('local')
                             ->directory('vendor-verification')
-                            ->disabled(fn ($record) => Auth::user()->vendorProfile?->is_verified),
+                            ->disabled(static fn ($record) => Auth::user()->vendorProfile?->is_verified),
                         FileUpload::make('store_front_image')
                             ->label(__('admin.vendor_settings.verification_docs.store_photo'))
                             ->image()
                             ->disk('local')
                             ->directory('vendor-verification')
-                            ->disabled(fn ($record) => Auth::user()->vendorProfile?->is_verified),
+                            ->disabled(static fn ($record) => Auth::user()->vendorProfile?->is_verified),
                         FileUpload::make('organic_certificate_url')
                             ->label(__('admin.vendor_settings.verification_docs.organic_cert'))
                             ->disk('local')
                             ->directory('vendor-verification')
-                            ->disabled(fn ($record) => Auth::user()->vendorProfile?->is_verified),
+                            ->disabled(static fn ($record) => Auth::user()->vendorProfile?->is_verified),
                     ])->columns(2),
             ])
             ->statePath('data');
@@ -94,12 +100,12 @@ class VerificationDocs extends Page
     }
 
     /**
-     * @return array<Action>
+     * @return Action[]
      */
     protected function getFormActions(): array
     {
         return [
-            \Filament\Actions\Action::make('save')
+            Action::make('save')
                 ->label(__('admin.profile.save_changes'))
                 ->submit('save')
                 ->keyBindings(['mod+s']),

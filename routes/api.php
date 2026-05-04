@@ -148,54 +148,7 @@ Route::prefix('v1')->name('v1.')->group(static function () {
             });
     });
 
-    // Admin-Specific Routes
-    Route::prefix('admin')->name('admin.')->group(static function () {
-        Route::prefix('auth')
-            ->name('auth.')
-            ->controller(AdminController\AuthController::class)
-            ->middleware('throttle:60,1')
-            ->group(static function () {
-                // Removed login - handled by Filament session auth at /admin/login
-                Route::post('register', 'register')->name('register');
-            });
-
-        Route::middleware(['auth:sanctum', 'active.type:admin'])->group(static function () {
-            Route::prefix('vendors')
-                ->name('vendors.')
-                ->controller(AdminController\Vendor\VendorController::class)
-                ->group(static function () {
-                    Route::get('pending', 'indexPendingVendorApproval')->name('pending.index');
-                    Route::get('pending/{id}', 'showPendingVendorApproval')->name('pending.show');
-                    Route::patch('pending/{id}', 'updatePendingVendorApproval')->name('update');
-                });
-
-            Route::prefix('payment-method-types')
-                ->name('payment-method-types.')
-                ->controller(AdminController\PaymentMethodTypeController::class)
-                ->group(static function () {
-                    Route::get('/', 'index')->name('index');
-                    Route::get('{id}', 'show')->name('show');
-                    Route::post('/', 'store')->name('store');
-                    Route::put('{id}', 'replace')->name('replace');
-                    Route::patch('{id}', 'update')->name('update');
-                    Route::delete('{id}', 'destroy')->name('delete');
-                });
-        });
-    });
-
-    // Vendor-Specific Routes
-    Route::prefix('vendor')->name('vendor.')->group(static function () {
-        Route::prefix('auth')
-            ->name('auth.')
-            ->controller(VendorController\AuthController::class)
-            ->middleware('throttle:60,1')
-            ->group(static function () {
-                // Removed login - handled by Filament session auth at /vendor/login
-                Route::post('register', 'register')->name('register');
-            });
-    });
-
-    // Shared Product Routes (Handled by user-type detection in controller)
+    // Shared Product Routes (Serve data to Consumer app)
     Route::prefix('products')
         ->name('products.')
         ->middleware(['auth:sanctum'])
@@ -203,18 +156,15 @@ Route::prefix('v1')->name('v1.')->group(static function () {
         ->group(static function () {
             Route::get('/', 'index')->name('index'); // Unified index
             Route::get('{id}', 'show')->name('show'); // Unified show
-            Route::post('/', 'store')->name('store');
-            Route::patch('{id}', 'update')->name('update');
-            Route::delete('{id}', 'destroy')->name('destroy');
         });
 
     // Fallback Route - 404
     Route::fallback(static fn (): JsonResponse => response()->json([
-            'status' => [
-                'code' => '404',
-                'success' => false,
-                'message' => 'Endpoint not found',
-            ],
-            'data' => [],
-        ], 404))->name('fallback');
+        'status' => [
+            'code' => '404',
+            'success' => false,
+            'message' => 'Endpoint not found',
+        ],
+        'data' => [],
+    ], 404))->name('fallback');
 });

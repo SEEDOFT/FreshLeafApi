@@ -107,7 +107,7 @@ class VendorProfile extends Page
                             ->label(__('admin.vendor_settings.vendor_profile.language'))
                             ->options([
                                 'km' => 'Khmer (ភាសាខ្មែរ)',
-                                'en' => 'English',
+                                'en' => 'English (ភាសាអង់គ្លេស)',
                             ])
                             ->required(static fn (string $operation): bool => $operation === 'create')->dehydrated(static fn ($state): bool => filled($state))
                             ->native(false)
@@ -144,7 +144,7 @@ class VendorProfile extends Page
     }
 
     /**
-     * @return array<Action>
+     * @return Action[]
      */
     protected function getFormActions(): array
     {

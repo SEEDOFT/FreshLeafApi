@@ -15,6 +15,8 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 
+use function now;
+
 class AiChatController extends Controller
 {
     /**
@@ -23,24 +25,23 @@ class AiChatController extends Controller
     public function createSession(CreateChatSessionRequest $request): JsonResponse
     {
         $validatedData = $request->validated();
-        $sessionId = $validatedData['session_id'] ?? (string) Str::uuid();
         $user = $this->authenticatedUser($request);
+
+        $sessionId = $validatedData['session_id'] ?? (string) Str::uuid();
 
         $session = AiChatSession::firstOrCreate([
             'session_id' => $sessionId,
             'user_id' => $user->id,
         ], [
             'title' => $validatedData['title'] ?? null,
-            'last_message_at' => \now(),
+            'last_message_at' => now(),
         ]);
 
         return static::successResponse([
             'session_id' => $session->session_id,
             'title' => $session->title,
-            'created_at' => \optional($session->created_at)
-                ->toIso8601String(),
-            'updated_at' => \optional($session->updated_at)
-                ->toIso8601String(),
+            'created_at' => $session->created_at?->toIso8601String(),
+            'updated_at' => $session->updated_at?->toIso8601String(),
         ], 'Chat session ready');
     }
 
@@ -49,9 +50,8 @@ class AiChatController extends Controller
      */
     public function storeMessage(StoreChatMessageRequest $request): JsonResponse
     {
-        $user = $this->authenticatedUser($request);
-
         $validatedData = $request->validated();
+        $user = $this->authenticatedUser($request);
 
         $session = AiChatSession::where('session_id', $validatedData['session_id'])
             ->where('user_id', $user->id)
@@ -85,7 +85,7 @@ class AiChatController extends Controller
                 ]);
 
                 $session->update([
-                    'last_message_at' => \now(),
+                    'last_message_at' => now(),
                 ]);
 
                 ProcessAiChatMessageJob::dispatch(
@@ -114,9 +114,8 @@ class AiChatController extends Controller
      */
     public function history(FetchChatHistoryRequest $request): JsonResponse
     {
-        $user = $this->authenticatedUser($request);
-
         $validatedData = $request->validated();
+        $user = $this->authenticatedUser($request);
 
         $session = AiChatSession::where('session_id', $validatedData['session_id'])
             ->where('user_id', $user->id)
@@ -139,8 +138,7 @@ class AiChatController extends Controller
                 'content' => $message->content,
                 'status' => $message->status,
                 'sequence' => $message->sequence,
-                'timestamp' => \optional($message->created_at)
-                    ->toIso8601String(),
+                'timestamp' => $message->created_at?->toIso8601String(),
                 'error' => $message->error,
             ])
             ->values();

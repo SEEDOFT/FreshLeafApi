@@ -16,8 +16,7 @@ class CategoryController extends Controller
      */
     public function index(): JsonResponse
     {
-        $categories = ProductCategory::query()
-            ->where('is_active', true)
+        $categories = ProductCategory::where('is_active', true)
             ->get();
 
         return static::successResponse($categories);

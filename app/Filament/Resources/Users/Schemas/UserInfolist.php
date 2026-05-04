@@ -61,10 +61,6 @@ class UserInfolist
                             ->circular()
                             ->imageSize(200)
                             ->defaultImageUrl(Storage::disk('public')->url('users/user.png')),
-
-                        TextEntry::make('userProfile.gender')
-                            ->label(__('admin.profile.gender'))
-                            ->placeholder('-'),
                     ]),
 
                 Section::make(__('admin.resources.user.wallets_info'))

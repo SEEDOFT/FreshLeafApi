@@ -4,12 +4,14 @@ declare(strict_types=1);
 
 namespace App\Filament\Resources\Vendors\Schemas;
 
+use App\Models\Wallet;
 use Filament\Infolists\Components\IconEntry;
 use Filament\Infolists\Components\ImageEntry;
 use Filament\Infolists\Components\RepeatableEntry;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
+use Illuminate\Support\Facades\Storage;
 
 class VendorInfolist
 {
@@ -57,6 +59,13 @@ class VendorInfolist
                     ->relationship('vendorProfile')
                     ->columns(2)
                     ->schema([
+                        ImageEntry::make('image')
+                            ->label(__('admin.profile.avatar'))
+                            ->disk('public')
+                            ->circular()
+                            ->imageSize(200)
+                            ->defaultImageUrl(Storage::disk('public')->url('users/user.png')),
+
                         TextEntry::make('business_name')
                             ->label(__('admin.resources.vendor.business_name'))
                             ->placeholder('-'),
@@ -79,7 +88,6 @@ class VendorInfolist
                         IconEntry::make('is_verified')
                             ->label(__('admin.resources.vendor.verification_status'))
                             ->boolean(),
-
                     ]),
 
                 Section::make(__('admin.resources.vendor.verification_docs'))
@@ -88,19 +96,22 @@ class VendorInfolist
                     ->schema([
                         ImageEntry::make('id_card_front')
                             ->label(__('admin.resources.vendor.id_card_front'))
+                            ->placeholder('-')
                             ->url(static fn ($state) => $state ? route('admin.documents.show', ['path' => $state]) : null)
                             ->imageSize(200),
                         ImageEntry::make('id_card_back')
                             ->label(__('admin.resources.vendor.id_card_back'))
+                            ->placeholder('-')
                             ->url(static fn ($state) => $state ? route('admin.documents.show', ['path' => $state]) : null)
                             ->imageSize(200),
                         ImageEntry::make('store_front_image')
                             ->label(__('admin.resources.vendor.store_photo'))
+                            ->placeholder('-')
                             ->url(static fn ($state) => $state ? route('admin.documents.show', ['path' => $state]) : null)
                             ->imageSize(200),
                         TextEntry::make('organic_certificate_url')
                             ->label(__('admin.resources.vendor.organic_cert'))
-                            ->placeholder(__('admin.general.not_provided'))
+                            ->placeholder(__('admin.resources.general.not_provided'))
                             ->url(static fn ($state) => $state ? route('admin.documents.show', ['path' => $state]) : null)
                             ->openUrlInNewTab()
                             ->color('primary'),
@@ -111,12 +122,16 @@ class VendorInfolist
                     ->columns(2)
                     ->schema([
                         TextEntry::make('bank_name')
+                            ->placeholder('-')
                             ->label(__('admin.resources.vendor.bank_name')),
                         TextEntry::make('bank_account_name')
+                            ->placeholder('-')
                             ->label(__('admin.resources.vendor.account_holder')),
                         TextEntry::make('bank_account_number')
+                            ->placeholder('-')
                             ->label(__('admin.resources.vendor.account_number')),
                         ImageEntry::make('bank_qr_code')
+                            ->placeholder('-')
                             ->label(__('admin.resources.vendor.qr_code'))
                             ->url(static fn ($state) => $state ? route('admin.documents.show', ['path' => $state]) : null)
                             ->imageSize(200),
@@ -128,10 +143,12 @@ class VendorInfolist
                             ->label(__('admin.resources.vendor.wallets_info'))
                             ->schema([
                                 TextEntry::make('currency.name')
+                                    ->placeholder('-')
                                     ->label(__('admin.resources.wallet.currency')),
                                 TextEntry::make('balance')
+                                    ->placeholder('-')
                                     ->label(__('admin.resources.wallet.balance'))
-                                    ->money(static fn ($record) => $record->currency->code),
+                                    ->money(static fn (Wallet $record) => $record->currency->code),
                             ])
                             ->columns(2),
                     ]),
@@ -141,9 +158,11 @@ class VendorInfolist
                     ->schema([
                         TextEntry::make('created_at')
                             ->label(__('admin.resources.created_at'))
+                            ->placeholder('-')
                             ->dateTime('d M Y, h:i A'),
                         TextEntry::make('updated_at')
                             ->label(__('admin.resources.updated_at'))
+                            ->placeholder('-')
                             ->dateTime('d M Y, h:i A'),
                     ]),
             ]);

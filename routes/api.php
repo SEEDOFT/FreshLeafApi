@@ -76,76 +76,76 @@ Route::prefix('v1')->name('v1.')->group(static function () {
 
     // User-Specific Routes
     Route::prefix('user')->name('user.')->middleware(['auth:sanctum', 'active.type:user'])
-    ->group(static function () {
-        Route::prefix('pin')
-            ->name('pin.')
-            ->controller(UserController\UserPinController::class)
-            ->group(static function () {
-                Route::post('set', 'setPin')->name('set');
-                Route::post('update', 'updatePin')->name('update');
-                Route::post('reset', 'resetPin')->name('reset');
-                Route::post('verify', 'verifyPin')->name('verify');
-            });
+        ->group(static function () {
+            Route::prefix('pin')
+                ->name('pin.')
+                ->controller(UserController\UserPinController::class)
+                ->group(static function () {
+                    Route::post('set', 'setPin')->name('set');
+                    Route::post('update', 'updatePin')->name('update');
+                    Route::post('reset', 'resetPin')->name('reset');
+                    Route::post('verify', 'verifyPin')->name('verify');
+                });
 
-        Route::prefix('payment-methods')
-            ->name('payment-methods.')
-            ->controller(UserController\PaymentMethodController::class)
-            ->group(static function () {
-                Route::get('/', 'index')->name('index');
-                Route::get('{id}', 'show')->name('show');
-                Route::post('/', 'store')->name('store');
-                Route::put('{id}', 'replace')->name('replace');
-                Route::patch('{id}', 'update')->name('update');
-                Route::delete('{id}', 'destroy')->name('delete');
-            });
+            Route::prefix('payment-methods')
+                ->name('payment-methods.')
+                ->controller(UserController\PaymentMethodController::class)
+                ->group(static function () {
+                    Route::get('/', 'index')->name('index');
+                    Route::get('{id}', 'show')->name('show');
+                    Route::post('/', 'store')->name('store');
+                    Route::put('{id}', 'replace')->name('replace');
+                    Route::patch('{id}', 'update')->name('update');
+                    Route::delete('{id}', 'destroy')->name('delete');
+                });
 
-        Route::prefix('payment-method-types')
-            ->name('payment-method-types.')
-            ->controller(UserController\PaymentMethodTypeController::class)
-            ->group(static function () {
-                Route::get('/', 'index')->name('index');
-                Route::get('{id}', 'show')->name('show');
-            });
+            Route::prefix('payment-method-types')
+                ->name('payment-method-types.')
+                ->controller(UserController\PaymentMethodTypeController::class)
+                ->group(static function () {
+                    Route::get('/', 'index')->name('index');
+                    Route::get('{id}', 'show')->name('show');
+                });
 
-        Route::prefix('devices')
-            ->name('devices.')
-            ->controller(UserController\DeviceController::class)
-            ->group(static function () {
-                Route::post('/', 'store')->name('store');
-                Route::delete('{token}', 'destroy')->name('destroy');
-            });
+            Route::prefix('devices')
+                ->name('devices.')
+                ->controller(UserController\DeviceController::class)
+                ->group(static function () {
+                    Route::post('/', 'store')->name('store');
+                    Route::delete('{token}', 'destroy')->name('destroy');
+                });
 
-        Route::prefix('wallet-transactions')
-            ->name('wallet-transactions.')
-            ->controller(UserController\WalletTransactionController::class)
-            ->group(static function () {
-                Route::get('/', 'index')->name('index');
-                Route::get('{id}', 'show')->name('show');
-                Route::post('/', 'store')->name('store');
-                Route::patch('{id}', 'update')->name('update');
-                Route::delete('{id}', 'destroy')->name('destroy');
-            });
+            Route::prefix('wallet-transactions')
+                ->name('wallet-transactions.')
+                ->controller(UserController\WalletTransactionController::class)
+                ->group(static function () {
+                    Route::get('/', 'index')->name('index');
+                    Route::get('{id}', 'show')->name('show');
+                    Route::post('/', 'store')->name('store');
+                    Route::patch('{id}', 'update')->name('update');
+                    Route::delete('{id}', 'destroy')->name('destroy');
+                });
 
-        Route::prefix('ai/chat')
-            ->name('ai.chat.')
-            ->controller(AiChatController::class)
-            ->group(static function () {
-                Route::post('sessions', 'createSession')->name('sessions.create');
-                Route::post('messages', 'storeMessage')->name('messages.store');
-                Route::post('history', 'history')->name('history');
-            });
+            Route::prefix('ai/chat')
+                ->name('ai.chat.')
+                ->controller(AiChatController::class)
+                ->group(static function () {
+                    Route::post('sessions', 'createSession')->name('sessions.create');
+                    Route::post('messages', 'storeMessage')->name('messages.store');
+                    Route::post('history', 'history')->name('history');
+                });
 
-        Route::prefix('support')
-            ->name('support.')
-            ->controller(UserController\SupportChatController::class)
-            ->group(static function () {
-                Route::get('ticket', 'getActiveTicket')->name('ticket.active');
-                Route::get('unread-count', 'getUnreadCount')->name('unread.count');
-                Route::post('messages', 'sendMessage')->name('messages.store');
-                Route::get('messages', 'getMessages')->name('messages.index');
-                Route::post('typing', 'sendTyping')->name('typing');
-            });
-    });
+            Route::prefix('support')
+                ->name('support.')
+                ->controller(UserController\SupportChatController::class)
+                ->group(static function () {
+                    Route::get('ticket', 'getActiveTicket')->name('ticket.active');
+                    Route::get('unread-count', 'getUnreadCount')->name('unread.count');
+                    Route::post('messages', 'sendMessage')->name('messages.store');
+                    Route::get('messages', 'getMessages')->name('messages.index');
+                    Route::post('typing', 'sendTyping')->name('typing');
+                });
+        });
 
     // User Module Routes
     Route::prefix('user')->name('user.')->middleware(['auth:sanctum'])->group(static function () {

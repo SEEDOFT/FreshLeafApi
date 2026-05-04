@@ -81,10 +81,11 @@ class AdminProfile extends Page
                                     ->label(__('admin.profile.avatar'))
                                     ->avatar()
                                     ->imageEditor()
-                                    ->directory('avatars')
+                                    ->disk('public')
+                                    ->directory('users')
+                                    ->maxSize(6144)
                                     ->alignCenter()
                                     ->columnSpan(1),
-
                                 Grid::make(2)
                                     ->schema([
                                         TextInput::make('first_name')

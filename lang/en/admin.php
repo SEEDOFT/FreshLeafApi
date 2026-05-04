@@ -178,6 +178,7 @@ return [
             'last_name' => 'Last Name',
             'email' => 'Email',
             'phone' => 'Phone Number',
+            'gender' => 'Gender',
             'type' => 'User Type',
             'status' => 'Status',
             'account_type' => 'Account Type',

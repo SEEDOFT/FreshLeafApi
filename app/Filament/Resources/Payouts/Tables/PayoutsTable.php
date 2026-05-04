@@ -19,15 +19,17 @@ class PayoutsTable
             ->recordAction('view')
             ->columns([
                 TextColumn::make('vendor.vendorProfile.business_name')
-                    ->label('Business')
+                    ->label(__('admin.resources.payout.business'))
                     ->searchable()
                     ->sortable(),
 
                 TextColumn::make('amount')
+                    ->label(__('admin.resources.payout.amount'))
                     ->money('USD')
                     ->sortable(),
 
                 TextColumn::make('status.name')
+                    ->label(__('admin.resources.payout.status'))
                     ->badge()
                     ->color(fn (string $state): string => match ($state) {
                         'Pending' => 'warning',
@@ -38,13 +40,15 @@ class PayoutsTable
                     }),
 
                 TextColumn::make('method.name')
-                    ->label('Method'),
+                    ->label(__('admin.resources.payout.method')),
 
                 TextColumn::make('processed_at')
+                    ->label(__('admin.resources.payout.processed_at'))
                     ->dateTime()
                     ->sortable(),
 
                 TextColumn::make('created_at')
+                    ->label(__('admin.resources.created_at'))
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),

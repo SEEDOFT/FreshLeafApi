@@ -18,17 +18,22 @@ class UnitsTable
             ->stackedOnMobile()
             ->columns([
                 TextColumn::make('name')
+                    ->label(__('admin.resources.unit.name'))
                     ->searchable(),
                 TextColumn::make('symbol')
+                    ->label(__('admin.resources.unit.symbol'))
                     ->searchable(),
                 TextColumn::make('conversion_to_base')
+                    ->label(__('admin.resources.unit.conversion'))
                     ->numeric()
                     ->sortable(),
                 TextColumn::make('created_at')
+                    ->label(__('admin.resources.created_at'))
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('updated_at')
+                    ->label(__('admin.resources.updated_at'))
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),

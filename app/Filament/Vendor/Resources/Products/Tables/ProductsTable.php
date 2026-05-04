@@ -19,29 +19,32 @@ class ProductsTable
         return $table
             ->columns([
                 TextColumn::make('name_en')
+                    ->label(__('admin.resources.product.name_en'))
                     ->searchable()
                     ->sortable(),
                 TextColumn::make('name_km')
+                    ->label(__('admin.resources.product.name_km'))
                     ->searchable()
                     ->sortable(),
 
                 TextColumn::make('category.name_en')
-                    ->label('Category')
+                    ->label(__('admin.resources.product.organic_category'))
                     ->badge()
                     ->sortable(),
 
                 TextColumn::make('defaultUnit.name')
-                    ->label('Base Unit'),
+                    ->label(__('admin.resources.product.unit')),
 
                 IconColumn::make('is_organic')
-                    ->label('Organic')
+                    ->label(__('admin.resources.product.is_organic'))
                     ->boolean(),
 
                 TextColumn::make('status.name')
-                    ->label('Status')
+                    ->label(__('admin.resources.product.status'))
                     ->badge(),
 
                 TextColumn::make('updated_at')
+                    ->label(__('admin.resources.updated_at'))
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),

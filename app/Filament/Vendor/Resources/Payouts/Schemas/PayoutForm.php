@@ -13,23 +13,19 @@ class PayoutForm
     {
         return $schema
             ->components([
-                TextInput::make('vendor_user_id')
-                    ->required(static fn (string $operation): bool => $operation === 'create')->dehydrated(static fn ($state): bool => filled($state))
-                    ->numeric(),
-                TextInput::make('payout_status_id')
-                    ->required(static fn (string $operation): bool => $operation === 'create')->dehydrated(static fn ($state): bool => filled($state))
-                    ->numeric(),
-                TextInput::make('payout_method_id')
-                    ->required(static fn (string $operation): bool => $operation === 'create')->dehydrated(static fn ($state): bool => filled($state))
-                    ->numeric(),
                 TextInput::make('amount')
+                    ->label(__('admin.resources.payout.amount'))
                     ->required(static fn (string $operation): bool => $operation === 'create')->dehydrated(static fn ($state): bool => filled($state))
-                    ->numeric(),
-                TextInput::make('transaction_reference'),
-                DateTimePicker::make('processed_at'),
-                TextInput::make('processed_by_admin_id')
-                    ->numeric(),
+                    ->numeric()
+                    ->prefix('$'),
+                TextInput::make('transaction_reference')
+                    ->label(__('admin.resources.payout.transaction_ref'))
+                    ->placeholder('-'),
+                DateTimePicker::make('processed_at')
+                    ->label(__('admin.resources.payout.processed_at')),
                 Textarea::make('admin_notes')
+                    ->label(__('admin.resources.payout.admin_notes'))
+                    ->disabled()
                     ->columnSpanFull(),
             ]);
     }

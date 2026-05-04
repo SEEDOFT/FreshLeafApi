@@ -19,19 +19,20 @@ class ProductForm
     {
         return $schema
             ->components([
-                Section::make('Basic Information')
+                Section::make(__('admin.resources.product.general_info'))
                     ->schema([
                         Grid::make(2)
                             ->schema([
                                 TextInput::make('name_km')
-                                    ->label('Name (Khmer)')
+                                    ->label(__('admin.resources.product.name_km'))
                                     ->required(static fn (string $operation): bool => $operation === 'create')->dehydrated(static fn ($state): bool => filled($state))
                                     ->live(onBlur: true)
                                     ->afterStateUpdated(fn (string $state, $set) => $set('slug', Str::slug($state))),
                                 TextInput::make('name_en')
-                                    ->label('Name (English)')
+                                    ->label(__('admin.resources.product.name_en'))
                                     ->required(static fn (string $operation): bool => $operation === 'create')->dehydrated(static fn ($state): bool => filled($state)),
                                 TextInput::make('slug')
+                                    ->label(__('admin.resources.product.slug'))
                                     ->hidden()
                                     ->dehydrated()
                                     ->required(static fn (string $operation): bool => $operation === 'create')->dehydrated(static fn ($state): bool => filled($state))
@@ -41,42 +42,44 @@ class ProductForm
                         Grid::make(3)
                             ->schema([
                                 Select::make('product_category_id')
-                                    ->label('Category')
+                                    ->label(__('admin.resources.product.organic_category'))
                                     ->relationship('productCategory', 'name_en')
                                     ->searchable()
                                     ->preload()
                                     ->required(static fn (string $operation): bool => $operation === 'create')->dehydrated(static fn ($state): bool => filled($state)),
 
                                 Select::make('product_type_id')
-                                    ->label('Type')
+                                    ->label(__('admin.resources.product.product_type'))
                                     ->relationship('type', 'name')
                                     ->required(static fn (string $operation): bool => $operation === 'create')->dehydrated(static fn ($state): bool => filled($state)),
 
                                 Select::make('default_unit_id')
-                                    ->label('Base Unit')
+                                    ->label(__('admin.resources.product.unit'))
                                     ->relationship('defaultUnit', 'name')
                                     ->required(static fn (string $operation): bool => $operation === 'create')->dehydrated(static fn ($state): bool => filled($state)),
                             ]),
                     ]),
 
-                Section::make('Product Details')
+                Section::make(__('admin.resources.product.details'))
                     ->schema([
                         Textarea::make('description_en')
+                            ->label(__('admin.resources.product.description_en'))
                             ->rows(3)
                             ->columnSpanFull(),
                         Textarea::make('description_km')
+                            ->label(__('admin.resources.product.description_km'))
                             ->rows(3)
                             ->columnSpanFull(),
 
                         Grid::make(2)
                             ->schema([
                                 TextInput::make('shelf_life_days')
-                                    ->label('Shelf Life (Days)')
+                                    ->label(__('admin.resources.product.shelf_life'))
                                     ->numeric()
-                                    ->suffix('days'),
+                                    ->suffix(' '.__('admin.resources.product.days')),
 
                                 Toggle::make('is_organic')
-                                    ->label('Certified Organic')
+                                    ->label(__('admin.resources.product.is_organic'))
                                     ->default(true)
                                     ->inline(false),
                             ]),

@@ -48,8 +48,9 @@ class ProductsTable
                     ->label(__('admin.resources.product.shelf_life'))
                     ->numeric()
                     ->sortable()
-                    ->suffix(' days'),
+                    ->suffix(' '.__('admin.resources.product.days')),
                 TextColumn::make('created_at')
+                    ->label(__('admin.resources.created_at'))
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),

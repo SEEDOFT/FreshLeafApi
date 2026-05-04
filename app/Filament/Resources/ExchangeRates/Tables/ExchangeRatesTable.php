@@ -17,17 +17,17 @@ class ExchangeRatesTable
             ->recordAction('view')
             ->columns([
                 TextColumn::make('fromCurrency.name')
-                    ->label('Base Currency')
+                    ->label(__('admin.resources.exchange_rate.base_currency'))
                     ->searchable(),
                 TextColumn::make('toCurrency.name')
-                    ->label('Target Currency')
+                    ->label(__('admin.resources.exchange_rate.target_currency'))
                     ->searchable(),
                 TextColumn::make('rate')
-                    ->label('Rate')
+                    ->label(__('admin.resources.exchange_rate.rate'))
                     ->numeric()
                     ->sortable(),
                 TextColumn::make('updated_at')
-                    ->label('Last Updated')
+                    ->label(__('admin.resources.updated_at'))
                     ->dateTime()
                     ->sortable(),
             ])

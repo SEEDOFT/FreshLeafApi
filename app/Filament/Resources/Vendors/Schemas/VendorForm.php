@@ -18,74 +18,85 @@ class VendorForm
     {
         return $schema
             ->components([
-                Section::make('Account Information')
+                Section::make(__('admin.resources.vendor.account_info'))
                     ->columns(2)
                     ->schema([
                         TextInput::make('first_name')
+                            ->label(__('admin.resources.user.first_name'))
                             ->required(static fn (string $operation): bool => $operation === 'create')->dehydrated(static fn ($state): bool => filled($state)),
                         TextInput::make('last_name')
+                            ->label(__('admin.resources.user.last_name'))
                             ->required(static fn (string $operation): bool => $operation === 'create')->dehydrated(static fn ($state): bool => filled($state)),
                         TextInput::make('email')
+                            ->label(__('admin.resources.user.email'))
                             ->email(),
                         TextInput::make('phone_number')
+                            ->label(__('admin.resources.user.phone'))
                             ->tel()
                             ->required(static fn (string $operation): bool => $operation === 'create')->dehydrated(static fn ($state): bool => filled($state)),
                         Select::make('user_status_id')
+                            ->label(__('admin.resources.user.account_status'))
                             ->relationship('status', 'name')
                             ->required(static fn (string $operation): bool => $operation === 'create')->dehydrated(static fn ($state): bool => filled($state)),
                     ]),
 
-                Section::make('Business Profile')
+                Section::make(__('admin.resources.vendor.business_profile'))
                     ->relationship('vendorProfile')
                     ->schema([
                         Grid::make(2)
                             ->schema([
                                 TextInput::make('business_name')
+                                    ->label(__('admin.resources.vendor.business_name'))
                                     ->required(static fn (string $operation): bool => $operation === 'create'),
-                                TextInput::make('contact_phone'),
-                                TextInput::make('city'),
-                                TextInput::make('province'),
+                                TextInput::make('contact_phone')
+                                    ->label(__('admin.resources.vendor.contact_phone')),
+                                TextInput::make('city')
+                                    ->label(__('admin.resources.vendor.city')),
+                                TextInput::make('province')
+                                    ->label(__('admin.resources.vendor.province')),
                             ]),
                         TextInput::make('address')
+                            ->label(__('admin.resources.vendor.address'))
                             ->columnSpanFull(),
                         Toggle::make('is_verified')
+                            ->label(__('admin.resources.vendor.verified'))
                             ->disabled()
                             ->dehydrated(false),
                     ]),
 
-                Section::make('Identity Verification')
+                Section::make(__('admin.resources.vendor.identity_verification'))
                     ->relationship('vendorProfile')
                     ->schema([
                         FileUpload::make('id_card_front')
-                            ->label('ID Card (Front)')
+                            ->label(__('admin.resources.vendor.id_card_front'))
                             ->image()
                             ->disk('local')
                             ->directory('vendor-verification')
                             ->required(static fn (string $operation): bool => $operation === 'create'),
                         FileUpload::make('id_card_back')
-                            ->label('ID Card (Back)')
+                            ->label(__('admin.resources.vendor.id_card_back'))
                             ->image()
                             ->disk('local')
                             ->directory('vendor-verification')
                             ->required(static fn (string $operation): bool => $operation === 'create'),
                         FileUpload::make('store_front_image')
-                            ->label('Farm / Store Photo')
+                            ->label(__('admin.resources.vendor.store_photo'))
                             ->image()
                             ->disk('local')
                             ->directory('vendor-verification')
                             ->required(static fn (string $operation): bool => $operation === 'create'),
                         FileUpload::make('organic_certificate_url')
-                            ->label('Organic Certificate (Optional)')
+                            ->label(__('admin.resources.vendor.organic_cert'))
                             ->disk('local')
                             ->directory('vendor-verification'),
                     ])->columns(2),
 
-                Section::make('Financial Details')
+                Section::make(__('admin.resources.vendor.financial_details'))
                     ->relationship('vendorProfile')
                     ->columns(2)
                     ->schema([
                         Select::make('bank_name')
-                            ->label('Bank Name')
+                            ->label(__('admin.resources.vendor.bank_name'))
                             ->options([
                                 // 'Wallet' => 'Wallet',
                                 'ABA' => 'ABA',
@@ -95,15 +106,15 @@ class VendorForm
                             ->columnSpanFull(),
 
                         TextInput::make('bank_account_name')
-                            ->label('Account Holder Name')
+                            ->label(__('admin.resources.vendor.account_holder'))
                             ->placeholder('KOY YOTRABOTH')
                             ->required(static fn (string $operation): bool => $operation === 'create'),
                         TextInput::make('bank_account_number')
-                            ->label('Account Number')
+                            ->label(__('admin.resources.vendor.account_number'))
                             ->required(static fn (string $operation): bool => $operation === 'create'),
 
                         FileUpload::make('bank_qr_code')
-                            ->label('Bank QR Code')
+                            ->label(__('admin.resources.vendor.qr_code'))
                             ->image()
                             ->disk('local')
                             ->directory('vendor-verification')

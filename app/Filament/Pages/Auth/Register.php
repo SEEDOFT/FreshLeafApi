@@ -28,13 +28,13 @@ class Register extends BaseRegister
     #[Override]
     public function getHeading(): string|Htmlable
     {
-        return 'Create vendor account';
+        return __('admin.auth.register.title');
     }
 
     #[Override]
     public function getSubHeading(): string|Htmlable|null
     {
-        return 'Complete your business profile to start selling.';
+        return __('admin.auth.register.subheading');
     }
 
     #[Override]
@@ -55,9 +55,9 @@ class Register extends BaseRegister
         return $schema
             ->components([
                 Wizard::make([
-                    Step::make('Account')
+                    Step::make(__('admin.auth.register.steps.account'))
                         ->icon('heroicon-o-user')
-                        ->description('Basic information for login.')
+                        ->description(__('admin.auth.register.steps.account_desc'))
                         ->schema([
                             Grid::make(2)->schema([
                                 $this->getNameFormComponent(),
@@ -67,79 +67,89 @@ class Register extends BaseRegister
                             ]),
                         ]),
 
-                    Step::make('Business')
+                    Step::make(__('admin.auth.register.steps.business'))
                         ->icon('heroicon-o-building-storefront')
-                        ->description('Information about your store or farm.')
+                        ->description(__('admin.auth.register.steps.business_desc'))
                         ->schema([
                             Grid::make(2)->schema([
                                 TextInput::make('business_name')
+                                    ->label(__('admin.auth.register.business_name'))
                                     ->required(static fn (string $operation): bool => $operation === 'create')->dehydrated(static fn ($state): bool => filled($state))
                                     ->maxLength(255),
                                 TextInput::make('contact_phone')
+                                    ->label(__('admin.resources.vendor.contact_phone'))
                                     ->tel()
                                     ->maxLength(255),
                                 TextInput::make('city')
+                                    ->label(__('admin.resources.vendor.city'))
                                     ->maxLength(255),
                                 TextInput::make('province')
+                                    ->label(__('admin.resources.vendor.province'))
                                     ->maxLength(255),
                             ]),
                             TextInput::make('address')
+                                ->label(__('admin.resources.vendor.address'))
                                 ->columnSpanFull()
                                 ->maxLength(255),
                         ]),
 
-                    Step::make('Verification')
+                    Step::make(__('admin.auth.register.steps.verification'))
                         ->icon('heroicon-o-shield-check')
-                        ->description('Required identity documents.')
+                        ->description(__('admin.auth.register.steps.verification_desc'))
                         ->schema([
                             Grid::make(2)->schema([
                                 FileUpload::make('id_card_front')
-                                    ->label('ID Card (Front)')
+                                    ->label(__('admin.auth.register.id_front'))
                                     ->image()
+                                    ->disk('local')
                                     ->directory('vendor-verification')
                                     ->required(static fn (string $operation): bool => $operation === 'create')->dehydrated(static fn ($state): bool => filled($state)),
                                 FileUpload::make('id_card_back')
-                                    ->label('ID Card (Back)')
+                                    ->label(__('admin.auth.register.id_back'))
                                     ->image()
+                                    ->disk('local')
                                     ->directory('vendor-verification')
                                     ->required(static fn (string $operation): bool => $operation === 'create')->dehydrated(static fn ($state): bool => filled($state)),
                                 FileUpload::make('store_front_image')
-                                    ->label('Farm / Store Photo')
+                                    ->label(__('admin.auth.register.store_photo'))
                                     ->image()
+                                    ->disk('local')
                                     ->directory('vendor-verification')
                                     ->required(static fn (string $operation): bool => $operation === 'create')->dehydrated(static fn ($state): bool => filled($state)),
                                 FileUpload::make('organic_certificate_url')
-                                    ->label('Organic Certificate (Optional)')
+                                    ->label(__('admin.auth.register.organic_cert'))
+                                    ->disk('local')
                                     ->directory('vendor-verification'),
                             ]),
                         ]),
 
-                    Step::make('Financials')
+                    Step::make(__('admin.auth.register.steps.financials'))
                         ->icon('heroicon-o-banknotes')
-                        ->description('Payout account details.')
+                        ->description(__('admin.auth.register.steps.financials_desc'))
                         ->schema([
                             Grid::make(3)->schema([
                                 TextInput::make('bank_name')
-                                    ->label('Bank Name')
+                                    ->label(__('admin.auth.register.bank_name'))
                                     ->placeholder('e.g. ABA Bank')
                                     ->required(static fn (string $operation): bool => $operation === 'create')->dehydrated(static fn ($state): bool => filled($state))
                                     ->maxLength(255),
                                 TextInput::make('bank_account_name')
-                                    ->label('Account Holder Name')
+                                    ->label(__('admin.auth.register.account_holder'))
                                     ->required(static fn (string $operation): bool => $operation === 'create')->dehydrated(static fn ($state): bool => filled($state))
                                     ->maxLength(255),
                                 TextInput::make('bank_account_number')
-                                    ->label('Account Number')
+                                    ->label(__('admin.auth.register.account_number'))
                                     ->required(static fn (string $operation): bool => $operation === 'create')->dehydrated(static fn ($state): bool => filled($state))
                                     ->maxLength(255),
                             ]),
                             FileUpload::make('bank_qr_code')
-                                ->label('Bank QR Code')
+                                ->label(__('admin.auth.register.qr_code'))
                                 ->image()
+                                ->disk('local')
                                 ->directory('vendor-verification')
                                 ->required(static fn (string $operation): bool => $operation === 'create')->dehydrated(static fn ($state): bool => filled($state)),
                         ]),
-                ])->submitAction(new HtmlString(Blade::render('<x-filament::button type="submit" size="sm" wire:click="register">Complete Registration</x-filament::button>'))),
+                ])->submitAction(new HtmlString(Blade::render('<x-filament::button type="submit" size="sm" wire:click="register">'.__('admin.auth.register.complete').'</x-filament::button>'))),
             ])->statePath('data');
     }
 
@@ -148,14 +158,14 @@ class Register extends BaseRegister
         return Grid::make(4)
             ->schema([
                 Select::make('country_iso')
-                    ->label('Country')
+                    ->label(__('admin.auth.register.country'))
                     ->options(get_country_options())
                     ->default('KH')
                     ->required(static fn (string $operation): bool => $operation === 'create')->dehydrated(static fn ($state): bool => filled($state))
                     ->searchable()
                     ->columnSpan(2),
                 TextInput::make('phone_number_input')
-                    ->label(__('custom.phone_number'))
+                    ->label(__('admin.auth.register.phone'))
                     ->placeholder('12 345 678')
                     ->required(static fn (string $operation): bool => $operation === 'create')->dehydrated(static fn ($state): bool => filled($state))
                     ->tel()

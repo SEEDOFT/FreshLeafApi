@@ -193,9 +193,11 @@ class AdminProfile extends Page
         return Grid::make(2)
             ->schema([
                 TextInput::make('first_name')
+                    ->label(__('admin.profile.first_name'))
                     ->required(static fn (string $operation): bool => $operation === 'create')->dehydrated(static fn ($state): bool => filled($state))
                     ->maxLength(255),
                 TextInput::make('last_name')
+                    ->label(__('admin.profile.last_name'))
                     ->required(static fn (string $operation): bool => $operation === 'create')->dehydrated(static fn ($state): bool => filled($state))
                     ->maxLength(255),
             ]);

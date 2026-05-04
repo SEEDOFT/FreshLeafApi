@@ -24,7 +24,7 @@ class ViewVendor extends ViewRecord
     {
         return [
             Action::make('approveVendor')
-                ->label('Approve')
+                ->label(__('admin.resources.vendor.approve'))
                 ->icon('heroicon-o-check-circle')
                 ->color('success')
                 ->visible(static fn (User $record) => $record->isType(UserType::VENDOR) && $record->vendorProfile && ! $record->vendorProfile->is_verified)
@@ -38,18 +38,18 @@ class ViewVendor extends ViewRecord
                     $record->update(['user_status_id' => UserStatus::ACTIVE]);
 
                     Notification::make()
-                        ->title('Vendor approved successfully.')
+                        ->title(__('admin.resources.vendor.notifications.approved'))
                         ->success()
                         ->send();
                 })
                 ->form([
                     Textarea::make('note')
-                        ->label('Approval Note (Optional)'),
+                        ->label(__('admin.resources.vendor.approval_note')),
                 ])
                 ->requiresConfirmation(),
 
             Action::make('rejectVendor')
-                ->label('Reject')
+                ->label(__('admin.resources.vendor.reject'))
                 ->icon('heroicon-o-x-circle')
                 ->color('danger')
                 ->visible(static fn (User $record) => $record->isType(UserType::VENDOR) && $record->vendorProfile && ! $record->vendorProfile->is_verified)
@@ -62,13 +62,13 @@ class ViewVendor extends ViewRecord
                     ]);
 
                     Notification::make()
-                        ->title('Vendor rejected.')
+                        ->title(__('admin.resources.vendor.notifications.rejected'))
                         ->danger()
                         ->send();
                 })
                 ->form([
                     Textarea::make('reason')
-                        ->label('Rejection Reason')
+                        ->label(__('admin.resources.vendor.rejection_reason'))
                         ->required(static fn (string $operation): bool => $operation === 'create')->dehydrated(static fn ($state): bool => filled($state)),
                 ])
                 ->requiresConfirmation(),

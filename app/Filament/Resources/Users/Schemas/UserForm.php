@@ -17,26 +17,28 @@ class UserForm
     {
         return $schema
             ->components([
-                Section::make('Account Information')
+                Section::make(__('admin.resources.user.account_info'))
                     ->columns(2)
                     ->schema([
                         TextInput::make('first_name')
-                            ->label('First Name')
-                            ->required(static fn (string $operation): bool => $operation === 'create')->dehydrated(static fn ($state): bool => filled($state)),
+                            ->label(__('admin.resources.user.first_name'))
+                            ->required(static fn (string $operation): bool => $operation === 'create')->dehydrated(static fn ($state): bool => filled($state))
+                            ->maxLength(255),
                         TextInput::make('last_name')
-                            ->label('Last Name')
-                            ->required(static fn (string $operation): bool => $operation === 'create')->dehydrated(static fn ($state): bool => filled($state)),
+                            ->label(__('admin.resources.user.last_name'))
+                            ->required(static fn (string $operation): bool => $operation === 'create')->dehydrated(static fn ($state): bool => filled($state))
+                            ->maxLength(255),
                         TextInput::make('email')
-                            ->label('Email')
+                            ->label(__('admin.resources.user.email'))
                             ->email()
                             ->unique(ignoreRecord: true),
                         TextInput::make('phone_number')
-                            ->label('Phone Number')
+                            ->label(__('admin.resources.user.phone'))
                             ->tel()
                             ->required(static fn (string $operation): bool => $operation === 'create')->dehydrated(static fn ($state): bool => filled($state))
                             ->unique(ignoreRecord: true),
                         Select::make('user_type_id')
-                            ->label('Account Type')
+                            ->label(__('admin.resources.user.account_type'))
                             ->relationship('type', 'name')
                             ->default(UserType::USER)
                             ->required(static fn (string $operation): bool => $operation === 'create')->dehydrated(static fn ($state): bool => filled($state))
@@ -44,7 +46,7 @@ class UserForm
                             ->preload()
                             ->live(),
                         Select::make('user_status_id')
-                            ->label('Account Status')
+                            ->label(__('admin.resources.user.account_status'))
                             ->relationship('status', 'name')
                             ->default(UserStatus::ACTIVE)
                             ->required(static fn (string $operation): bool => $operation === 'create')->dehydrated(static fn ($state): bool => filled($state))

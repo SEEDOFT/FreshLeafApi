@@ -25,14 +25,17 @@ class UsersTable
             ->recordAction('view')
             ->columns([
                 TextColumn::make('name')
-                    ->label('Full Name')
-                    ->getStateUsing(static fn (User $record) => "{$record->first_name} {$record->last_name}")
+                    ->label(__('admin.resources.user.full_name'))
+                    ->getStateUsing(static fn (User $record) => "{$record->last_name} {$record->first_name}")
                     ->searchable(['first_name', 'last_name']),
                 TextColumn::make('email')
+                    ->label(__('admin.resources.user.email'))
                     ->searchable(),
                 TextColumn::make('phone_number')
+                    ->label(__('admin.resources.user.phone'))
                     ->searchable(),
                 TextColumn::make('type.name')
+                    ->label(__('admin.resources.user.type'))
                     ->badge()
                     ->color(fn (string $state): string => match ($state) {
                         'Admin' => 'danger',
@@ -41,6 +44,7 @@ class UsersTable
                         default => 'gray',
                     }),
                 TextColumn::make('status.name')
+                    ->label(__('admin.resources.user.status'))
                     ->badge()
                     ->color(fn (string $state): string => match ($state) {
                         'Active' => 'success',
@@ -49,6 +53,7 @@ class UsersTable
                         default => 'gray',
                     }),
                 TextColumn::make('created_at')
+                    ->label(__('admin.resources.created_at'))
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
@@ -56,10 +61,10 @@ class UsersTable
             ->filters([
                 SelectFilter::make('user_type_id')
                     ->relationship('type', 'name')
-                    ->label('User Type'),
+                    ->label(__('admin.resources.user.account_type')),
                 SelectFilter::make('user_status_id')
                     ->relationship('status', 'name')
-                    ->label('Status'),
+                    ->label(__('admin.resources.user.account_status')),
                 TrashedFilter::make(),
             ])
             ->actions([

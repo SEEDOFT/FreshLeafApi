@@ -125,6 +125,7 @@ class VendorInfolist
                 Section::make(__('admin.resources.vendor.wallets_info'))
                     ->schema([
                         RepeatableEntry::make('wallets')
+                            ->label(__('admin.resources.vendor.wallets_info'))
                             ->schema([
                                 TextEntry::make('currency.name')
                                     ->label(__('admin.resources.wallet.currency')),

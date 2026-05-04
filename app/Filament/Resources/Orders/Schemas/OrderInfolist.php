@@ -14,46 +14,57 @@ class OrderInfolist
     {
         return $schema
             ->components([
-                Section::make('Order Information')
+                Section::make(__('admin.resources.order.overview'))
                     ->columns(2)
                     ->schema([
                         TextEntry::make('order_number')
+                            ->label(__('admin.resources.order.order_number'))
                             ->copyable(),
                         TextEntry::make('status.name')
+                            ->label(__('admin.resources.order.status'))
                             ->badge(),
                         TextEntry::make('user.first_name')
-                            ->label('Customer'),
+                            ->label(__('admin.resources.order.customer')),
                         TextEntry::make('vendor.business_name')
-                            ->label('Vendor'),
+                            ->label(__('admin.resources.order.vendor')),
                     ]),
 
-                Section::make('Financial Details')
+                Section::make(__('admin.resources.order.financials'))
                     ->columns(2)
                     ->schema([
                         TextEntry::make('total_amount')
+                            ->label(__('admin.resources.order.total'))
                             ->money('USD'),
                         TextEntry::make('commission_amount')
+                            ->label(__('admin.resources.order.commission'))
                             ->money('USD'),
                         TextEntry::make('payment_status.name')
+                            ->label(__('admin.resources.order.payment_status'))
                             ->badge(),
-                        TextEntry::make('payment_method.name'),
+                        TextEntry::make('payment_method.name')
+                            ->label(__('admin.resources.order.payment_method')),
                     ]),
 
-                Section::make('Delivery Information')
+                Section::make(__('admin.resources.order.delivery_info'))
                     ->columns(2)
                     ->schema([
                         TextEntry::make('delivery_address')
+                            ->label(__('admin.resources.order.delivery_address'))
                             ->columnSpanFull(),
-                        TextEntry::make('delivery_contact_name'),
-                        TextEntry::make('delivery_contact_phone'),
+                        TextEntry::make('delivery_contact_name')
+                            ->label(__('admin.resources.order.delivery_contact_name')),
+                        TextEntry::make('delivery_contact_phone')
+                            ->label(__('admin.resources.order.delivery_contact_phone')),
                     ]),
 
-                Section::make('Timestamps')
+                Section::make(__('admin.resources.timestamps'))
                     ->columns(2)
                     ->schema([
                         TextEntry::make('created_at')
+                            ->label(__('admin.resources.created_at'))
                             ->dateTime(),
                         TextEntry::make('updated_at')
+                            ->label(__('admin.resources.updated_at'))
                             ->dateTime(),
                     ]),
             ]);

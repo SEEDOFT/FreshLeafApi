@@ -20,22 +20,25 @@ class WalletsTable
             ->stackedOnMobile()
             ->columns([
                 TextColumn::make('user.name')
-                    ->label('User')
+                    ->label(__('admin.resources.wallet.user'))
                     // ->getStateUsing(static fn (Wallet $record) => "{$record->user->first_name} {$record->user->last_name}")
                     ->searchable(['first_name', 'last_name'])
                     ->sortable(),
                 TextColumn::make('currency.code')
-                    ->label('Currency')
+                    ->label(__('admin.resources.wallet.currency'))
                     ->sortable(),
                 TextColumn::make('balance')
+                    ->label(__('admin.resources.wallet.balance'))
                     ->numeric(decimalPlaces: 2)
                     ->sortable(),
                 TextColumn::make('updated_at')
+                    ->label(__('admin.resources.updated_at'))
                     ->dateTime()
                     ->sortable(),
             ])
             ->filters([
                 SelectFilter::make('currency_id')
+                    ->label(__('admin.resources.wallet.currency'))
                     ->relationship('currency', 'name'),
             ])
             ->recordActions([

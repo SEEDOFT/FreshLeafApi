@@ -22,14 +22,16 @@ class OrdersTable
             ->recordAction('view')
             ->columns([
                 TextColumn::make('order_number')
+                    ->label(__('admin.resources.order.order_number'))
                     ->searchable()
                     ->sortable(),
                 TextColumn::make('user.name')
-                    ->label('Customer')
+                    ->label(__('admin.resources.order.customer'))
                     ->getStateUsing(fn (Order $record) => "{$record->user->first_name} {$record->user->last_name}")
                     ->searchable(['first_name', 'last_name'])
                     ->sortable(),
                 TextColumn::make('status.name')
+                    ->label(__('admin.resources.order.status'))
                     ->badge()
                     ->color(fn (string $state): string => match ($state) {
                         'New' => 'info',
@@ -40,6 +42,7 @@ class OrdersTable
                     })
                     ->sortable(),
                 TextColumn::make('paymentStatus.name')
+                    ->label(__('admin.resources.order.payment_status'))
                     ->badge()
                     ->color(fn (string $state): string => match ($state) {
                         'Paid' => 'success',
@@ -49,20 +52,25 @@ class OrdersTable
                     })
                     ->sortable(),
                 TextColumn::make('total_amount')
+                    ->label(__('admin.resources.order.total'))
                     ->money('USD')
                     ->sortable(),
                 TextColumn::make('delivery_date')
+                    ->label(__('admin.resources.order.delivery_date'))
                     ->date()
                     ->sortable(),
                 TextColumn::make('created_at')
+                    ->label(__('admin.resources.created_at'))
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
                 SelectFilter::make('order_status_id')
+                    ->label(__('admin.resources.order.status'))
                     ->relationship('status', 'name'),
                 SelectFilter::make('payment_status_id')
+                    ->label(__('admin.resources.order.payment_status'))
                     ->relationship('paymentStatus', 'name'),
             ])
             ->recordActions([

@@ -22,13 +22,13 @@ class Login extends BaseLogin
     #[Override]
     public function getHeading(): string|Htmlable
     {
-        return 'Welcome back';
+        return __('admin.auth.login.title');
     }
 
     #[Override]
     public function getSubHeading(): string|Htmlable|null
     {
-        return 'Sign in to manage your FreshLeaf';
+        return __('admin.auth.login.subheading');
     }
 
     #[Override]
@@ -48,14 +48,14 @@ class Login extends BaseLogin
         return Grid::make(4)
             ->schema([
                 Select::make('country_iso')
-                    ->label('Country')
+                    ->label(__('admin.auth.register.country'))
                     ->options(get_country_options())
                     ->default('KH')
                     ->required(static fn (string $operation): bool => $operation === 'create')->dehydrated(static fn ($state): bool => filled($state))
                     ->searchable()
                     ->columnSpan(2),
                 TextInput::make('phone_number_input')
-                    ->label(__('custom.phone_number'))
+                    ->label(__('admin.auth.login.phone'))
                     ->placeholder('012 345 678')
                     ->required(static fn (string $operation): bool => $operation === 'create')->dehydrated(static fn ($state): bool => filled($state))
                     ->tel()
@@ -95,7 +95,7 @@ class Login extends BaseLogin
 
         if ($user && $user->user_status_id === UserStatus::PENDING) {
             throw ValidationException::withMessages([
-                'data.phone_number_input' => 'Your account is pending approval. Please wait for an administrator to review your application.',
+                'data.phone_number_input' => __('admin.auth.login.pending'),
             ]);
         }
 
@@ -106,7 +106,7 @@ class Login extends BaseLogin
     protected function throwFailureValidationException(): never
     {
         throw ValidationException::withMessages([
-            'data.phone_number_input' => __('filament-panels::auth/pages/login.messages.failed'),
+            'data.phone_number_input' => __('admin.auth.login.failed'),
         ]);
     }
 }

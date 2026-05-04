@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Filament\Vendor\Clusters\Settings\Pages;
 
 use App\Filament\Vendor\Clusters\Settings;
+use Filament\Actions\Action;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\TimePicker;
@@ -22,11 +23,11 @@ class BusinessProfile extends Page
 
     protected static ?string $slug = 'business';
 
+    #[Override]
     protected static ?string $navigationLabel = 'Business Info';
 
-    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-building-storefront';
-
-    protected string $view = 'filament.vendor.pages.business-profile';
+    #[Override]
+    protected string $view = 'filament.pages.shared.form-page';
 
     /**
      * @var array<string, mixed> | null
@@ -42,23 +43,28 @@ class BusinessProfile extends Page
     {
         return $schema
             ->components([
-                Section::make('Store Information')
-                    ->description('Publicly visible details about your business.')
+                Section::make(__('admin.vendor_settings.business_profile.store_info'))
+                    ->description(__('admin.vendor_settings.business_profile.store_info_desc'))
                     ->schema([
                         Grid::make(2)
                             ->schema([
                                 TextInput::make('business_name')
+                                    ->label(__('admin.resources.vendor.business_name'))
                                     ->required(static fn (string $operation): bool => $operation === 'create')->dehydrated(static fn ($state): bool => filled($state))
                                     ->maxLength(255),
                                 TextInput::make('contact_phone')
+                                    ->label(__('admin.resources.vendor.contact_phone'))
                                     ->tel()
                                     ->maxLength(255),
                                 TextInput::make('city')
+                                    ->label(__('admin.resources.vendor.city'))
                                     ->maxLength(255),
                                 TextInput::make('province')
+                                    ->label(__('admin.resources.vendor.province'))
                                     ->maxLength(255),
                             ]),
                         TextInput::make('address')
+                            ->label(__('admin.resources.vendor.address'))
                             ->columnSpanFull()
                             ->maxLength(255),
                         Textarea::make('shop_description')
@@ -88,8 +94,18 @@ class BusinessProfile extends Page
         $user->vendorProfile()->update($state);
 
         Notification::make()
-            ->title('Business profile updated.')
+            ->title(__('admin.vendor_settings.business_profile.success_notification'))
             ->success()
             ->send();
+    }
+
+    protected function getFormActions(): array
+    {
+        return [
+            Action::make('save')
+                ->label(__('admin.profile.save_changes'))
+                ->submit('save')
+                ->keyBindings(['mod+s']),
+        ];
     }
 }

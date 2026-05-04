@@ -31,16 +31,18 @@ class VendorsTable
             ->recordAction('view')
             ->columns([
                 TextColumn::make('vendorProfile.business_name')
-                    ->label('Business Name')
+                    ->label(__('admin.resources.vendor.business_name'))
                     ->searchable()
                     ->sortable(),
                 TextColumn::make('name')
-                    ->label('Owner')
+                    ->label(__('admin.resources.vendor.owner'))
                     ->getStateUsing(static fn (User $record) => "{$record->first_name} {$record->last_name}")
                     ->searchable(['first_name', 'last_name']),
                 TextColumn::make('phone_number')
+                    ->label(__('admin.resources.vendor.phone'))
                     ->searchable(),
                 TextColumn::make('status.name')
+                    ->label(__('admin.resources.vendor.status'))
                     ->badge()
                     ->color(static fn (string $state): string => match ($state) {
                         'Active' => 'success',
@@ -49,10 +51,11 @@ class VendorsTable
                         default => 'gray',
                     }),
                 IconColumn::make('vendorProfile.is_verified')
-                    ->label('Verified')
+                    ->label(__('admin.resources.vendor.verified'))
                     ->boolean()
                     ->sortable(),
                 TextColumn::make('created_at')
+                    ->label(__('admin.resources.created_at'))
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
@@ -60,17 +63,17 @@ class VendorsTable
             ->filters([
                 SelectFilter::make('user_status_id')
                     ->relationship('status', 'name')
-                    ->label('Status'),
+                    ->label(__('admin.resources.vendor.status')),
                 TrashedFilter::make(),
             ])
             ->actions([
                 ViewAction::make()
-                    ->label('View Submission')
+                    ->label(__('admin.resources.vendor.view_submission'))
                     ->icon('heroicon-o-eye')
                     ->color('info'),
                 EditAction::make(),
                 Action::make('approveVendor')
-                    ->label('Approve')
+                    ->label(__('admin.resources.vendor.approve'))
                     ->icon('heroicon-o-check-circle')
                     ->color('success')
                     ->visible(static fn (User $record) => $record->vendorProfile && ! $record->vendorProfile->is_verified)
@@ -88,12 +91,12 @@ class VendorsTable
                     })
                     ->form([
                         Textarea::make('note')
-                            ->label('Approval Note (Optional)'),
+                            ->label(__('admin.resources.vendor.approval_note')),
                     ])
                     ->requiresConfirmation(),
 
                 Action::make('rejectVendor')
-                    ->label('Reject')
+                    ->label(__('admin.resources.vendor.reject'))
                     ->icon('heroicon-o-x-circle')
                     ->color('danger')
                     ->visible(static fn (User $record) => $record->vendorProfile && ! $record->vendorProfile->is_verified)
@@ -107,7 +110,7 @@ class VendorsTable
                     })
                     ->form([
                         Textarea::make('reason')
-                            ->label('Rejection Reason')
+                            ->label(__('admin.resources.vendor.rejection_reason'))
                             ->required(static fn (string $operation): bool => $operation === 'create')->dehydrated(static fn ($state): bool => filled($state)),
                     ])
                     ->requiresConfirmation(),

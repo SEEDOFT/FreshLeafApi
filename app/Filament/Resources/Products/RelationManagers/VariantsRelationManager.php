@@ -27,15 +27,19 @@ class VariantsRelationManager extends RelationManager
         return $schema
             ->components([
                 Select::make('unit_id')
+                    ->label(__('admin.resources.product.unit'))
                     ->relationship('unit', 'name')
                     ->required(static fn (string $operation): bool => $operation === 'create')->dehydrated(static fn ($state): bool => filled($state)),
                 TextInput::make('name')
+                    ->label(__('admin.resources.unit.name'))
                     ->placeholder('e.g. 500g Pack, Bulk 5kg')
                     ->required(static fn (string $operation): bool => $operation === 'create')->dehydrated(static fn ($state): bool => filled($state)),
                 TextInput::make('quantity_in_unit')
+                    ->label(__('admin.resources.product.quantity_in_unit'))
                     ->required(static fn (string $operation): bool => $operation === 'create')->dehydrated(static fn ($state): bool => filled($state))
                     ->numeric(),
                 TextInput::make('price')
+                    ->label(__('admin.resources.product.price'))
                     ->required(static fn (string $operation): bool => $operation === 'create')->dehydrated(static fn ($state): bool => filled($state))
                     ->numeric()
                     ->prefix('$'),
@@ -50,15 +54,18 @@ class VariantsRelationManager extends RelationManager
             ->recordTitleAttribute('name')
             ->columns([
                 TextColumn::make('name')
+                    ->label(__('admin.resources.unit.name'))
                     ->searchable()
                     ->sortable(),
                 TextColumn::make('unit.symbol')
-                    ->sortable()
-                    ->label('Unit'),
+                    ->label(__('admin.resources.product.unit'))
+                    ->sortable(),
                 TextColumn::make('quantity_in_unit')
+                    ->label(__('admin.resources.product.quantity_in_unit'))
                     ->numeric()
                     ->sortable(),
                 TextColumn::make('price')
+                    ->label(__('admin.resources.product.price'))
                     ->money('USD')
                     ->sortable(),
             ])

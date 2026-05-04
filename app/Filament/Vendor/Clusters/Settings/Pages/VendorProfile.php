@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Filament\Vendor\Clusters\Settings\Pages;
 
 use App\Filament\Vendor\Clusters\Settings;
+use Filament\Actions\Action;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
@@ -15,18 +16,29 @@ use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 use Illuminate\Support\Facades\Auth;
+use Override;
+
+use function __;
+use function is_array;
+use function is_string;
+use function reset;
 
 class VendorProfile extends Page
 {
+    #[Override]
     protected static ?string $cluster = Settings::class;
 
+    #[Override]
     protected static ?string $slug = 'profile';
 
+    #[Override]
     protected static ?string $navigationLabel = 'My Profile';
 
+    #[Override]
     protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-user-circle';
 
-    protected string $view = 'filament.vendor.pages.business-profile';
+    #[Override]
+    protected string $view = 'filament.pages.shared.form-page';
 
     /**
      * @var array<string, mixed> | null
@@ -52,12 +64,12 @@ class VendorProfile extends Page
     {
         return $schema
             ->components([
-                Section::make('General Information')
+                Section::make(__('admin.vendor_settings.vendor_profile.general_info'))
                     ->schema([
                         Grid::make(4)
                             ->schema([
                                 FileUpload::make('image')
-                                    ->label('Store / Owner Avatar')
+                                    ->label(__('admin.vendor_settings.vendor_profile.avatar'))
                                     ->avatar()
                                     ->imageEditor()
                                     ->directory('avatars')
@@ -67,17 +79,20 @@ class VendorProfile extends Page
                                 Grid::make(2)
                                     ->schema([
                                         TextInput::make('first_name')
+                                            ->label(__('admin.vendor_settings.vendor_profile.first_name'))
                                             ->required(static fn (string $operation): bool => $operation === 'create')->dehydrated(static fn ($state): bool => filled($state))
                                             ->maxLength(255),
                                         TextInput::make('last_name')
+                                            ->label(__('admin.vendor_settings.vendor_profile.last_name'))
                                             ->required(static fn (string $operation): bool => $operation === 'create')->dehydrated(static fn ($state): bool => filled($state))
                                             ->maxLength(255),
                                         TextInput::make('email')
+                                            ->label(__('admin.vendor_settings.vendor_profile.email'))
                                             ->email()
                                             ->required(static fn (string $operation): bool => $operation === 'create')->dehydrated(static fn ($state): bool => filled($state))
                                             ->maxLength(255),
                                         TextInput::make('phone_number')
-                                            ->label('Phone Number')
+                                            ->label(__('admin.vendor_settings.vendor_profile.phone'))
                                             ->tel()
                                             ->required(static fn (string $operation): bool => $operation === 'create')->dehydrated(static fn ($state): bool => filled($state)),
                                     ])
@@ -85,17 +100,19 @@ class VendorProfile extends Page
                             ]),
                     ]),
 
-                Section::make('Preferences')
-                    ->description('Customize your store dashboard language.')
+                Section::make(__('admin.vendor_settings.vendor_profile.preferences'))
+                    ->description(__('admin.vendor_settings.vendor_profile.preferences_desc'))
                     ->schema([
                         Select::make('locale')
-                            ->label('Display Language')
+                            ->label(__('admin.vendor_settings.vendor_profile.language'))
                             ->options([
                                 'km' => 'Khmer (ភាសាខ្មែរ)',
                                 'en' => 'English',
                             ])
                             ->required(static fn (string $operation): bool => $operation === 'create')->dehydrated(static fn ($state): bool => filled($state))
-                            ->native(false),
+                            ->native(false)
+                            ->searchable()
+                            ->preload(),
                     ])->columns(2),
             ])
             ->statePath('data');
@@ -118,7 +135,7 @@ class VendorProfile extends Page
         $user->update($state);
 
         Notification::make()
-            ->title('Profile updated successfully.')
+            ->title(__('admin.vendor_settings.vendor_profile.success_notification'))
             ->success()
             ->send();
 
@@ -126,14 +143,29 @@ class VendorProfile extends Page
         $this->redirect(static::getUrl());
     }
 
+    /**
+     * @return array<Action>
+     */
+    protected function getFormActions(): array
+    {
+        return [
+            Action::make('save')
+                ->label(__('admin.profile.save_changes'))
+                ->submit('save')
+                ->keyBindings(['mod+s']),
+        ];
+    }
+
     protected function getNameFormComponent(): Component
     {
         return Grid::make(2)
             ->schema([
                 TextInput::make('first_name')
+                    ->label(__('admin.vendor_settings.vendor_profile.first_name'))
                     ->required(static fn (string $operation): bool => $operation === 'create')->dehydrated(static fn ($state): bool => filled($state))
                     ->maxLength(255),
                 TextInput::make('last_name')
+                    ->label(__('admin.vendor_settings.vendor_profile.last_name'))
                     ->required(static fn (string $operation): bool => $operation === 'create')->dehydrated(static fn ($state): bool => filled($state))
                     ->maxLength(255),
             ]);

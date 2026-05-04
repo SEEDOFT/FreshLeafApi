@@ -76,7 +76,7 @@ class FinancialDetails extends Page
         $user->vendorProfile()->update($state);
 
         Notification::make()
-            ->title('Financial details updated.')
+            ->title(__('admin.vendor_settings.financial_details.success_notification'))
             ->success()
             ->send();
     }

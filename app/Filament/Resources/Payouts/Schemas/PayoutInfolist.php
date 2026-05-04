@@ -11,31 +11,47 @@ class PayoutInfolist
     {
         return $schema
             ->components([
-                TextEntry::make('vendor_user_id')
-                    ->numeric(),
-                TextEntry::make('payout_status_id')
-                    ->numeric(),
-                TextEntry::make('payout_method_id')
-                    ->numeric(),
-                TextEntry::make('amount')
-                    ->numeric(),
-                TextEntry::make('transaction_reference')
-                    ->placeholder('-'),
-                TextEntry::make('processed_at')
-                    ->dateTime()
-                    ->placeholder('-'),
-                TextEntry::make('processed_by_admin_id')
-                    ->numeric()
-                    ->placeholder('-'),
-                TextEntry::make('admin_notes')
-                    ->placeholder('-')
-                    ->columnSpanFull(),
-                TextEntry::make('created_at')
-                    ->dateTime()
-                    ->placeholder('-'),
-                TextEntry::make('updated_at')
-                    ->dateTime()
-                    ->placeholder('-'),
+                Section::make(__('admin.resources.payout.details'))
+                    ->columns(2)
+                    ->schema([
+                        TextEntry::make('vendor.vendorProfile.business_name')
+                            ->label(__('admin.resources.payout.business')),
+                        TextEntry::make('status.name')
+                            ->label(__('admin.resources.payout.status'))
+                            ->badge(),
+                        TextEntry::make('method.name')
+                            ->label(__('admin.resources.payout.method')),
+                        TextEntry::make('amount')
+                            ->label(__('admin.resources.payout.amount'))
+                            ->money('USD'),
+                        TextEntry::make('transaction_reference')
+                            ->label(__('admin.resources.payout.transaction_ref'))
+                            ->placeholder('-'),
+                        TextEntry::make('processed_at')
+                            ->label(__('admin.resources.payout.processed_at'))
+                            ->dateTime()
+                            ->placeholder('-'),
+                        TextEntry::make('processedBy.name')
+                            ->label(__('admin.resources.payout.processed_by'))
+                            ->placeholder('-'),
+                        TextEntry::make('admin_notes')
+                            ->label(__('admin.resources.payout.admin_notes'))
+                            ->placeholder('-')
+                            ->columnSpanFull(),
+                    ]),
+
+                Section::make(__('admin.resources.timestamps'))
+                    ->columns(2)
+                    ->schema([
+                        TextEntry::make('created_at')
+                            ->label(__('admin.resources.created_at'))
+                            ->dateTime()
+                            ->placeholder('-'),
+                        TextEntry::make('updated_at')
+                            ->label(__('admin.resources.updated_at'))
+                            ->dateTime()
+                            ->placeholder('-'),
+                    ]),
             ]);
     }
 }

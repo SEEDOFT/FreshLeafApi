@@ -70,6 +70,7 @@ class UserInfolist
                 Section::make(__('admin.resources.user.wallets_info'))
                     ->schema([
                         RepeatableEntry::make('wallets')
+                            ->label(__('admin.resources.user.wallets_info'))
                             ->schema([
                                 TextEntry::make('currency.name')
                                     ->label(__('admin.resources.wallet.currency'))

@@ -50,6 +50,12 @@ class ProductResource extends Resource
     }
 
     #[Override]
+    public static function infolist(\Filament\Infolists\Infolist $infolist): \Filament\Infolists\Infolist
+    {
+        return ProductInfolist::configure($infolist);
+    }
+
+    #[Override]
     public static function table(Table $table): Table
     {
         return ProductsTable::configure($table);

@@ -6,13 +6,14 @@ namespace App\Services;
 
 use App\Models\User;
 use App\Models\Wallet;
-use App\Models\WalletTransactionHistory;
+use App\Models\WalletTransaction;
 use Illuminate\Pagination\Paginator;
 
 class WalletService
 {
     /**
      * Get user wallets.
+     *
      * @return Paginator<int, Wallet>
      */
     public function getUserWallets(User $user, int $perPage): Paginator
@@ -25,7 +26,8 @@ class WalletService
 
     /**
      * Get wallet history.
-     * @return Paginator<int, \App\Models\WalletTransaction>
+     *
+     * @return Paginator<int, WalletTransaction>
      */
     public function getWalletHistory(Wallet $wallet, int $perPage): Paginator
     {

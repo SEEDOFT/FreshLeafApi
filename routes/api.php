@@ -2,13 +2,11 @@
 
 declare(strict_types=1);
 
-use App\Http\Controllers\Api\Admin as AdminController;
 use App\Http\Controllers\Api\Ai\AiChatController;
 use App\Http\Controllers\Api\CategoryController;
 use App\Http\Controllers\Api\Product\ProductController;
 use App\Http\Controllers\Api\Shared as SharedController;
 use App\Http\Controllers\Api\User as UserController;
-use App\Http\Controllers\Api\Vendor as VendorController;
 use Illuminate\Broadcasting\BroadcastController;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Route;
@@ -77,7 +75,8 @@ Route::prefix('v1')->name('v1.')->group(static function () {
     });
 
     // User-Specific Routes
-    Route::prefix('user')->name('user.')->middleware(['auth:sanctum', 'active.type:user'])->group(static function () {
+    Route::prefix('user')->name('user.')->middleware(['auth:sanctum', 'active.type:user'])
+    ->group(static function () {
         Route::prefix('pin')
             ->name('pin.')
             ->controller(UserController\UserPinController::class)
@@ -146,6 +145,52 @@ Route::prefix('v1')->name('v1.')->group(static function () {
                 Route::get('messages', 'getMessages')->name('messages.index');
                 Route::post('typing', 'sendTyping')->name('typing');
             });
+    });
+
+    // User Module Routes
+    Route::prefix('user')->name('user.')->middleware(['auth:sanctum'])->group(static function () {
+        Route::controller(ProfileController::class)->group(static function () {
+            Route::get('/', 'show')->name('profile.show');
+            Route::patch('/', 'update')->name('profile.update');
+            Route::put('/', 'replace')->name('profile.replace');
+            Route::delete('/', 'destroy')->name('profile.destroy');
+        });
+
+        Route::controller(WalletController::class)->prefix('wallets')->group(static function () {
+            Route::get('/', 'index')->name('wallets.index');
+            Route::get('{id}', 'show')->name('wallets.show');
+            Route::get('{id}/histories', 'history')->name('wallets.history');
+        });
+
+        Route::controller(WalletTransactionController::class)->prefix('wallet-transactions')->group(static function () {
+            Route::get('/', 'index')->name('transactions.index');
+            Route::get('{id}', 'show')->name('transactions.show');
+            Route::post('/', 'store')->name('transactions.store');
+            Route::patch('{id}', 'update')->name('transactions.update');
+            Route::delete('{id}', 'destroy')->name('transactions.destroy');
+        });
+
+        Route::controller(AddressController::class)->prefix('addresses')->group(static function () {
+            Route::get('/', 'index')->name('addresses.index');
+            Route::get('{id}', 'show')->name('addresses.show');
+            Route::post('/', 'store')->name('addresses.store');
+            Route::patch('{id}', 'update')->name('addresses.update');
+            Route::put('{id}', 'replace')->name('addresses.replace');
+            Route::delete('{id}', 'destroy')->name('addresses.destroy');
+        });
+
+        Route::controller(SupportChatController::class)->prefix('support')->group(static function () {
+            Route::get('ticket', 'getActiveTicket')->name('support.ticket');
+            Route::post('typing', 'sendTyping')->name('support.typing');
+            Route::post('message', 'sendMessage')->name('support.message');
+            Route::get('messages', 'getMessages')->name('support.messages');
+            Route::get('unread-count', 'getUnreadCount')->name('support.unread-count');
+        });
+
+        Route::controller(DeviceController::class)->prefix('devices')->group(static function () {
+            Route::post('/', 'store')->name('devices.store');
+            Route::delete('{token}', 'destroy')->name('devices.destroy');
+        });
     });
 
     // Shared Product Routes (Serve data to Consumer app)

@@ -12,6 +12,7 @@ class AddressService
 {
     /**
      * Get user addresses.
+     *
      * @return Paginator<int, Address>
      */
     public function getUserAddresses(User $user, int $perPage): Paginator
@@ -24,6 +25,7 @@ class AddressService
 
     /**
      * Create an address.
+     *
      * @param  array<string, mixed>  $data
      */
     public function createAddress(User $user, array $data): Address
@@ -39,6 +41,7 @@ class AddressService
 
     /**
      * Update an address.
+     *
      * @param  array<string, mixed>  $data
      */
     public function updateAddress(Address $address, array $data): Address
@@ -60,6 +63,7 @@ class AddressService
 
     /**
      * Replace an address.
+     *
      * @param  array<string, mixed>  $data
      */
     public function replaceAddress(Address $address, array $data): Address

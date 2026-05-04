@@ -10,12 +10,17 @@ use App\Http\Requests\User\Address\StoreAddressRequest;
 use App\Http\Requests\User\Address\UpdateAddressRequest;
 use App\Http\Resources\User\AddressResource;
 use App\Models\Address;
+use App\Services\AddressService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
 
 class AddressController extends Controller
 {
+    public function __construct(
+        protected AddressService $addressService
+    ) {}
+
     /**
      * List user/vendor addresses.
      */
@@ -25,10 +30,7 @@ class AddressController extends Controller
 
         Gate::authorize('viewAny', [Address::class, $user->user_type_id]);
 
-        $addresses = $user->addresses()
-            ->active()
-            ->latest()
-            ->simplePaginate($request->integer('per_page', 10));
+        $addresses = $this->addressService->getUserAddresses($user, $request->integer('per_page', 10));
 
         return static::successResponse(AddressResource::collection($addresses), 'Addresses retrieved successfully');
     }
@@ -60,16 +62,7 @@ class AddressController extends Controller
 
         Gate::authorize('create', [Address::class, $user->user_type_id]);
 
-        $validatedData = $request->validated();
-
-        if (isset($validatedData['lat'], $validatedData['long'])) {
-            $validatedData['address_map'] =
-                "https://www.google.com/maps?q={$validatedData['lat']},{$validatedData['long']}";
-        }
-
-        $address = $user->addresses()->create(\array_merge($validatedData, [
-            'user_id' => $user->id,
-        ]));
+        $address = $this->addressService->createAddress($user, $request->validated());
 
         return static::successResponse(new AddressResource($address), 'Address created successfully', 201);
     }
@@ -80,7 +73,6 @@ class AddressController extends Controller
     public function update(string $id, UpdateAddressRequest $request): JsonResponse
     {
         $user = $this->authenticatedUser($request);
-
         $address = $user->addresses()->active()->find($id);
 
         if (! $address) {
@@ -89,20 +81,7 @@ class AddressController extends Controller
 
         Gate::authorize('update', [$address, $user->user_type_id]);
 
-        $validatedData = $request->validated();
-
-        if (isset($validatedData['lat'], $validatedData['long'])) {
-            $validatedData['address_map'] =
-                "https://www.google.com/maps?q={$validatedData['lat']},{$validatedData['long']}";
-        } else {
-            unset($validatedData['lat'], $validatedData['long']);
-        }
-
-        if (isset($validatedData['label'])) {
-            $validatedData['label'] = strtoupper($validatedData['label']);
-        }
-
-        $address->update($validatedData);
+        $address = $this->addressService->updateAddress($address, $request->validated());
 
         return static::successResponse(new AddressResource($address), 'Address updated successfully');
     }
@@ -113,7 +92,6 @@ class AddressController extends Controller
     public function replace(string $id, ReplaceAddressRequest $request): JsonResponse
     {
         $user = $this->authenticatedUser($request);
-
         $address = $user->addresses()->active()->find($id);
 
         if (! $address) {
@@ -122,16 +100,7 @@ class AddressController extends Controller
 
         Gate::authorize('update', [$address, $user->user_type_id]);
 
-        $validatedData = $request->validated();
-
-        if (isset($validatedData['lat'], $validatedData['long'])) {
-            $validatedData['address_map'] =
-                "https://www.google.com/maps?q={$validatedData['lat']},{$validatedData['long']}";
-        } else {
-            $validatedData['address_map'] = null;
-        }
-
-        $address->update($validatedData);
+        $address = $this->addressService->replaceAddress($address, $request->validated());
 
         return static::successResponse(new AddressResource($address), 'Address replaced successfully');
     }
@@ -142,7 +111,6 @@ class AddressController extends Controller
     public function destroy(string $id, Request $request): JsonResponse
     {
         $user = $this->authenticatedUser($request);
-
         $address = $user->addresses()->active()->find($id);
 
         if (! $address) {
@@ -151,7 +119,7 @@ class AddressController extends Controller
 
         Gate::authorize('delete', [$address, $user->user_type_id]);
 
-        $address->delete();
+        $this->addressService->deleteAddress($address);
 
         return static::successResponse(message: 'Address deleted successfully');
     }

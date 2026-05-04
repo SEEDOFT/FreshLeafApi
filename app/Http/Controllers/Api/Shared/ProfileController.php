@@ -9,19 +9,19 @@ use App\Http\Requests\Shared\UpdateProfileRequest;
 use App\Http\Resources\Admin\AdminProfileResource;
 use App\Http\Resources\User\UserResource;
 use App\Http\Resources\Vendor\VendorProfileResource;
-use App\Models\User;
 use App\Models\UserStatus;
 use App\Models\UserType;
+use App\Services\ProfileService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Gate;
-use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Str;
 
 class ProfileController extends Controller
 {
+    public function __construct(
+        protected ProfileService $profileService
+    ) {}
+
     /**
      * Show authenticated user's profile information.
      */
@@ -51,9 +51,7 @@ class ProfileController extends Controller
      */
     public function update(UpdateProfileRequest $request): JsonResponse
     {
-        $user = $this->authenticatedUser($request);
-
-        return $this->persistProfile($user, $request->validated(), $request, false);
+        return $this->handleProfileUpdate($request, false);
     }
 
     /**
@@ -61,9 +59,26 @@ class ProfileController extends Controller
      */
     public function replace(UpdateProfileRequest $request): JsonResponse
     {
-        $user = $this->authenticatedUser($request);
+        return $this->handleProfileUpdate($request, true);
+    }
 
-        return $this->persistProfile($user, $request->validated(), $request, true);
+    private function handleProfileUpdate(UpdateProfileRequest $request, bool $isReplace): JsonResponse
+    {
+        $user = $this->authenticatedUser($request);
+        Gate::authorize('update', [$user, $user->user_type_id]);
+
+        $updatedUser = $this->profileService->updateProfile(
+            $user,
+            $request->validated(),
+            $request->file('image')
+        );
+
+        return match ($updatedUser->user_type_id) {
+            UserType::ADMIN => static::successResponse(new AdminProfileResource($updatedUser), 'Admin profile updated'),
+            UserType::VENDOR => static::successResponse(new VendorProfileResource($updatedUser), 'Vendor profile updated'),
+            UserType::USER => static::successResponse(new UserResource($updatedUser), $isReplace ? 'User replaced successfully' : 'User updated successfully'),
+            default => static::errorResponse('Unauthorized', 403),
+        };
     }
 
     /**
@@ -81,61 +96,5 @@ class ProfileController extends Controller
         ]);
 
         return static::successResponse(message: 'User deleted successfully');
-    }
-
-    /**
-     * Persist profile data.
-     *
-     * @param  array<string, mixed>  $validatedData
-     */
-    private function persistProfile(
-        User $user,
-        array $validatedData,
-        Request $request,
-        bool $isReplace
-    ): JsonResponse {
-        Gate::authorize('update', [$user, $user->user_type_id]);
-
-        if (isset($validatedData['password'])) {
-            $validatedData['password'] = Hash::make($validatedData['password']);
-        }
-
-        if ($request->hasFile('image')) {
-            if ($user->image) {
-                Storage::disk(config('filesystems.default'))->delete('users/'.$user->image);
-            }
-            $validatedData['image'] = $this->storeUserImage($request->file('image'));
-        }
-
-        // Update User model (common fields)
-        $user->update(\array_intersect_key($validatedData, \array_flip([
-            'first_name', 'last_name', 'email', 'phone_number', 'password', 'image',
-        ])));
-
-        // Update specific profile
-        match ($user->user_type_id) {
-            UserType::ADMIN => $user->adminProfile()->firstOrCreate(['user_id' => $user->id])->update($validatedData),
-            UserType::VENDOR => $user->vendorProfile()->firstOrCreate(['user_id' => $user->id])->update($validatedData),
-            UserType::USER => $user->userProfile()->firstOrCreate(['user_id' => $user->id])->update($validatedData),
-            default => null,
-        };
-
-        return match ($user->user_type_id) {
-            UserType::ADMIN => static::successResponse(new AdminProfileResource($user->fresh()->load('adminProfile')), 'Admin profile updated'),
-            UserType::VENDOR => static::successResponse(new VendorProfileResource($user->fresh()->load('vendorProfile')), 'Vendor profile updated'),
-            UserType::USER => static::successResponse(new UserResource($user->fresh()->load('userProfile')), $isReplace ? 'User replaced successfully' : 'User updated successfully'),
-            default => static::errorResponse('Unauthorized', 403),
-        };
-    }
-
-    /**
-     * Store user image and return the file name.
-     */
-    private function storeUserImage(UploadedFile $file): string
-    {
-        $fileName = Str::ulid().'.'.$file->getClientOriginalExtension();
-        $file->storeAs('users', $fileName, 'public');
-
-        return $fileName;
     }
 }

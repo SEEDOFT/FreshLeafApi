@@ -8,6 +8,7 @@ use App\Events\NewSupportTicket;
 use App\Events\SupportMessageSent;
 use App\Events\SupportTyping;
 use App\Http\Controllers\Controller;
+use App\Http\Resources\Shared\SupportMessageResource;
 use App\Models\SupportMessage;
 use App\Models\SupportTicket;
 use App\Models\User;
@@ -83,7 +84,7 @@ class SupportChatController extends Controller
         $ticket = SupportTicket::findOrFail((int) $validatedData['ticket_id']);
 
         if ($ticket->user_id !== $user->id) {
-            return static::errorResponse('Unauthorized access to ticket history', 403);
+            return static::unauthorizedResponse('Unauthorized access to ticket history');
         }
 
         $filePath = null;
@@ -110,7 +111,7 @@ class SupportChatController extends Controller
         Notification::send($admins, new NewSupportMessageNotification($message));
 
         return static::successResponse(
-            $message,
+            new SupportMessageResource($message),
             'Message sent',
         );
     }
@@ -128,7 +129,7 @@ class SupportChatController extends Controller
         $ticket = SupportTicket::findOrFail((int) $validatedData['ticket_id']);
 
         if ($ticket->user_id !== $user->id) {
-            return static::errorResponse('Unauthorized access to ticket history', 403);
+            return static::unauthorizedResponse('Unauthorized access to ticket history');
         }
 
         // Mark admin messages as read
@@ -140,7 +141,7 @@ class SupportChatController extends Controller
         $messages = $ticket->messages()->oldest()->get();
 
         return static::successResponse(
-            $messages,
+            SupportMessageResource::collection($messages),
             'Messages retrieved',
         );
     }
@@ -165,9 +166,6 @@ class SupportChatController extends Controller
             ->where('is_read', false)
             ->count();
 
-        return static::successResponse(
-            ['count' => $count],
-            'Unread count retrieved',
-        );
+        return static::successResponse(['count' => $count], 'Unread count retrieved');
     }
 }

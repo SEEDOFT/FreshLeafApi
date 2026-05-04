@@ -51,7 +51,7 @@ class ProductResource extends Resource
     }
 
     #[Override]
-    public static function infolist(\Filament\Infolists\Infolist $infolist): \Filament\Infolists\Infolist
+    public static function infolist(Schema $infolist): Schema
     {
         return ProductInfolist::configure($infolist);
     }

@@ -26,7 +26,7 @@ class UsersTable
             ->columns([
                 TextColumn::make('name')
                     ->label('Full Name')
-                    ->getStateUsing(fn (User $record) => "{$record->first_name} {$record->last_name}")
+                    ->getStateUsing(static fn (User $record) => "{$record->first_name} {$record->last_name}")
                     ->searchable(['first_name', 'last_name']),
                 TextColumn::make('email')
                     ->searchable(),

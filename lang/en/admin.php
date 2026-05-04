@@ -406,6 +406,8 @@ return [
         'resolve' => 'Resolve Ticket',
         'type_reply' => 'Type your reply...',
         'send' => 'Send',
+        'no_ticket_selected_title' => 'No ticket selected',
+        'no_ticket_selected_desc' => 'Select a customer conversation from the sidebar to begin helping them.',
     ],
     'widgets' => [
         'commission' => [

@@ -427,6 +427,8 @@ return [
         'resolve' => 'បញ្ចប់សំណើ',
         'type_reply' => 'វាយសារឆ្លើយតប...',
         'send' => 'ផ្ញើ',
+        'no_ticket_selected_title' => 'មិនមានសំណើត្រូវបានជ្រើសរើស',
+        'no_ticket_selected_desc' => 'ជ្រើសរើសការសន្ទនារបស់អតិថិជនពីរបារចំហៀងដើម្បីចាប់ផ្តើមជួយពួកគេ។',
     ],
     'widgets' => [
         'commission' => [

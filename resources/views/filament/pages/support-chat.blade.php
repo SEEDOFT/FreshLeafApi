@@ -263,8 +263,8 @@
                     <div class="p-6 bg-gray-100 dark:bg-white/5 rounded-full mb-4">
                         <x-filament::icon icon="heroicon-o-chat-bubble-left-right" class="w-12 h-12" />
                     </div>
-                    <h3 class="text-lg font-bold mb-1">No ticket selected</h3>
-                    <p class="text-sm text-center max-w-xs">Select a customer conversation from the sidebar to begin helping them.</p>
+                    <h3 class="text-lg font-bold mb-1">{{ __('admin.support.no_ticket_selected_title') }}</h3>
+                    <p class="text-sm text-center max-w-xs">{{ __('admin.support.no_ticket_selected_desc') }}</p>
                 </div>
             @endif
         </main>

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Filament\Admin\Pages\Auth;
+namespace App\Filament\Vendor\Pages\Auth;
 
 use App\Models\User;
 use App\Models\UserStatus;

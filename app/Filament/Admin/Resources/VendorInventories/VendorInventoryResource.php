@@ -6,8 +6,8 @@ namespace App\Filament\Admin\Resources\VendorInventories;
 
 use App\Filament\Admin\Resources\VendorInventories\Pages\ListVendorInventories;
 use App\Filament\Admin\Resources\VendorInventories\Pages\ViewVendorInventory;
-use App\Filament\Resources\VendorInventories\Schemas\VendorInventoryInfolist;
-use App\Filament\Resources\VendorInventories\Tables\VendorInventoryTable;
+use App\Filament\Admin\Resources\VendorInventories\Schemas\VendorInventoryInfolist;
+use App\Filament\Admin\Resources\VendorInventories\Tables\VendorInventoryTable;
 use App\Models\VendorInventory;
 use BackedEnum;
 use Filament\Resources\Resource;
@@ -18,8 +18,10 @@ use Override;
 
 class VendorInventoryResource extends Resource
 {
+    #[Override]
     protected static ?string $model = VendorInventory::class;
 
+    #[Override]
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
 
     #[Override]

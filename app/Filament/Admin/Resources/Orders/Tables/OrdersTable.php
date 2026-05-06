@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Filament\Resources\Orders\Tables;
+namespace App\Filament\Admin\Resources\Orders\Tables;
 
 use App\Models\Order;
 use Filament\Actions\BulkActionGroup;

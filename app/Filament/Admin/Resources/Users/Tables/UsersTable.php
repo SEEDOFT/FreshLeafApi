@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Filament\Resources\Users\Tables;
+namespace App\Filament\Admin\Resources\Users\Tables;
 
 use App\Models\User;
 use Filament\Actions\BulkActionGroup;

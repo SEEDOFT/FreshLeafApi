@@ -8,9 +8,9 @@ use App\Filament\Admin\Resources\Payouts\Pages\CreatePayout;
 use App\Filament\Admin\Resources\Payouts\Pages\EditPayout;
 use App\Filament\Admin\Resources\Payouts\Pages\ListPayouts;
 use App\Filament\Admin\Resources\Payouts\Pages\ViewPayout;
-use App\Filament\Resources\Payouts\Schemas\PayoutForm;
-use App\Filament\Resources\Payouts\Schemas\PayoutInfolist;
-use App\Filament\Resources\Payouts\Tables\PayoutsTable;
+use App\Filament\Admin\Resources\Payouts\Schemas\PayoutForm;
+use App\Filament\Admin\Resources\Payouts\Schemas\PayoutInfolist;
+use App\Filament\Admin\Resources\Payouts\Tables\PayoutsTable;
 use App\Models\Payout;
 use BackedEnum;
 use Filament\Resources\Resource;
@@ -21,8 +21,10 @@ use Override;
 
 class PayoutResource extends Resource
 {
+    #[Override]
     protected static ?string $model = Payout::class;
 
+    #[Override]
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedBanknotes;
 
     #[Override]

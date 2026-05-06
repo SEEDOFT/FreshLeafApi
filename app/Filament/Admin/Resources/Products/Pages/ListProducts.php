@@ -11,6 +11,7 @@ use Override;
 
 class ListProducts extends ListRecords
 {
+    #[Override]
     protected static string $resource = ProductResource::class;
 
     #[Override]

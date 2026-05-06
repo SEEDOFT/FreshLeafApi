@@ -7,8 +7,8 @@ namespace App\Filament\Admin\Resources\Units;
 use App\Filament\Admin\Resources\Units\Pages\CreateUnit;
 use App\Filament\Admin\Resources\Units\Pages\EditUnit;
 use App\Filament\Admin\Resources\Units\Pages\ListUnits;
-use App\Filament\Resources\Units\Schemas\UnitForm;
-use App\Filament\Resources\Units\Tables\UnitsTable;
+use App\Filament\Admin\Resources\Units\Schemas\UnitForm;
+use App\Filament\Admin\Resources\Units\Tables\UnitsTable;
 use App\Models\Unit;
 use BackedEnum;
 use Filament\Resources\Resource;
@@ -19,8 +19,10 @@ use Override;
 
 class UnitResource extends Resource
 {
+    #[Override]
     protected static ?string $model = Unit::class;
 
+    #[Override]
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedScale;
 
     #[Override]

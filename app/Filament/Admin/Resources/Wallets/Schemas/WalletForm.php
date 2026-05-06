@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Filament\Resources\Wallets\Schemas;
+namespace App\Filament\Admin\Resources\Wallets\Schemas;
 
 use App\Models\User;
 use Filament\Forms\Components\Select;

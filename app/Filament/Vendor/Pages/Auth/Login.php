@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Filament\Admin\Pages\Auth;
+namespace App\Filament\Vendor\Pages\Auth;
 
 use App\Models\User;
 use App\Models\UserStatus;
@@ -81,7 +81,7 @@ class Login extends BaseLogin
     #[Override]
     protected function getCredentialsFromFormData(array $data): array
     {
-        $userTypeId = UserType::ADMIN;
+        $userTypeId = UserType::VENDOR;
 
         // Combine dial code and number
         $countryIso = $data['country_iso'] ?? 'KH';

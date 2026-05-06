@@ -18,6 +18,7 @@ use Override;
 
 class VerificationDocs extends Page
 {
+    #[Override]
     protected static ?string $cluster = Settings::class;
 
     #[Override]

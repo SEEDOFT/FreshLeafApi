@@ -1,6 +1,8 @@
 <?php
 
-namespace App\Filament\Resources\VendorInventories\Tables;
+declare(strict_types=1);
+
+namespace App\Filament\Admin\Resources\VendorInventories\Tables;
 
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Filament\Vendor\Resources\Payouts\Pages;
 
 use App\Filament\Vendor\Resources\Payouts\PayoutResource;
@@ -10,6 +12,7 @@ use Override;
 
 class EditPayout extends EditRecord
 {
+    #[Override]
     protected static string $resource = PayoutResource::class;
 
     #[Override]

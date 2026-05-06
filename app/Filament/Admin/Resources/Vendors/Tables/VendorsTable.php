@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Filament\Resources\Vendors\Tables;
+namespace App\Filament\Admin\Resources\Vendors\Tables;
 
 use App\Models\User;
 use App\Models\UserStatus;
@@ -76,7 +76,10 @@ class VendorsTable
                     ->label(__('admin.resources.vendor.approve'))
                     ->icon('heroicon-o-check-circle')
                     ->color('success')
-                    ->visible(static fn (User $record) => $record->vendorProfile && ! $record->vendorProfile->is_verified)
+                    ->visible(
+                        static fn (User $record) => $record->vendorProfile &&
+                         ! $record->vendorProfile->is_verified
+                    )
                     ->action(static function (User $record, array $data) {
                         $record->vendorProfile?->update([
                             'is_verified' => true,
@@ -99,7 +102,10 @@ class VendorsTable
                     ->label(__('admin.resources.vendor.reject'))
                     ->icon('heroicon-o-x-circle')
                     ->color('danger')
-                    ->visible(static fn (User $record) => $record->vendorProfile && ! $record->vendorProfile->is_verified)
+                    ->visible(
+                        static fn (User $record) => $record->vendorProfile &&
+                    ! $record->vendorProfile->is_verified
+                    )
                     ->action(static function (User $record, array $data) {
                         $record->vendorProfile?->update([
                             'is_verified' => false,
@@ -111,7 +117,8 @@ class VendorsTable
                     ->form([
                         Textarea::make('reason')
                             ->label(__('admin.resources.vendor.rejection_reason'))
-                            ->required(static fn (string $operation): bool => $operation === 'create')->dehydrated(static fn (mixed $state): bool => filled($state)),
+                            ->required(static fn (string $operation): bool => $operation === 'create')
+                            ->dehydrated(static fn (mixed $state): bool => filled($state)),
                     ])
                     ->requiresConfirmation(),
             ])

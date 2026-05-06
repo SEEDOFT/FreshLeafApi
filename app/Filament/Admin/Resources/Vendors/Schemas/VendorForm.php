@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Filament\Resources\Vendors\Schemas;
+namespace App\Filament\Admin\Resources\Vendors\Schemas;
 
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Select;
@@ -23,21 +23,25 @@ class VendorForm
                     ->schema([
                         TextInput::make('first_name')
                             ->label(__('admin.resources.user.first_name'))
-                            ->required(static fn (string $operation): bool => $operation === 'create')->dehydrated(static fn (mixed $state): bool => filled($state)),
+                            ->required(static fn (string $operation): bool => $operation === 'create')
+                            ->dehydrated(static fn (mixed $state): bool => filled($state)),
                         TextInput::make('last_name')
                             ->label(__('admin.resources.user.last_name'))
-                            ->required(static fn (string $operation): bool => $operation === 'create')->dehydrated(static fn (mixed $state): bool => filled($state)),
+                            ->required(static fn (string $operation): bool => $operation === 'create')
+                            ->dehydrated(static fn (mixed $state): bool => filled($state)),
                         TextInput::make('email')
                             ->label(__('admin.resources.user.email'))
                             ->email(),
                         TextInput::make('phone_number')
                             ->label(__('admin.resources.user.phone'))
                             ->tel()
-                            ->required(static fn (string $operation): bool => $operation === 'create')->dehydrated(static fn (mixed $state): bool => filled($state)),
+                            ->required(static fn (string $operation): bool => $operation === 'create')
+                            ->dehydrated(static fn (mixed $state): bool => filled($state)),
                         Select::make('user_status_id')
                             ->label(__('admin.resources.user.account_status'))
                             ->relationship('status', 'name')
-                            ->required(static fn (string $operation): bool => $operation === 'create')->dehydrated(static fn (mixed $state): bool => filled($state)),
+                            ->required(static fn (string $operation): bool => $operation === 'create')
+                            ->dehydrated(static fn (mixed $state): bool => filled($state)),
                     ]),
 
                 Section::make(__('admin.resources.vendor.business_profile'))

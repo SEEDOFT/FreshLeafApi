@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace App\Filament\Clusters\Settings\Pages;
+namespace App\Filament\Admin\Clusters\Settings\Pages;
 
-use App\Filament\Clusters\Settings;
+use App\Filament\Admin\Clusters\Settings;
 use App\Models\User;
 use Filament\Actions\Action;
 use Filament\Forms\Components\TextInput;

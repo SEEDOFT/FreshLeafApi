@@ -1,6 +1,8 @@
 <?php
 
-namespace App\Filament\Resources\Payouts\Schemas;
+declare(strict_types=1);
+
+namespace App\Filament\Admin\Resources\Payouts\Schemas;
 
 use Filament\Infolists\Components\TextEntry;
 use Filament\Schemas\Components\Section;

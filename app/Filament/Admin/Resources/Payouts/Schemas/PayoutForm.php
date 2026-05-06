@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Filament\Resources\Payouts\Schemas;
+namespace App\Filament\Admin\Resources\Payouts\Schemas;
 
 use App\Models\UserType;
 use Filament\Forms\Components\DateTimePicker;

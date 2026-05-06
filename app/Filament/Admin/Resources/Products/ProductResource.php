@@ -8,9 +8,9 @@ use App\Filament\Admin\Resources\Products\Pages\CreateProduct;
 use App\Filament\Admin\Resources\Products\Pages\EditProduct;
 use App\Filament\Admin\Resources\Products\Pages\ListProducts;
 use App\Filament\Admin\Resources\Products\Pages\ViewProduct;
-use App\Filament\Resources\Products\Schemas\ProductForm;
-use App\Filament\Resources\Products\Schemas\ProductInfolist;
-use App\Filament\Resources\Products\Tables\ProductsTable;
+use App\Filament\Admin\Resources\Products\Schemas\ProductForm;
+use App\Filament\Admin\Resources\Products\Schemas\ProductInfolist;
+use App\Filament\Admin\Resources\Products\Tables\ProductsTable;
 use App\Models\Product;
 use BackedEnum;
 use Filament\Resources\Resource;
@@ -23,8 +23,10 @@ use Override;
 
 class ProductResource extends Resource
 {
+    #[Override]
     protected static ?string $model = Product::class;
 
+    #[Override]
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
 
     #[Override]

@@ -1,6 +1,8 @@
 <?php
 
-namespace App\Filament\Resources\VendorInventories\Schemas;
+declare(strict_types=1);
+
+namespace App\Filament\Admin\Resources\VendorInventories\Schemas;
 
 use Filament\Schemas\Schema;
 

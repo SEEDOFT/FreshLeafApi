@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Filament\Resources\Users\Schemas;
+namespace App\Filament\Admin\Resources\Users\Schemas;
 
 use App\Models\UserStatus;
 use App\Models\UserType;

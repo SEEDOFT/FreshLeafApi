@@ -11,6 +11,7 @@ use Override;
 
 class ListUnits extends ListRecords
 {
+    #[Override]
     protected static string $resource = UnitResource::class;
 
     #[Override]

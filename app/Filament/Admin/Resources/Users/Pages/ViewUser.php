@@ -11,6 +11,7 @@ use Override;
 
 class ViewUser extends ViewRecord
 {
+    #[Override]
     protected static string $resource = UserResource::class;
 
     #[Override]

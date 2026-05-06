@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Filament\Resources\Products\Schemas;
+namespace App\Filament\Admin\Resources\Products\Schemas;
 
 use App\Models\ProductCategory;
 use Filament\Forms\Components\KeyValue;

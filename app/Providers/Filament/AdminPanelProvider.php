@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace App\Providers\Filament;
 
-use App\Filament\Clusters\Settings\Pages\AdminProfile;
-use App\Filament\Clusters\Settings\Pages\ApplicationSettings;
-use App\Filament\Pages\Auth\Login;
+use App\Filament\Admin\Clusters\Settings\Pages\AdminProfile;
+use App\Filament\Admin\Clusters\Settings\Pages\ApplicationSettings;
+use App\Filament\Admin\Pages\Auth\Login;
 use App\Filament\ThemeColors;
-use App\Filament\Widgets\AdminRevenueChart;
-use App\Filament\Widgets\AdminStatsOverview;
+use App\Filament\Admin\Widgets\AdminRevenueChart;
+use App\Filament\Admin\Widgets\AdminStatsOverview;
 use App\Http\Middleware\SetLocaleFromAcceptLanguage;
 use Filament\Enums\ThemeMode;
 use Filament\Http\Middleware\Authenticate;
@@ -84,11 +84,11 @@ class AdminPanelProvider extends PanelProvider
             ])
             ->discoverResources(in: app_path('Filament/Admin/Resources'), for: 'App\Filament\Admin\Resources')
             ->discoverPages(in: app_path('Filament/Admin/Pages'), for: 'App\Filament\Admin\Pages')
-            ->discoverClusters(in: app_path('Filament/Clusters'), for: 'App\Filament\Clusters')
+            ->discoverClusters(in: app_path('Filament/Admin/Clusters'), for: 'App\Filament\Admin\Clusters')
             ->pages([
                 Dashboard::class,
             ])
-            ->discoverWidgets(in: app_path('Filament/Widgets'), for: 'App\Filament\Widgets')
+            ->discoverWidgets(in: app_path('Filament/Admin/Widgets'), for: 'App\Filament\Admin\Widgets')
             ->widgets(widgets: [
                 AccountWidget::class,
                 AdminStatsOverview::class,

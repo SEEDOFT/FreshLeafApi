@@ -11,6 +11,7 @@ use Override;
 
 class ListWallets extends ListRecords
 {
+    #[Override]
     protected static string $resource = WalletResource::class;
 
     #[Override]

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Filament\Resources\Vendors\Schemas;
+namespace App\Filament\Admin\Resources\Vendors\Schemas;
 
 use App\Models\Currency;
 use App\Models\Wallet;
@@ -100,25 +100,33 @@ class VendorInfolist
                         ImageEntry::make('id_card_front')
                             ->label(__('admin.resources.vendor.id_card_front'))
                             ->placeholder($notProvided)
-                            ->getStateUsing(static fn ($record) => $record->id_card_front ? route('admin.documents.show', ['path' => $record->id_card_front]) : null)
+                            ->getStateUsing(static fn ($record) => $record->id_card_front
+                                ? route('admin.documents.show', ['path' => $record->id_card_front]) : null
+                            )
                             ->disk(null)
                             ->imageSize(200),
                         ImageEntry::make('id_card_back')
                             ->label(__('admin.resources.vendor.id_card_back'))
                             ->placeholder($notProvided)
-                            ->getStateUsing(static fn ($record) => $record->id_card_back ? route('admin.documents.show', ['path' => $record->id_card_back]) : null)
+                            ->getStateUsing(static fn ($record) => $record->id_card_back
+                            ? route('admin.documents.show', ['path' => $record->id_card_back]) : null
+                            )
                             ->disk(null)
                             ->imageSize(200),
                         ImageEntry::make('store_front_image')
                             ->label(__('admin.resources.vendor.store_photo'))
                             ->placeholder($notProvided)
-                            ->getStateUsing(static fn ($record) => $record->store_front_image ? route('admin.documents.show', ['path' => $record->store_front_image]) : null)
+                            ->getStateUsing(static fn ($record) => $record->store_front_image
+                            ? route('admin.documents.show', ['path' => $record->store_front_image]) : null
+                            )
                             ->disk(null)
                             ->imageSize(200),
                         TextEntry::make('organic_certificate_url')
                             ->label(__('admin.resources.vendor.organic_cert'))
                             ->placeholder($notProvided)
-                            ->url(static fn (mixed $state) => $state ? route('admin.documents.show', ['path' => $state]) : null)
+                            ->url(static fn (mixed $state) => $state
+                            ? route('admin.documents.show', ['path' => $state]) : null
+                            )
                             ->openUrlInNewTab()
                             ->color('primary'),
                     ]),
@@ -139,7 +147,9 @@ class VendorInfolist
                         ImageEntry::make('bank_qr_code')
                             ->placeholder($notProvided)
                             ->label(__('admin.resources.vendor.qr_code'))
-                            ->getStateUsing(static fn ($record) => $record->bank_qr_code ? route('admin.documents.show', ['path' => $record->bank_qr_code]) : null)
+                            ->getStateUsing(static fn ($record) => $record->bank_qr_code
+                            ? route('admin.documents.show', ['path' => $record->bank_qr_code]) : null
+                            )
                             ->disk(null)
                             ->imageSize(200),
                     ]),

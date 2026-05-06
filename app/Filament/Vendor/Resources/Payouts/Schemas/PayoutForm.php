@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Filament\Vendor\Resources\Payouts\Schemas;
 
 use Filament\Forms\Components\DateTimePicker;
@@ -15,7 +17,8 @@ class PayoutForm
             ->components([
                 TextInput::make('amount')
                     ->label(__('admin.resources.payout.amount'))
-                    ->required(static fn (string $operation): bool => $operation === 'create')->dehydrated(static fn (mixed $state): bool => filled($state))
+                    ->required(static fn (string $operation): bool => $operation === 'create')
+                    ->dehydrated(static fn (mixed $state): bool => filled($state))
                     ->numeric()
                     ->prefix('$'),
                 TextInput::make('transaction_reference')

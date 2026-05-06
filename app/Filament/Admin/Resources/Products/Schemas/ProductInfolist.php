@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Filament\Resources\Products\Schemas;
+namespace App\Filament\Admin\Resources\Products\Schemas;
 
 use Filament\Forms\Components\KeyValue;
 use Filament\Infolists\Components\ImageEntry;

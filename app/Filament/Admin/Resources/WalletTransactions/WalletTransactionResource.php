@@ -7,8 +7,8 @@ namespace App\Filament\Admin\Resources\WalletTransactions;
 use App\Filament\Admin\Resources\WalletTransactions\Pages\CreateWalletTransaction;
 use App\Filament\Admin\Resources\WalletTransactions\Pages\EditWalletTransaction;
 use App\Filament\Admin\Resources\WalletTransactions\Pages\ListWalletTransactions;
-use App\Filament\Resources\WalletTransactions\Schemas\WalletTransactionForm;
-use App\Filament\Resources\WalletTransactions\Tables\WalletTransactionsTable;
+use App\Filament\Admin\Resources\WalletTransactions\Schemas\WalletTransactionForm;
+use App\Filament\Admin\Resources\WalletTransactions\Tables\WalletTransactionsTable;
 use App\Models\WalletTransaction;
 use BackedEnum;
 use Filament\Resources\Resource;
@@ -19,8 +19,10 @@ use Override;
 
 class WalletTransactionResource extends Resource
 {
+    #[Override]
     protected static ?string $model = WalletTransaction::class;
 
+    #[Override]
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedArrowsRightLeft;
 
     #[Override]

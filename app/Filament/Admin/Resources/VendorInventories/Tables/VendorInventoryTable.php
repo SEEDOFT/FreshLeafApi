@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Filament\Resources\VendorInventories\Tables;
+namespace App\Filament\Admin\Resources\VendorInventories\Tables;
 
 use App\Models\VendorInventory;
 use Filament\Actions\ViewAction;
@@ -21,7 +21,9 @@ class VendorInventoryTable
             ->columns([
                 TextColumn::make('vendor.name')
                     ->label(__('admin.resources.vendor_inventory.vendor'))
-                    ->getStateUsing(static fn (VendorInventory $record) => "{$record->vendor->last_name} {$record->vendor->first_name}")
+                    ->getStateUsing(
+                        static fn (VendorInventory $record) => "{$record->vendor->last_name} {$record->vendor->first_name}"
+                    )
                     ->searchable(['first_name', 'last_name'])
                     ->sortable(),
 

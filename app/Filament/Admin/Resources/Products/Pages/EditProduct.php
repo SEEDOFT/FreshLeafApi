@@ -13,6 +13,7 @@ use Override;
 
 class EditProduct extends EditRecord
 {
+    #[Override]
     protected static string $resource = ProductResource::class;
 
     #[Override]

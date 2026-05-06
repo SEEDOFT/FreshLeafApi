@@ -11,6 +11,7 @@ use Override;
 
 class ViewWallet extends ViewRecord
 {
+    #[Override]
     protected static string $resource = WalletResource::class;
 
     #[Override]

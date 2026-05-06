@@ -17,6 +17,7 @@ use Override;
 
 class ViewVendor extends ViewRecord
 {
+    #[Override]
     protected static string $resource = VendorResource::class;
 
     #[Override]
@@ -27,7 +28,11 @@ class ViewVendor extends ViewRecord
                 ->label(__('admin.resources.vendor.approve'))
                 ->icon('heroicon-o-check-circle')
                 ->color('success')
-                ->visible(static fn (User $record) => $record->isType(UserType::VENDOR) && $record->vendorProfile && ! $record->vendorProfile->is_verified)
+                ->visible(
+                    static fn (User $record) => $record->isType(UserType::VENDOR) &&
+                    $record->vendorProfile &&
+                    ! $record->vendorProfile->is_verified
+                )
                 ->action(static function (User $record, array $data) {
                     $record->vendorProfile?->update([
                         'is_verified' => true,
@@ -52,7 +57,11 @@ class ViewVendor extends ViewRecord
                 ->label(__('admin.resources.vendor.reject'))
                 ->icon('heroicon-o-x-circle')
                 ->color('danger')
-                ->visible(static fn (User $record) => $record->isType(UserType::VENDOR) && $record->vendorProfile && ! $record->vendorProfile->is_verified)
+                ->visible(
+                    static fn (User $record) => $record->isType(UserType::VENDOR) &&
+                    $record->vendorProfile &&
+                    ! $record->vendorProfile->is_verified
+                )
                 ->action(static function (User $record, array $data) {
                     $record->vendorProfile?->update([
                         'is_verified' => false,
@@ -69,7 +78,8 @@ class ViewVendor extends ViewRecord
                 ->form([
                     Textarea::make('reason')
                         ->label(__('admin.resources.vendor.rejection_reason'))
-                        ->required(static fn (string $operation): bool => $operation === 'create')->dehydrated(static fn (mixed $state): bool => filled($state)),
+                        ->required(static fn (string $operation): bool => $operation === 'create')
+                        ->dehydrated(static fn (mixed $state): bool => filled($state)),
                 ])
                 ->requiresConfirmation(),
         ];

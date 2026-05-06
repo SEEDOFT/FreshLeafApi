@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Filament\Resources\ProductCategories\Schemas;
+namespace App\Filament\Admin\Resources\ProductCategories\Schemas;
 
 use App\Models\ProductCategoryStatus;
 use Filament\Forms\Components\FileUpload;

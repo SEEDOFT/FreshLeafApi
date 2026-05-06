@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Filament\Resources\WalletTransactions\Tables;
+namespace App\Filament\Admin\Resources\WalletTransactions\Tables;
 
 use App\Models\WalletTransaction;
 use Filament\Actions\BulkActionGroup;

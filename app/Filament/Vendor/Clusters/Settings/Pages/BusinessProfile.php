@@ -21,8 +21,10 @@ use Override;
 
 class BusinessProfile extends Page
 {
+    #[Override]
     protected static ?string $cluster = Settings::class;
 
+    #[Override]
     protected static ?string $slug = 'business';
 
     #[Override]
@@ -56,7 +58,8 @@ class BusinessProfile extends Page
                             ->schema([
                                 TextInput::make('business_name')
                                     ->label(__('admin.resources.vendor.business_name'))
-                                    ->required(static fn (string $operation): bool => $operation === 'create')->dehydrated(static fn (mixed $state): bool => filled($state))
+                                    ->required(static fn (string $operation): bool => $operation === 'create')
+                                    ->dehydrated(static fn (mixed $state): bool => filled($state))
                                     ->maxLength(255),
                                 TextInput::make('contact_phone')
                                     ->label(__('admin.resources.vendor.contact_phone'))

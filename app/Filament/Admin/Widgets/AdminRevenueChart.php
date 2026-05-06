@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Filament\Widgets;
+namespace App\Filament\Admin\Widgets;
 
 use App\Models\Order;
 use Filament\Widgets\ChartWidget;
@@ -22,7 +22,6 @@ class AdminRevenueChart extends ChartWidget
 
     protected ?string $chartColor = 'success';
 
-    #[Override]
     protected function getData(): array
     {
         $data = Order::whereHas('paymentStatus', static fn ($query) => $query->where('code', 'paid'))

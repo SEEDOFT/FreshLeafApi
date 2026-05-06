@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Filament\Widgets;
+namespace App\Filament\Admin\Widgets;
 
 use App\Models\OrderItem;
 use Filament\Widgets\StatsOverviewWidget as BaseWidget;

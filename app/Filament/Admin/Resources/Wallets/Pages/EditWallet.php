@@ -11,6 +11,7 @@ use Override;
 
 class EditWallet extends EditRecord
 {
+    #[Override]
     protected static string $resource = WalletResource::class;
 
     #[Override]

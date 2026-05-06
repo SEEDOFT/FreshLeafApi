@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Filament\Resources\VendorInventories\Schemas;
+namespace App\Filament\Admin\Resources\VendorInventories\Schemas;
 
 use App\Models\VendorInventory;
 use Filament\Infolists\Components\ImageEntry;
@@ -21,7 +21,9 @@ class VendorInventoryInfolist
                     ->schema([
                         TextEntry::make('vendor_name')
                             ->label(__('admin.resources.user.full_name'))
-                            ->getStateUsing(static fn (VendorInventory $record) => "{$record->vendor->last_name} {$record->vendor->first_name}"),
+                            ->getStateUsing(
+                                static fn (VendorInventory $record) => "{$record->vendor->last_name} {$record->vendor->first_name}"
+                            ),
                         TextEntry::make('vendor.email')
                             ->label(__('admin.resources.user.email')),
                         TextEntry::make('vendor.phone_number')

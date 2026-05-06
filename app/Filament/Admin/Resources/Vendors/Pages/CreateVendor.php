@@ -11,6 +11,7 @@ use Override;
 
 class CreateVendor extends CreateRecord
 {
+    #[Override]
     protected static string $resource = VendorResource::class;
 
     /**

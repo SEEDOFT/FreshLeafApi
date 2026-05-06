@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Filament\Vendor\Resources\Products\Pages;
 
 use App\Filament\Vendor\Resources\Products\ProductResource;
@@ -12,6 +14,7 @@ use Override;
 
 class EditProduct extends EditRecord
 {
+    #[Override]
     protected static string $resource = ProductResource::class;
 
     #[Override]

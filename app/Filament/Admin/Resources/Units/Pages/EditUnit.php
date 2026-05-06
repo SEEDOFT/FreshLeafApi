@@ -11,6 +11,7 @@ use Override;
 
 class EditUnit extends EditRecord
 {
+    #[Override]
     protected static string $resource = UnitResource::class;
 
     #[Override]

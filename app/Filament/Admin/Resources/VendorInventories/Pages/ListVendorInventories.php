@@ -10,6 +10,7 @@ use Override;
 
 class ListVendorInventories extends ListRecords
 {
+    #[Override]
     protected static string $resource = VendorInventoryResource::class;
 
     #[Override]

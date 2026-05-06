@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Filament\Vendor\Resources\Payouts;
 
 use App\Filament\Vendor\Resources\Payouts\Pages\ListPayouts;
@@ -16,8 +18,10 @@ use Override;
 
 class PayoutResource extends Resource
 {
+    #[Override]
     protected static ?string $model = Payout::class;
 
+    #[Override]
     protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-banknotes';
 
     #[Override]

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Filament\Resources\Products\RelationManagers;
+namespace App\Filament\Admin\Resources\Products\RelationManagers;
 
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\CreateAction;
@@ -19,6 +19,7 @@ use Override;
 
 class VariantsRelationManager extends RelationManager
 {
+    #[Override]
     protected static string $relationship = 'variants';
 
     #[Override]
@@ -29,18 +30,22 @@ class VariantsRelationManager extends RelationManager
                 Select::make('unit_id')
                     ->label(__('admin.resources.product.unit'))
                     ->relationship('unit', 'name')
-                    ->required(static fn (string $operation): bool => $operation === 'create')->dehydrated(static fn (mixed $state): bool => filled($state)),
+                    ->required(static fn (string $operation): bool => $operation === 'create')
+                    ->dehydrated(static fn (mixed $state): bool => filled($state)),
                 TextInput::make('name')
                     ->label(__('admin.resources.unit.name'))
                     ->placeholder('e.g. 500g Pack, Bulk 5kg')
-                    ->required(static fn (string $operation): bool => $operation === 'create')->dehydrated(static fn (mixed $state): bool => filled($state)),
+                    ->required(static fn (string $operation): bool => $operation === 'create')
+                    ->dehydrated(static fn (mixed $state): bool => filled($state)),
                 TextInput::make('quantity_in_unit')
                     ->label(__('admin.resources.product.quantity_in_unit'))
-                    ->required(static fn (string $operation): bool => $operation === 'create')->dehydrated(static fn (mixed $state): bool => filled($state))
+                    ->required(static fn (string $operation): bool => $operation === 'create')
+                    ->dehydrated(static fn (mixed $state): bool => filled($state))
                     ->numeric(),
                 TextInput::make('price')
                     ->label(__('admin.resources.product.price'))
-                    ->required(static fn (string $operation): bool => $operation === 'create')->dehydrated(static fn (mixed $state): bool => filled($state))
+                    ->required(static fn (string $operation): bool => $operation === 'create')
+                    ->dehydrated(static fn (mixed $state): bool => filled($state))
                     ->numeric()
                     ->prefix('$'),
             ]);

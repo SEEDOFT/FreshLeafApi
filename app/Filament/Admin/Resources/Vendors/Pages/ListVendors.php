@@ -14,6 +14,7 @@ use Override;
 
 class ListVendors extends ListRecords
 {
+    #[Override]
     protected static string $resource = VendorResource::class;
 
     #[Override]

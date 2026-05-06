@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Filament\Resources\Wallets\Tables;
+namespace App\Filament\Admin\Resources\Wallets\Tables;
 
 use App\Models\Currency;
 use App\Models\Wallet;

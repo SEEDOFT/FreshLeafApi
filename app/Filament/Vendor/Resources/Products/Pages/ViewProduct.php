@@ -11,6 +11,7 @@ use Override;
 
 class ViewProduct extends ViewRecord
 {
+    #[Override]
     protected static string $resource = ProductResource::class;
 
     #[Override]

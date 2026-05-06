@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Filament\Vendor\Clusters\Settings\Pages;
 
 use App\Filament\Vendor\Clusters\Settings;
+use BackedEnum;
 use Filament\Actions\Action;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Select;
@@ -35,7 +36,7 @@ class VendorProfile extends Page
     protected static ?string $navigationLabel = 'My Profile';
 
     #[Override]
-    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-user-circle';
+    protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-user-circle';
 
     #[Override]
     protected string $view = 'filament.pages.shared.form-page';
@@ -80,21 +81,25 @@ class VendorProfile extends Page
                                     ->schema([
                                         TextInput::make('first_name')
                                             ->label(__('admin.vendor_settings.vendor_profile.first_name'))
-                                            ->required(static fn (string $operation): bool => $operation === 'create')->dehydrated(static fn (mixed $state): bool => filled($state))
+                                            ->required(static fn (string $operation): bool => $operation === 'create')
+                                            ->dehydrated(static fn (mixed $state): bool => filled($state))
                                             ->maxLength(255),
                                         TextInput::make('last_name')
                                             ->label(__('admin.vendor_settings.vendor_profile.last_name'))
-                                            ->required(static fn (string $operation): bool => $operation === 'create')->dehydrated(static fn (mixed $state): bool => filled($state))
+                                            ->required(static fn (string $operation): bool => $operation === 'create')
+                                            ->dehydrated(static fn (mixed $state): bool => filled($state))
                                             ->maxLength(255),
                                         TextInput::make('email')
                                             ->label(__('admin.vendor_settings.vendor_profile.email'))
                                             ->email()
-                                            ->required(static fn (string $operation): bool => $operation === 'create')->dehydrated(static fn (mixed $state): bool => filled($state))
+                                            ->required(static fn (string $operation): bool => $operation === 'create')
+                                            ->dehydrated(static fn (mixed $state): bool => filled($state))
                                             ->maxLength(255),
                                         TextInput::make('phone_number')
                                             ->label(__('admin.vendor_settings.vendor_profile.phone'))
                                             ->tel()
-                                            ->required(static fn (string $operation): bool => $operation === 'create')->dehydrated(static fn (mixed $state): bool => filled($state)),
+                                            ->required(static fn (string $operation): bool => $operation === 'create')
+                                            ->dehydrated(static fn (mixed $state): bool => filled($state)),
                                     ])
                                     ->columnSpan(3),
                             ]),
@@ -109,7 +114,8 @@ class VendorProfile extends Page
                                 'km' => 'Khmer (ភាសាខ្មែរ)',
                                 'en' => 'English (ភាសាអង់គ្លេស)',
                             ])
-                            ->required(static fn (string $operation): bool => $operation === 'create')->dehydrated(static fn (mixed $state): bool => filled($state))
+                            ->required(static fn (string $operation): bool => $operation === 'create')
+                            ->dehydrated(static fn (mixed $state): bool => filled($state))
                             ->native(false)
                             ->searchable()
                             ->preload(),
@@ -167,11 +173,13 @@ class VendorProfile extends Page
             ->schema([
                 TextInput::make('first_name')
                     ->label(__('admin.vendor_settings.vendor_profile.first_name'))
-                    ->required(static fn (string $operation): bool => $operation === 'create')->dehydrated(static fn (mixed $state): bool => filled($state))
+                    ->required(static fn (string $operation): bool => $operation === 'create')
+                    ->dehydrated(static fn (mixed $state): bool => filled($state))
                     ->maxLength(255),
                 TextInput::make('last_name')
                     ->label(__('admin.vendor_settings.vendor_profile.last_name'))
-                    ->required(static fn (string $operation): bool => $operation === 'create')->dehydrated(static fn (mixed $state): bool => filled($state))
+                    ->required(static fn (string $operation): bool => $operation === 'create')
+                    ->dehydrated(static fn (mixed $state): bool => filled($state))
                     ->maxLength(255),
             ]);
     }

@@ -23,8 +23,10 @@ use Override;
 
 class ProductResource extends Resource
 {
+    #[Override]
     protected static ?string $model = VendorInventory::class;
 
+    #[Override]
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
 
     #[Override]

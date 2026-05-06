@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Filament\Vendor\Resources\Payouts\Schemas;
 
 use Filament\Infolists\Components\TextEntry;

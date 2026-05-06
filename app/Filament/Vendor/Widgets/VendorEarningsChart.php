@@ -12,6 +12,7 @@ use Override;
 
 class VendorEarningsChart extends ChartWidget
 {
+    #[Override]
     protected ?string $heading = 'Earnings Trend (30 Days)';
 
     #[Override]

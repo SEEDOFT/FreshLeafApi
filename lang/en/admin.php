@@ -367,8 +367,6 @@ return [
             'rate' => 'Conversion Rate',
             'rate_helper' => 'e.g. 1 USD = 4100 KHR',
         ],
-        'created_at' => 'Account Created At',
-        'updated_at' => 'Last Updated At',
         'general' => [
             'not_provided' => 'Not Provided',
         ],
@@ -404,6 +402,8 @@ return [
         'start_new_conversation' => 'Start a new conversation',
         'empty_state_desc' => 'Ask about inventory, order flow, vendor onboarding, or operational decisions.',
         'composer_placeholder' => 'Message FreshLeaf Assistant...',
+        'service_unavailable' => 'AI Service Unavailable',
+        'service_unavailable_banner' => 'The AI service is currently down or unreachable. Please try again later.',
         'composer_hint' => 'Press Enter to send, Shift+Enter for a new line.',
         'thinking' => 'Thinking',
         'type_message' => 'Type your message',

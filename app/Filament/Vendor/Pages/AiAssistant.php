@@ -7,6 +7,9 @@ namespace App\Filament\Vendor\Pages;
 use BackedEnum;
 use Filament\Pages\Page;
 use Filament\Support\Enums\Width;
+use Filament\Tables\Concerns\InteractsWithTable;
+use Filament\Tables\Contracts\HasTable;
+use Illuminate\Database\Eloquent\Builder;
 use Override;
 
 class AiAssistant extends Page
@@ -43,4 +46,5 @@ class AiAssistant extends Page
 
     #[Override]
     protected string $view = 'filament.vendor.pages.ai-assistant';
+
 }

@@ -11,6 +11,7 @@ use App\Http\Requests\Ai\StoreChatMessageRequest;
 use App\Jobs\ProcessAiChatMessageJob;
 use App\Models\AiChatMessage;
 use App\Models\AiChatSession;
+use App\Services\Ai\AiService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
@@ -19,6 +20,8 @@ use function now;
 
 class AiChatController extends Controller
 {
+    public function __construct(private AiService $aiService) {}
+
     /**
      * Create or get a chat session.
      */
@@ -50,6 +53,10 @@ class AiChatController extends Controller
      */
     public function storeMessage(StoreChatMessageRequest $request): JsonResponse
     {
+        if (! $this->aiService->healthCheck()) {
+            return static::errorResponse('AI service is currently unavailable', 503);
+        }
+
         $validatedData = $request->validated();
         $user = $this->authenticatedUser($request);
 

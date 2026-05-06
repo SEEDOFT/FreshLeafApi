@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use App\Http\Controllers\Api\Ai\AiChatController;
+use App\Http\Controllers\Api\Ai\AiStatusController;
 use App\Http\Controllers\Api\Product\CategoryController;
 use App\Http\Controllers\Api\Product\ProductController;
 use App\Http\Controllers\Api\User\AddressController;
@@ -148,6 +149,9 @@ Route::prefix('v1')->name('v1.')->group(static function () {
                     Route::post('messages', 'storeMessage')->name('messages.store');
                     Route::post('history', 'history')->name('history');
                 });
+
+            Route::get('ai/status', [AiStatusController::class, 'check'])
+                ->name('ai.status');
 
             Route::prefix('support')
                 ->name('support.')

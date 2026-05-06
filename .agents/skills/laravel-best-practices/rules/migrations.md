@@ -39,7 +39,7 @@ $table->string('slug')->unique(); // ← added after deployment
 Correct (new migration to alter):
 ```php
 // 2024_03_15_add_slug_to_posts_table.php
-Schema::table('posts', static function (Blueprint $table) {
+Schema::table('posts', function (Blueprint $table) {
     $table->string('slug')->unique()->after('title');
 });
 ```
@@ -50,7 +50,7 @@ Add indexes when creating the table, not as an afterthought. Columns used in `WH
 
 Incorrect:
 ```php
-Schema::create('orders', static function (Blueprint $table) {
+Schema::create('orders', function (Blueprint $table) {
     $table->id();
     $table->foreignId('user_id')->constrained();
     $table->string('status');
@@ -60,7 +60,7 @@ Schema::create('orders', static function (Blueprint $table) {
 
 Correct:
 ```php
-Schema::create('orders', static function (Blueprint $table) {
+Schema::create('orders', function (Blueprint $table) {
     $table->id();
     $table->foreignId('user_id')->constrained()->index();
     $table->string('status')->index();
@@ -90,7 +90,7 @@ Implement `down()` for schema changes that can be safely reversed so `migrate:ro
 ```php
 public function down(): void
 {
-    Schema::table('posts', static function (Blueprint $table) {
+    Schema::table('posts', function (Blueprint $table) {
         $table->dropColumn('slug');
     });
 }
@@ -106,7 +106,7 @@ Incorrect (partial failure creates unrecoverable state):
 ```php
 public function up(): void
 {
-    Schema::create('settings', static function (Blueprint $table) { ... });
+    Schema::create('settings', function (Blueprint $table) { ... });
     DB::table('settings')->insert(['key' => 'version', 'value' => '1.0']);
 }
 ```
@@ -114,7 +114,7 @@ public function up(): void
 Correct (separate migrations):
 ```php
 // Migration 1: create_settings_table
-Schema::create('settings', static function (Blueprint $table) { ... });
+Schema::create('settings', function (Blueprint $table) { ... });
 
 // Migration 2: seed_default_settings
 DB::table('settings')->insert(['key' => 'version', 'value' => '1.0']);

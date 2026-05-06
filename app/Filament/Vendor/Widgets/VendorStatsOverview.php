@@ -16,6 +16,7 @@ use Override;
 
 class VendorStatsOverview extends BaseWidget
 {
+    #[Override]
     protected string $view = 'filament.widgets.admin-stats-overview';
 
     #[Override]

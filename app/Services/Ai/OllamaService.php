@@ -9,6 +9,7 @@ use Exception;
 use Illuminate\Http\Client\ConnectionException;
 use Illuminate\Http\Client\Response;
 use Illuminate\Support\Facades\Http;
+use Override;
 use Psr\Http\Message\StreamInterface;
 
 class OllamaService implements AiProviderContract
@@ -31,6 +32,21 @@ class OllamaService implements AiProviderContract
         $this->baseUrl = \rtrim((string) \config('ai.providers.ollama.base_url', 'http://127.0.0.1:11434'), '/');
         $this->model = (string) \config('ai.providers.ollama.model', 'qwen2.5:1.5b');
         $this->timeout = (int) \config('ai.providers.ollama.timeout', 60);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    #[Override]
+    public function healthCheck(): bool
+    {
+        try {
+            $response = Http::timeout(5)->get($this->baseUrl.'/api/tags');
+
+            return $response->successful();
+        } catch (Exception) {
+            return false;
+        }
     }
 
     /**

@@ -9,6 +9,7 @@ use Exception;
 use Illuminate\Http\Client\ConnectionException;
 use Illuminate\Http\Client\Response;
 use Illuminate\Support\Facades\Http;
+use Override;
 use Psr\Http\Message\StreamInterface;
 
 class GeminiService implements AiProviderContract
@@ -30,6 +31,23 @@ class GeminiService implements AiProviderContract
     {
         $this->apiKey = (string) \config('services.gemini.api_key');
         $this->model = (string) \config('services.gemini.model', 'gemini-2.0-flash');
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    #[Override]
+    public function healthCheck(): bool
+    {
+        try {
+            $response = Http::timeout(5)->get($this->baseUrl.'/models/'.$this->model, [
+                'key' => $this->apiKey,
+            ]);
+
+            return $response->successful();
+        } catch (Exception) {
+            return false;
+        }
     }
 
     /**

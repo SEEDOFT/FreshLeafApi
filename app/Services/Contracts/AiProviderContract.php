@@ -7,6 +7,13 @@ namespace App\Services\Contracts;
 interface AiProviderContract
 {
     /**
+     * Check if the AI provider is available.
+     *
+     * @return bool True if available, false otherwise.
+     */
+    public function healthCheck(): bool;
+
+    /**
      * Generate content based on the given prompt and options.
      *
      * @param  string  $prompt  The input prompt for content generation.

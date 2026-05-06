@@ -4,11 +4,15 @@
         "opencode",
         "gemini"
     ],
+    "cloud": false,
     "guidelines": true,
     "mcp": true,
     "nightwatch_mcp": false,
     "sail": false,
     "skills": [
-        "laravel-best-practices"
+        "laravel-best-practices",
+        "livewire-development",
+        "echo-development",
+        "tailwindcss-development"
     ]
 }

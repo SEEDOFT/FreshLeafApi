@@ -131,13 +131,18 @@
             </div>
 
             <div class="ai-chat-status">
-                <span class="ai-status-pill {{ $isRealtimeConnected ? 'is-connected' : 'is-fallback' }}">
-                    {{ $isRealtimeConnected ? __('admin.ai.realtime_connected') : __('admin.ai.fallback_sync_mode') }}
+                <span class="ai-status-pill {{ $isAiServiceAvailable ? ($isRealtimeConnected ? 'is-connected' : 'is-fallback') : 'is-error' }}">
+                    {{ $isAiServiceAvailable ? ($isRealtimeConnected ? __('admin.ai.realtime_connected') : __('admin.ai.fallback_sync_mode')) : __('admin.ai.service_unavailable') }}
                 </span>
             </div>
         </header>
 
-        @if($realtimeStatusMessage)
+        @if(! $isAiServiceAvailable)
+            <div class="ai-chat-banner ai-chat-banner-error">
+                <x-filament::icon icon="heroicon-o-exclamation-triangle" class="h-4 w-4" />
+                <span>{{ __('admin.ai.service_unavailable_banner') }}</span>
+            </div>
+        @elseif($realtimeStatusMessage)
             <div class="ai-chat-banner">
                 <x-filament::icon icon="heroicon-o-signal-slash" class="h-4 w-4" />
                 <span>{{ $realtimeStatusMessage }}</span>
@@ -226,11 +231,11 @@
                     x-model="localMessage"
                     x-on:input="resize()"
                     rows="1"
-                    placeholder="{{ __('admin.ai.composer_placeholder') }}"
+                    placeholder="{{ $isAiServiceAvailable ? __('admin.ai.composer_placeholder') : __('admin.ai.service_unavailable') }}"
                     class="ai-composer-input"
                     style="overflow-y: auto; height: 44px; min-height: 44px;"
                     x-on:keydown.enter="if (! $event.shiftKey) { $event.preventDefault(); submit(); }"
-                    :disabled="false"
+                    :disabled="{{ $isAiServiceAvailable ? 'false' : 'true' }}"
                 ></textarea>
 
                 <div class="ai-composer-actions">
@@ -249,7 +254,7 @@
                         type="submit"
                         class="ai-send-button"
                         wire:loading.attr="disabled"
-                        x-bind:disabled="$wire.isTyping || localMessage.trim() === ''"
+                        x-bind:disabled="{{ $isAiServiceAvailable ? 'false' : 'true' }} || $wire.isTyping || localMessage.trim() === ''"
                     >
                         <x-filament::icon icon="heroicon-o-arrow-up" class="h-4 w-4" />
                     </button>

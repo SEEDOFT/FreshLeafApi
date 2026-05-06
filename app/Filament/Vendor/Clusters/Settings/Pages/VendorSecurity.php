@@ -54,17 +54,17 @@ class VendorSecurity extends Page
                         TextInput::make('current_password')
                             ->label(__('admin.security.current_password'))
                             ->password()
-                            ->required(static fn (string $operation): bool => $operation === 'create')->dehydrated(static fn ($state): bool => filled($state))
+                            ->required(static fn (string $operation): bool => $operation === 'create')->dehydrated(static fn (mixed $state): bool => filled($state))
                             ->currentPassword(),
                         TextInput::make('password')
                             ->label(__('admin.security.password'))
                             ->password()
-                            ->required(static fn (string $operation): bool => $operation === 'create')->dehydrated(static fn ($state): bool => filled($state))
+                            ->required(static fn (string $operation): bool => $operation === 'create')->dehydrated(static fn (mixed $state): bool => filled($state))
                             ->confirmed(),
                         TextInput::make('password_confirmation')
                             ->label(__('admin.security.password_confirmation'))
                             ->password()
-                            ->required(static fn (string $operation): bool => $operation === 'create')->dehydrated(static fn ($state): bool => filled($state)),
+                            ->required(static fn (string $operation): bool => $operation === 'create')->dehydrated(static fn (mixed $state): bool => filled($state)),
                     ])->columns(2),
             ])
             ->statePath('data');

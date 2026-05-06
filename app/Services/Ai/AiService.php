@@ -25,6 +25,19 @@ class AiService implements AiProviderContract
      * {@inheritDoc}
      */
     #[Override]
+    public function healthCheck(): bool
+    {
+        try {
+            return $this->resolveProvider()->healthCheck();
+        } catch (Exception) {
+            return false;
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    #[Override]
     public function generateContent(string $prompt, array $options = []): string
     {
         return $this->resolveProvider()->generateContent($prompt, $options);

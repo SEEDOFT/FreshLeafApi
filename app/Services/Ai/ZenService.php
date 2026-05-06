@@ -9,6 +9,7 @@ use Exception;
 use Illuminate\Http\Client\ConnectionException;
 use Illuminate\Http\Client\Response;
 use Illuminate\Support\Facades\Http;
+use Override;
 use Psr\Http\Message\StreamInterface;
 
 class ZenService implements AiProviderContract
@@ -29,6 +30,25 @@ class ZenService implements AiProviderContract
         $this->timeout = (int) \config('ai.providers.zen.timeout', 40);
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    #[Override]
+    public function healthCheck(): bool
+    {
+        try {
+            $response = Http::timeout(5)->get($this->baseUrl.'/api/tags');
+
+            return $response->successful();
+        } catch (Exception) {
+            return false;
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    #[Override]
     public function generateContent(string $prompt, array $options = []): string
     {
         $messages = [
@@ -41,6 +61,10 @@ class ZenService implements AiProviderContract
         return $this->requestChat($messages, $options);
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    #[Override]
     public function generateContentWithHistory(array $history, string $prompt, array $options = []): string
     {
         $messages = [];
@@ -66,6 +90,10 @@ class ZenService implements AiProviderContract
         return $this->requestChat($messages, $options);
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    #[Override]
     public function generateContentWithSystemPrompt(
         string $systemPrompt,
         string $prompt,
@@ -85,6 +113,10 @@ class ZenService implements AiProviderContract
         return $this->requestChat($messages, $options);
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    #[Override]
     public function generateContentWithSystemPromptAndHistory(
         string $systemPrompt,
         array $history,

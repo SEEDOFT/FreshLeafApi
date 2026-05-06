@@ -9,6 +9,7 @@ use App\Models\AiChatMessage;
 use App\Models\AiChatSession;
 use App\Models\User;
 use App\Models\UserType;
+use App\Services\Ai\AiService;
 use Filament\Facades\Filament;
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\Cache;
@@ -79,6 +80,8 @@ class AiAssistantChat extends Component
 
     public bool $isRealtimeConnected = true;
 
+    public bool $isAiServiceAvailable = true;
+
     public ?string $realtimeStatusMessage = null;
 
     public bool $showHistory = true;
@@ -106,7 +109,13 @@ class AiAssistantChat extends Component
         }
 
         $this->showHistory = (bool) session('ai_assistant_show_history', true);
+        $this->checkAiServiceStatus();
         $this->initializeChat((int) $user->id);
+    }
+
+    public function checkAiServiceStatus(): void
+    {
+        $this->isAiServiceAvailable = app(AiService::class)->healthCheck();
     }
 
     private function initializeChat(int $userId): void

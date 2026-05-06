@@ -7,44 +7,32 @@ The Laravel Boost guidelines are specifically curated by Laravel maintainers for
 
 ## Foundational Context
 
-This application is a modern Laravel application powered by **PHP 8.5** features. Ensure you abide by these specific packages & versions.
+This application is a Laravel application and its main Laravel ecosystems package & versions are below. You are an expert with them all. Ensure you abide by these specific packages & versions.
 
-- php - 8.5 (Strictly use Property Hooks, Asymmetric Visibility, and Pipe Operator)
-- static callables - Use `static` for all anonymous functions (fn/function) that do not reference `$this`.
+- php - 8.5
+- filament/filament (FILAMENT) - v5
 - laravel/framework (LARAVEL) - v13
-- laravel/reverb (REVERB) - v1 (Real-time WebSockets)
-- filament/filament (FILAMENT) - v4 (Modern Glassmorphism UI)
+- laravel/prompts (PROMPTS) - v0
+- laravel/reverb (REVERB) - v1
+- laravel/sanctum (SANCTUM) - v4
+- laravel/telescope (TELESCOPE) - v5
+- livewire/livewire (LIVEWIRE) - v4
+- larastan/larastan (LARASTAN) - v3
 - laravel/boost (BOOST) - v2
 - laravel/mcp (MCP) - v0
 - laravel/pail (PAIL) - v1
 - laravel/pint (PINT) - v1
 - phpunit/phpunit (PHPUNIT) - v12
-
-## Static Analysis & Null-Safety (MANDATORY)
-
-To ensure the highest codebase quality and avoid runtime errors, the following standards are now mandatory:
-
-- **Strict Static Analysis**: All new and modified code must pass PHPStan analysis.
-- **Null-Safety**:
-    - Avoid `property.nonObject` errors by always validating relationships before accessing properties. Use null-safe operators (`?->`) or null-coalescing (`??`) appropriately.
-    - If a relationship is guaranteed by domain logic to be present, use explicit checks or `findOrFail()` before accessing it.
-    - For model properties, provide fallback values (`?? 'default'`) if the property can be null.
-- **Type Correctness**:
-    - Always provide explicit type hints for method parameters and return types.
-    - Use proper type casting (e.g., `(float)`, `(int)`, `(string)`) when passing values to functions that expect strict types (e.g., `number_format`, `Hash::check`).
-    - Validate and sanitize input data before use.
-- **Array Handling**: Use array shapes in PHPDoc blocks to strictly define the structure of complex arrays (e.g., `@var array<array{role?: string, content: string}>`).
+- laravel-echo (ECHO) - v2
+- tailwindcss (TAILWINDCSS) - v4
 
 ## Skills Activation
 
-This project has domain-specific skills available. You MUST activate the relevant skill whenever you work in that domain—don't wait until you're stuck.
-
-- `laravel-best-practices` — Apply this skill whenever writing, reviewing, or refactoring Laravel PHP code. This includes creating or modifying controllers, models, migrations, form requests, policies, jobs, scheduled commands, service classes, and Eloquent queries. Triggers for N+1 and query performance issues, caching strategies, authorization and security patterns, validation, error handling, queue and job configuration, route definitions, and architectural decisions. Also use for Laravel code reviews and refactoring existing Laravel code to follow best practices. Covers any task involving Laravel backend PHP code patterns.
+This project has domain-specific skills available in `**/skills/**`. You MUST activate the relevant skill whenever you work in that domain—don't wait until you're stuck.
 
 ## Conventions
 
 - You must follow all existing code conventions used in this application. When creating or editing a file, check sibling files for the correct structure, approach, and naming.
-- **Localization**: User language preferences are stored in the `locale` field of individual profile tables (`admin_profiles`, `vendor_profiles`, `user_profiles`), not the `users` table. Use the `currentLocale` property hook on the `User` model to resolve the correct language.
 - Use descriptive names for variables and methods. For example, `isRegisteredForDiscounts`, not `discount()`.
 - Check for existing components to reuse before writing a new one.
 
@@ -110,18 +98,27 @@ This project has domain-specific skills available. You MUST activate the relevan
 
 === php rules ===
 
-# PHP 8.5 Standards
+# PHP
 
-- **Property Hooks**: Use for all calculated model properties. Do not use legacy getter/setter attributes.
-- **Asymmetric Visibility**: Use `public private(set)` for properties that should be readonly externally.
-- **Pipe Operator (`|>`)**: Use for all multi-step data or price transformations.
-- **Strict Types**: Every file must start with `declare(strict_types=1);`.
 - Always use curly braces for control structures, even for single-line bodies.
-- Use PHP 8 constructor property promotion.
-- Use explicit return type declarations and type hints for all method parameters.
-- Use TitleCase for Enum keys.
-- Prefer PHPDoc blocks over inline comments.
+- Use PHP 8 constructor property promotion: `public function __construct(public GitHub $github) { }`. Do not leave empty zero-parameter `__construct()` methods unless the constructor is private.
+- Use explicit return type declarations and type hints for all method parameters: `function isAccessible(User $user, ?string $path = null): bool`
+- Use TitleCase for Enum keys: `FavoritePerson`, `BestLake`, `Monthly`.
+- Prefer PHPDoc blocks over inline comments. Only add inline comments for exceptionally complex logic.
 - Use array shape type definitions in PHPDoc blocks.
+
+=== deployments rules ===
+
+# Deployment
+
+- Laravel can be deployed using [Laravel Cloud](https://cloud.laravel.com/), which is the fastest way to deploy and scale production Laravel applications.
+
+=== tests rules ===
+
+# Test Enforcement
+
+- Every change must be programmatically tested. Write a new test or update an existing test, then run the affected tests to make sure they pass.
+- Run the minimum number of tests needed to ensure code quality and speed. Use `php artisan test --compact` with a specific filename or filter.
 
 === laravel/core rules ===
 
@@ -152,6 +149,14 @@ This project has domain-specific skills available. You MUST activate the relevan
 ## Vite Error
 
 - If you receive an "Illuminate\Foundation\ViteException: Unable to locate file in Vite manifest" error, you can run `npm run build` or ask the user to run `npm run dev` or `composer run dev`.
+
+=== livewire/core rules ===
+
+# Livewire
+
+- Livewire allow to build dynamic, reactive interfaces in PHP without writing JavaScript.
+- You can use Alpine.js for client-side interactions instead of JavaScript frameworks.
+- Keep state server-side so the UI reflects it. Validate and authorize in actions as you would in HTTP requests.
 
 === pint/core rules ===
 

@@ -36,11 +36,19 @@ AI-powered shopping assistant with real-time streaming responses. Supports multi
 
 | Method | Endpoint | Description |
 |--------|----------|--------------|
+| GET  | `/api/v1/ai/status` | Check AI service availability |
 | POST | `/api/v1/ai/chat/sessions` | Create/reuse chat session |
 | POST | `/api/v1/ai/chat/messages` | Send message (starts stream) |
 | POST | `/api/v1/ai/chat/history` | Load message history |
 
 ## Real-time Flow
+
+### 0. Service Health Check (UI Initialization)
+```
+GET /api/v1/ai/status
+→ Returns `{ "data": { "available": true|false } }`
+→ Client (Flutter/Filament) enables or disables chat inputs based on status.
+```
 
 ### 1. Create Session
 ```

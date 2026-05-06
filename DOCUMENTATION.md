@@ -103,7 +103,13 @@ All models are built using PHP 8.3 features, including Attributes for property d
   - `Admin` and `Vendor` models now use `HasApiTokens` (Sanctum lifecycle).
   - API middleware enforces role/status via `role:*` and `active.status:*`.
 
-### 9. Security Utilities
+### 9. Vendor Access & Security
+- **Vendor AI Assistant:** Vendor panel now includes the `AiAssistant` page, mirroring the admin functionality.
+- **Hardened Authentication:** AI chat sessions are strictly bound to authorized users. All session queries must use hardened validation logic:
+    - **Logic:** Users must be verified by `phone_number`, `user_type_id`, and `user_status_id` (Active).
+    - **Implementation:** Use `App\Services\Auth\UserSessionSecurity::getAuthorizedUser($phone, $type)` for all session retrievals to ensure data isolation.
+
+### 10. Security Utilities
 - **Key Generation:** Added `php artisan make:key` command to generate high-entropy secure keys (using `random_bytes`). It can automatically update or add keys to the `.env` file for variables like `REVERB_APP_KEY` or `ADMIN_REGISTRATION_KEY`.
 
 ---

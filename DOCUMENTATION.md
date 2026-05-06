@@ -3,6 +3,18 @@
 ## Overview
 This documentation outlines the implementation status of the FreshLeaf API, a multi-vendor organic vegetable marketplace. The platform follows a B2C model where consumers use a mobile app to purchase produce, while vendors use a web interface to manage their inventory and sales.
 
+## Architecture Updates
+### Filament Admin Reorganization
+- **Namespace Migration:** All admin-specific pages and resources have been moved to the `App\Filament\Admin` namespace.
+- **Provider Discovery:** The `AdminPanelProvider` has been updated to scan `app/Filament/Admin/Resources` and `app/Filament/Admin/Pages` for automatic registration.
+- **New Directory Structure:**
+  ```
+  app/Filament/Admin/
+  ├── Pages/       # Admin pages (AiAssistant, etc.)
+  ├── Resources/   # Admin resources (Orders, Products, etc.)
+  ```
+
+
 ### Business Model & Roles
 - **Consumers (B2C)**: Use the FreshLeaf mobile app to discover and buy organic vegetables.
 - **Vendors**: Required to register their real identity and verify their store before selling. They manage products, orders, and payments via a dedicated web dashboard.

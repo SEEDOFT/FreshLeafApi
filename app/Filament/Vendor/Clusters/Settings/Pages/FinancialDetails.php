@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Filament\Vendor\Clusters\Settings\Pages;
 
 use App\Filament\Vendor\Clusters\Settings;
+use App\Models\User;
 use Filament\Actions\Action;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\TextInput;
@@ -36,7 +37,11 @@ class FinancialDetails extends Page
 
     public function mount(): void
     {
-        $this->data = Auth::user()->vendorProfile?->toArray() ?? [];
+        $user = Auth::user();
+
+        $this->data = $user instanceof User
+            ? $user->vendorProfile?->toArray() ?? []
+            : [];
     }
 
     public function form(Schema $schema): Schema
@@ -71,8 +76,12 @@ class FinancialDetails extends Page
     public function save(): void
     {
         $user = Auth::user();
+        $form = $this->getSchema('form');
+        if (! $user instanceof User || ! $form) {
+            return;
+        }
 
-        $state = $this->getSchema('form')->getState();
+        $state = $form->getState();
         $user->vendorProfile()->update($state);
 
         Notification::make()

@@ -20,6 +20,7 @@ class GenerateKeyCommand extends Command
     {
         $name = $this->argument('name');
         $length = (int) $this->option('length');
+        $length = max(1, $length);
 
         // Generate secure hex key
         $key = bin2hex(random_bytes($length));
@@ -52,6 +53,12 @@ class GenerateKeyCommand extends Command
         }
 
         $content = file_get_contents($path);
+        if ($content === false) {
+            $this->error('Failed to read .env file.');
+
+            return false;
+        }
+
         $keyExists = Str::contains($content, "{$name}=");
 
         if ($keyExists && ! $this->option('force')) {
@@ -66,7 +73,7 @@ class GenerateKeyCommand extends Command
                 "/^{$name}=.*/m",
                 "{$name}={$key}",
                 $content
-            );
+            ) ?? $content;
         } else {
             $content .= "\n{$name}={$key}\n";
         }

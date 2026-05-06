@@ -7,7 +7,7 @@ namespace App\Filament\Resources\ProductCategories\Tables;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
-use Filament\Tables\Columns\IconColumn;
+use Filament\Actions\ViewAction;
 use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
@@ -34,9 +34,14 @@ class ProductCategoriesTable
                     ->searchable()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
-                IconColumn::make('is_active')
-                    ->label(__('admin.resources.product_category.is_active'))
-                    ->boolean()
+                TextColumn::make('status.name')
+                    ->label(__('admin.resources.product_category.status'))
+                    ->badge()
+                    ->color(fn (string $state): string => match ($state) {
+                        'Active' => 'success',
+                        'Inactive' => 'danger',
+                        default => 'gray',
+                    })
                     ->sortable(),
                 TextColumn::make('products_count')
                     ->label(__('admin.resources.product_category.products_count'))
@@ -52,6 +57,7 @@ class ProductCategoriesTable
                 //
             ])
             ->recordActions([
+                ViewAction::make(),
                 EditAction::make(),
             ])
             ->toolbarActions([

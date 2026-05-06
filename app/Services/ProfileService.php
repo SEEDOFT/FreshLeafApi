@@ -15,10 +15,12 @@ class ProfileService
 {
     /**
      * Persist profile data.
+    /**
+     * Update the user's profile.
      *
      * @param  array<string, mixed>  $data
      */
-    public function updateProfile(User $user, array $data, ?UploadedFile $image): User
+    public function updateProfile(User $user, array $data, ?UploadedFile $image = null): ?User
     {
         if (isset($data['password'])) {
             $data['password'] = Hash::make($data['password']);
@@ -31,7 +33,6 @@ class ProfileService
             $data['image'] = $this->storeUserImage($image);
         }
 
-        // Update User model (common fields)
         $user->update(array_intersect_key($data, array_flip([
             'first_name', 'last_name', 'email', 'phone_number', 'password', 'image',
         ])));
@@ -44,7 +45,12 @@ class ProfileService
             default => null,
         };
 
-        return $user->fresh()->load(['adminProfile', 'vendorProfile', 'userProfile']);
+        $freshUser = $user->fresh();
+        if ($freshUser) {
+            $freshUser->load(['adminProfile', 'vendorProfile', 'userProfile']);
+        }
+
+        return $freshUser;
     }
 
     private function storeUserImage(UploadedFile $file): string

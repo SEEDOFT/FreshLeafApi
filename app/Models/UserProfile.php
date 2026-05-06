@@ -82,7 +82,7 @@ class UserProfile extends Model
      */
     public function verifyPin(string $pin): bool
     {
-        return $this->hasPin() && Hash::check($pin, $this->pin);
+        return $this->hasPin() && Hash::check($pin, (string) $this->pin);
     }
 
     /**

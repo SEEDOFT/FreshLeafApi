@@ -4,13 +4,15 @@ declare(strict_types=1);
 
 namespace App\Filament\Vendor\Pages;
 
+use BackedEnum;
 use Filament\Pages\Page;
 use Filament\Support\Enums\Width;
 use Override;
 
 class AiAssistant extends Page
 {
-    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-sparkles';
+    #[Override]
+    protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-sparkles';
 
     #[Override]
     public static function getNavigationLabel(): string
@@ -24,10 +26,13 @@ class AiAssistant extends Page
         return __('admin.ai.assistant');
     }
 
+    #[Override]
     protected static ?string $slug = 'ai-assistant';
 
+    #[Override]
     protected static ?int $navigationSort = 100;
 
+    #[Override]
     protected string|Width|null $maxContentWidth = Width::Full;
 
     #[Override]
@@ -36,5 +41,6 @@ class AiAssistant extends Page
         return (bool) app_setting('enable_ai_assistant_vendor', true);
     }
 
+    #[Override]
     protected string $view = 'filament.vendor.pages.ai-assistant';
 }

@@ -1,10 +1,12 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Filament\Vendor\Resources\Products\Schemas;
 
-use App\Models\Product;
-use Filament\Infolists\Components\IconEntry;
+use Filament\Infolists\Components\ImageEntry;
 use Filament\Infolists\Components\TextEntry;
+use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 
 class ProductInfolist
@@ -13,51 +15,52 @@ class ProductInfolist
     {
         return $schema
             ->components([
-                TextEntry::make('productCategory.name_en')
-                    ->label(__('admin.resources.product.organic_category')),
-                TextEntry::make('type.name')
-                    ->label(__('admin.resources.product.product_type')),
-                TextEntry::make('defaultUnit.name')
-                    ->label(__('admin.resources.product.unit')),
-                TextEntry::make('status.name')
-                    ->label(__('admin.resources.product.product_status')),
-                TextEntry::make('name_en')
-                    ->label(__('admin.resources.product.name_en')),
-                TextEntry::make('name_km')
-                    ->label(__('admin.resources.product.name_km')),
-                TextEntry::make('slug')
-                    ->label(__('admin.resources.product.slug')),
-                TextEntry::make('description_en')
-                    ->label(__('admin.resources.product.description_en'))
-                    ->placeholder('-')
-                    ->columnSpanFull(),
-                TextEntry::make('description_km')
-                    ->label(__('admin.resources.product.description_km'))
-                    ->placeholder('-')
-                    ->columnSpanFull(),
-                TextEntry::make('nutrition_data')
-                    ->label(__('admin.resources.product.nutrition_data'))
-                    ->placeholder('-')
-                    ->columnSpanFull(),
-                TextEntry::make('shelf_life_days')
-                    ->label(__('admin.resources.product.shelf_life'))
-                    ->numeric()
-                    ->placeholder('-'),
-                TextEntry::make('deleted_at')
-                    ->label(__('admin.resources.deleted_at'))
-                    ->dateTime()
-                    ->visible(fn (Product $record): bool => $record->trashed()),
-                TextEntry::make('created_at')
-                    ->label(__('admin.resources.created_at'))
-                    ->dateTime()
-                    ->placeholder('-'),
-                TextEntry::make('updated_at')
-                    ->label(__('admin.resources.updated_at'))
-                    ->dateTime()
-                    ->placeholder('-'),
-                IconEntry::make('is_organic')
-                    ->label(__('admin.resources.product.is_organic'))
-                    ->boolean(),
+                Section::make(__('admin.resources.product.pricing_inventory'))
+                    ->columns(2)
+                    ->schema([
+                        TextEntry::make('product.name_en')
+                            ->label(__('admin.resources.product.name_en')),
+                        TextEntry::make('product.name_km')
+                            ->label(__('admin.resources.product.name_km')),
+                        TextEntry::make('price')
+                            ->label(__('admin.resources.product.unit_price'))
+                            ->money('USD'),
+                        TextEntry::make('stock_quantity')
+                            ->label(__('admin.resources.product.stock')),
+                        TextEntry::make('unit.name')
+                            ->label(__('admin.resources.product.unit')),
+                        TextEntry::make('status.name')
+                            ->label(__('admin.resources.product.status'))
+                            ->badge(),
+                    ]),
+
+                Section::make(__('admin.resources.product.organic_traceability'))
+                    ->columns(2)
+                    ->schema([
+                        TextEntry::make('province_of_origin')
+                            ->label(__('admin.resources.product.province_of_origin'))
+                            ->placeholder('-'),
+                        TextEntry::make('certification_type')
+                            ->label(__('admin.resources.product.certification_type'))
+                            ->placeholder('-'),
+                        TextEntry::make('farm_location')
+                            ->label(__('admin.resources.product.farm_location'))
+                            ->placeholder('-'),
+                        TextEntry::make('harvest_date')
+                            ->label(__('admin.resources.product.harvest_date'))
+                            ->date()
+                            ->placeholder('-'),
+                        TextEntry::make('shelf_life_days')
+                            ->label(__('admin.resources.product.shelf_life'))
+                            ->suffix(' '.__('admin.resources.product.days'))
+                            ->placeholder('-'),
+                        TextEntry::make('packaging_type')
+                            ->label(__('admin.resources.product.packaging_type'))
+                            ->placeholder('-'),
+                        ImageEntry::make('batch_images')
+                            ->label(__('admin.resources.product.visuals'))
+                            ->columnSpanFull(),
+                    ]),
             ]);
     }
 }

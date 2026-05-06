@@ -2,16 +2,16 @@
 
 declare(strict_types=1);
 
-namespace App\Http\Resources\Shared;
+namespace App\Http\Resources\User;
 
-use App\Models\Wallet;
+use App\Models\PaymentMethodType;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 /**
- * @mixin Wallet
+ * @mixin PaymentMethodType
  */
-class WalletResource extends JsonResource
+class PaymentMethodTypeResource extends JsonResource
 {
     /**
      * Transform the resource into an array.
@@ -22,10 +22,8 @@ class WalletResource extends JsonResource
     {
         return [
             'id' => $this->id,
-            'balance' => $this->balance,
-            'currency' => $this->relationLoaded('currency')
-                ? new CurrencyResource($this->currency)
-                : null,
+            'code' => $this->code,
+            'name' => $this->name,
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
         ];

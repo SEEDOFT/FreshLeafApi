@@ -23,6 +23,8 @@ class DatabaseSeeder extends Seeder
             DefaultSuperAdminSeeder::class,
             PaymentMethodTypeSeeder::class,
             PaymentMethodStatusSeeder::class,
+            ProductCategoryStatusSeeder::class,
+            VendorInventoryStatusSeeder::class,
             // OperationUserSeeder::class,
             // SupplierSeeder::class,
             ProductStatusSeeder::class,

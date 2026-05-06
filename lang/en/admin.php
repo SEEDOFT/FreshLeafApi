@@ -45,6 +45,8 @@ return [
             'submit' => 'Sign in',
             'failed' => 'These credentials do not match our records.',
             'pending' => 'Your account is pending approval. Please wait for an administrator to review your application.',
+            'not_having_account' => "Don't have an account?",
+            'register_here' => 'Register here',
         ],
         'register' => [
             'title' => 'Vendor Registration',
@@ -67,6 +69,8 @@ return [
             'qr_code' => 'Bank QR Code',
             'submit' => 'Register Store',
             'complete' => 'Complete Registration',
+            'already_have_account' => 'Already have an account?',
+            'login_here' => 'Login here',
             'steps' => [
                 'account' => 'Account',
                 'account_desc' => 'Basic information for login.',
@@ -95,8 +99,8 @@ return [
             'visuals' => 'Visuals',
         ],
         'product_category' => [
-            'label' => 'System Category',
-            'plural_label' => 'System Categories',
+            'label' => 'Product Category',
+            'plural_label' => 'Product Categories',
             'name_en' => 'Name (English)',
             'name_km' => 'Name (Khmer)',
             'description_en' => 'Description (English)',
@@ -107,6 +111,7 @@ return [
             'products_count' => 'Products',
             'basic_info' => 'Basic Information',
             'visuals' => 'Visuals',
+            'status' => 'Status',
         ],
         'security' => [
             'label' => 'Security',
@@ -296,7 +301,7 @@ return [
             'slug' => 'Slug',
             'description_en' => 'Description (English)',
             'description_km' => 'Description (Khmer)',
-            'system_category' => 'System Category',
+            'system_category' => 'Product Category',
             'organic_category' => 'Organic Category',
             'type' => 'Product Type',
             'status' => 'Status',
@@ -326,7 +331,7 @@ return [
             'general_info' => 'General Information',
             'categorization' => 'Categorization',
             'pricing_inventory' => 'Pricing & Inventory',
-            'organic_traceability' => 'Organic Traceability',
+            'traceability' => 'Traceability',
             'nutrition_data' => 'Nutrition & Data',
             'add_nutrition' => 'Add Nutrition Fact',
             'nutrition_key' => 'Fact',
@@ -338,11 +343,21 @@ return [
             'unit_price' => 'Unit Price',
             'variant' => 'Variant',
             'quantity_in_unit' => 'Quantity in Unit',
+            'add_to_store' => 'Add to Store',
+            'notifications' => [
+                'added_to_store' => 'Product added to your store inventory.',
+            ],
             'farming_methods' => [
                 'certified_organic' => 'Certified Organic',
                 'pesticide_free' => 'Pesticide Free',
                 'naturally_grown' => 'Naturally Grown',
             ],
+        ],
+        'vendor_inventory' => [
+            'label' => 'Vendor Inventory',
+            'plural_label' => 'Vendor Inventories',
+            'global_listings' => 'Global Listings',
+            'vendor' => 'Vendor',
         ],
         'exchange_rate' => [
             'label' => 'Exchange Rate',
@@ -352,11 +367,12 @@ return [
             'rate' => 'Conversion Rate',
             'rate_helper' => 'e.g. 1 USD = 4100 KHR',
         ],
-        'created_at' => 'Created At',
-        'updated_at' => 'Updated At',
+        'created_at' => 'Account Created At',
+        'updated_at' => 'Last Updated At',
         'general' => [
             'not_provided' => 'Not Provided',
         ],
+        'timestamps' => 'Time Stamps',
     ],
     'profile' => [
         'general_info' => 'General Information',

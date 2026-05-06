@@ -21,8 +21,10 @@ use Override;
 
 class ExchangeRateResource extends Resource
 {
+    #[Override]
     protected static ?string $model = ExchangeRate::class;
 
+    #[Override]
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
 
     #[Override]
@@ -59,14 +61,6 @@ class ExchangeRateResource extends Resource
     public static function table(Table $table): Table
     {
         return ExchangeRatesTable::configure($table);
-    }
-
-    #[Override]
-    public static function getRelations(): array
-    {
-        return [
-            //
-        ];
     }
 
     #[Override]

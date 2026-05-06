@@ -125,7 +125,12 @@ class VendorProfile extends Page
             return;
         }
 
-        $state = $this->getSchema('form')->getState();
+        $form = $this->getSchema('form');
+        if (! $form) {
+            return;
+        }
+
+        $state = $form->getState();
 
         // Unwrap image from array before saving to DB
         if (isset($state['image']) && is_array($state['image'])) {

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Http\Resources\Shared;
+namespace App\Http\Resources\User;
 
 use App\Models\WalletTransaction;
 use Illuminate\Http\Request;

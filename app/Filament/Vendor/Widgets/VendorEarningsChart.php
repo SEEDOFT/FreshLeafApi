@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Filament\Vendor\Widgets;
 
+use App\Models\User;
 use Filament\Widgets\ChartWidget;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -17,6 +18,12 @@ class VendorEarningsChart extends ChartWidget
     protected function getData(): array
     {
         $user = Auth::user();
+        if (! $user instanceof User) {
+            return [
+                'datasets' => [],
+                'labels' => [],
+            ];
+        }
 
         // Calculate daily earnings based on items belonging to this vendor in paid orders
         $data = DB::table('order_items')

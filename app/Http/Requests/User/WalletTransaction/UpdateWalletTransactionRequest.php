@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Http\Requests\User;
+namespace App\Http\Requests\User\WalletTransaction;
 
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
@@ -14,7 +14,7 @@ class UpdateWalletTransactionRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return true; // Handled by controller Gate::authorize
+        return \auth()->check();
     }
 
     /**

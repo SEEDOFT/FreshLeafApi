@@ -5,12 +5,10 @@ declare(strict_types=1);
 namespace App\Filament\Resources\Products\Schemas;
 
 use App\Models\ProductCategory;
-use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\KeyValue;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
-use Filament\Forms\Components\Toggle;
 use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Components\Utilities\Set;
@@ -30,7 +28,7 @@ class ProductForm
                             ->label(__('admin.resources.product.name_en'))
                             ->required(static fn (string $operation): bool => $operation === 'create')->dehydrated(static fn ($state): bool => filled($state))
                             ->live(onBlur: true)
-                            ->afterStateUpdated(fn (Set $set, ?string $state) => $set('slug', Str::slug($state))),
+                            ->afterStateUpdated(fn (Set $set, ?string $state) => $set('slug', Str::slug($state ?? ''))),
                         TextInput::make('name_km')
                             ->label(__('admin.resources.product.name_km'))
                             ->required(static fn (string $operation): bool => $operation === 'create')->dehydrated(static fn ($state): bool => filled($state)),
@@ -49,7 +47,7 @@ class ProductForm
                 Grid::make(3)
                     ->schema([
                         Section::make(__('admin.resources.product.categorization'))
-                            ->columnSpan(2)
+                            ->columnSpanFull()
                             ->columns(2)
                             ->schema([
                                 Select::make('product_category_id')
@@ -64,7 +62,7 @@ class ProductForm
                                             return null;
                                         }
                                         $cat = ProductCategory::find($state);
-                                        if (! $cat) {
+                                        if (! $cat instanceof ProductCategory) {
                                             return null;
                                         }
                                         if (str_contains(strtolower($cat->slug), 'leafy')) {
@@ -100,49 +98,7 @@ class ProductForm
                                     ->label(__('admin.resources.product.unit'))
                                     ->relationship('defaultUnit', 'name')
                                     ->required(static fn (string $operation): bool => $operation === 'create')->dehydrated(static fn ($state): bool => filled($state)),
-                                TextInput::make('selling_unit')
-                                    ->label(__('admin.resources.product.selling_unit'))
-                                    ->placeholder('e.g. kg, bunch'),
                             ]),
-
-                        Section::make(__('admin.resources.product.pricing_inventory'))
-                            ->columnSpan(1)
-                            ->schema([
-                                // price_per_unit, available_stock, is_active removed for Admin panel
-                                // These are now handled in VendorInventory.
-                                Toggle::make('is_organic')
-                                    ->label(__('admin.resources.product.is_organic'))
-                                    ->default(true),
-                            ]),                    ]),
-
-                Section::make(__('admin.resources.product.organic_traceability'))
-                    ->columns(2)
-                    ->schema([
-                        TextInput::make('province_of_origin')
-                            ->label(__('admin.resources.product.province_of_origin')),
-                        TextInput::make('certification_type')
-                            ->label(__('admin.resources.product.certification_type')),
-                        Textarea::make('storage_instructions_en')
-                            ->label(__('admin.resources.product.storage_instructions').' (EN)'),
-                        Textarea::make('storage_instructions_km')
-                            ->label(__('admin.resources.product.storage_instructions').' (KM)'),
-                        TextInput::make('packaging_type')
-                            ->label(__('admin.resources.product.packaging_type')),
-                        TextInput::make('farm_name_location')
-                            ->label(__('admin.resources.product.farm_location')),
-                        Select::make('farming_method')
-                            ->label(__('admin.resources.product.farming_method'))
-                            ->options([
-                                'certified_organic' => __('admin.resources.product.farming_methods.certified_organic'),
-                                'pesticide_free' => __('admin.resources.product.farming_methods.pesticide_free'),
-                                'naturally_grown' => __('admin.resources.product.farming_methods.naturally_grown'),
-                            ]),
-                        DatePicker::make('harvest_date')
-                            ->label(__('admin.resources.product.harvest_date')),
-                        TextInput::make('shelf_life_days')
-                            ->label(__('admin.resources.product.shelf_life'))
-                            ->numeric()
-                            ->suffix('days'),
                     ]),
 
                 Section::make(__('admin.resources.product.nutrition_data'))

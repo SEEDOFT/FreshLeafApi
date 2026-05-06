@@ -24,7 +24,6 @@ class ProductController extends Controller
                 'type',
                 'defaultUnit',
                 'status',
-                'vendor',
             ])
             ->orderByDesc('id')
             ->simplePaginate($request->integer('per_page', 15));
@@ -52,7 +51,6 @@ class ProductController extends Controller
                 'type',
                 'defaultUnit',
                 'status',
-                'vendor',
             ])),
             'Product loaded successfully'
         );

@@ -4,10 +4,11 @@ declare(strict_types=1);
 
 namespace App\Filament\Resources\ProductCategories\Schemas;
 
+use App\Models\ProductCategoryStatus;
 use Filament\Forms\Components\FileUpload;
+use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
-use Filament\Forms\Components\Toggle;
 use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Components\Utilities\Set;
@@ -30,7 +31,7 @@ class ProductCategoryForm
                                     ->label(__('admin.resources.product_category.name_en'))
                                     ->required(static fn (string $operation): bool => $operation === 'create')->dehydrated(static fn ($state): bool => filled($state))
                                     ->live(onBlur: true)
-                                    ->afterStateUpdated(fn (Set $set, ?string $state) => $set('slug', Str::slug($state))),
+                                    ->afterStateUpdated(fn (Set $set, ?string $state) => $set('slug', Str::slug($state ?? ''))),
                                 TextInput::make('name_km')
                                     ->label(__('admin.resources.product_category.name_km'))
                                     ->required(static fn (string $operation): bool => $operation === 'create')->dehydrated(static fn ($state): bool => filled($state)),
@@ -38,9 +39,11 @@ class ProductCategoryForm
                                     ->label(__('admin.resources.product_category.slug'))
                                     ->required(static fn (string $operation): bool => $operation === 'create')->dehydrated(static fn ($state): bool => filled($state))
                                     ->unique(ignoreRecord: true),
-                                Toggle::make('is_active')
-                                    ->label(__('admin.resources.product_category.is_active'))
-                                    ->default(true),
+                                Select::make('product_category_status_id')
+                                    ->label(__('admin.resources.product_category.status'))
+                                    ->relationship('status', 'name')
+                                    ->required()
+                                    ->default(ProductCategoryStatus::ACTIVE),
                                 Textarea::make('description_en')
                                     ->label(__('admin.resources.product_category.description_en'))
                                     ->columnSpanFull(),

@@ -8,7 +8,7 @@ use App\Events\NewSupportTicket;
 use App\Events\SupportMessageSent;
 use App\Events\SupportTyping;
 use App\Http\Controllers\Controller;
-use App\Http\Resources\Shared\SupportMessageResource;
+use App\Http\Resources\User\SupportMessageResource;
 use App\Models\SupportMessage;
 use App\Models\SupportTicket;
 use App\Models\User;

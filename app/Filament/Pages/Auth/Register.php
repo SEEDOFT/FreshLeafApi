@@ -7,7 +7,9 @@ namespace App\Filament\Pages\Auth;
 use App\Models\User;
 use App\Models\UserStatus;
 use App\Models\UserType;
+use Closure;
 use Filament\Auth\Pages\Register as BaseRegister;
+use Filament\Facades\Filament;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
@@ -34,7 +36,13 @@ class Register extends BaseRegister
     #[Override]
     public function getSubHeading(): string|Htmlable|null
     {
-        return __('admin.auth.register.subheading');
+        return new HtmlString(
+            __('admin.auth.register.subheading').' '.
+            __('admin.auth.register.already_have_account').' '.
+            '<a class="text-primary-600 font-medium hover:text-primary-500" href="'.Filament::getLoginUrl().'">'.
+            __('admin.auth.register.login_here').
+            '</a>'
+        );
     }
 
     #[Override]
@@ -59,7 +67,7 @@ class Register extends BaseRegister
                         ->icon('heroicon-o-user')
                         ->description(__('admin.auth.register.steps.account_desc'))
                         ->schema([
-                            Grid::make(2)->schema([
+                            Grid::make(1)->schema([
                                 $this->getNameFormComponent(),
                                 $this->getPhoneNumberFormComponent(),
                                 $this->getPasswordFormComponent(),
@@ -74,7 +82,8 @@ class Register extends BaseRegister
                             Grid::make(2)->schema([
                                 TextInput::make('business_name')
                                     ->label(__('admin.auth.register.business_name'))
-                                    ->required(static fn (string $operation): bool => $operation === 'create')->dehydrated(static fn ($state): bool => filled($state))
+                                    ->required(static fn (string $operation): bool => $operation === 'create')
+                                    ->dehydrated(static fn ($state): bool => filled($state))
                                     ->maxLength(255),
                                 TextInput::make('contact_phone')
                                     ->label(__('admin.resources.vendor.contact_phone'))
@@ -103,19 +112,22 @@ class Register extends BaseRegister
                                     ->image()
                                     ->disk('local')
                                     ->directory('vendor-verification')
-                                    ->required(static fn (string $operation): bool => $operation === 'create')->dehydrated(static fn ($state): bool => filled($state)),
+                                    ->required(static fn (string $operation): bool => $operation === 'create')
+                                    ->dehydrated(static fn ($state): bool => filled($state)),
                                 FileUpload::make('id_card_back')
                                     ->label(__('admin.auth.register.id_back'))
                                     ->image()
                                     ->disk('local')
                                     ->directory('vendor-verification')
-                                    ->required(static fn (string $operation): bool => $operation === 'create')->dehydrated(static fn ($state): bool => filled($state)),
+                                    ->required(static fn (string $operation): bool => $operation === 'create')
+                                    ->dehydrated(static fn ($state): bool => filled($state)),
                                 FileUpload::make('store_front_image')
                                     ->label(__('admin.auth.register.store_photo'))
                                     ->image()
                                     ->disk('local')
                                     ->directory('vendor-verification')
-                                    ->required(static fn (string $operation): bool => $operation === 'create')->dehydrated(static fn ($state): bool => filled($state)),
+                                    ->required(static fn (string $operation): bool => $operation === 'create')
+                                    ->dehydrated(static fn ($state): bool => filled($state)),
                                 FileUpload::make('organic_certificate_url')
                                     ->label(__('admin.auth.register.organic_cert'))
                                     ->disk('local')
@@ -131,15 +143,18 @@ class Register extends BaseRegister
                                 TextInput::make('bank_name')
                                     ->label(__('admin.auth.register.bank_name'))
                                     ->placeholder('e.g. ABA Bank')
-                                    ->required(static fn (string $operation): bool => $operation === 'create')->dehydrated(static fn ($state): bool => filled($state))
+                                    ->required(static fn (string $operation): bool => $operation === 'create')
+                                    ->dehydrated(static fn ($state): bool => filled($state))
                                     ->maxLength(255),
                                 TextInput::make('bank_account_name')
                                     ->label(__('admin.auth.register.account_holder'))
-                                    ->required(static fn (string $operation): bool => $operation === 'create')->dehydrated(static fn ($state): bool => filled($state))
+                                    ->required(static fn (string $operation): bool => $operation === 'create')
+                                    ->dehydrated(static fn ($state): bool => filled($state))
                                     ->maxLength(255),
                                 TextInput::make('bank_account_number')
                                     ->label(__('admin.auth.register.account_number'))
-                                    ->required(static fn (string $operation): bool => $operation === 'create')->dehydrated(static fn ($state): bool => filled($state))
+                                    ->required(static fn (string $operation): bool => $operation === 'create')
+                                    ->dehydrated(static fn ($state): bool => filled($state))
                                     ->maxLength(255),
                             ]),
                             FileUpload::make('bank_qr_code')
@@ -147,10 +162,21 @@ class Register extends BaseRegister
                                 ->image()
                                 ->disk('local')
                                 ->directory('vendor-verification')
-                                ->required(static fn (string $operation): bool => $operation === 'create')->dehydrated(static fn ($state): bool => filled($state)),
+                                ->required(static fn (string $operation): bool => $operation === 'create')
+                                ->dehydrated(static fn ($state): bool => filled($state)),
                         ]),
-                ])->submitAction(new HtmlString(Blade::render('<x-filament::button type="submit" size="sm" wire:click="register">'.__('admin.auth.register.complete').'</x-filament::button>'))),
-            ])->statePath('data');
+                ])
+                    ->submitAction(
+                        new HtmlString(
+                            Blade::render(
+                                '<x-filament::button type="submit" size="sm" wire:click="register">'
+                                .__('admin.auth.register.complete')
+                                .'</x-filament::button>'
+                            )
+                        ),
+                    ),
+            ])
+            ->statePath('data');
     }
 
     protected function getPhoneNumberFormComponent(): Grid
@@ -161,22 +187,30 @@ class Register extends BaseRegister
                     ->label(__('admin.auth.register.country'))
                     ->options(get_country_options())
                     ->default('KH')
-                    ->required(static fn (string $operation): bool => $operation === 'create')->dehydrated(static fn ($state): bool => filled($state))
+                    ->required(static fn (string $operation): bool => $operation === 'create')
+                    ->dehydrated(static fn ($state): bool => filled($state))
                     ->searchable()
                     ->columnSpan(2),
                 TextInput::make('phone_number_input')
                     ->label(__('admin.auth.register.phone'))
                     ->placeholder('12 345 678')
-                    ->required(static fn (string $operation): bool => $operation === 'create')->dehydrated(static fn ($state): bool => filled($state))
-                    ->tel()
+                    ->required(static fn (string $operation): bool => $operation === 'create')
+                    ->dehydrated(static fn ($state): bool => filled($state))
+                    ->mask('999 999 999')
                     ->rule(static function (Get $get) {
-                        return static function (string $attribute, $value, \Closure $fail) use ($get) {
+                        return static function (string $attribute, $value, Closure $fail) use ($get) {
                             $dialCode = get_dial_code($get('country_iso'));
                             $fullPhone = $dialCode.ltrim($value, '0');
                             $exists = User::where('phone_number', $fullPhone)
                                 ->where('user_type_id', UserType::VENDOR)
+                                ->whereIn('user_status_id', [
+                                    UserStatus::ACTIVE,
+                                    UserStatus::PENDING,
+                                    UserStatus::INACTIVE,
+                                ])
                                 ->whereNull('deleted_at')
                                 ->exists();
+
                             if ($exists) {
                                 $fail('This phone number is already registered.');
                             }
@@ -196,10 +230,10 @@ class Register extends BaseRegister
 
         unset($data['name']);
 
-        // Combine fields and strip leading zero
         $dialCode = get_dial_code($data['country_iso']);
         $phoneInput = preg_replace('/[^0-9]/', '', $data['phone_number_input'] ?? '');
         $data['phone_number'] = $dialCode.ltrim($phoneInput, '0');
+
         unset($data['country_iso'], $data['phone_number_input']);
 
         $data['user_type_id'] = UserType::VENDOR;

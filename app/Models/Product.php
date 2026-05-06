@@ -27,63 +27,38 @@ use Illuminate\Support\Str;
  * @property int $product_type_id
  * @property int $default_unit_id
  * @property int $product_status_id
- * @property int|null $user_id
  * @property string $name_en
  * @property string $name_km
  * @property string $slug
  * @property string|null $description_en
  * @property string|null $description_km
- * @property string|null $selling_unit
- * @property float|null $price_per_unit
- * @property float $available_stock
- * @property string|null $farm_name_location
- * @property string|null $farming_method
- * @property Carbon|null $harvest_date
- * @property bool $is_active
- * @property bool $is_organic
  * @property array<array-key, mixed>|null $nutrition_data
- * @property int|null $shelf_life_days
+ * @property string|null $image_url
  * @property Carbon|null $deleted_at
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  * @property-read ProductCategory $productCategory
  * @property-read Unit $defaultUnit
  * @property-read ProductStatus $status
- * @property-read User|null $vendor
  * @property-read Collection<int, ProductVariant> $variants
  * @property-read ProductDiscount|null $activeDiscount
  *
  * @method static Builder|Product active()
  * @method static Builder|Product byCategory(int|ProductCategory $category)
- * @method static Builder|Product byVendor(int $userId)
  */
-#[Table('products', key: 'id')]
+#[Table('products', key: 'id', keyType: 'int')]
 #[Fillable([
     'product_category_id',
     'product_type_id',
     'default_unit_id',
     'product_status_id',
-    'user_id',
     'name_en',
     'name_km',
     'slug',
     'description_en',
     'description_km',
-    'selling_unit',
-    'price_per_unit',
-    'available_stock',
-    'farm_name_location',
-    'farming_method',
-    'harvest_date',
-    'is_active',
-    'is_organic',
     'nutrition_data',
-    'shelf_life_days',
-    'province_of_origin',
-    'certification_type',
-    'storage_instructions_en',
-    'storage_instructions_km',
-    'packaging_type',
+    'image_url',
 ])]
 #[UseFactory(ProductFactory::class)]
 class Product extends Model
@@ -100,12 +75,7 @@ class Product extends Model
     {
         return [
             'nutrition_data' => 'array',
-            'is_organic' => 'boolean',
-            'is_active' => 'boolean',
-            'harvest_date' => 'date',
             'deleted_at' => 'datetime',
-            'price_per_unit' => 'float',
-            'available_stock' => 'float',
         ];
     }
 
@@ -186,16 +156,6 @@ class Product extends Model
     }
 
     /**
-     * Get the vendor owner for the product.
-     *
-     * @return BelongsTo<User, $this>
-     */
-    public function vendor(): BelongsTo
-    {
-        return $this->belongsTo(User::class, 'user_id', 'id');
-    }
-
-    /**
      * Get the variants for the product.
      *
      * @return HasMany<ProductVariant, $this>
@@ -213,7 +173,7 @@ class Product extends Model
     public function activeDiscount(): HasOne
     {
         return $this->hasOne(ProductDiscount::class, 'product_id', 'id')
-            ->where('is_active', true)
+            ->where('product_status_id', ProductStatus::ACTIVE)
             ->where(static function ($query) {
                 $query->whereNull('starts_at')
                     ->orWhere('starts_at', '<=', now());
@@ -243,8 +203,7 @@ class Product extends Model
     #[Scope]
     protected function active(Builder $query): void
     {
-        $query->where('is_active', true)
-            ->where('product_status_id', ProductStatus::ACTIVE);
+        $query->where('product_status_id', ProductStatus::ACTIVE);
     }
 
     /**
@@ -259,16 +218,5 @@ class Product extends Model
             ? $category->id : $category;
 
         $query->where('product_category_id', $categoryId);
-    }
-
-    /**
-     * Scope a query by vendor owner.
-     *
-     * @param  Builder<self>  $query
-     */
-    #[Scope]
-    protected function byVendor(Builder $query, int $userId): void
-    {
-        $query->where('user_id', $userId);
     }
 }

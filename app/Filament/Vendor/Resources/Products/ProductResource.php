@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Filament\Vendor\Resources\Products;
 
 use App\Filament\Vendor\Resources\Products\Pages\CreateProduct;
@@ -9,6 +11,7 @@ use App\Filament\Vendor\Resources\Products\Pages\ViewProduct;
 use App\Filament\Vendor\Resources\Products\Schemas\ProductForm;
 use App\Filament\Vendor\Resources\Products\Schemas\ProductInfolist;
 use App\Filament\Vendor\Resources\Products\Tables\ProductsTable;
+use App\Models\User;
 use App\Models\VendorInventory;
 use BackedEnum;
 use Filament\Resources\Resource;
@@ -16,7 +19,6 @@ use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Override;
 
 class ProductResource extends Resource
@@ -26,9 +28,23 @@ class ProductResource extends Resource
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
 
     #[Override]
+    public static function getModelLabel(): string
+    {
+        return __('admin.resources.product.label');
+    }
+
+    #[Override]
+    public static function getPluralModelLabel(): string
+    {
+        return __('admin.resources.product.plural_label');
+    }
+
+    #[Override]
     public static function canAccess(): bool
     {
-        return (bool) auth()->user()->vendorProfile?->is_verified;
+        $user = auth()->user();
+
+        return $user instanceof User && (bool) $user->vendorProfile?->is_verified;
     }
 
     #[Override]
@@ -73,14 +89,5 @@ class ProductResource extends Resource
             'view' => ViewProduct::route('/{record}'),
             'edit' => EditProduct::route('/{record}/edit'),
         ];
-    }
-
-    #[Override]
-    public static function getRecordRouteBindingEloquentQuery(): Builder
-    {
-        return parent::getRecordRouteBindingEloquentQuery()
-            ->withoutGlobalScopes([
-                SoftDeletingScope::class,
-            ]);
     }
 }

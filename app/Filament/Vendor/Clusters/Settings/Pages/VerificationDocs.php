@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Filament\Vendor\Clusters\Settings\Pages;
 
 use App\Filament\Vendor\Clusters\Settings;
+use App\Models\User;
 use BackedEnum;
 use Filament\Actions\Action;
 use Filament\Forms\Components\FileUpload;
@@ -38,7 +39,11 @@ class VerificationDocs extends Page
 
     public function mount(): void
     {
-        $this->data = Auth::user()->vendorProfile?->toArray() ?? [];
+        $user = Auth::user();
+
+        $this->data = $user instanceof User
+            ? $user->vendorProfile?->toArray() ?? []
+            : [];
     }
 
     public function form(Schema $schema): Schema
@@ -53,24 +58,24 @@ class VerificationDocs extends Page
                             ->image()
                             ->disk('local')
                             ->directory('vendor-verification')
-                            ->disabled(static fn ($record) => Auth::user()->vendorProfile?->is_verified),
+                            ->disabled(static fn ($record): bool => (bool) Auth::user()?->vendorProfile?->is_verified),
                         FileUpload::make('id_card_back')
                             ->label(__('admin.vendor_settings.verification_docs.id_back'))
                             ->image()
                             ->disk('local')
                             ->directory('vendor-verification')
-                            ->disabled(static fn ($record) => Auth::user()->vendorProfile?->is_verified),
+                            ->disabled(static fn ($record): bool => (bool) Auth::user()?->vendorProfile?->is_verified),
                         FileUpload::make('store_front_image')
                             ->label(__('admin.vendor_settings.verification_docs.store_photo'))
                             ->image()
                             ->disk('local')
                             ->directory('vendor-verification')
-                            ->disabled(static fn ($record) => Auth::user()->vendorProfile?->is_verified),
+                            ->disabled(static fn ($record): bool => (bool) Auth::user()?->vendorProfile?->is_verified),
                         FileUpload::make('organic_certificate_url')
                             ->label(__('admin.vendor_settings.verification_docs.organic_cert'))
                             ->disk('local')
                             ->directory('vendor-verification')
-                            ->disabled(static fn ($record) => Auth::user()->vendorProfile?->is_verified),
+                            ->disabled(static fn ($record): bool => (bool) Auth::user()?->vendorProfile?->is_verified),
                     ])->columns(2),
             ])
             ->statePath('data');
@@ -79,6 +84,9 @@ class VerificationDocs extends Page
     public function save(): void
     {
         $user = Auth::user();
+        if (! $user instanceof User) {
+            return;
+        }
 
         if ($user->vendorProfile?->is_verified) {
             Notification::make()
@@ -90,7 +98,12 @@ class VerificationDocs extends Page
             return;
         }
 
-        $state = $this->getSchema('form')->getState();
+        $form = $this->getSchema('form');
+        if (! $form) {
+            return;
+        }
+
+        $state = $form->getState();
         $user->vendorProfile()->update($state);
 
         Notification::make()

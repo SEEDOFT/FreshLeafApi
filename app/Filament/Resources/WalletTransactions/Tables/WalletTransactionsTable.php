@@ -21,7 +21,7 @@ class WalletTransactionsTable
             ->columns([
                 TextColumn::make('wallet.user.name')
                     ->label(__('admin.resources.wallet_transaction.user'))
-                    ->getStateUsing(fn (WalletTransaction $record) => "{$record->wallet->user->first_name} {$record->wallet->user->last_name}")
+                    ->getStateUsing(fn (WalletTransaction $record) => "{$record->wallet->user?->first_name} {$record->wallet->user?->last_name}")
                     ->searchable(['first_name', 'last_name'])
                     ->sortable(),
                 TextColumn::make('type.name')
@@ -40,7 +40,7 @@ class WalletTransactionsTable
                     ->sortable(),
                 TextColumn::make('amount')
                     ->label(__('admin.resources.wallet_transaction.amount'))
-                    ->money(fn (WalletTransaction $record) => $record->wallet->currency->code)
+                    ->money(fn (WalletTransaction $record) => $record->wallet->currency->code ?? 'USD')
                     ->sortable(),
                 TextColumn::make('created_at')
                     ->label(__('admin.resources.created_at'))

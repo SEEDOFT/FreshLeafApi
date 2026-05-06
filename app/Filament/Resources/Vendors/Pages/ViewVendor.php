@@ -29,7 +29,7 @@ class ViewVendor extends ViewRecord
                 ->color('success')
                 ->visible(static fn (User $record) => $record->isType(UserType::VENDOR) && $record->vendorProfile && ! $record->vendorProfile->is_verified)
                 ->action(static function (User $record, array $data) {
-                    $record->vendorProfile->update([
+                    $record->vendorProfile?->update([
                         'is_verified' => true,
                         'approved_at' => now(),
                         'approved_by_admin_id' => Auth::id(),
@@ -54,7 +54,7 @@ class ViewVendor extends ViewRecord
                 ->color('danger')
                 ->visible(static fn (User $record) => $record->isType(UserType::VENDOR) && $record->vendorProfile && ! $record->vendorProfile->is_verified)
                 ->action(static function (User $record, array $data) {
-                    $record->vendorProfile->update([
+                    $record->vendorProfile?->update([
                         'is_verified' => false,
                         'rejected_at' => now(),
                         'rejected_by_admin_id' => Auth::id(),

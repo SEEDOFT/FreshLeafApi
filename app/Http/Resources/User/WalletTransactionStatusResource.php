@@ -2,16 +2,16 @@
 
 declare(strict_types=1);
 
-namespace App\Http\Resources\Shared;
+namespace App\Http\Resources\User;
 
-use App\Models\WalletTransactionType;
+use App\Models\WalletTransactionStatus;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 /**
- * @mixin WalletTransactionType
+ * @mixin WalletTransactionStatus
  */
-class WalletTransactionTypeResource extends JsonResource
+class WalletTransactionStatusResource extends JsonResource
 {
     /**
      * Transform the resource into an array.

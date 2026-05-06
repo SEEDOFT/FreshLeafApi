@@ -23,9 +23,14 @@ use Override;
 
 class VendorResource extends Resource
 {
+    #[Override]
     protected static ?string $model = User::class;
 
+    #[Override]
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedBuildingStorefront;
+
+    #[Override]
+    protected static ?string $slug = 'vendors';
 
     #[Override]
     public static function getNavigationGroup(): ?string
@@ -51,8 +56,6 @@ class VendorResource extends Resource
     {
         return __('admin.resources.vendor.plural_label');
     }
-
-    protected static ?string $slug = 'vendors';
 
     #[Override]
     public static function form(Schema $schema): Schema

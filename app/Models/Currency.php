@@ -41,6 +41,10 @@ class Currency extends Model
 
     public const string USD = 'USD';
 
+    public const int KHR_ID = 1;
+
+    public const int USD_ID = 2;
+
     /**
      * Get the wallets associated with the currency.
      *

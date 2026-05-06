@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Http\Controllers\Api\User;
 
 use App\Http\Controllers\Controller;
-use App\Http\Resources\Shared\PaymentMethodTypeResource;
+use App\Http\Resources\User\PaymentMethodTypeResource;
 use App\Models\PaymentMethodType;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;

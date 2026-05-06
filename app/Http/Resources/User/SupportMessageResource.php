@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Http\Resources\Shared;
+namespace App\Http\Resources\User;
 
 use App\Models\SupportMessage;
 use Illuminate\Http\Request;

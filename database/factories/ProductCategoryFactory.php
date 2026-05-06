@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Database\Factories;
 
 use App\Models\ProductCategory;
+use App\Models\ProductCategoryStatus;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Str;
 
@@ -28,7 +29,7 @@ class ProductCategoryFactory extends Factory
             'description_en' => $this->faker->sentence(),
             'description_km' => $this->faker->sentence().' (Khmer)',
             'slug' => Str::slug($name),
-            'is_active' => true,
+            'product_category_status_id' => ProductCategoryStatus::ACTIVE,
         ];
     }
 }

@@ -12,7 +12,16 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Carbon;
 
+/**
+ * @property int $id
+ * @property int $user_id
+ * @property float $balance
+ * @property int $currency_id
+ * @property Carbon $created_at
+ * @property Carbon $updated_at
+ */
 #[Table('wallets', key: 'id', keyType: 'int')]
 #[Fillable([
     'user_id',

@@ -6,6 +6,7 @@ namespace App\Filament\Vendor\Widgets;
 
 use App\Models\Order;
 use App\Models\Product;
+use App\Models\User;
 use App\Models\Wallet;
 use Filament\Widgets\StatsOverviewWidget as BaseWidget;
 use Filament\Widgets\StatsOverviewWidget\Stat;
@@ -38,6 +39,9 @@ class VendorStatsOverview extends BaseWidget
     protected function getStats(): array
     {
         $user = Auth::user();
+        if (! $user instanceof User) {
+            return [];
+        }
 
         $productCount = Product::where('user_id', $user->id)->count();
 

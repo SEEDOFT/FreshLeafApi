@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Filament\Resources\Products\Schemas;
 
+use Filament\Forms\Components\KeyValue;
+use Filament\Infolists\Components\ImageEntry;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
@@ -21,31 +23,38 @@ class ProductInfolist
                             ->label(__('admin.resources.product.name_en')),
                         TextEntry::make('name_km')
                             ->label(__('admin.resources.product.name_km')),
+                        TextEntry::make('slug')
+                            ->label(__('admin.resources.product.slug')),
                         TextEntry::make('productCategory.name_en')
-                            ->label(__('admin.resources.product.organic_category')),
+                            ->label(__('admin.resources.product.system_category')),
                         TextEntry::make('type.name')
-                            ->label(__('admin.resources.product.product_type')),
-                    ]),
-                Section::make(__('admin.resources.product.pricing_inventory'))
-                    ->columns(3)
-                    ->schema([
+                            ->label(__('admin.resources.product.type')),
+                        TextEntry::make('status.name')
+                            ->label(__('admin.resources.product.status'))
+                            ->badge(),
                         TextEntry::make('defaultUnit.name')
                             ->label(__('admin.resources.product.unit')),
-                        TextEntry::make('price_per_unit')
-                            ->label(__('admin.resources.product.price'))
-                            ->money('USD'),
-                        TextEntry::make('available_stock')
-                            ->label(__('admin.resources.product.stock'))
-                            ->numeric(),
-                    ]),
-                Section::make(__('admin.resources.product.general_info'))
-                    ->schema([
                         TextEntry::make('description_en')
                             ->label(__('admin.resources.product.description_en'))
                             ->columnSpanFull(),
                         TextEntry::make('description_km')
                             ->label(__('admin.resources.product.description_km'))
                             ->columnSpanFull(),
+                    ]),
+
+                Section::make(__('admin.resources.product.nutrition_data'))
+                    ->schema([
+                        KeyValue::make('nutrition_data')
+                            ->label(__('admin.resources.product.nutrition_data'))
+                            ->keyLabel(__('admin.resources.product.nutrition_key'))
+                            ->valueLabel(__('admin.resources.product.nutrition_value')),
+                    ]),
+
+                Section::make(__('admin.resources.product.visuals'))
+                    ->schema([
+                        ImageEntry::make('image_url')
+                            ->label(__('admin.resources.product.image'))
+                            ->imageSize('200'),
                     ]),
             ]);
     }

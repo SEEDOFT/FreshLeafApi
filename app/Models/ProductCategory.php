@@ -6,36 +6,40 @@ namespace App\Models;
 
 use Database\Factories\ProductCategoryFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
+use Illuminate\Database\Eloquent\Attributes\Scope;
 use Illuminate\Database\Eloquent\Attributes\Table;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\App;
 
 /**
  * @property int $id
+ * @property int $product_category_status_id
  * @property string $name_en
  * @property string|null $name_km
  * @property string|null $description_en
  * @property string|null $description_km
  * @property string|null $image_url
- * @property bool $is_active
  * @property string $slug
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  * @property-read Collection<int, Product> $products
  * @property-read int|null $products_count
+ * @property-read ProductCategoryStatus $status
  */
 #[Table('product_categories')]
 #[Fillable([
+    'product_category_status_id',
     'name_en',
     'name_km',
     'description_en',
     'description_km',
     'image_url',
-    'is_active',
     'slug',
 ])]
 class ProductCategory extends Model
@@ -58,6 +62,16 @@ class ProductCategory extends Model
     }
 
     /**
+     * Get the status of the category.
+     *
+     * @return BelongsTo<ProductCategoryStatus, $this>
+     */
+    public function status(): BelongsTo
+    {
+        return $this->belongsTo(ProductCategoryStatus::class, 'product_category_status_id');
+    }
+
+    /**
      * Get the products for the category.
      *
      * @return HasMany<Product, $this>
@@ -68,14 +82,13 @@ class ProductCategory extends Model
     }
 
     /**
-     * Get the attributes that should be cast.
+     * Scope a query to only include active categories.
      *
-     * @return array<string, string>
+     * @param  Builder<self>  $query
      */
-    protected function casts(): array
+    #[Scope]
+    protected function active($query): void
     {
-        return [
-            'is_active' => 'boolean',
-        ];
+        $query->where('product_category_status_id', ProductCategoryStatus::ACTIVE);
     }
 }

@@ -7,6 +7,9 @@ namespace App\Livewire;
 use App\Jobs\ProcessAiChatMessageJob;
 use App\Models\AiChatMessage;
 use App\Models\AiChatSession;
+use App\Models\User;
+use App\Models\UserType;
+use Filament\Facades\Filament;
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
@@ -43,10 +46,25 @@ class AiAssistantChat extends Component
 
     public string $message = '';
 
-    /** @var array<array{role: string, content: string, message_id?: string, status?: string}> */
+    /**
+     * @var array<array{
+     *  role?: string,
+     *  content: string,
+     *  message_id?: string|null,
+     *  status?: string
+     * }>
+     */
     public array $messages = [];
 
-    /** @var array<array{id: int, session_id: string, title: string, updated_at_human: string, updated_at_iso: string}> */
+    /**
+     * @var array<array{
+     *  id: int,
+     *  session_id: string,
+     *  title: string,
+     *  updated_at_human: string,
+     *  updated_at_iso: string
+     * }>
+     */
     public array $sessions = [];
 
     public ?int $activeDbSessionId = null;
@@ -67,13 +85,28 @@ class AiAssistantChat extends Component
 
     public function mount(): void
     {
-        $userId = auth()->id();
-        if (! $userId) {
+        /** @var User|null $user */
+        $user = auth()->user();
+
+        if (! $user || ! $user->isActive()) {
+            return;
+        }
+
+        $panelId = Filament::getCurrentPanel()?->getId();
+
+        // Cross-verify user type against current panel context
+        $isAuthorized = match ($panelId) {
+            'admin' => $user->isType(UserType::ADMIN),
+            'vendor' => $user->isType(UserType::VENDOR),
+            default => false,
+        };
+
+        if (! $isAuthorized) {
             return;
         }
 
         $this->showHistory = (bool) session('ai_assistant_show_history', true);
-        $this->initializeChat($userId);
+        $this->initializeChat((int) $user->id);
     }
 
     private function initializeChat(int $userId): void
@@ -97,9 +130,11 @@ class AiAssistantChat extends Component
     public function deleteSession(int $sessionId): void
     {
         $userId = auth()->id();
-        if (! $userId) {
+        if ($userId === null) {
             return;
         }
+
+        $userId = (int) $userId;
 
         AiChatSession::where('id', $sessionId)
             ->where('user_id', $userId)
@@ -228,10 +263,11 @@ class AiAssistantChat extends Component
     public function startNewChat(): void
     {
         $userId = auth()->id();
-        if (! $userId) {
+        if ($userId === null) {
             return;
         }
 
+        $userId = (int) $userId;
         $session = $this->createSession($userId);
         $this->loadSessions($userId);
         $this->setActiveSession($session);
@@ -336,7 +372,7 @@ class AiAssistantChat extends Component
 
         if ($elapsedSeconds >= self::REQUEST_TIMEOUT_SECONDS) {
             $this->updateOrAppendAssistantMessage(
-                messageId: $this->pendingAssistantMessageId,
+                messageId: (string) $this->pendingAssistantMessageId,
                 content: 'Request timed out while waiting for AI response. Please try sending again.',
                 status: self::STATUS_FAILED,
             );
@@ -381,11 +417,12 @@ class AiAssistantChat extends Component
             return;
         }
 
-        $userId = auth()->id();
-        if (! $userId || ! $this->activeDbSessionId || ! $this->activeSessionUlid) {
+        $rawUserId = auth()->id();
+        if (! $rawUserId || ! $this->activeDbSessionId || ! $this->activeSessionUlid) {
             return;
         }
 
+        $userId = (int) $rawUserId;
         $userMessage = trim($this->message);
         $this->message = '';
         $this->resetRealtimeState();
@@ -402,7 +439,7 @@ class AiAssistantChat extends Component
 
         // Create assistant message placeholder
         $assistantMsgId = (string) Str::ulid();
-        $assistantModel = $this->createAssistantPlaceholder($assistantMsgId);
+        $this->createAssistantPlaceholder($assistantMsgId);
         $this->messages[] = [
             'role' => 'assistant',
             'content' => '',
@@ -416,7 +453,7 @@ class AiAssistantChat extends Component
         // Update session title and dispatch job
         $this->updateSessionMetadata($userId, $userMessage);
         ProcessAiChatMessageJob::dispatch(
-            userId: $assistantModel,
+            userId: $userId,
             prompt: $userMessage,
             history: $this->getChatHistory($userId)
         );
@@ -649,7 +686,7 @@ class AiAssistantChat extends Component
 
         $userId = auth()->id();
         if ($userId) {
-            $this->loadSessions($userId);
+            $this->loadSessions((int) $userId);
         }
 
         $this->dispatch('message-sent');

@@ -6,6 +6,7 @@ namespace Tests\Feature;
 
 use App\Models\Product;
 use App\Models\ProductCategory;
+use App\Models\ProductCategoryStatus;
 use App\Models\ProductStatus;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
@@ -18,6 +19,7 @@ class ProductTest extends TestCase
     {
         parent::setUp();
 
+        ProductCategoryStatus::query()->create(['id' => 1, 'code' => 'active', 'name' => 'Active']);
         ProductStatus::factory()->create(['id' => ProductStatus::ACTIVE, 'code' => 'active']);
         ProductStatus::factory()->create(['id' => ProductStatus::INACTIVE, 'code' => 'inactive']);
         ProductStatus::factory()->create(['id' => ProductStatus::DRAFT, 'code' => 'draft']);

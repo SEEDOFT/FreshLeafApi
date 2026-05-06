@@ -9,7 +9,7 @@ use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Actions\ForceDeleteBulkAction;
 use Filament\Actions\RestoreBulkAction;
-use Filament\Tables\Columns\IconColumn;
+use Filament\Actions\ViewAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Filters\TrashedFilter;
@@ -40,15 +40,6 @@ class ProductsTable
                     ->label(__('admin.resources.product.status'))
                     ->badge()
                     ->sortable(),
-                IconColumn::make('is_organic')
-                    ->label(__('admin.resources.product.is_organic'))
-                    ->boolean()
-                    ->sortable(),
-                TextColumn::make('shelf_life_days')
-                    ->label(__('admin.resources.product.shelf_life'))
-                    ->numeric()
-                    ->sortable()
-                    ->suffix(' '.__('admin.resources.product.days')),
                 TextColumn::make('created_at')
                     ->label(__('admin.resources.created_at'))
                     ->dateTime()
@@ -65,6 +56,7 @@ class ProductsTable
                 TrashedFilter::make(),
             ])
             ->recordActions([
+                ViewAction::make(),
                 EditAction::make(),
             ])
             ->toolbarActions([

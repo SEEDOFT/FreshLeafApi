@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Filament\Vendor\Clusters\Settings\Pages;
 
 use App\Filament\Vendor\Clusters\Settings;
+use App\Models\User;
 use BackedEnum;
 use Filament\Actions\Action;
 use Filament\Forms\Components\TextInput;
@@ -72,7 +73,12 @@ class VendorSecurity extends Page
     public function save(): void
     {
         $user = Auth::user();
-        $state = $this->getSchema('form')->getState();
+        $form = $this->getSchema('form');
+        if (! $user instanceof User || ! $form) {
+            return;
+        }
+
+        $state = $form->getState();
 
         $user->update([
             'password' => Hash::make($state['password']),

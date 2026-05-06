@@ -1,9 +1,12 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Filament\Vendor\Resources\Products\Pages;
 
+use App\Filament\Vendor\Pages\ProductCatalog;
 use App\Filament\Vendor\Resources\Products\ProductResource;
-use Filament\Actions\CreateAction;
+use Filament\Actions\Action;
 use Filament\Resources\Pages\ListRecords;
 use Override;
 
@@ -15,7 +18,9 @@ class ListProducts extends ListRecords
     protected function getHeaderActions(): array
     {
         return [
-            CreateAction::make(),
+            Action::make('create')
+                ->label(__('admin.resources.product.add_product'))
+                ->url(static fn (): string => ProductCatalog::getUrl()),
         ];
     }
 }

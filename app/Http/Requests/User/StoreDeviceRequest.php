@@ -14,7 +14,7 @@ class StoreDeviceRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return true; // Authorized via Sanctum middleware
+        return \auth()->check();
     }
 
     /**

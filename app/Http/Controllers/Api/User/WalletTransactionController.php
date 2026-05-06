@@ -5,17 +5,15 @@ declare(strict_types=1);
 namespace App\Http\Controllers\Api\User;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\User\StoreWalletTransactionRequest;
-use App\Http\Requests\User\UpdateWalletTransactionRequest;
-use App\Http\Resources\Shared\WalletTransactionResource;
-use App\Models\UserType;
+use App\Http\Requests\User\WalletTransaction\StoreWalletTransactionRequest;
+use App\Http\Requests\User\WalletTransaction\UpdateWalletTransactionRequest;
+use App\Http\Resources\User\WalletTransactionResource;
 use App\Models\WalletTransaction;
 use App\Models\WalletTransactionHistory;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Gate;
 
 class WalletTransactionController extends Controller
 {
@@ -24,8 +22,6 @@ class WalletTransactionController extends Controller
      */
     public function index(Request $request): JsonResponse
     {
-        Gate::authorize('viewAny', [WalletTransaction::class, UserType::USER]);
-
         $user = $this->authenticatedUser($request);
 
         $query = WalletTransaction::whereHas(
@@ -52,14 +48,11 @@ class WalletTransactionController extends Controller
      */
     public function store(StoreWalletTransactionRequest $request): JsonResponse
     {
-        Gate::authorize('create', [WalletTransaction::class, UserType::USER]);
-
         $user = $this->authenticatedUser($request);
 
-        return DB::transaction(function () use ($request, $user) {
+        return DB::transaction(function () use ($request, $user): JsonResponse {
             $transaction = WalletTransaction::create($request->validated());
 
-            // Log initial history
             WalletTransactionHistory::create([
                 'wallet_transaction_id' => $transaction->id,
                 'from_wallet_transaction_status_id' => null,
@@ -88,8 +81,6 @@ class WalletTransactionController extends Controller
             return $this->errorResponse('Wallet transaction not found', 404);
         }
 
-        Gate::authorize('view', [$transaction, UserType::USER]);
-
         return $this->successResponse(
             new WalletTransactionResource($transaction),
             'Wallet transaction retrieved successfully'
@@ -107,12 +98,10 @@ class WalletTransactionController extends Controller
             return $this->errorResponse('Wallet transaction not found', 404);
         }
 
-        Gate::authorize('update', [$transaction, UserType::USER]);
-
         $user = $this->authenticatedUser($request);
         $oldStatusId = $transaction->wallet_transaction_status_id;
 
-        return DB::transaction(function () use ($request, $transaction, $user, $oldStatusId) {
+        return DB::transaction(function () use ($request, $transaction, $user, $oldStatusId): JsonResponse {
             $transaction->update($request->validated());
 
             if ($transaction->wasChanged('wallet_transaction_status_id')) {
@@ -142,8 +131,6 @@ class WalletTransactionController extends Controller
         if (! $transaction) {
             return $this->errorResponse('Wallet transaction not found', 404);
         }
-
-        Gate::authorize('delete', [$transaction, UserType::USER]);
 
         $transaction->delete();
 

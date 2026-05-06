@@ -28,7 +28,7 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->redirectGuestsTo(null);
 
         $middleware->alias([
-            'active.type' => EnsureActiveUserType::class,
+            'active.user' => EnsureActiveUserType::class,
         ]);
 
         $middleware->api(prepend: [

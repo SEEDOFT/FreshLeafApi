@@ -176,14 +176,14 @@ class WebSearchService
         $results = [];
 
         foreach ($nodes as $node) {
-            $titleQuery = $xpath->query(".//*[contains(concat(' ', normalize-space(@class), ' '), ' result__a ')]", $node);
-            $snippetQuery = $xpath->query(".//*[contains(concat(' ', normalize-space(@class), ' '), ' result__snippet ')]", $node);
+            $titleQuery = $xpath->query(".//*[contains(concat(' ', normalize-space(@class), ' '), ' result__a ')]", ($node instanceof \DOMNode) ? $node : null);
+            $snippetQuery = $xpath->query(".//*[contains(concat(' ', normalize-space(@class), ' '), ' result__snippet ')]", ($node instanceof \DOMNode) ? $node : null);
 
-            $titleNode = ($titleQuery !== false) ? $titleQuery->item(0) : null;
-            $snippetNode = ($snippetQuery !== false) ? $snippetQuery->item(0) : null;
+            $titleNode = ($titleQuery instanceof \DOMNodeList) ? $titleQuery->item(0) : null;
+            $snippetNode = ($snippetQuery instanceof \DOMNodeList) ? $snippetQuery->item(0) : null;
 
-            $title = trim((string) ($titleNode ? $titleNode->textContent : ''));
-            $snippet = trim((string) ($snippetNode ? $snippetNode->textContent : ''));
+            $title = trim(($titleNode instanceof \DOMNode) ? (string) $titleNode->textContent : '');
+            $snippet = trim(($snippetNode instanceof \DOMNode) ? (string) $snippetNode->textContent : '');
 
             if ($title === '' && $snippet === '') {
                 continue;

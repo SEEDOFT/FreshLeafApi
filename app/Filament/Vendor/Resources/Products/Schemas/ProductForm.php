@@ -4,14 +4,13 @@ declare(strict_types=1);
 
 namespace App\Filament\Vendor\Resources\Products\Schemas;
 
+use App\Models\VendorInventoryStatus;
+use Filament\Forms\Components\DatePicker;
+use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Select;
-use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
-use Filament\Forms\Components\Toggle;
-use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
-use Illuminate\Support\Str;
 
 class ProductForm
 {
@@ -19,70 +18,60 @@ class ProductForm
     {
         return $schema
             ->components([
-                Section::make(__('admin.resources.product.general_info'))
+                Section::make(__('admin.resources.product.pricing_inventory'))
+                    ->columns(2)
                     ->schema([
-                        Grid::make(2)
-                            ->schema([
-                                TextInput::make('name_km')
-                                    ->label(__('admin.resources.product.name_km'))
-                                    ->required(static fn (string $operation): bool => $operation === 'create')->dehydrated(static fn ($state): bool => filled($state))
-                                    ->live(onBlur: true)
-                                    ->afterStateUpdated(fn (string $state, $set) => $set('slug', Str::slug($state))),
-                                TextInput::make('name_en')
-                                    ->label(__('admin.resources.product.name_en'))
-                                    ->required(static fn (string $operation): bool => $operation === 'create')->dehydrated(static fn ($state): bool => filled($state)),
-                                TextInput::make('slug')
-                                    ->label(__('admin.resources.product.slug'))
-                                    ->hidden()
-                                    ->dehydrated()
-                                    ->required(static fn (string $operation): bool => $operation === 'create')->dehydrated(static fn ($state): bool => filled($state))
-                                    ->unique(ignoreRecord: true),
-                            ]),
-
-                        Grid::make(3)
-                            ->schema([
-                                Select::make('product_category_id')
-                                    ->label(__('admin.resources.product.organic_category'))
-                                    ->relationship('productCategory', 'name_en')
-                                    ->searchable()
-                                    ->preload()
-                                    ->required(static fn (string $operation): bool => $operation === 'create')->dehydrated(static fn ($state): bool => filled($state)),
-
-                                Select::make('product_type_id')
-                                    ->label(__('admin.resources.product.product_type'))
-                                    ->relationship('type', 'name')
-                                    ->required(static fn (string $operation): bool => $operation === 'create')->dehydrated(static fn ($state): bool => filled($state)),
-
-                                Select::make('default_unit_id')
-                                    ->label(__('admin.resources.product.unit'))
-                                    ->relationship('defaultUnit', 'name')
-                                    ->required(static fn (string $operation): bool => $operation === 'create')->dehydrated(static fn ($state): bool => filled($state)),
-                            ]),
+                        Select::make('product_id')
+                            ->label(__('admin.resources.product.label'))
+                            ->relationship('product', 'name_en')
+                            ->disabled()
+                            ->dehydrated()
+                            ->required()
+                            ->columnSpanFull(),
+                        TextInput::make('price')
+                            ->label(__('admin.resources.product.unit_price'))
+                            ->numeric()
+                            ->prefix('$')
+                            ->required(),
+                        TextInput::make('stock_quantity')
+                            ->label(__('admin.resources.product.quantity'))
+                            ->numeric()
+                            ->required(),
+                        Select::make('unit_id')
+                            ->label(__('admin.resources.product.unit'))
+                            ->relationship('unit', 'name')
+                            ->required(),
+                        Select::make('inventory_status_id')
+                            ->label(__('admin.resources.product.status'))
+                            ->relationship('status', 'name')
+                            ->required()
+                            ->default(VendorInventoryStatus::ACTIVE),
                     ]),
 
-                Section::make(__('admin.resources.product.details'))
+                Section::make(__('admin.resources.product.organic_traceability'))
+                    ->columns(2)
                     ->schema([
-                        Textarea::make('description_en')
-                            ->label(__('admin.resources.product.description_en'))
-                            ->rows(3)
+                        TextInput::make('province_of_origin')
+                            ->label(__('admin.resources.product.province_of_origin')),
+                        TextInput::make('certification_type')
+                            ->label(__('admin.resources.product.certification_type')),
+                        TextInput::make('farm_location')
+                            ->label(__('admin.resources.product.farm_location')),
+                        DatePicker::make('harvest_date')
+                            ->label(__('admin.resources.product.harvest_date')),
+                        TextInput::make('shelf_life_days')
+                            ->label(__('admin.resources.product.shelf_life'))
+                            ->numeric()
+                            ->suffix(' '.__('admin.resources.product.days')),
+                        TextInput::make('packaging_type')
+                            ->label(__('admin.resources.product.packaging_type')),
+                        FileUpload::make('batch_images')
+                            ->label(__('admin.resources.product.visuals'))
+                            ->multiple()
+                            ->image()
+                            ->disk('public')
+                            ->directory('vendor-inventory')
                             ->columnSpanFull(),
-                        Textarea::make('description_km')
-                            ->label(__('admin.resources.product.description_km'))
-                            ->rows(3)
-                            ->columnSpanFull(),
-
-                        Grid::make(2)
-                            ->schema([
-                                TextInput::make('shelf_life_days')
-                                    ->label(__('admin.resources.product.shelf_life'))
-                                    ->numeric()
-                                    ->suffix(' '.__('admin.resources.product.days')),
-
-                                Toggle::make('is_organic')
-                                    ->label(__('admin.resources.product.is_organic'))
-                                    ->default(true)
-                                    ->inline(false),
-                            ]),
                     ]),
             ]);
     }

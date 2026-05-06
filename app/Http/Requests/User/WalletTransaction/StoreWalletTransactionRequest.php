@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Http\Requests\User;
+namespace App\Http\Requests\User\WalletTransaction;
 
 use App\Models\User;
 use Illuminate\Contracts\Validation\ValidationRule;

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Filament\Resources\ExchangeRates\Schemas;
 
 use Filament\Infolists\Components\TextEntry;
@@ -12,14 +14,14 @@ class ExchangeRateInfolist
         return $schema
             ->components([
                 TextEntry::make('fromCurrency.name')
-                    ->label('Base Currency'),
+                    ->label(__('admin.resources.exchange_rate.base_currency')),
                 TextEntry::make('toCurrency.name')
-                    ->label('Target Currency'),
+                    ->label(__('admin.resources.exchange_rate.target_currency')),
                 TextEntry::make('rate')
-                    ->label('Conversion Rate')
+                    ->label(__('admin.resources.exchange_rate.rate'))
                     ->numeric(),
                 TextEntry::make('updated_at')
-                    ->label('Last Updated')
+                    ->label(__('admin.resources.updated_at'))
                     ->dateTime(),
             ]);
     }

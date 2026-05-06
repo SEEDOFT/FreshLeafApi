@@ -2,12 +2,16 @@
 
 declare(strict_types=1);
 
-namespace App\Http\Resources\Admin;
+namespace App\Http\Resources\User;
 
+use App\Models\Currency;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class DashboardCardResource extends JsonResource
+/**
+ * @mixin Currency
+ */
+class CurrencyResource extends JsonResource
 {
     /**
      * Transform the resource into an array.
@@ -17,9 +21,10 @@ class DashboardCardResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
-            'label' => (string) ($this['label'] ?? ''),
-            'value' => (int) ($this['value'] ?? 0),
-            'tone' => (string) ($this['tone'] ?? 'neutral'),
+            'id' => $this->id,
+            'code' => $this->code,
+            'name' => $this->name,
+            'symbol' => $this->symbol,
         ];
     }
 }

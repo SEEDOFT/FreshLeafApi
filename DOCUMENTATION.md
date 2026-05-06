@@ -165,6 +165,21 @@ REVERB_PORT=8080
 - **Async Processing:** Queued jobs for AI processing on dedicated `ai-stream` queue.
 - **Dev Scripts:** `composer run dev` with configurable Laravel server host/port via `--host` and `--port` arguments.
 
+## 🛡️ Code Quality Standards (MANDATORY)
+
+To ensure the highest codebase quality and avoid runtime errors, the following standards are now mandatory:
+
+- **Strict Static Analysis**: All new and modified code must pass PHPStan analysis.
+- **Null-Safety**:
+    - Avoid `property.nonObject` errors by always validating relationships before accessing properties. Use null-safe operators (`?->`) or null-coalescing (`??`) appropriately.
+    - If a relationship is guaranteed by domain logic to be present, use explicit checks or `findOrFail()` before accessing it.
+    - For model properties, provide fallback values (`?? 'default'`) if the property can be null.
+- **Type Correctness**:
+    - Always provide explicit type hints for method parameters and return types.
+    - Use proper type casting (e.g., `(float)`, `(int)`, `(string)`) when passing values to functions that expect strict types (e.g., `number_format`, `Hash::check`).
+    - Validate and sanitize input data before use.
+- **Array Handling**: Use array shapes in PHPDoc blocks to strictly define the structure of complex arrays (e.g., `@var array<array{role?: string, content: string}>`).
+
 ---
 
 ## 🚀 Roadmap (Next Steps)

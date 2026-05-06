@@ -16,13 +16,22 @@ use Illuminate\Support\Carbon;
  * @property string $sender_type
  * @property int $sender_id
  * @property string $message
+ * @property bool $is_read
+ * @property string|null $file_path
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  * @property-read SupportTicket $ticket
  * @property-read User $sender
  */
 #[Table('support_messages', key: 'id', keyType: 'int')]
-#[Fillable(['support_ticket_id', 'sender_type', 'sender_id', 'message', 'is_read', 'file_path'])]
+#[Fillable([
+    'support_ticket_id',
+    'sender_type',
+    'sender_id',
+    'message',
+    'is_read',
+    'file_path',
+])]
 class SupportMessage extends Model
 {
     /**

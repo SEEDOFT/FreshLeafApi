@@ -33,6 +33,8 @@ use Illuminate\Support\Carbon;
 class AiChatSession extends Model
 {
     /**
+     * {@inheritDoc}
+     *
      * @return array<string, string>
      */
     protected function casts(): array
@@ -55,6 +57,7 @@ class AiChatSession extends Model
      */
     public function messages(): HasMany
     {
-        return $this->hasMany(AiChatMessage::class, 'ai_chat_session_id', 'id')->orderBy('created_at');
+        return $this->hasMany(AiChatMessage::class, 'ai_chat_session_id', 'id')
+            ->orderBy('created_at');
     }
 }

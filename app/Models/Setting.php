@@ -76,7 +76,7 @@ class Setting extends Model
         return 'string';
     }
 
-    private static function serializeValue(mixed $value, string $type): ?string
+    private static function serializeValue(mixed $value, string $type): string|false|null
     {
         if ($value === null) {
             return null;

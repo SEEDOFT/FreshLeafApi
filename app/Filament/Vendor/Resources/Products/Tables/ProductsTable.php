@@ -8,7 +8,7 @@ use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Actions\ViewAction;
-use Filament\Tables\Columns\IconColumn;
+use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 
@@ -17,31 +17,39 @@ class ProductsTable
     public static function configure(Table $table): Table
     {
         return $table
+            ->recordAction('view')
+            ->stackedOnMobile()
             ->columns([
-                TextColumn::make('name_en')
+                ImageColumn::make('product.image_url')
+                    ->label(__('admin.resources.product.image')),
+
+                TextColumn::make('product.name_en')
                     ->label(__('admin.resources.product.name_en'))
                     ->searchable()
                     ->sortable(),
-                TextColumn::make('name_km')
+
+                TextColumn::make('product.name_km')
                     ->label(__('admin.resources.product.name_km'))
                     ->searchable()
                     ->sortable(),
 
-                TextColumn::make('category.name_en')
-                    ->label(__('admin.resources.product.organic_category'))
-                    ->badge()
+                TextColumn::make('price')
+                    ->label(__('admin.resources.product.unit_price'))
+                    ->money('USD')
                     ->sortable(),
 
-                TextColumn::make('defaultUnit.name')
-                    ->label(__('admin.resources.product.unit')),
+                TextColumn::make('stock_quantity')
+                    ->label(__('admin.resources.product.stock'))
+                    ->numeric()
+                    ->sortable(),
 
-                IconColumn::make('is_organic')
-                    ->label(__('admin.resources.product.is_organic'))
-                    ->boolean(),
+                TextColumn::make('unit.name')
+                    ->label(__('admin.resources.product.unit')),
 
                 TextColumn::make('status.name')
                     ->label(__('admin.resources.product.status'))
-                    ->badge(),
+                    ->badge()
+                    ->sortable(),
 
                 TextColumn::make('updated_at')
                     ->label(__('admin.resources.updated_at'))

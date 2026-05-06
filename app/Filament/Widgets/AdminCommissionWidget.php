@@ -17,8 +17,8 @@ class AdminCommissionWidget extends BaseWidget
     #[Override]
     protected function getStats(): array
     {
-        $totalCommission = OrderItem::sum('commission_amount');
-        $vendorNetTotal = OrderItem::sum('vendor_net_amount');
+        $totalCommission = (float) OrderItem::sum('commission_amount');
+        $vendorNetTotal = (float) OrderItem::sum('vendor_net_amount');
 
         return [
             Stat::make(__('admin.widgets.commission.platform_commission'), '$'.number_format($totalCommission, 2))

@@ -98,7 +98,12 @@ class ApplicationSettings extends Page
 
     public function save(): void
     {
-        $state = $this->getSchema('form')->getState();
+        $form = $this->getSchema('form');
+        if (! $form) {
+            return;
+        }
+
+        $state = $form->getState();
 
         foreach ($state as $key => $value) {
             Setting::set($key, $value, 'application');

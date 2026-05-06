@@ -90,16 +90,19 @@ class AdminProfile extends Page
                                     ->schema([
                                         TextInput::make('first_name')
                                             ->label(__('admin.profile.first_name'))
-                                            ->required(static fn (string $operation): bool => $operation === 'create')->dehydrated(static fn ($state): bool => filled($state))
+                                            ->required(static fn (string $operation): bool => $operation === 'create')
+                                            ->dehydrated(static fn ($state): bool => filled($state))
                                             ->maxLength(255),
                                         TextInput::make('last_name')
                                             ->label(__('admin.profile.last_name'))
-                                            ->required(static fn (string $operation): bool => $operation === 'create')->dehydrated(static fn ($state): bool => filled($state))
+                                            ->required(static fn (string $operation): bool => $operation === 'create')
+                                            ->dehydrated(static fn ($state): bool => filled($state))
                                             ->maxLength(255),
                                         TextInput::make('email')
                                             ->label(__('admin.profile.email'))
                                             ->email()
-                                            ->required(static fn (string $operation): bool => $operation === 'create')->dehydrated(static fn ($state): bool => filled($state))
+                                            ->required(static fn (string $operation): bool => $operation === 'create')
+                                            ->dehydrated(static fn ($state): bool => filled($state))
                                             ->maxLength(255),
                                         TextInput::make('phone_number')
                                             ->label(__('admin.profile.phone'))
@@ -118,7 +121,8 @@ class AdminProfile extends Page
                                 'km' => 'Khmer (ភាសាខ្មែរ)',
                                 'en' => 'English (ភាសាអង់គ្លេស)',
                             ])
-                            ->required(static fn (string $operation): bool => $operation === 'create')->dehydrated(static fn ($state): bool => filled($state))
+                            ->required(static fn (string $operation): bool => $operation === 'create')
+                            ->dehydrated(static fn ($state): bool => filled($state))
                             ->native(false)
                             ->searchable()
                             ->preload(),
@@ -151,7 +155,12 @@ class AdminProfile extends Page
             return;
         }
 
-        $state = $this->getSchema('form')->getState();
+        $form = $this->getSchema('form');
+        if (! $form) {
+            return;
+        }
+
+        $state = $form->getState();
 
         // Unwrap image from array before saving to DB
         if (isset($state['image']) && is_array($state['image'])) {
@@ -195,11 +204,13 @@ class AdminProfile extends Page
             ->schema([
                 TextInput::make('first_name')
                     ->label(__('admin.profile.first_name'))
-                    ->required(static fn (string $operation): bool => $operation === 'create')->dehydrated(static fn ($state): bool => filled($state))
+                    ->required(static fn (string $operation): bool => $operation === 'create')
+                    ->dehydrated(static fn ($state): bool => filled($state))
                     ->maxLength(255),
                 TextInput::make('last_name')
                     ->label(__('admin.profile.last_name'))
-                    ->required(static fn (string $operation): bool => $operation === 'create')->dehydrated(static fn ($state): bool => filled($state))
+                    ->required(static fn (string $operation): bool => $operation === 'create')
+                    ->dehydrated(static fn ($state): bool => filled($state))
                     ->maxLength(255),
             ]);
     }

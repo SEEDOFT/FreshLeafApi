@@ -27,7 +27,7 @@ class OrdersTable
                     ->sortable(),
                 TextColumn::make('user.name')
                     ->label(__('admin.resources.order.customer'))
-                    ->getStateUsing(fn (Order $record) => "{$record->user->first_name} {$record->user->last_name}")
+                    ->getStateUsing(fn (Order $record) => "{$record->user?->first_name} {$record->user?->last_name}")
                     ->searchable(['first_name', 'last_name'])
                     ->sortable(),
                 TextColumn::make('status.name')

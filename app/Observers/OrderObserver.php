@@ -17,7 +17,7 @@ class OrderObserver
     public function created(Order $order): void
     {
         // Notify the user who placed the order
-        $order->user->notify(new NewOrderNotification($order));
+        $order->user?->notify(new NewOrderNotification($order));
 
         // Optionally notify admins (if applicable)
         // Notification::send($admins, new NewOrderNotification($order));
@@ -29,7 +29,7 @@ class OrderObserver
     public function updated(Order $order): void
     {
         if ($order->isDirty('order_status_id')) {
-            $order->user->notify(new OrderStatusUpdatedNotification($order));
+            $order->user?->notify(new OrderStatusUpdatedNotification($order));
         }
     }
 }

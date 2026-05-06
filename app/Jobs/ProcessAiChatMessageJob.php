@@ -10,7 +10,7 @@ use App\Events\AiMessageFailed;
 use App\Events\AiMessageStarted;
 use App\Models\AiChatMessage;
 use App\Models\AiChatSession;
-use App\Models\Product;
+use App\Models\VendorInventory;
 use App\Services\Ai\AiService;
 use App\Services\Ai\WebSearchService;
 use Illuminate\Bus\Queueable;
@@ -98,20 +98,38 @@ class ProcessAiChatMessageJob implements ShouldQueue
 
     private function fetchProductContext(string $prompt): string
     {
-        $products = Product::where('is_active', true)
-            ->where(function ($query) use ($prompt) {
-                $query->where('name_en', 'LIKE', "%{$prompt}%")
-                    ->orWhere('name_km', 'LIKE', "%{$prompt}%");
+        $inventoryItems = VendorInventory::query()
+            ->active()
+            ->join('products', 'vendor_inventories.product_id', '=', 'products.id')
+            ->join('units', 'vendor_inventories.unit_id', '=', 'units.id')
+            ->where(static function ($query) use ($prompt) {
+                $query->where('products.name_en', 'LIKE', "%{$prompt}%")
+                    ->orWhere('products.name_km', 'LIKE', "%{$prompt}%");
             })
+            ->select([
+                'products.name_en',
+                'products.name_km',
+                'vendor_inventories.price',
+                'vendor_inventories.stock_quantity',
+                'units.name as unit_name',
+                'vendor_inventories.farm_location',
+            ])
             ->limit(5)
             ->get();
 
-        if ($products->isEmpty()) {
+        if ($inventoryItems->isEmpty()) {
             return '';
         }
 
-        return $products->map(fn ($p) => "Product: {$p->name_en} ({$p->name_km}) - Price: \${$p->price_per_unit}, Stock: {$p->available_stock} {$p->selling_unit}, Farming: {$p->farming_method}")
-            ->implode("\n");
+        return $inventoryItems->map(static fn ($item) => sprintf(
+            'Product: %s (%s) - Price: $%s, Stock: %s %s, Location: %s',
+            $item->getAttribute('name_en'),
+            $item->getAttribute('name_km'),
+            $item->getAttribute('price'),
+            $item->getAttribute('stock_quantity'),
+            $item->getAttribute('unit_name'),
+            $item->getAttribute('farm_location')
+        ))->implode("\n");
     }
 
     /**
@@ -304,7 +322,7 @@ class ProcessAiChatMessageJob implements ShouldQueue
                     ]);
                 }
 
-                if (str_contains($chunk, "\n") || count(preg_split('/(?<=[.!?])\s+/', $buffer)) > 1) {
+                if (str_contains($chunk, "\n") || count((array) preg_split('/(?<=[.!?])\s+/', $buffer)) > 1) {
                     $this->broadcastChunk($assistantMessage, $this->userId, $this->sessionId, $buffer, ++$sequence);
                     $buffer = '';
                 }

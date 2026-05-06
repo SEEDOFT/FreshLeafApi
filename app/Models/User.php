@@ -73,6 +73,10 @@ class User extends Authenticatable implements FilamentUser, HasName
     #[Override]
     public function canAccessPanel(Panel $panel): bool
     {
+        if (! $this->isActive()) {
+            return false;
+        }
+
         if ($panel->getId() === 'admin') {
             return $this->isType(UserType::ADMIN);
         }
@@ -96,7 +100,7 @@ class User extends Authenticatable implements FilamentUser, HasName
                 default => null,
             };
 
-            return ($profile !== null) ? $profile->locale : (string) config('app.locale');
+            return ($profile !== null && $profile->locale !== null) ? $profile->locale : (string) config('app.locale');
         }
     }
 
@@ -112,7 +116,7 @@ class User extends Authenticatable implements FilamentUser, HasName
                 default => null,
             };
 
-            return ($profile !== null) ? $profile->prefer_theme : 'system';
+            return ($profile !== null && $profile->prefer_theme !== null) ? $profile->prefer_theme : 'system';
         }
     }
 
@@ -270,14 +274,16 @@ class User extends Authenticatable implements FilamentUser, HasName
 
         $freshKhrWallet = $khrWallet->fresh();
 
-        WalletHistory::insert([
-            'user_id' => $this->id,
-            'wallet_id' => $freshKhrWallet->id,
-            'currency_id' => $khrCurrencyId,
-            'balance' => $freshKhrWallet->balance,
-            'created_at' => now(),
-            'updated_at' => now(),
-        ]);
+        if ($freshKhrWallet) {
+            WalletHistory::insert([
+                'user_id' => $this->id,
+                'wallet_id' => $freshKhrWallet->id,
+                'currency_id' => $khrCurrencyId,
+                'balance' => $freshKhrWallet->balance,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
+        }
 
         $usdWallet = $this->wallets()->firstOrCreate(
             ['user_id' => $this->id, 'currency_id' => $usdCurrencyId],
@@ -286,14 +292,16 @@ class User extends Authenticatable implements FilamentUser, HasName
 
         $freshUsdWallet = $usdWallet->fresh();
 
-        WalletHistory::insert([
-            'user_id' => $this->id,
-            'wallet_id' => $freshUsdWallet->id,
-            'currency_id' => $usdCurrencyId,
-            'balance' => $freshUsdWallet->balance,
-            'created_at' => now(),
-            'updated_at' => now(),
-        ]);
+        if ($freshUsdWallet) {
+            WalletHistory::insert([
+                'user_id' => $this->id,
+                'wallet_id' => $freshUsdWallet->id,
+                'currency_id' => $usdCurrencyId,
+                'balance' => $freshUsdWallet->balance,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
+        }
     }
 
     /**

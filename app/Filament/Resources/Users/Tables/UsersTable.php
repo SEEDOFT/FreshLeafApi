@@ -37,7 +37,7 @@ class UsersTable
                 TextColumn::make('type.name')
                     ->label(__('admin.resources.user.type'))
                     ->badge()
-                    ->color(fn (string $state): string => match ($state) {
+                    ->color(static fn (string $state): string => match ($state) {
                         'Admin' => 'danger',
                         'Vendor' => 'warning',
                         'Consumer' => 'info',
@@ -46,7 +46,7 @@ class UsersTable
                 TextColumn::make('status.name')
                     ->label(__('admin.resources.user.status'))
                     ->badge()
-                    ->color(fn (string $state): string => match ($state) {
+                    ->color(static fn (string $state): string => match ($state) {
                         'Active' => 'success',
                         'Pending' => 'warning',
                         'Inactive', 'Deleted' => 'danger',

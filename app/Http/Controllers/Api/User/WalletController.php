@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace App\Http\Controllers\Api\User;
 
 use App\Http\Controllers\Controller;
-use App\Http\Resources\Shared\WalletHistoryResource;
-use App\Http\Resources\Shared\WalletResource;
+use App\Http\Resources\User\WalletHistoryResource;
+use App\Http\Resources\User\WalletResource;
 use App\Models\Wallet;
 use App\Services\WalletService;
 use Illuminate\Http\JsonResponse;

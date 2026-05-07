@@ -27,12 +27,12 @@ class DeviceController extends Controller
             ]
         );
 
-        return static::successResponse(
+        return static::successTrans(
             [
                 'device_token' => $device->device_token,
                 'device_type' => $device->device_type,
             ],
-            'Device registered successfully'
+            'device.registered'
         );
     }
 
@@ -43,6 +43,6 @@ class DeviceController extends Controller
     {
         UserDevice::where('device_token', $token)->update(['is_active' => false]);
 
-        return static::successResponse(message: 'Device deactivated successfully');
+        return static::successTrans('device.deactivated');
     }
 }

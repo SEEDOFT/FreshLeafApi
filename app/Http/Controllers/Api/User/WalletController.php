@@ -7,7 +7,6 @@ namespace App\Http\Controllers\Api\User;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\User\WalletHistoryResource;
 use App\Http\Resources\User\WalletResource;
-use App\Models\Wallet;
 use App\Services\WalletService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -26,9 +25,9 @@ class WalletController extends Controller
         $user = $this->authenticatedUser($request);
         $wallets = $this->walletService->getUserWallets($user, $request->integer('per_page', 10));
 
-        return static::successResponse(
+        return static::successTrans(
             WalletResource::collection($wallets),
-            'Wallets retrieved successfully'
+            'wallet.wallets_retrieved'
         );
     }
 
@@ -41,12 +40,12 @@ class WalletController extends Controller
         $wallet = $user->wallets()->with('currency')->find($id);
 
         if (! $wallet) {
-            return static::errorResponse('Wallet not found', 404);
+            return static::notFoundTranslated('wallet.not_found');
         }
 
-        return static::successResponse(
+        return static::successTrans(
             new WalletResource($wallet),
-            'Wallet retrieved successfully'
+            'wallet.retrieved'
         );
     }
 
@@ -59,14 +58,14 @@ class WalletController extends Controller
         $wallet = $user->wallets()->with('currency')->find($id);
 
         if (! $wallet) {
-            return static::errorResponse('Wallet not found', 404);
+            return static::notFoundTranslated('wallet.not_found');
         }
 
         $histories = $this->walletService->getWalletHistory($wallet, $request->integer('per_page', 10));
 
-        return static::successResponse(
+        return static::successTrans(
             WalletHistoryResource::collection($histories),
-            'Wallet history retrieved successfully'
+            'wallet.history_retrieved'
         );
     }
 }

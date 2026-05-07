@@ -9,7 +9,6 @@ use App\Http\Requests\User\Address\ReplaceAddressRequest;
 use App\Http\Requests\User\Address\StoreAddressRequest;
 use App\Http\Requests\User\Address\UpdateAddressRequest;
 use App\Http\Resources\User\AddressResource;
-use App\Models\Address;
 use App\Services\AddressService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -29,7 +28,7 @@ class AddressController extends Controller
 
         $addresses = $this->addressService->getUserAddresses($user, $request->integer('per_page', 10));
 
-        return static::successResponse(AddressResource::collection($addresses), 'Addresses retrieved successfully');
+        return static::successTrans(AddressResource::collection($addresses), 'address.addresses_retrieved');
     }
 
     /**
@@ -41,10 +40,10 @@ class AddressController extends Controller
         $address = $user->addresses()->active()->find($id);
 
         if (! $address) {
-            return static::errorResponse('Address not found', 404);
+            return static::notFoundTranslated('address.not_found');
         }
 
-        return static::successResponse(new AddressResource($address), 'Address retrieved successfully');
+        return static::successTrans(new AddressResource($address), 'address.retrieved');
     }
 
     /**
@@ -55,7 +54,7 @@ class AddressController extends Controller
         $user = $this->authenticatedUser($request);
         $address = $this->addressService->createAddress($user, $request->validated());
 
-        return static::successResponse(new AddressResource($address), 'Address created successfully', 201);
+        return static::successTrans(new AddressResource($address), 'address.created', [], 201);
     }
 
     /**
@@ -67,12 +66,12 @@ class AddressController extends Controller
         $address = $user->addresses()->active()->find($id);
 
         if (! $address) {
-            return static::errorResponse('Address not found', 404);
+            return static::notFoundTranslated('address.not_found');
         }
 
         $address = $this->addressService->updateAddress($address, $request->validated());
 
-        return static::successResponse(new AddressResource($address), 'Address updated successfully');
+        return static::successTrans(new AddressResource($address), 'address.updated');
     }
 
     /**
@@ -84,12 +83,12 @@ class AddressController extends Controller
         $address = $user->addresses()->active()->find($id);
 
         if (! $address) {
-            return static::errorResponse('Address not found', 404);
+            return static::notFoundTranslated('address.not_found');
         }
 
         $address = $this->addressService->replaceAddress($address, $request->validated());
 
-        return static::successResponse(new AddressResource($address), 'Address replaced successfully');
+        return static::successTrans(new AddressResource($address), 'address.replaced');
     }
 
     /**
@@ -101,11 +100,11 @@ class AddressController extends Controller
         $address = $user->addresses()->active()->find($id);
 
         if (! $address) {
-            return static::errorResponse('Address not found', 404);
+            return static::notFoundTranslated('address.not_found');
         }
 
         $this->addressService->deleteAddress($address);
 
-        return static::successResponse(message: 'Address deleted successfully');
+        return static::successTrans('address.deleted');
     }
 }

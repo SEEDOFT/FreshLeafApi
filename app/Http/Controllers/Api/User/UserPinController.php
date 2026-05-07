@@ -8,7 +8,6 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\User\Pin\SetPinRequest;
 use App\Http\Requests\User\Pin\UpdatePinRequest;
 use App\Http\Requests\User\Pin\VerifyPinRequest;
-use App\Models\User;
 use App\Models\UserProfile;
 use Illuminate\Http\JsonResponse;
 
@@ -25,12 +24,12 @@ class UserPinController extends Controller
         $profile = UserProfile::firstOrCreateForUser($user);
 
         if ($profile->hasPin()) {
-            return static::errorResponse('PIN already set. Use update endpoint to change it.', 422);
+            return static::errorTranslated('pin.already_set', [], 422);
         }
 
         $profile->setPin($validatedData['pin']);
 
-        return static::successResponse(message: 'PIN set successfully');
+        return static::successTrans('pin.set_success');
     }
 
     /**
@@ -44,12 +43,12 @@ class UserPinController extends Controller
         $profile = $user->userProfile;
 
         if ($profile === null || ! $profile->verifyPin($validatedData['current_pin'])) {
-            return static::errorResponse('Invalid current PIN', 401);
+            return static::errorTranslated('pin.invalid_current_pin', [], 401);
         }
 
         $profile->setPin($validatedData['pin']);
 
-        return static::successResponse(message: 'PIN updated successfully');
+        return static::successTrans('pin.updated_success');
     }
 
     /**
@@ -63,14 +62,14 @@ class UserPinController extends Controller
         $profile = $user->userProfile;
 
         if ($profile === null || ! $profile->hasPin()) {
-            return static::errorResponse('PIN not set', 422);
+            return static::errorTranslated('pin.not_set', [], 422);
         }
 
         if (! $profile->verifyPin($validatedData['pin'])) {
-            return static::errorResponse('Invalid PIN', 401);
+            return static::errorTranslated('pin.invalid_pin', [], 401);
         }
 
-        return static::successResponse(message: 'PIN verified');
+        return static::successTrans('pin.verified');
     }
 
     /**
@@ -86,6 +85,6 @@ class UserPinController extends Controller
 
         $profile->setPin($validatedData['pin']);
 
-        return static::successResponse(message: 'PIN reset successfully');
+        return static::successTrans('pin.reset_success');
     }
 }

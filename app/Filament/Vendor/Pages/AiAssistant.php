@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Filament\Vendor\Pages;
 
+use App\Models\UserType;
+use App\Services\Auth\UserSessionSecurity;
 use BackedEnum;
 use Filament\Pages\Page;
 use Filament\Support\Enums\Width;
@@ -38,7 +40,8 @@ class AiAssistant extends Page
     #[Override]
     public static function canAccess(): bool
     {
-        return (bool) app_setting('enable_ai_assistant_vendor', true);
+        return (bool) app_setting('enable_ai_assistant_vendor', true)
+            && UserSessionSecurity::isAuthorizedAs(UserType::VENDOR);
     }
 
     #[Override]

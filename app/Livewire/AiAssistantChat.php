@@ -10,6 +10,7 @@ use App\Models\AiChatSession;
 use App\Models\User;
 use App\Models\UserType;
 use App\Services\Ai\AiService;
+use App\Services\Auth\UserSessionSecurity;
 use Filament\Facades\Filament;
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\Cache;
@@ -88,10 +89,9 @@ class AiAssistantChat extends Component
 
     public function mount(): void
     {
-        /** @var User|null $user */
-        $user = auth()->user();
+        $user = UserSessionSecurity::getAuthorizedUser();
 
-        if (! $user || ! $user->isActive()) {
+        if (! $user) {
             return;
         }
 
@@ -99,8 +99,8 @@ class AiAssistantChat extends Component
 
         // Cross-verify user type against current panel context
         $isAuthorized = match ($panelId) {
-            'admin' => $user->isType(UserType::ADMIN),
-            'vendor' => $user->isType(UserType::VENDOR),
+            'admin' => $user->user_type_id === UserType::ADMIN,
+            'vendor' => $user->user_type_id === UserType::VENDOR,
             default => false,
         };
 
@@ -138,12 +138,12 @@ class AiAssistantChat extends Component
 
     public function deleteSession(int $sessionId): void
     {
-        $userId = auth()->id();
-        if ($userId === null) {
+        $user = UserSessionSecurity::getAuthorizedUser();
+        if (! $user) {
             return;
         }
 
-        $userId = (int) $userId;
+        $userId = (int) $user->id;
 
         AiChatSession::where('id', $sessionId)
             ->where('user_id', $userId)
@@ -271,12 +271,12 @@ class AiAssistantChat extends Component
 
     public function startNewChat(): void
     {
-        $userId = auth()->id();
-        if ($userId === null) {
+        $user = UserSessionSecurity::getAuthorizedUser();
+        if (! $user) {
             return;
         }
 
-        $userId = (int) $userId;
+        $userId = (int) $user->id;
         $session = $this->createSession($userId);
         $this->loadSessions($userId);
         $this->setActiveSession($session);
@@ -286,10 +286,12 @@ class AiAssistantChat extends Component
 
     public function switchSession(int $sessionId): void
     {
-        $userId = auth()->id();
-        if (! $userId) {
+        $user = UserSessionSecurity::getAuthorizedUser();
+        if (! $user) {
             return;
         }
+
+        $userId = (int) $user->id;
 
         $session = AiChatSession::where('id', $sessionId)
             ->where('user_id', $userId)
@@ -420,18 +422,18 @@ class AiAssistantChat extends Component
         $this->finalizePendingMessage();
     }
 
-    public function sendMessage(): void
+    public function sendUserMessage(): void
     {
         if (trim($this->message) === '' || $this->isTyping) {
             return;
         }
 
-        $rawUserId = auth()->id();
-        if (! $rawUserId || ! $this->activeDbSessionId || ! $this->activeSessionUlid) {
+        $user = UserSessionSecurity::getAuthorizedUser();
+        if (! $user || ! $this->activeDbSessionId || ! $this->activeSessionUlid) {
             return;
         }
 
-        $userId = (int) $rawUserId;
+        $userId = (int) $user->id;
         $userMessage = trim($this->message);
         $this->message = '';
         $this->resetRealtimeState();
@@ -693,9 +695,9 @@ class AiAssistantChat extends Component
             $this->realtimeStatusMessage = null;
         }
 
-        $userId = auth()->id();
-        if ($userId) {
-            $this->loadSessions((int) $userId);
+        $user = UserSessionSecurity::getAuthorizedUser();
+        if ($user) {
+            $this->loadSessions((int) $user->id);
         }
 
         $this->dispatch('message-sent');

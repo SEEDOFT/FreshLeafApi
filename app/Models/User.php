@@ -100,7 +100,9 @@ class User extends Authenticatable implements FilamentUser, HasName
                 default => null,
             };
 
-            return ($profile !== null && $profile->locale !== null) ? $profile->locale : (string) config('app.locale');
+            $default = config('app.locale');
+
+            return ($profile !== null && $profile->locale !== null) ? $profile->locale : (\is_string($default) ? $default : 'en');
         }
     }
 
@@ -242,15 +244,20 @@ class User extends Authenticatable implements FilamentUser, HasName
 
     /**
      * Specifies the user's FCM tokens for notifications.
-     *
-     * @return array<int, string>
+    /**
+     * @return list<string>
      */
     public function routeNotificationForFcm(): array
     {
-        return $this->devices()
+        $tokens = $this->devices()
             ->where('is_active', true)
             ->pluck('device_token')
-            ->all();
+            ->toArray();
+
+        /** @var list<string> $filteredTokens */
+        $filteredTokens = \array_values(\array_filter($tokens, static fn (mixed $token): bool => \is_string($token)));
+
+        return $filteredTokens;
     }
 
     /**
@@ -258,10 +265,17 @@ class User extends Authenticatable implements FilamentUser, HasName
      */
     public function ensureDefaultWallets(): void
     {
-        $khrCurrencyId = (int) Currency::where('code', Currency::KHR)
+        $khrCurrencyId = Currency::where('code', Currency::KHR)
             ->value('id');
-        $usdCurrencyId = (int) Currency::where('code', Currency::USD)
+        $usdCurrencyId = Currency::where('code', Currency::USD)
             ->value('id');
+
+        if (! \is_numeric($khrCurrencyId) || ! \is_numeric($usdCurrencyId)) {
+            return;
+        }
+
+        $khrCurrencyId = (int) $khrCurrencyId;
+        $usdCurrencyId = (int) $usdCurrencyId;
 
         if ($khrCurrencyId <= 0 || $usdCurrencyId <= 0) {
             return;

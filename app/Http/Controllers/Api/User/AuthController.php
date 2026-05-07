@@ -31,7 +31,12 @@ class AuthController extends Controller
             ->where('phone_number', $validatedData['phone_number'])
             ->first();
 
-        if (! $user || ! Hash::check($validatedData['password'], $user->password)) {
+        $password = $validatedData['password'];
+        if (! \is_string($password)) {
+            return static::errorResponse('Invalid password format', 400);
+        }
+
+        if (! $user || ! \is_string($user->password) || ! Hash::check($password, $user->password)) {
             return static::errorResponse('Invalid login details', 401);
         }
 
@@ -56,12 +61,17 @@ class AuthController extends Controller
 
         /** @var User $user */
         $user = DB::transaction(static function () use ($validatedData): User {
+            $password = $validatedData['password'];
+            if (! \is_string($password)) {
+                throw new \Exception('Invalid password format');
+            }
+
             $user = User::create([
                 'first_name' => $validatedData['first_name'],
                 'last_name' => $validatedData['last_name'],
                 'email' => $validatedData['email'] ?? null,
                 'phone_number' => $validatedData['phone_number'],
-                'password' => Hash::make($validatedData['password']),
+                'password' => Hash::make($password),
                 'user_type_id' => UserType::USER,
                 'user_status_id' => UserStatus::ACTIVE,
             ]);
@@ -103,7 +113,12 @@ class AuthController extends Controller
         $validatedData = $request->validated();
         $user = $this->authenticatedUser($request);
 
-        if (! Hash::check($validatedData['password'], $user->password)) {
+        $password = $validatedData['password'];
+        if (! \is_string($password)) {
+            return static::errorResponse('Invalid password format', 400);
+        }
+
+        if (! \is_string($user->password) || ! Hash::check($password, $user->password)) {
             return static::errorResponse('Invalid password', 401);
         }
 
@@ -118,8 +133,13 @@ class AuthController extends Controller
         $validatedData = $request->validated();
         $user = $this->authenticatedUser($request);
 
+        $password = $validatedData['password'];
+        if (! \is_string($password)) {
+            return static::errorResponse('Invalid password format', 400);
+        }
+
         $user->update([
-            'password' => Hash::make($validatedData['password']),
+            'password' => Hash::make($password),
         ]);
 
         return static::successResponse(message: 'Password updated');

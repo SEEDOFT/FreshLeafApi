@@ -29,8 +29,11 @@ class GeminiService implements AiProviderContract
      */
     public function __construct()
     {
-        $this->apiKey = (string) \config('services.gemini.api_key');
-        $this->model = (string) \config('services.gemini.model', 'gemini-2.0-flash');
+        $apiKey = config('services.gemini.api_key');
+        $model = config('services.gemini.model', 'gemini-2.0-flash');
+
+        $this->apiKey = \is_string($apiKey) ? $apiKey : '';
+        $this->model = \is_string($model) ? $model : 'gemini-2.0-flash';
     }
 
     /**
@@ -96,13 +99,13 @@ class GeminiService implements AiProviderContract
         $contents = [];
 
         foreach ($history as $message) {
-            $content = (string) ($message['content'] ?? '');
+            $content = (\is_array($message) && isset($message['content']) && \is_string($message['content'])) ? $message['content'] : '';
 
             if ($content === '') {
                 continue;
             }
 
-            $role = ($message['role'] ?? 'user') === 'assistant' ? 'model' : 'user';
+            $role = (\is_array($message) && ($message['role'] ?? 'user') === 'assistant') ? 'model' : 'user';
 
             $contents[] = [
                 'role' => $role,
@@ -177,13 +180,13 @@ class GeminiService implements AiProviderContract
         $contents = [];
 
         foreach ($history as $message) {
-            $content = (string) ($message['content'] ?? '');
+            $content = (\is_array($message) && isset($message['content']) && \is_string($message['content'])) ? $message['content'] : '';
 
             if ($content === '') {
                 continue;
             }
 
-            $role = ($message['role'] ?? 'user') === 'assistant' ? 'model' : 'user';
+            $role = (\is_array($message) && ($message['role'] ?? 'user') === 'assistant') ? 'model' : 'user';
 
             $contents[] = [
                 'role' => $role,
@@ -229,11 +232,14 @@ class GeminiService implements AiProviderContract
         $contents = [];
 
         foreach ($history as $message) {
-            $content = (string) ($message['content'] ?? '');
+            $content = (\is_array($message) && isset($message['content']) && \is_string($message['content'])) ? $message['content'] : '';
+
             if ($content === '') {
                 continue;
             }
-            $role = ($message['role'] ?? 'user') === 'assistant' ? 'model' : 'user';
+
+            $role = (\is_array($message) && ($message['role'] ?? 'user') === 'assistant') ? 'model' : 'user';
+
             $contents[] = [
                 'role' => $role,
                 'parts' => [['text' => $content]],
@@ -285,9 +291,17 @@ class GeminiService implements AiProviderContract
                     continue;
                 }
 
-                $text = (string) ($data['candidates'][0]['content']['parts'][0]['text'] ?? '');
+                $candidates = $data['candidates'] ?? null;
+                if (! \is_array($candidates) || ! isset($candidates[0]) || ! \is_array($candidates[0])) {
+                    continue;
+                }
 
-                if ($text !== '') {
+                $candidate = $candidates[0];
+                $content = $candidate['content'] ?? null;
+                $parts = \is_array($content) ? ($content['parts'] ?? null) : null;
+
+                if (\is_array($parts) && isset($parts[0]) && \is_array($parts[0]) && isset($parts[0]['text']) && \is_string($parts[0]['text'])) {
+                    $text = $parts[0]['text'];
                     $fullText .= $text;
                     $onChunk($text);
                 }
@@ -369,7 +383,9 @@ class GeminiService implements AiProviderContract
         }
 
         $text = \collect($parts)
-            ->map(static fn (mixed $part): string => \is_array($part) ? (string) ($part['text'] ?? '') : '')
+            ->map(static function (mixed $part): string {
+                return (\is_array($part) && isset($part['text']) && \is_string($part['text'])) ? $part['text'] : '';
+            })
             ->implode('');
 
         if ($text === '') {
@@ -435,7 +451,9 @@ class GeminiService implements AiProviderContract
         }
 
         $text = \collect($parts)
-            ->map(static fn (mixed $part): string => \is_array($part) ? (string) ($part['text'] ?? '') : '')
+            ->map(static function (mixed $part): string {
+                return (\is_array($part) && isset($part['text']) && \is_string($part['text'])) ? $part['text'] : '';
+            })
             ->implode('');
 
         if ($text === '') {
@@ -473,8 +491,8 @@ class GeminiService implements AiProviderContract
      */
     private function extractErrorMessage(Response $response): string
     {
-        $message = (string) $response->json('error.message', 'Unknown Gemini API error');
+        $message = $response->json('error.message');
 
-        return 'Gemini API error ('.$response->status().'): '.$message;
+        return 'Gemini API error ('.$response->status().'): '.(\is_string($message) ? $message : 'Unknown Gemini API error');
     }
 }

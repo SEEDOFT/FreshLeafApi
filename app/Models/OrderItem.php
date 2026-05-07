@@ -48,16 +48,26 @@ class OrderItem extends Model
     /** @use HasFactory<OrderItemFactory> */
     use HasFactory;
 
+    public float $commission_amount;
+
+    public float $vendor_net_amount;
+
     /**
      * The "booted" method of the model.
      */
     protected static function booted(): void
     {
         static::saving(static function (OrderItem $item): void {
-            $rate = Setting::get('commission_rate_percentage', 10.00);
+            /** @var float $rate */
+            $rate = (float) Setting::get('commission_rate_percentage', 10.00);
+            /** @var float $subtotal */
+            $subtotal = (float) ($item->subtotal ?? 0.0);
 
-            $item->commission_amount = $item->subtotal * ($rate / 100);
-            $item->vendor_net_amount = $item->subtotal - $item->commission_amount;
+            $commissionAmount = $subtotal * ($rate / 100.0);
+            $vendorNetAmount = $subtotal - $commissionAmount;
+
+            $item->commission_amount = (float) $commissionAmount;
+            $item->vendor_net_amount = (float) $vendorNetAmount;
         });
     }
 

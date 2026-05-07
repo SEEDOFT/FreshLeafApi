@@ -28,9 +28,10 @@ class SetLocaleFromAcceptLanguage
         $locale = $this->resolveLocale($request);
 
         if ($locale !== null) {
-            \app()->setLocale($locale);
+            \app()->setLocale((string) $locale);
         } else {
-            \app()->setLocale(app_setting('default_locale', config('app.locale')));
+            $defaultLocale = config('app.locale');
+            \app()->setLocale(\is_string($defaultLocale) ? $defaultLocale : 'en');
         }
 
         return $next($request);

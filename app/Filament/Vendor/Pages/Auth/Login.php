@@ -11,6 +11,7 @@ use Filament\Auth\Pages\Login as BaseLogin;
 use Filament\Facades\Filament;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
+use Filament\Infolists\Components\TextEntry;
 use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Schema;
 use Illuminate\Contracts\Support\Htmlable;
@@ -21,6 +22,15 @@ use Override;
 class Login extends BaseLogin
 {
     #[Override]
+    protected string $view = 'filament.vendor.pages.auth.login';
+
+    #[Override]
+    public function getLayout(): string
+    {
+        return 'filament-panels::components.layout.base';
+    }
+
+    #[Override]
     public function getHeading(): string|Htmlable
     {
         return __('admin.auth.login.title');
@@ -29,17 +39,7 @@ class Login extends BaseLogin
     #[Override]
     public function getSubHeading(): string|Htmlable|null
     {
-        if (! Filament::hasRegistration()) {
-            return __('admin.auth.login.subheading');
-        }
-
-        return new HtmlString(
-            __('admin.auth.login.subheading').' '.
-            __('admin.auth.login.not_having_account').' '.
-            '<a class="text-primary-600 font-medium hover:text-primary-500" href="'.Filament::getRegistrationUrl().'">'.
-            __('admin.auth.login.register_here').
-            '</a>'
-        );
+        return __('admin.auth.login.subheading');
     }
 
     #[Override]
@@ -49,6 +49,18 @@ class Login extends BaseLogin
             ->components([
                 $this->getPhoneNumberFormComponent(),
                 $this->getPasswordFormComponent(),
+                TextEntry::make('registration_link')
+                    ->hiddenLabel()
+                    ->state(new HtmlString(
+                        '<div class="text-sm text-center py-2">'.
+                        __('admin.auth.login.not_having_account').' '.
+                        '<a class="text-emerald-600 font-bold hover:text-emerald-500 underline underline-offset-4" href="'.
+                        Filament::getRegistrationUrl().'">'.
+                        __('admin.auth.login.register_here').
+                        '</a>'.
+                        '</div>'
+                    ))
+                    ->html(),
                 $this->getRememberFormComponent(),
             ])
             ->statePath('data');
@@ -56,16 +68,14 @@ class Login extends BaseLogin
 
     protected function getPhoneNumberFormComponent(): Grid
     {
-        return Grid::make(4)
+        return Grid::make(5)
             ->schema([
-                Select::make('country_iso')
-                    ->label(__('admin.auth.register.country'))
-                    ->options(get_country_options())
-                    ->default('KH')
-                    ->required(static fn (string $operation): bool => $operation === 'create')
-                    ->dehydrated(static fn (mixed $state): bool => filled($state))
-                    ->searchable()
-                    ->columnSpan(2),
+                configure_country_select(
+                    Select::make('country_iso')
+                        ->label(__('admin.auth.register.country'))
+                )
+                    ->required()
+                    ->columnSpan(3),
                 TextInput::make('phone_number_input')
                     ->label(__('admin.auth.login.phone'))
                     ->placeholder('012 345 678')
@@ -83,7 +93,6 @@ class Login extends BaseLogin
     {
         $userTypeId = UserType::VENDOR;
 
-        // Combine dial code and number
         $countryIso = $data['country_iso'] ?? 'KH';
         $phoneInput = preg_replace('/[^0-9]/', '', $data['phone_number_input'] ?? '');
         $dialCode = get_dial_code($countryIso);

@@ -181,16 +181,15 @@ class Register extends BaseRegister
 
     protected function getPhoneNumberFormComponent(): Grid
     {
-        return Grid::make(4)
+        return Grid::make(5)
             ->schema([
-                Select::make('country_iso')
-                    ->label(__('admin.auth.register.country'))
-                    ->options(get_country_options())
-                    ->default('KH')
+                configure_country_select(
+                    Select::make('country_iso')
+                        ->label(__('admin.auth.register.country'))
+                )
                     ->required(static fn (string $operation): bool => $operation === 'create')
                     ->dehydrated(static fn (mixed $state): bool => filled($state))
-                    ->searchable()
-                    ->columnSpan(2),
+                    ->columnSpan(3),
                 TextInput::make('phone_number_input')
                     ->label(__('admin.auth.register.phone'))
                     ->placeholder('12 345 678')

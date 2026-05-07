@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace App\Providers\Filament;
 
-use App\Filament\Vendor\Pages\Auth\Login;
-use App\Filament\Vendor\Pages\Auth\Register;
 use App\Filament\ThemeColors;
 use App\Filament\Vendor\Clusters\Settings\Pages\BusinessProfile;
 use App\Filament\Vendor\Clusters\Settings\Pages\VendorProfile;
+use App\Filament\Vendor\Pages\Auth\Login;
+use App\Filament\Vendor\Pages\Auth\Register;
 use App\Filament\Vendor\Widgets\VendorEarningsChart;
 use App\Filament\Vendor\Widgets\VendorStatsOverview;
 use App\Http\Middleware\SetLocaleFromAcceptLanguage;

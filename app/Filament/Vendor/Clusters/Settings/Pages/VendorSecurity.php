@@ -84,7 +84,7 @@ class VendorSecurity extends Page
         $state = $form->getState();
 
         $user->update([
-            'password' => Hash::make($state['password']),
+            'password' => Hash::make($state['password'] ?? ''),
         ]);
 
         $this->data = [];

@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Notifications;
 
 use Illuminate\Notifications\Notification;
-use Illuminate\Support\Facades\Log;
 use NotificationChannels\Fcm\FcmChannel;
 use NotificationChannels\Fcm\FcmMessage;
 use NotificationChannels\Fcm\Resources\Notification as FcmNotification;
@@ -28,50 +27,20 @@ class PushNotification extends Notification
      *
      * @return array<int, string>
      */
-    public function via(object $notifiable): array
+    public function via(): array
     {
-        Log::info('PushNotification via() called', [
-            'notifiable_id' => method_exists($notifiable, 'getKey') ? $notifiable->getKey() : 'unknown',
-            'title' => $this->title,
-        ]);
-
         return [FcmChannel::class];
     }
 
     /**
      * Create the FCM message representation.
      */
-    public function toFcm(object $notifiable): FcmMessage
+    public function toFcm(): FcmMessage
     {
-        $notifiableId = method_exists($notifiable, 'getKey') ? $notifiable->getKey() : 'unknown';
-
-        Log::info('PushNotification toFcm() called', [
-            'notifiable_id' => $notifiableId,
-            'title' => $this->title,
-            'body' => $this->body,
-            'data' => $this->data,
-            'notifiable_class' => get_class($notifiable),
-        ]);
-
-        // Check if notifiable has routeNotificationForFcm method
-        if (method_exists($notifiable, 'routeNotificationForFcm')) {
-            $fcmTokens = $notifiable->routeNotificationForFcm();
-            Log::info('PushNotification FCM tokens', [
-                'notifiable_id' => $notifiableId,
-                'tokens' => $fcmTokens,
-                'token_count' => count($fcmTokens),
-            ]);
-        } else {
-            Log::warning('PushNotification: Notifiable does not have routeNotificationForFcm method', [
-                'notifiable_id' => $notifiableId,
-                'notifiable_class' => get_class($notifiable),
-            ]);
-        }
-
-        return (new FcmMessage(notification: new FcmNotification(
+        return new FcmMessage(notification: new FcmNotification(
             title: $this->title,
             body: $this->body,
-        )))
+        ))
             ->data($this->data)
             ->custom([
                 'android' => [

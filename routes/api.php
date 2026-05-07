@@ -6,7 +6,6 @@ use App\Http\Controllers\Api\Ai\AiChatController;
 use App\Http\Controllers\Api\Ai\AiStatusController;
 use App\Http\Controllers\Api\Product\CategoryController;
 use App\Http\Controllers\Api\Product\ProductController;
-use App\Http\Controllers\Api\Test\TestNotificationController;
 use App\Http\Controllers\Api\User\AddressController;
 use App\Http\Controllers\Api\User\AuthController;
 use App\Http\Controllers\Api\User\DeviceController;
@@ -29,14 +28,6 @@ Route::prefix('v1')->name('v1.')->group(static function () {
         ->group(static function () {
             Route::get('/', 'index')->name('index');
             Route::get('{category:slug}', 'show')->name('show');
-        });
-
-    // Test Endpoints (Public - for testing Firebase notifications)
-    Route::prefix('test')
-        ->name('test.')
-        ->controller(TestNotificationController::class)
-        ->group(static function () {
-            Route::post('/notifications', 'send')->name('notifications');
         });
 
     // Unified Auth (Login/Register remain type-specific for clarity, but Logout is shared)

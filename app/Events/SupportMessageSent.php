@@ -11,6 +11,7 @@ use Illuminate\Broadcasting\PrivateChannel;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcastNow;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Str;
 use Override;
 
 class SupportMessageSent implements ShouldBroadcastNow
@@ -67,12 +68,22 @@ class SupportMessageSent implements ShouldBroadcastNow
      */
     public function broadcastWith(): array
     {
+        $this->message->loadMissing(['sender', 'ticket.user']);
+
+        $message = trim($this->message->message);
+        $messagePreview = filled($message)
+            ? Str::limit($message, 120)
+            : 'Sent an attachment';
+
         return [
             'id' => $this->message->id,
             'support_ticket_id' => $this->message->support_ticket_id,
             'sender_type' => $this->message->sender_type,
             'sender_id' => $this->message->sender_id,
+            'sender_name' => $this->message->sender->fullName,
+            'ticket_user_name' => $this->message->ticket->user->fullName,
             'message' => $this->message->message,
+            'message_preview' => $messagePreview,
             'file_path' => $this->message->file_path,
             'created_at' => $this->message->created_at?->toIso8601String(),
             'updated_at' => $this->message->updated_at?->toIso8601String(),

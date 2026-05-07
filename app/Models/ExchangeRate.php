@@ -79,11 +79,12 @@ class ExchangeRate extends Model
             return self::$rateCache[$cacheKey];
         }
 
-        $rate = (float) self::whereHas('fromCurrency', fn ($q) => $q->where('code', $fromCode))
+        /** @var float|string|null $rate */
+        $rate = self::whereHas('fromCurrency', fn ($q) => $q->where('code', $fromCode))
             ->whereHas('toCurrency', fn ($q) => $q->where('code', $toCode))
-            ->value('rate') ?: 1.0;
+            ->value('rate');
 
-        return self::$rateCache[$cacheKey] = $rate;
+        return self::$rateCache[$cacheKey] = (float) ($rate ?? 1.0);
     }
 
     /**

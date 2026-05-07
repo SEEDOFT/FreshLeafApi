@@ -45,7 +45,7 @@ class AdminProfile extends Page
     protected string $view = 'filament.pages.shared.form-page';
 
     /**
-     * @var array<string, mixed> | null
+     * @var array<mixed> | null
      */
     public ?array $data = [];
 

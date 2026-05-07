@@ -17,3 +17,7 @@ Route::get('/admin/documents/{path}', [VerificationDocumentController::class, 's
 Route::match(['GET', 'POST'], 'broadcasting/auth', [BroadcastController::class, 'authenticate'])
     ->middleware('auth:sanctum')
     ->name('broadcasting.auth');
+
+Route::get('/countries', function () {
+    return count(countries());
+});

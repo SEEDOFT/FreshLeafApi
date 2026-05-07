@@ -249,3 +249,121 @@
 div[class*="stat"] {
     border: none !important;
 }
+
+/* Country select labels: dropdown shows name, selected value shows flag + code only. */
+.freshleaf-country-option {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    min-width: 0;
+    width: 100%;
+}
+
+.freshleaf-country-option-flag {
+    flex-shrink: 0;
+    border-radius: 2px;
+    object-fit: cover;
+}
+
+.freshleaf-country-option-name {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.freshleaf-country-option-code {
+    margin-left: auto;
+    color: #6b7280;
+    font-size: 0.75rem;
+    white-space: nowrap;
+}
+
+.fi-select-input-value-label .freshleaf-country-option {
+    width: auto;
+}
+
+.fi-select-input-value-label .freshleaf-country-option-name {
+    display: none;
+}
+
+.fi-select-input-value-label .freshleaf-country-option-code {
+    margin-left: 0;
+    font-size: inherit;
+}
+
+.freshleaf-support-toast {
+    position: fixed;
+    right: 1rem;
+    bottom: 1rem;
+    z-index: 60;
+    display: flex;
+    width: min(24rem, calc(100vw - 2rem));
+    align-items: flex-start;
+    gap: 0.75rem;
+    border: 1px solid rgba(16, 185, 129, 0.22);
+    border-radius: 1rem;
+    background: rgba(255, 255, 255, 0.96);
+    padding: 1rem;
+    color: #111827;
+    text-align: left;
+    box-shadow: 0 20px 35px -18px rgba(15, 23, 42, 0.35);
+    opacity: 0;
+    transform: translateY(0.75rem);
+    transition: opacity 180ms ease, transform 180ms ease;
+}
+
+.dark .freshleaf-support-toast {
+    border-color: rgba(52, 211, 153, 0.22);
+    background: rgba(24, 24, 27, 0.96);
+    color: #f9fafb;
+    box-shadow: 0 20px 35px -18px rgba(0, 0, 0, 0.75);
+}
+
+.freshleaf-support-toast.is-visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.freshleaf-support-toast__icon {
+    display: grid;
+    width: 2.5rem;
+    height: 2.5rem;
+    flex-shrink: 0;
+    place-items: center;
+    border-radius: 999px;
+    background: rgba(16, 185, 129, 0.12);
+    color: #059669;
+}
+
+.freshleaf-support-toast__icon svg {
+    width: 1.35rem;
+    height: 1.35rem;
+}
+
+.freshleaf-support-toast__content {
+    min-width: 0;
+}
+
+.freshleaf-support-toast__title,
+.freshleaf-support-toast__body {
+    display: block;
+}
+
+.freshleaf-support-toast__title {
+    font-weight: 700;
+    line-height: 1.25;
+}
+
+.freshleaf-support-toast__body {
+    margin-top: 0.2rem;
+    overflow: hidden;
+    color: #6b7280;
+    font-size: 0.875rem;
+    line-height: 1.35;
+    text-overflow: ellipsis;
+}
+
+.dark .freshleaf-support-toast__body {
+    color: #a1a1aa;
+}

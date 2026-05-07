@@ -23,7 +23,7 @@ use Illuminate\Support\Carbon;
  * @property Carbon|null $updated_at
  * @property-read User $user
  */
-#[Table('user_devices', key: 'id')]
+#[Table('user_devices', key: 'id', keyType: 'int')]
 #[Fillable(['user_id', 'device_token', 'device_type', 'is_active'])]
 #[UseFactory(UserDeviceFactory::class)]
 class UserDevice extends Model

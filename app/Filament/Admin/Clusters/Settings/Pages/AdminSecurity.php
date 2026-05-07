@@ -82,9 +82,13 @@ class AdminSecurity extends Page
 
         $state = $form->getState();
 
-        $user->update([
-            'password' => Hash::make($state['password']),
-        ]);
+        $password = $state['password'] ?? null;
+
+        if ($password) {
+            $user->update([
+                'password' => Hash::make($password),
+            ]);
+        }
 
         $this->data = [];
 

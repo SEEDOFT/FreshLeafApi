@@ -56,16 +56,14 @@ class Login extends BaseLogin
 
     protected function getPhoneNumberFormComponent(): Grid
     {
-        return Grid::make(4)
+        return Grid::make(5)
             ->schema([
-                Select::make('country_iso')
-                    ->label(__('admin.auth.register.country'))
-                    ->options(get_country_options())
-                    ->default('KH')
+                configure_country_select(
+                    Select::make('country_iso')
+                        ->label(__('admin.auth.register.country')))
                     ->required(static fn (string $operation): bool => $operation === 'create')
                     ->dehydrated(static fn (mixed $state): bool => filled($state))
-                    ->searchable()
-                    ->columnSpan(2),
+                    ->columnSpan(3),
                 TextInput::make('phone_number_input')
                     ->label(__('admin.auth.login.phone'))
                     ->placeholder('012 345 678')
@@ -81,32 +79,17 @@ class Login extends BaseLogin
     #[Override]
     protected function getCredentialsFromFormData(array $data): array
     {
-        $userTypeId = UserType::ADMIN;
-
-        // Combine dial code and number
         $countryIso = $data['country_iso'] ?? 'KH';
         $phoneInput = preg_replace('/[^0-9]/', '', $data['phone_number_input'] ?? '');
         $dialCode = get_dial_code($countryIso);
         $fullPhone = $dialCode.ltrim($phoneInput, '0');
 
-        $credentials = [
+        return array_filter([
             'phone_number' => $fullPhone,
             'password' => $data['password'],
-            'user_type_id' => $userTypeId,
-        ];
-
-        // Check if user exists and is pending
-        $user = User::where('phone_number', $fullPhone)
-            ->where('user_type_id', $userTypeId)
-            ->first();
-
-        if ($user && $user->user_status_id === UserStatus::PENDING) {
-            throw ValidationException::withMessages([
-                'data.phone_number_input' => __('admin.auth.login.pending'),
-            ]);
-        }
-
-        return array_filter($credentials);
+            'user_status_id' => UserStatus::ACTIVE,
+            'user_type_id' => UserType::ADMIN
+        ]);
     }
 
     #[Override]

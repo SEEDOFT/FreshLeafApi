@@ -58,16 +58,14 @@ class OrderItem extends Model
     protected static function booted(): void
     {
         static::saving(static function (OrderItem $item): void {
-            /** @var float $rate */
             $rate = (float) Setting::get('commission_rate_percentage', 10.00);
-            /** @var float $subtotal */
             $subtotal = (float) ($item->subtotal ?? 0.0);
 
             $commissionAmount = $subtotal * ($rate / 100.0);
             $vendorNetAmount = $subtotal - $commissionAmount;
 
-            $item->commission_amount = (float) $commissionAmount;
-            $item->vendor_net_amount = (float) $vendorNetAmount;
+            $item->commission_amount = $commissionAmount;
+            $item->vendor_net_amount = $vendorNetAmount;
         });
     }
 

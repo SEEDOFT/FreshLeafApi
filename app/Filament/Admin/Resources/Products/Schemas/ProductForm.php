@@ -26,15 +26,18 @@ class ProductForm
                     ->schema([
                         TextInput::make('name_en')
                             ->label(__('admin.resources.product.name_en'))
-                            ->required(static fn (string $operation): bool => $operation === 'create')->dehydrated(static fn (mixed $state): bool => filled($state))
+                            ->required(static fn (string $operation): bool => $operation === 'create')
+                            ->dehydrated(static fn (mixed $state): bool => filled($state))
                             ->live(onBlur: true)
                             ->afterStateUpdated(fn (Set $set, ?string $state) => $set('slug', Str::slug($state ?? ''))),
                         TextInput::make('name_km')
                             ->label(__('admin.resources.product.name_km'))
-                            ->required(static fn (string $operation): bool => $operation === 'create')->dehydrated(static fn (mixed $state): bool => filled($state)),
+                            ->required(static fn (string $operation): bool => $operation === 'create')
+                            ->dehydrated(static fn (mixed $state): bool => filled($state)),
                         TextInput::make('slug')
                             ->label(__('admin.resources.product.slug'))
-                            ->required(static fn (string $operation): bool => $operation === 'create')->dehydrated(static fn (mixed $state): bool => filled($state))
+                            ->required(static fn (string $operation): bool => $operation === 'create')
+                            ->dehydrated(static fn (mixed $state): bool => filled($state))
                             ->unique(ignoreRecord: true),
                         Textarea::make('description_en')
                             ->label(__('admin.resources.product.description_en'))
@@ -55,7 +58,8 @@ class ProductForm
                                     ->relationship('productCategory', 'name_en')
                                     ->searchable()
                                     ->preload()
-                                    ->required(static fn (string $operation): bool => $operation === 'create')->dehydrated(static fn (mixed $state): bool => filled($state))
+                                    ->required(static fn (string $operation): bool => $operation === 'create')
+                                    ->dehydrated(static fn (mixed $state): bool => filled($state))
                                     ->helperText(function ($state) {
                                         $helpers = __('admin.resources.product.category_helpers');
                                         if (! $state) {
@@ -65,22 +69,22 @@ class ProductForm
                                         if (! $cat instanceof ProductCategory) {
                                             return null;
                                         }
-                                        if (str_contains(strtolower($cat->slug), 'leafy')) {
+                                        if ($cat->id === ProductCategory::LEAFY) {
                                             return $helpers['leafy'];
                                         }
-                                        if (str_contains(strtolower($cat->slug), 'fruit')) {
+                                        if ($cat->id === ProductCategory::FRUIT) {
                                             return $helpers['fruit'];
                                         }
-                                        if (str_contains(strtolower($cat->slug), 'root')) {
+                                        if ($cat->id === ProductCategory::ROOT_AND_TUBER) {
                                             return $helpers['root'];
                                         }
-                                        if (str_contains(strtolower($cat->slug), 'bulb')) {
+                                        if ($cat->id === ProductCategory::BULB_AND_STEM) {
                                             return $helpers['bulb'];
                                         }
-                                        if (str_contains(strtolower($cat->slug), 'legume')) {
+                                        if ($cat->id === ProductCategory::LEGUME) {
                                             return $helpers['legume'];
                                         }
-                                        if (str_contains(strtolower($cat->slug), 'indigenous')) {
+                                        if ($cat->id === ProductCategory::INDIGENOUS_AND_WILD) {
                                             return $helpers['indigenous'];
                                         }
 
@@ -89,15 +93,18 @@ class ProductForm
                                 Select::make('product_type_id')
                                     ->label(__('admin.resources.product.type'))
                                     ->relationship('type', 'name')
-                                    ->required(static fn (string $operation): bool => $operation === 'create')->dehydrated(static fn (mixed $state): bool => filled($state)),
+                                    ->required(static fn (string $operation): bool => $operation === 'create')
+                                    ->dehydrated(static fn (mixed $state): bool => filled($state)),
                                 Select::make('product_status_id')
                                     ->label(__('admin.resources.product.status'))
                                     ->relationship('status', 'name')
-                                    ->required(static fn (string $operation): bool => $operation === 'create')->dehydrated(static fn (mixed $state): bool => filled($state)),
+                                    ->required(static fn (string $operation): bool => $operation === 'create')
+                                    ->dehydrated(static fn (mixed $state): bool => filled($state)),
                                 Select::make('default_unit_id')
                                     ->label(__('admin.resources.product.unit'))
                                     ->relationship('defaultUnit', 'name')
-                                    ->required(static fn (string $operation): bool => $operation === 'create')->dehydrated(static fn (mixed $state): bool => filled($state)),
+                                    ->required(static fn (string $operation): bool => $operation === 'create')
+                                    ->dehydrated(static fn (mixed $state): bool => filled($state)),
                             ]),
                     ]),
 

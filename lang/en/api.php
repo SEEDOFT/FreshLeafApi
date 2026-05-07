@@ -63,9 +63,11 @@ return [
     */
     'wallet_transaction' => [
         'retrieved' => 'Wallet transaction retrieved successfully',
+        'transactions_retrieved' => 'Wallet transactions retrieved successfully',
         'created' => 'Wallet transaction created successfully',
-        'not_found' => 'Wallet transaction not found',
+        'updated' => 'Wallet transaction updated successfully',
         'deleted' => 'Wallet transaction deleted successfully',
+        'not_found' => 'Wallet transaction not found',
     ],
 
     /*
@@ -114,12 +116,27 @@ return [
     | Support Chat API Messages
     |--------------------------------------------------------------------------
     */
-    'support_chat' => [
+'support_chat' => [
         'session_created' => 'Support chat session created',
         'message_sent' => 'Message sent successfully',
+        'messages_retrieved' => 'Messages retrieved successfully',
         'typing' => 'Typing indicator sent',
         'unread_retrieved' => 'Unread count retrieved',
         'no_unread' => 'No unread messages',
+        'unauthorized_access' => 'Unauthorized access to ticket history',
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | AI Chat API Messages
+    |--------------------------------------------------------------------------
+    */
+    'ai_chat' => [
+        'chat_started' => 'AI chat session started',
+        'response_received' => 'AI response received',
+        'history_retrieved' => 'Chat history retrieved',
+        'session_not_found' => 'Chat session not found',
+        'service_unavailable' => 'AI service is currently unavailable',
     ],
 
     /*
@@ -144,6 +161,31 @@ return [
         'retrieved' => 'Product retrieved successfully',
         'products_retrieved' => 'Products retrieved successfully',
         'not_found' => 'Product not found',
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Cart API Messages
+    |--------------------------------------------------------------------------
+    */
+    'cart' => [
+        'retrieved' => 'Cart retrieved successfully',
+        'item_added' => 'Item added to cart successfully',
+        'item_updated' => 'Cart item updated successfully',
+        'item_removed' => 'Item removed from cart successfully',
+        'insufficient_stock' => 'Not enough stock available',
+        'insufficient_stock_total' => 'Not enough stock available for the total quantity',
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Wishlist API Messages
+    |--------------------------------------------------------------------------
+    */
+    'wishlist' => [
+        'retrieved' => 'Wishlist retrieved successfully',
+        'item_added' => 'Item added to wishlist',
+        'item_removed' => 'Item removed from wishlist',
     ],
 
     /*
@@ -197,5 +239,6 @@ return [
         'unauthorized' => 'Unauthorized',
         'forbidden' => 'Forbidden',
         'server_error' => 'Server error',
+        'endpoint_not_found' => 'Endpoint not found',
     ],
 ];

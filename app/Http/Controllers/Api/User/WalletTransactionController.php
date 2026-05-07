@@ -37,9 +37,9 @@ class WalletTransactionController extends Controller
 
         $transactions = $query->simplePaginate($request->integer('per_page', 15));
 
-        return $this->successResponse(
+        return $this->successTrans(
             WalletTransactionResource::collection($transactions),
-            'Wallet transactions retrieved successfully'
+            'wallet_transaction.transactions_retrieved'
         );
     }
 
@@ -61,9 +61,10 @@ class WalletTransactionController extends Controller
                 'note' => 'Transaction initiated',
             ]);
 
-            return $this->successResponse(
+            return $this->successTrans(
                 new WalletTransactionResource($transaction->load(['type', 'status'])),
-                'Wallet transaction created successfully',
+                'wallet_transaction.created',
+                [],
                 201
             );
         });
@@ -78,12 +79,12 @@ class WalletTransactionController extends Controller
             ->find($id);
 
         if (! $transaction) {
-            return $this->errorResponse('Wallet transaction not found', 404);
+            return $this->notFoundTrans('wallet_transaction.not_found');
         }
 
-        return $this->successResponse(
+        return $this->successTrans(
             new WalletTransactionResource($transaction),
-            'Wallet transaction retrieved successfully'
+            'wallet_transaction.retrieved'
         );
     }
 
@@ -95,7 +96,7 @@ class WalletTransactionController extends Controller
         $transaction = WalletTransaction::find($id);
 
         if (! $transaction) {
-            return $this->errorResponse('Wallet transaction not found', 404);
+            return $this->notFoundTrans('wallet_transaction.not_found');
         }
 
         $user = $this->authenticatedUser($request);
@@ -114,9 +115,9 @@ class WalletTransactionController extends Controller
                 ]);
             }
 
-            return $this->successResponse(
+            return $this->successTrans(
                 new WalletTransactionResource($transaction->load(['type', 'status'])),
-                'Wallet transaction updated successfully'
+                'wallet_transaction.updated'
             );
         });
     }
@@ -129,11 +130,11 @@ class WalletTransactionController extends Controller
         $transaction = WalletTransaction::find($id);
 
         if (! $transaction) {
-            return $this->errorResponse('Wallet transaction not found', 404);
+            return $this->notFoundTrans('wallet_transaction.not_found');
         }
 
         $transaction->delete();
 
-        return $this->successResponse([], 'Wallet transaction deleted successfully');
+        return $this->successTrans('wallet_transaction.deleted');
     }
 }

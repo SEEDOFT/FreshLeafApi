@@ -20,9 +20,9 @@ class PaymentMethodTypeController extends Controller
         $types = PaymentMethodType::orderBy('id')
             ->simplePaginate($request->integer('per_page', 15));
 
-        return static::successResponse(
+        return static::successTrans(
             PaymentMethodTypeResource::collection($types),
-            'Payment method types retrieved successfully'
+            'payment_method_type.payment_method_types_retrieved'
         );
     }
 
@@ -33,12 +33,12 @@ class PaymentMethodTypeController extends Controller
     {
         $type = PaymentMethodType::find($id);
         if (! $type) {
-            return static::errorResponse('Payment method type not found', 404);
+            return static::notFoundTranslated('payment_method_type.not_found');
         }
 
-        return static::successResponse(
+        return static::successTrans(
             new PaymentMethodTypeResource($type),
-            'Payment method type retrieved successfully'
+            'payment_method_type.retrieved'
         );
     }
 }

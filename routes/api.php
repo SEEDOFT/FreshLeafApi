@@ -8,6 +8,7 @@ use App\Http\Controllers\Api\Product\CategoryController;
 use App\Http\Controllers\Api\Product\ProductController;
 use App\Http\Controllers\Api\User\AddressController;
 use App\Http\Controllers\Api\User\AuthController;
+use App\Http\Controllers\Api\User\CartController;
 use App\Http\Controllers\Api\User\DeviceController;
 use App\Http\Controllers\Api\User\PaymentMethodController;
 use App\Http\Controllers\Api\User\PaymentMethodTypeController;
@@ -16,6 +17,7 @@ use App\Http\Controllers\Api\User\SupportChatController;
 use App\Http\Controllers\Api\User\UserPinController;
 use App\Http\Controllers\Api\User\WalletController;
 use App\Http\Controllers\Api\User\WalletTransactionController;
+use App\Http\Controllers\Api\User\WishlistController;
 use Illuminate\Broadcasting\BroadcastController;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Route;
@@ -120,6 +122,24 @@ Route::prefix('v1')->name('v1.')->group(static function () {
                 ->group(static function () {
                     Route::get('/', 'index')->name('index');
                     Route::get('{id}', 'show')->name('show');
+                });
+
+            Route::prefix('cart')
+                ->name('cart.')
+                ->controller(CartController::class)
+                ->group(static function () {
+                    Route::get('/', 'index')->name('index');
+                    Route::post('/', 'store')->name('store');
+                    Route::put('{itemId}', 'update')->name('update');
+                    Route::delete('{itemId}', 'destroy')->name('destroy');
+                });
+
+            Route::prefix('wishlist')
+                ->name('wishlist.')
+                ->controller(WishlistController::class)
+                ->group(static function () {
+                    Route::get('/', 'index')->name('index');
+                    Route::post('toggle', 'toggle')->name('toggle');
                 });
 
             Route::prefix('devices')
@@ -231,7 +251,7 @@ Route::prefix('v1')->name('v1.')->group(static function () {
         'status' => [
             'code' => '404',
             'success' => false,
-            'message' => 'Endpoint not found',
+            'message' => trans('api.general.endpoint_not_found'),
         ],
         'data' => [],
     ], 404))->name('fallback');

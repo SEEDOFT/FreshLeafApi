@@ -7,7 +7,6 @@ namespace App\Http\Controllers\Api\Product;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\Product\ProductResource;
 use App\Models\Product;
-use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -28,9 +27,9 @@ class ProductController extends Controller
             ->orderByDesc('id')
             ->simplePaginate($request->integer('per_page', 15));
 
-        return static::successResponse(
+        return static::successTrans(
             ProductResource::collection($products),
-            'Products available for sale loaded successfully'
+            'product.products_retrieved'
         );
     }
 
@@ -42,17 +41,17 @@ class ProductController extends Controller
         $product = Product::find($id);
 
         if (! $product) {
-            return static::errorResponse('Product not found', 404);
+            return static::notFoundTranslated('product.not_found');
         }
 
-        return static::successResponse(
+        return static::successTrans(
             new ProductResource($product->load([
                 'productCategory',
                 'type',
                 'defaultUnit',
                 'status',
             ])),
-            'Product loaded successfully'
+            'product.retrieved'
         );
     }
 }

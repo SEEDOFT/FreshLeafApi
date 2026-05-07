@@ -47,7 +47,7 @@ class VendorPanelProvider extends PanelProvider
             ->spa()
             ->viteTheme('resources/css/filament/panels/theme.css')
             ->maxContentWidth('full')
-            ->defaultThemeMode(ThemeMode::Light)
+            ->defaultThemeMode(ThemeMode::System)
             ->sidebarCollapsibleOnDesktop()
             ->userMenuItems([
                 'profile' => MenuItem::make()->visible(false),

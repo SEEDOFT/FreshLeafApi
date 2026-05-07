@@ -2,12 +2,12 @@ Database Schema (B2B)
 
 This project has three user groups:
 - Consumer: buys products.
-- Operation: vendor/supplier account that provides products.
+- Operation: vendor account that provides products.
 - Admin: system owner that controls catalog and operations.
 
-Authorization rule (no direct FK between Users and Suppliers):
+Authorization rule:
 - Access is controlled by `users.user_type_id` and `users.user_status_id`.
-- Operation API requires `UserTypes = Operation` and `UserStatuses = Active`.
+- Operation API requires `UserTypes = Vendor` and `UserStatuses = Active`.
 
 Core user tables
 
@@ -176,10 +176,20 @@ Catalog and inventory tables
 
 -> ProductCategories (table: product_categories)
     id,
-    name,
+    product_category_status_id,
+    name_en,
+    name_km,
     slug,
+    description_en,
+    description_km,
+    image_url,
     created_at,
     updated_at
+
+-> ProductCategoryStatuses
+    id,
+    code,
+    name
 
 -> ProductTypes
     id,
@@ -216,134 +226,98 @@ Cambodia Product Category Details
 
 -> Products
     id,
-    product_category_id, (FK -> product_categories.id)
+    product_category_id,
     product_type_id,
     default_unit_id,
     product_status_id,
-    name,
+    name_en,
+    name_km,
     slug,
-    description,
+    description_en,
+    description_km,
     nutrition_data,
-    shelf_life_days,
+    image_url,
     created_at,
     updated_at,
     deleted_at
 
--> ProductVariants
+-> VendorInventories
     id,
+    vendor_id,
     product_id,
-    unit_id,
-    name,
-    quantity_in_unit,
+    inventory_status_id,
     price,
+    stock_quantity,
+    unit_id,
+    harvest_date,
+    farm_location,
+    province_of_origin,
+    certification_type,
+    packaging_type,
+    shelf_life_days,
+    batch_images,
     created_at,
-    updated_at
+    updated_at,
+    deleted_at
 
--> Suppliers
+-> VendorInventoryStatuses
     id,
-    name,
-    contact_name,
-    phone,
-    email,
-    address,
-    created_at,
-    updated_at
+    code,
+    name
 
--> PurchaseOrders
-    id,
-    supplier_id,
-    purchase_order_status_id,
-    po_number,
-    ordered_at,
-    received_at,
-    total_cost,
-    created_at,
-    updated_at
+Cart and Wishlist tables
 
--> PurchaseOrderItems
+-> UserCarts
     id,
-    purchase_order_id,
-    product_id,
-    product_variant_id,
-    qty_ordered,
-    qty_received,
-    cost_per_unit,
-    expiry_date,
-    batch_code,
-    created_at,
-    updated_at
+    user_id,
+    user_cart_status_id,
+    user_cart_type_id
 
--> InventoryBatches
-    id,
-    product_id,
-    product_variant_id,
-    supplier_id,
-    inventory_batch_status_id,
-    batch_code,
-    received_qty,
-    reserved_qty,
-    sold_qty,
-    damaged_qty,
-    expired_qty,
-    cost_per_unit,
-    expiry_date,
-    received_at,
-    created_at,
-    updated_at
+-> UserCartStatuses / UserCartTypes
+    id, code, name
 
--> InventoryMovements
+-> UserCartItems
     id,
-    inventory_batch_id,
-    inventory_movement_type_id,
+    cart_id,
+    vendor_inventory_id,
+    user_cart_item_status_id,
+    user_cart_item_type_id,
     quantity,
-    reference_type,
-    reference_id,
-    note,
-    created_by,
-    created_at,
-    updated_at
+    unit_price,
+    subtotal
 
--> PriceHistories
+-> UserCartItemStatuses / UserCartItemTypes
+    id, code, name
+
+-> UserWishlists
     id,
-    product_id,
-    product_variant_id,
-    old_price,
-    new_price,
-    changed_by,
-    changed_at,
-    created_at,
-    updated_at
+    user_id,
+    user_wishlist_status_id,
+    user_wishlist_type_id
 
-Suggested initial data volume (recommended)
+-> UserWishlistStatuses / UserWishlistTypes
+    id, code, name
 
-For Cambodia phase 1 MVP:
-- ProductCategories: 5
-- Products: 50-75
-- ProductVariants: 120-180
-- Operation vendors (UserTypes=2): 10-15
-- Suppliers: 10-20
-- InventoryBatches: 100+
+-> UserWishlistItems
+    id,
+    user_wishlist_id,
+    vendor_inventory_id,
+    user_wishlist_item_status_id,
+    user_wishlist_item_type_id
+
+-> UserWishlistItemStatuses / UserWishlistItemTypes
+    id, code, name
 
 How this works (simple flow)
 
-1) Admin manages master catalog
-   - Admin creates product categories, units, products, and variants.
+1) Admin manages master catalog (Dictionary)
+   - Admin creates product categories, units, and base products.
 
-2) Operation vendor supplies stock
-   - Vendor data is represented in supplier and purchasing flow.
-   - Purchase order and inventory batches are created when stock arrives.
+2) Vendor supplies stock
+   - Vendors add physical inventory (VendorInventories) pointing to master products.
+   - Vendors define price, stock quantity, and physical origin attributes per batch.
 
-3) Price and stock become sellable data
-   - ProductVariants carry sale prices.
-   - InventoryBatches and InventoryMovements track actual available stock.
-   - PriceHistories keeps change history.
-
-4) Consumer buys through API
-   - Consumer sees available catalog, creates cart/order, and pays.
-   - System reduces stock through inventory movement records.
-
-Rule of thumb for product count
-
-- If your API is still under active development, use 100 products / 250 variants.
-- If you are validating real vendor behavior, move to 300-800 products quickly.
-- If you are preparing for production launch, target 1,000+ products.
+3) Consumer buys through API
+   - Consumer browses vendor inventory listings.
+   - Consumer adds specific vendor inventory items to UserCarts or UserWishlists.
+   - Checkout generates orders based on cart items.

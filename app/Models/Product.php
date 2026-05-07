@@ -40,8 +40,6 @@ use Illuminate\Support\Str;
  * @property-read ProductCategory $productCategory
  * @property-read Unit $defaultUnit
  * @property-read ProductStatus $status
- * @property-read Collection<int, ProductVariant> $variants
- * @property-read ProductDiscount|null $activeDiscount
  *
  * @method static Builder|Product active()
  * @method static Builder|Product byCategory(int|ProductCategory $category)
@@ -153,46 +151,6 @@ class Product extends Model
     public function status(): BelongsTo
     {
         return $this->belongsTo(ProductStatus::class, 'product_status_id', 'id');
-    }
-
-    /**
-     * Get the variants for the product.
-     *
-     * @return HasMany<ProductVariant, $this>
-     */
-    public function variants(): HasMany
-    {
-        return $this->hasMany(ProductVariant::class, 'product_id', 'id');
-    }
-
-    /**
-     * Get the current active discount for the product.
-     *
-     * @return HasOne<ProductDiscount, $this>
-     */
-    public function activeDiscount(): HasOne
-    {
-        return $this->hasOne(ProductDiscount::class, 'product_id', 'id')
-            ->where('product_status_id', ProductStatus::ACTIVE)
-            ->where(static function ($query) {
-                $query->whereNull('starts_at')
-                    ->orWhere('starts_at', '<=', now());
-            })
-            ->where(static function ($query) {
-                $query->whereNull('ends_at')
-                    ->orWhere('ends_at', '>=', now());
-            });
-    }
-
-    /**
-     * Get the current discount percentage.
-     */
-    public public(set) int $discountPercentage {
-        get {
-            $discount = $this->activeDiscount;
-
-            return ($discount !== null) ? $discount->discount_percentage : 0;
-        }
     }
 
     /**

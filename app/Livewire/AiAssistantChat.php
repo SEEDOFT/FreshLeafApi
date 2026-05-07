@@ -97,7 +97,6 @@ class AiAssistantChat extends Component
 
         $panelId = Filament::getCurrentPanel()?->getId();
 
-        // Cross-verify user type against current panel context
         $isAuthorized = match ($panelId) {
             'admin' => $user->user_type_id === UserType::ADMIN,
             'vendor' => $user->user_type_id === UserType::VENDOR,

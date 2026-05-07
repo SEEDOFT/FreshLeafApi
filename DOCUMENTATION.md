@@ -211,7 +211,7 @@ To ensure the highest codebase quality and avoid runtime errors, the following s
 ### Phase 2: Core API Development
 1. **Product Catalog:** Build READ/SEARCH endpoints for Products and Categories.
 2. **Inventory Management:** Implement logic for receiving POs and updating `InventoryBatches`.
-3. **Cart Endpoints:** Full cart management API.
+- **Cart Endpoints:** Full cart management API utilizing `VendorInventory`.
 
 ### Phase 3: AI & Analytics
 1. **Event Tracking:** Middleware/Events to log `UserBehaviorEvents`.

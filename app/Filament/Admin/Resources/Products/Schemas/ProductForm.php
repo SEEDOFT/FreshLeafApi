@@ -56,8 +56,6 @@ class ProductForm
                                 Select::make('product_category_id')
                                     ->label(__('admin.resources.product.system_category'))
                                     ->relationship('productCategory', 'name_en')
-                                    ->searchable()
-                                    ->preload()
                                     ->required(static fn (string $operation): bool => $operation === 'create')
                                     ->dehydrated(static fn (mixed $state): bool => filled($state))
                                     ->helperText(function ($state) {

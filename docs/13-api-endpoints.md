@@ -51,8 +51,8 @@ These endpoints are shared across all user types. The system identifies your acc
 
 | Method | Endpoint | Description | Auth |
 |--------|----------|-------------|------|
-| GET | `/products` | List products (Admin: all, Vendor: own, User: active) | Yes |
-| GET | `/products/{id}` | Get product details | Yes |
+| GET | `/products` | List active products. For Consumers, returns `VendorInventory` items for sale. | Yes |
+| GET | `/products/{id}` | Get specific product/inventory details | Yes |
 
 ### Addresses (Shared - User & Vendor)
 
@@ -75,6 +75,17 @@ These endpoints are shared across all user types. The system identifies your acc
 |--------|----------|-------------|------|
 | POST | `/auth/register` | Register consumer | No |
 | POST | `/auth/login` | Login consumer | No |
+
+### Shopping (Cart & Wishlist)
+
+| Method | Endpoint | Description | Auth |
+|--------|----------|-------------|------|
+| GET | `/user/cart` | Get active cart and items | Yes |
+| POST | `/user/cart` | Add `vendor_inventory_id` to cart | Yes |
+| PUT | `/user/cart/{itemId}` | Update cart item quantity | Yes |
+| DELETE | `/user/cart/{itemId}` | Remove item from cart | Yes |
+| GET | `/user/wishlist` | Get active wishlist and items | Yes |
+| POST | `/user/wishlist/toggle` | Toggle `vendor_inventory_id` in wishlist | Yes |
 
 ### PIN Security
 

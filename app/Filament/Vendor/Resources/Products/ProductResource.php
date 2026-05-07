@@ -12,6 +12,8 @@ use App\Filament\Vendor\Resources\Products\Schemas\ProductForm;
 use App\Filament\Vendor\Resources\Products\Schemas\ProductInfolist;
 use App\Filament\Vendor\Resources\Products\Tables\ProductsTable;
 use App\Models\User;
+use App\Models\UserStatus;
+use App\Models\UserType;
 use App\Models\VendorInventory;
 use BackedEnum;
 use Filament\Resources\Resource;
@@ -46,7 +48,10 @@ class ProductResource extends Resource
     {
         $user = auth()->user();
 
-        return $user instanceof User && (bool) $user->vendorProfile?->is_verified;
+        return $user instanceof User &&
+            $user->user_type_id === UserType::VENDOR &&
+            $user->user_status_id === UserStatus::ACTIVE &&
+            (bool) $user->vendorProfile?->is_verified;
     }
 
     #[Override]

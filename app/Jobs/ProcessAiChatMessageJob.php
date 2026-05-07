@@ -13,14 +13,19 @@ use App\Models\AiChatSession;
 use App\Models\VendorInventory;
 use App\Services\Ai\AiService;
 use App\Services\Ai\WebSearchService;
+use Exception;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Log;
+
+use function sprintf;
+use function stripos;
 
 class ProcessAiChatMessageJob implements ShouldQueue
 {
@@ -102,10 +107,9 @@ class ProcessAiChatMessageJob implements ShouldQueue
             ->active()
             ->join('products', 'vendor_inventories.product_id', '=', 'products.id')
             ->join('units', 'vendor_inventories.unit_id', '=', 'units.id')
-            ->where(static function ($query) use ($prompt) {
-                $query->where('products.name_en', 'LIKE', "%{$prompt}%")
-                    ->orWhere('products.name_km', 'LIKE', "%{$prompt}%");
-            })
+            ->where(static fn (Builder $query) => $query
+                ->where('products.name_en', 'LIKE', "%{$prompt}%")
+                ->orWhere('products.name_km', 'LIKE', "%{$prompt}%"))
             ->select([
                 'products.name_en',
                 'products.name_km',
@@ -184,10 +188,20 @@ class ProcessAiChatMessageJob implements ShouldQueue
             $context = '';
 
             if ($searchQuery !== '' && (bool) config('ai.web_search.enabled', true)) {
-                $this->broadcastChunk($assistantMessage, $userId, $sessionId, " [Accessing internet to search for: {$searchQuery}] \n\n", ++$sequence);
+                $this->broadcastChunk(
+                    $assistantMessage,
+                    $userId,
+                    $sessionId,
+                    " [Accessing internet to search for: {$searchQuery}] \n\n", ++$sequence
+                );
                 $context = $webSearchService->search($searchQuery);
             } elseif ($this->shouldPerformLiveSearch($this->prompt)) {
-                $this->broadcastChunk($assistantMessage, $userId, $sessionId, " [Performing live search] \n\n", ++$sequence);
+                $this->broadcastChunk(
+                    $assistantMessage,
+                    $userId,
+                    $sessionId,
+                    " [Performing live search] \n\n", ++$sequence
+                );
                 $context = $webSearchService->search($this->prompt);
             }
 
@@ -205,7 +219,7 @@ class ProcessAiChatMessageJob implements ShouldQueue
                 $fullResponse = $this->streamAiResponse($aiService, $assistantMessage, $finalPrompt, $sequence);
 
                 if (Cache::has("ai_stop_{$assistantMessage->message_id}")) {
-                    throw new \Exception('STOP_SIGNAL');
+                    throw new Exception('STOP_SIGNAL');
                 }
 
                 // Check if the streamed response contains a search tag
@@ -215,19 +229,31 @@ class ProcessAiChatMessageJob implements ShouldQueue
                         'content' => '',
                         'status' => 'processing',
                     ])->save();
-                    $this->broadcastChunk($assistantMessage, $userId, $sessionId, "\n\n[Accessing internet to search for: {$secondarySearchQuery}] \n\n", ++$sequence);
+                    $this->broadcastChunk(
+                        $assistantMessage,
+                        $userId,
+                        $sessionId,
+                        "\n\n[Accessing internet to search for: {$secondarySearchQuery}] \n\n", ++$sequence
+                    );
 
                     $secondaryContext = $webSearchService->search($secondarySearchQuery);
-                    $secondaryPrompt = "Context from web search:\n\n{$secondaryContext}\n\nUser Question: {$this->prompt}";
+                    $secondaryPrompt =
+                    "Context from web search:\n\n{$secondaryContext}\n\nUser Question: {$this->prompt}";
 
                     // Replace the internal search marker with the final answer.
-                    $fullResponse = $this->streamAiResponse($aiService, $assistantMessage, $secondaryPrompt, $sequence, $secondaryContext);
+                    $fullResponse = $this->streamAiResponse(
+                        $aiService,
+                        $assistantMessage,
+                        $secondaryPrompt,
+                        $sequence,
+                        $secondaryContext
+                    );
                 }
             }
 
             // Check if we stopped early
             if (Cache::has("ai_stop_{$assistantMessage->message_id}")) {
-                throw new \Exception('STOP_SIGNAL');
+                throw new Exception('STOP_SIGNAL');
             }
 
             // 4. Finalize Message
@@ -253,7 +279,7 @@ class ProcessAiChatMessageJob implements ShouldQueue
                 timestamp: now()->toIso8601String(),
             ));
 
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             // Re-throw PHPUnit exceptions so tests don't fail silently
             if (str_starts_with(get_class($e), 'PHPUnit\\')) {
                 throw $e;
@@ -305,7 +331,7 @@ class ProcessAiChatMessageJob implements ShouldQueue
             prompt: $prompt,
             onChunk: function (string $chunk) use (&$sequence, &$buffer, &$persistedResponse, &$hasLoggedFirstChunk, $assistantMessage): void {
                 if (Cache::has("ai_stop_{$assistantMessage->message_id}")) {
-                    throw new \Exception('STOP_SIGNAL');
+                    throw new Exception('STOP_SIGNAL');
                 }
 
                 $buffer .= $chunk;
@@ -374,7 +400,10 @@ class ProcessAiChatMessageJob implements ShouldQueue
         }
 
         $locale = $this->language ?: $user->currentLocale;
-        $languagePrompt = (string) config("ai.language_prompts.{$locale}", "Please respond in the following language: {$locale}");
+        $languagePrompt = (string) config(
+            "ai.language_prompts.{$locale}",
+            "Please respond in the following language: {$locale}"
+        );
 
         return $prompt."\n\n".$languagePrompt;
     }

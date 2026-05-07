@@ -43,7 +43,7 @@ class ProductCategoryInfolist
                     ->schema([
                         ImageEntry::make('image_url')
                             ->label(__('admin.resources.product_category.image'))
-                            ->height('200px'),
+                            ->imageSize(200),
                     ]),
             ]);
     }

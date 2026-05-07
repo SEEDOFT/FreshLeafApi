@@ -267,6 +267,14 @@ class Register extends BaseRegister
         return $user;
     }
 
+    protected function afterRegister(): void
+    {
+        // Logout the auto-logged-in user
+        auth()->logout();
+
+        $this->redirect(route('filament.vendor.auth.login'));
+    }
+
     #[Override]
     protected function isRegisterRateLimited(string $email): bool
     {

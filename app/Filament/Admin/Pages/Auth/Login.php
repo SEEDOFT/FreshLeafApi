@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Filament\Admin\Pages\Auth;
 
-use App\Models\User;
 use App\Models\UserStatus;
 use App\Models\UserType;
 use Filament\Auth\Pages\Login as BaseLogin;
@@ -88,7 +87,7 @@ class Login extends BaseLogin
             'phone_number' => $fullPhone,
             'password' => $data['password'],
             'user_status_id' => UserStatus::ACTIVE,
-            'user_type_id' => UserType::ADMIN
+            'user_type_id' => UserType::ADMIN,
         ]);
     }
 

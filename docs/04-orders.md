@@ -29,9 +29,12 @@ Main order table:
 
 ### order_items
 Order line items:
-- product_id, variant_id
-- quantity, unit_price
+- vendor_inventory_id (Link to specific vendor stock)
+- quantity
+- subtotal
+- Snapshot fields: product_name_snapshot, unit_snapshot, unit_price_snapshot
 - commission_amount (admin commission)
+- vendor_net_amount (amount vendor receives)
 
 ### order_statuses
 Status lookup table:
@@ -40,25 +43,23 @@ Status lookup table:
 ### order_status_histories
 Audit trail of status changes
 
-### product_substitutions
-Allowed substitutions for out-of-stock items
-
 ## Order Flow
 
 ```
-1. User creates order (via Flutter app)
-2. Order status: PENDING
-3. Admin/vendor confirms → CONFIRMED
-4. Vendor prepares → PREPARING
-5. Delivery in progress → DELIVERING
-6. Completed → DELIVERED
+1. User adds Vendor Inventory items to Cart.
+2. User checks out (via Flutter app) generating an Order.
+3. Order status: PENDING
+4. Admin/vendor confirms → CONFIRMED
+5. Vendor prepares → PREPARING
+6. Delivery in progress → DELIVERING
+7. Completed → DELIVERED
 ```
 
 ## Commission System
 
 Admin earns commission on each completed sale:
 - commission_amount stored in order_item
-- Calculated from vendor's product price
+- Calculated from vendor's product price (using global `commission_rate_percentage` setting)
 
 ## Order Statuses
 

@@ -18,16 +18,21 @@ use Illuminate\Support\Carbon;
 /**
  * @property int $id
  * @property int $user_id
- * @property int $cart_status_id
+ * @property int $user_cart_status_id
+ * @property int $user_cart_type_id
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  * @property-read Collection<int, CartItem> $items
- * @property-read int|null $items_count
- * @property-read CartStatus $status
- * @property-read User|null $user
+ * @property-read User $user
+ * @property-read UserCartStatus $status
+ * @property-read UserCartType $type
  */
-#[Table('carts', key: 'id')]
-#[Fillable(['user_id', 'cart_status_id'])]
+#[Table('user_carts', key: 'id', keyType: 'int')]
+#[Fillable([
+    'user_id',
+    'user_cart_status_id',
+    'user_cart_type_id',
+])]
 #[UseFactory(CartFactory::class)]
 class Cart extends Model
 {
@@ -36,8 +41,7 @@ class Cart extends Model
 
     /**
      * Get the user that owns the cart.
-     */
-    /**
+     *
      * @return BelongsTo<User, $this>
      */
     public function user(): BelongsTo
@@ -46,24 +50,32 @@ class Cart extends Model
     }
 
     /**
-     * Get the cart status.
-     */
-    /**
-     * @return BelongsTo<CartStatus, $this>
-     */
-    public function status(): BelongsTo
-    {
-        return $this->belongsTo(CartStatus::class, 'cart_status_id', 'id');
-    }
-
-    /**
      * Get the items for the cart.
-     */
-    /**
+     *
      * @return HasMany<CartItem, $this>
      */
     public function items(): HasMany
     {
         return $this->hasMany(CartItem::class, 'cart_id', 'id');
+    }
+
+    /**
+     * Get the status that owns the cart.
+     *
+     * @return BelongsTo<UserCartStatus, $this>
+     */
+    public function status(): BelongsTo
+    {
+        return $this->belongsTo(UserCartStatus::class, 'user_cart_status_id');
+    }
+
+    /**
+     * Get the type that owns the cart.
+     *
+     * @return BelongsTo<UserCartType, $this>
+     */
+    public function type(): BelongsTo
+    {
+        return $this->belongsTo(UserCartType::class, 'user_cart_type_id');
     }
 }

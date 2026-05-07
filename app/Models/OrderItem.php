@@ -15,8 +15,7 @@ use Illuminate\Support\Carbon;
 /**
  * @property int $id
  * @property int $order_id
- * @property int $product_id
- * @property int $product_variant_id
+ * @property int $vendor_inventory_id
  * @property string $product_name_snapshot
  * @property string $unit_snapshot
  * @property float $unit_price_snapshot
@@ -27,14 +26,12 @@ use Illuminate\Support\Carbon;
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  * @property-read Order $order
- * @property-read Product|null $product
- * @property-read ProductVariant $variant
+ * @property-read VendorInventory $vendorInventory
  */
 #[Table('order_items', key: 'id')]
 #[Fillable([
     'order_id',
-    'product_id',
-    'product_variant_id',
+    'vendor_inventory_id',
     'product_name_snapshot',
     'unit_snapshot',
     'unit_price_snapshot',
@@ -87,22 +84,12 @@ class OrderItem extends Model
     }
 
     /**
-     * Get the product for the item.
+     * Get the vendor inventory for the item.
      *
-     * @return BelongsTo<Product, $this>
+     * @return BelongsTo<VendorInventory, $this>
      */
-    public function product(): BelongsTo
+    public function vendorInventory(): BelongsTo
     {
-        return $this->belongsTo(Product::class, 'product_id', 'id');
-    }
-
-    /**
-     * Get the product variant for the item.
-     *
-     * @return BelongsTo<ProductVariant, $this>
-     */
-    public function variant(): BelongsTo
-    {
-        return $this->belongsTo(ProductVariant::class, 'product_variant_id', 'id');
+        return $this->belongsTo(VendorInventory::class, 'vendor_inventory_id', 'id');
     }
 }

@@ -1,17 +1,15 @@
 # Database Schema Reference - FreshLeaf API
 
-This document provides a detailed overview of the database schema for the FreshLeaf API. The schema is organized into eight core domains to ensure scalability and clarity.
+This document provides a detailed overview of the database schema for the FreshLeaf API. The schema is organized into core domains to ensure scalability and clarity.
 
 ## Table of Contents
 1. [User Domain](#1-user-domain)
-2. [Product Domain](#2-product-domain)
-3. [Supplier & Procurement Domain](#3-supplier--procurement-domain)
-4. [Inventory Domain](#4-inventory-domain)
-5. [Cart Domain](#5-cart-domain)
-6. [Order Domain](#6-order-domain)
-7. [AI Domain](#7-ai-domain)
-8. [Notification Domain](#8-notification-domain)
-9. [System Tables](#9-system-tables)
+2. [Product & Catalog Domain](#2-product--catalog-domain)
+3. [Vendor Inventory Domain](#3-vendor-inventory-domain)
+4. [Cart & Wishlist Domain](#4-cart--wishlist-domain)
+5. [Order Domain](#5-order-domain)
+6. [Wallet Domain](#6-wallet-domain)
+7. [System Tables](#7-system-tables)
 
 ---
 
@@ -35,7 +33,7 @@ Core user account information.
 ### `user_types`
 Lookup for user roles/types.
 - `id` (PK)
-- `code` (string, unique) - e.g., 'customer', 'admin', 'supplier'.
+- `code` (string, unique) - e.g., 'consumer', 'admin', 'vendor'.
 - `name` (string)
 
 ### `user_statuses`
@@ -67,33 +65,36 @@ Tracks FCM tokens for push notifications.
 
 ---
 
-## 2. Product Domain
+## 2. Product & Catalog Domain
+
+This domain acts as a "Dictionary" of available products.
 
 ### `product_categories`
 - `id` (PK)
-- `name` (string)
+- `product_category_status_id` (FK: `product_category_statuses`)
+- `name_en`, `name_km` (string)
+- `description_en`, `description_km` (text, nullable)
+- `image_url` (string, nullable)
 - `slug` (string, unique, index)
 
+### `product_category_statuses`
+- `id` (PK)
+- `code` (string, unique)
+- `name` (string)
+
 ### `products`
+The master dictionary definition of a product.
 - `id` (PK)
 - `product_category_id` (FK: `product_categories`)
 - `product_type_id` (FK: `product_types`)
 - `default_unit_id` (FK: `units`)
 - `product_status_id` (FK: `product_statuses`)
-- `name` (string)
+- `name_en`, `name_km` (string)
 - `slug` (string, unique, index)
-- `description` (text, nullable)
+- `description_en`, `description_km` (text, nullable)
 - `nutrition_data` (json, nullable)
-- `shelf_life_days` (integer, nullable)
+- `image_url` (string, nullable)
 - `deleted_at` (timestamp, soft delete)
-
-### `product_variants`
-- `id` (PK)
-- `product_id` (FK: `products`, cascade delete)
-- `unit_id` (FK: `units`)
-- `name` (string) - e.g., '500g Pack', 'Bulk 5kg'.
-- `quantity_in_unit` (decimal)
-- `price` (decimal, 12,2)
 
 ### `units`
 - `id` (PK)
@@ -103,135 +104,113 @@ Tracks FCM tokens for push notifications.
 
 ---
 
-## 3. Supplier & Procurement Domain
+## 3. Vendor Inventory Domain
 
-### `suppliers`
+Where vendors list physical stock for sale.
+
+### `vendor_inventories`
+Physical stock added by vendors.
 - `id` (PK)
-- `name` (string)
-- `contact_name` (string, nullable)
-- `phone`, `email` (strings, nullable)
-- `address` (text, nullable)
-
-### `purchase_orders`
-- `id` (PK)
-- `supplier_id` (FK: `suppliers`)
-- `purchase_order_status_id` (FK: `purchase_order_statuses`)
-- `po_number` (string, unique, index)
-- `ordered_at`, `received_at` (timestamps)
-- `total_cost` (decimal)
-
----
-
-## 4. Inventory Domain
-
-### `inventory_batches`
-- `id` (PK)
+- `vendor_id` (FK: `users`)
 - `product_id` (FK: `products`)
-- `product_variant_id` (FK: `product_variants`)
-- `batch_code` (string, unique, index)
-- `received_qty`, `reserved_qty`, `sold_qty`, `damaged_qty`, `expired_qty` (decimals)
-- `expiry_date` (date, nullable)
-- `received_at` (timestamp)
+- `inventory_status_id` (FK: `vendor_inventory_statuses`)
+- `price` (decimal)
+- `stock_quantity` (decimal)
+- `unit_id` (FK: `units`)
+- `harvest_date` (date, nullable)
+- `farm_location` (string, nullable)
+- `province_of_origin` (string, nullable)
+- `certification_type` (string, nullable)
+- `packaging_type` (string, nullable)
+- `shelf_life_days` (integer, nullable)
+- `batch_images` (json, nullable)
+- `deleted_at` (timestamp, soft delete)
 
-### `inventory_movements`
+### `vendor_inventory_statuses`
 - `id` (PK)
-- `inventory_batch_id` (FK: `inventory_batches`)
-- `inventory_movement_type_id` (FK: `inventory_movement_types`)
-- `quantity` (decimal)
-- `reference_type`, `reference_id` (strings, nullable) - Morph link to orders/POs.
-- `created_by` (FK: `users`)
+- `code` (string, unique)
+- `name` (string)
 
 ---
 
-## 5. Cart Domain
+## 4. Cart & Wishlist Domain
 
-### `carts`
+### `user_carts`
 - `id` (PK)
 - `user_id` (FK: `users`, cascade delete)
-- `cart_status_id` (FK: `cart_statuses`)
+- `user_cart_status_id` (FK: `user_cart_statuses`)
+- `user_cart_type_id` (FK: `user_cart_types`)
 
-### `cart_items`
+### `user_cart_items`
 - `id` (PK)
-- `cart_id` (FK: `carts`, cascade delete)
-- `product_id` (FK: `products`)
-- `product_variant_id` (FK: `product_variants`)
+- `cart_id` (FK: `user_carts`, cascade delete)
+- `vendor_inventory_id` (FK: `vendor_inventories`)
+- `user_cart_item_status_id` (FK: `user_cart_item_statuses`)
+- `user_cart_item_type_id` (FK: `user_cart_item_types`)
 - `quantity` (decimal)
 - `unit_price`, `subtotal` (decimals)
 
+### `user_wishlists`
+- `id` (PK)
+- `user_id` (FK: `users`, cascade delete)
+- `user_wishlist_status_id` (FK: `user_wishlist_statuses`)
+- `user_wishlist_type_id` (FK: `user_wishlist_types`)
+
+### `user_wishlist_items`
+- `id` (PK)
+- `user_wishlist_id` (FK: `user_wishlists`, cascade delete)
+- `vendor_inventory_id` (FK: `vendor_inventories`)
+- `user_wishlist_item_status_id` (FK: `user_wishlist_item_statuses`)
+- `user_wishlist_item_type_id` (FK: `user_wishlist_item_types`)
+
 ---
 
-## 6. Order Domain
+## 5. Order Domain
 
 ### `orders`
-...
-- `payment_status_id` (FK: `payment_statuses`)
+- `id` (PK)
+- `user_id` (buyer)
+- `address_id` (delivery address)
+- `order_type_id`
+- `order_status_id`
+- `payment_status_id`
+- `delivery_date`, `delivery_slot`
+- `subtotal`, `commission_amount`, `total`
+- `notes`
+
+### `order_items`
+- `id` (PK)
+- `order_id` (FK: `orders`)
+- `vendor_inventory_id` (FK: `vendor_inventories`)
+- `product_name_snapshot` (string)
+- `unit_snapshot` (string)
+- `unit_price_snapshot` (decimal)
+- `quantity` (decimal)
+- `subtotal` (decimal)
+- `commission_amount` (decimal)
+- `vendor_net_amount` (decimal)
 
 ---
 
-## 7. Wallet Domain
+## 6. Wallet Domain
 
 ### `wallets`
-Tracks user balances per currency.
 - `id` (PK)
-- `user_id` (FK: `users`, unique per user/currency)
+- `user_id` (FK: `users`)
 - `currency_id` (FK: `currencies`)
 - `balance` (decimal, 16,4)
 
 ### `wallet_transactions`
-Individual movements within a wallet.
 - `id` (PK)
 - `wallet_id` (FK: `wallets`)
-- `wallet_transaction_type_id` (FK: `wallet_transaction_types`)
-- `wallet_transaction_status_id` (FK: `wallet_transaction_statuses`)
+- `wallet_transaction_type_id`
+- `wallet_transaction_status_id`
 - `amount` (decimal, 16,2)
-- `reference_type`, `reference_id` (strings, nullable) - Morph link to orders/payments.
-- `description` (text, nullable)
-
-### `wallet_transaction_histories`
-Audit trail of transaction state changes.
-- `id` (PK)
-- `wallet_transaction_id` (FK: `wallet_transactions`)
-- `from_wallet_transaction_status_id` (FK: `wallet_transaction_statuses`, nullable)
-- `to_wallet_transaction_status_id` (FK: `wallet_transaction_statuses`)
-- `changed_by_user_id` (FK: `users`, nullable)
-- `note` (text, nullable)
 
 ---
 
-## 8. AI Domain
-
-### `user_behavior_events`
-- `id` (PK)
-- `user_id` (FK: `users`, set null on delete)
-- `behavior_event_type_id` (FK: `behavior_event_types`)
-- `product_id`, `product_variant_id` (FKs: nullable)
-- `metadata` (json, nullable)
-
-### `ai_recommendations`
-- `id` (PK)
-- `user_id` (FK: `users`, cascade delete)
-- `ai_recommendation_type_id` (FK: `ai_recommendation_types`)
-- `score` (decimal, 8,4)
-
----
-
-## 8. Notification Domain
-
-### `notifications`
-- `id` (PK)
-- `user_id` (FK: `users`, cascade delete)
-- `notification_type_id` (FK: `notification_type`)
-- `title`, `message` (strings/text)
-- `data` (json, nullable)
-- `read_at` (timestamp, nullable)
-
----
-
-## 9. System Tables
+## 7. System Tables
 
 - `personal_access_tokens`: Sanctum API tokens.
 - `migrations`: Track migration history.
-- `password_reset_tokens`: Core auth tokens.
-- `sessions`: Persistent PHP sessions.
-- `jobs`, `job_batches`, `failed_jobs`: Queue management.
-- `cache`, `cache_locks`: Application caching.
+- `jobs`, `failed_jobs`: Queue management.

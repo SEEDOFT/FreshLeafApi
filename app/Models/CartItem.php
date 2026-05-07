@@ -16,22 +16,25 @@ use Illuminate\Support\Carbon;
 /**
  * @property int $id
  * @property int $cart_id
- * @property int $product_id
- * @property int $product_variant_id
- * @property numeric $quantity
- * @property numeric $unit_price
- * @property numeric $subtotal
+ * @property int $vendor_inventory_id
+ * @property int $user_cart_item_status_id
+ * @property int $user_cart_item_type_id
+ * @property float $quantity
+ * @property float $unit_price
+ * @property float $subtotal
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  * @property-read Cart $cart
- * @property-read Product|null $product
- * @property-read ProductVariant $variant
+ * @property-read VendorInventory $vendorInventory
+ * @property-read UserCartItemStatus $status
+ * @property-read UserCartItemType $type
  */
-#[Table('cart_items', key: 'id')]
+#[Table('user_cart_items', key: 'id')]
 #[Fillable([
     'cart_id',
-    'product_id',
-    'product_variant_id',
+    'vendor_inventory_id',
+    'user_cart_item_status_id',
+    'user_cart_item_type_id',
     'quantity',
     'unit_price',
     'subtotal',
@@ -43,9 +46,27 @@ class CartItem extends Model
     use HasFactory;
 
     /**
-     * Get the cart that owns the item.
+     * {@inheritDoc}
+     *
+     * @return array<string, mixed>
+     */
+    protected function casts(): array
+    {
+        return [
+            'quantity' => 'decimal:2',
+            'unit_price' => 'decimal:2',
+            'subtotal' => 'decimal:2',
+        ];
+    }
+
+    /**
+     * Get the cart that owns the cart item.
+     *
+     * @return BelongsTo<Cart, $this>
      */
     /**
+     * Get the cart that owns the cart item.
+     *
      * @return BelongsTo<Cart, $this>
      */
     public function cart(): BelongsTo
@@ -54,24 +75,32 @@ class CartItem extends Model
     }
 
     /**
-     * Get the product for the item.
+     * Get the vendor inventory that owns the cart item.
+     *
+     * @return BelongsTo<VendorInventory, $this>
      */
-    /**
-     * @return BelongsTo<Product, $this>
-     */
-    public function product(): BelongsTo
+    public function vendorInventory(): BelongsTo
     {
-        return $this->belongsTo(Product::class, 'product_id', 'id');
+        return $this->belongsTo(VendorInventory::class, 'vendor_inventory_id', 'id');
     }
 
     /**
-     * Get the product variant for the item.
+     * Get the status that owns the cart item.
+     *
+     * @return BelongsTo<UserCartItemStatus, $this>
      */
-    /**
-     * @return BelongsTo<ProductVariant, $this>
-     */
-    public function variant(): BelongsTo
+    public function status(): BelongsTo
     {
-        return $this->belongsTo(ProductVariant::class, 'product_variant_id', 'id');
+        return $this->belongsTo(UserCartItemStatus::class, 'user_cart_item_status_id');
+    }
+
+    /**
+     * Get the type that owns the cart item.
+     *
+     * @return BelongsTo<UserCartItemType, $this>
+     */
+    public function type(): BelongsTo
+    {
+        return $this->belongsTo(UserCartItemType::class, 'user_cart_item_type_id');
     }
 }

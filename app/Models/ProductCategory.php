@@ -48,10 +48,15 @@ class ProductCategory extends Model
     use HasFactory;
 
     public const int LEAFY = 1;
+
     public const int FRUIT = 2;
+
     public const int ROOT_AND_TUBER = 3;
+
     public const int BULB_AND_STEM = 4;
+
     public const int LEGUME = 5;
+
     public const int INDIGENOUS_AND_WILD = 6;
 
     /**

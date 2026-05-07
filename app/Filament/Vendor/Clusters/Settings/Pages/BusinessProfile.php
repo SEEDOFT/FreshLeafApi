@@ -57,23 +57,23 @@ class BusinessProfile extends Page
                         Grid::make(2)
                             ->schema([
                                 TextInput::make('business_name')
-                                    ->label(__('admin.resources.vendor.business_name'))
+                                    ->label(__('panels.vendor.business_name'))
                                     ->required(static fn (string $operation): bool => $operation === 'create')
                                     ->dehydrated(static fn (mixed $state): bool => filled($state))
                                     ->maxLength(255),
                                 TextInput::make('contact_phone')
-                                    ->label(__('admin.resources.vendor.contact_phone'))
+                                    ->label(__('panels.form.fields.contact_phone'))
                                     ->tel()
                                     ->maxLength(255),
                                 TextInput::make('city')
-                                    ->label(__('admin.resources.vendor.city'))
+                                    ->label(__('panels.form.fields.city'))
                                     ->maxLength(255),
                                 TextInput::make('province')
-                                    ->label(__('admin.resources.vendor.province'))
+                                    ->label(__('panels.form.fields.province'))
                                     ->maxLength(255),
                             ]),
                         TextInput::make('address')
-                            ->label(__('admin.resources.vendor.address'))
+                            ->label(__('panels.form.fields.address'))
                             ->columnSpanFull()
                             ->maxLength(255),
                         Textarea::make('shop_description')
@@ -87,8 +87,7 @@ class BusinessProfile extends Page
                                 TimePicker::make('closing_time')
                                     ->label(__('admin.vendor_settings.business_profile.closing_time')),
                                 Toggle::make('is_open')
-                                    ->label(__('admin.vendor_settings.business_profile.is_open'))
-                                    ->inline(false),
+                                    ->label(__('admin.vendor_settings.business_profile.is_open')),
                             ]),
                     ]),
             ])
@@ -119,7 +118,7 @@ class BusinessProfile extends Page
     {
         return [
             Action::make('save')
-                ->label(__('admin.profile.save_changes'))
+                ->label(__('panels.form.save_changes'))
                 ->submit('save')
                 ->keyBindings(['mod+s']),
         ];

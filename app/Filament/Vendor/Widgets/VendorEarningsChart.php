@@ -31,7 +31,7 @@ class VendorEarningsChart extends ChartWidget
             ->join('orders', 'order_items.order_id', '=', 'orders.id')
             ->join('products', 'order_items.product_id', '=', 'products.id')
             ->join('payment_statuses', 'orders.payment_status_id', '=', 'payment_statuses.id')
-            ->where('products.user_id', $user->id)
+            // ->where('products.user_id', $user->id)
             ->where('payment_statuses.code', 'paid')
             ->where('orders.created_at', '>=', now()->subDays(30))
             ->select(

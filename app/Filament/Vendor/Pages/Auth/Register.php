@@ -86,18 +86,18 @@ class Register extends BaseRegister
                                     ->dehydrated(static fn (mixed $state): bool => filled($state))
                                     ->maxLength(255),
                                 TextInput::make('contact_phone')
-                                    ->label(__('admin.resources.vendor.contact_phone'))
+                                    ->label(__('panels.form.fields.contact_phone'))
                                     ->tel()
                                     ->maxLength(255),
                                 TextInput::make('city')
-                                    ->label(__('admin.resources.vendor.city'))
+                                    ->label(__('panels.form.fields.city'))
                                     ->maxLength(255),
                                 TextInput::make('province')
-                                    ->label(__('admin.resources.vendor.province'))
+                                    ->label(__('panels.form.fields.province'))
                                     ->maxLength(255),
                             ]),
                             TextInput::make('address')
-                                ->label(__('admin.resources.vendor.address'))
+                                ->label(__('panels.form.fields.address'))
                                 ->columnSpanFull()
                                 ->maxLength(255),
                         ]),

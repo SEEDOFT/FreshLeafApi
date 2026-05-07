@@ -20,7 +20,7 @@ class ListProducts extends ListRecords
     {
         return [
             Action::make('create')
-                ->label(__('admin.resources.product.add_product'))
+                ->label(__('panels.form.add_product'))
                 ->url(static fn (): string => ProductCatalog::getUrl()),
         ];
     }

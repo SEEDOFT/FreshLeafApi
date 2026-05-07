@@ -171,4 +171,26 @@ return [
             'note' => 'បន្ថែមកំណត់ចំណាំខ្លី',
         ],
     ],
+    'security' => [
+        'change_password' => 'ផ្លាស់ប្តូរពាក្យសម្ងាត់',
+        'change_password_desc' => 'ធ្វើបច្ចុប្បន្នភាពសុវត្ថិ',
+        'current_password' => 'ពាក្យសម្ងាត់បច្ចុប្បន្ន',
+        'password' => 'ពាក្យសម្ងាត់ថ្មី',
+        'password_confirmation' => 'បញ្ជាក់ពាក្យសម្ងាត់',
+        'update_password' => 'ធ្វើបច្ចុប្បន្នភាព',
+        'success_notification' => 'ពាក្យសម្ងាត់បាន',
+    ],
+    'product' => [
+        'pricing_inventory' => 'តម្លៃ & សារកំណត់',
+        'organic_traceability' => 'តាមដាន',
+        'add_product' => 'បន្ថែម',
+        'add_to_store' => 'បន្ថែម',
+    ],
+    'vendor' => [
+        'business_name' => 'ឈ្មោះ',
+        'contact_phone' => 'ទូរ',
+        'city' => 'ក',
+        'province' => 'ខ',
+        'address' => 'អ',
+    ],
 ];

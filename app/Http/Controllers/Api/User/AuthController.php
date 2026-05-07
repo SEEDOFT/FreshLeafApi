@@ -33,23 +33,23 @@ class AuthController extends Controller
 
         $password = $validatedData['password'];
         if (! \is_string($password)) {
-            return static::errorTranslated('auth.invalid_password_format');
+            return static::errorResponse(__('api.auth.invalid_password_format'));
         }
 
         if (! $user || ! \is_string($user->password) || ! Hash::check($password, $user->password)) {
-            return static::errorTranslated('auth.login_failed', [], 401);
+            return static::errorResponse(__('api.auth.login_failed'), 401);
         }
 
         if (! $user->isActive()) {
-            return static::errorTranslated('auth.account_not_active', [], 403);
+            return static::errorResponse(__('api.auth.account_not_active'), 403);
         }
 
         $token = $user->createToken('user_auth_token')->plainTextToken;
 
-        return static::successTranslated('auth.login_success', [
+        return static::successResponse([
             'access_token' => $token,
             'token_type' => 'Bearer',
-        ]);
+        ], __('api.auth.login_success'));
     }
 
     /**
@@ -87,10 +87,10 @@ class AuthController extends Controller
 
         $token = $user->createToken('user_auth_token')->plainTextToken;
 
-        return static::successTranslated('auth.register_success', [
+        return static::successResponse([
             'access_token' => $token,
             'token_type' => 'Bearer',
-        ], 201);
+        ], __('api.auth.register_success'), 201);
     }
 
     /**
@@ -102,7 +102,7 @@ class AuthController extends Controller
 
         $user->tokens()->delete();
 
-        return static::successTranslated('auth.tokens_revoked');
+        return static::successResponse([], __('api.auth.tokens_revoked'));
     }
 
     /**
@@ -115,14 +115,14 @@ class AuthController extends Controller
 
         $password = $validatedData['password'];
         if (! \is_string($password)) {
-            return static::errorTranslated('auth.invalid_password_format');
+            return static::errorResponse(__('api.auth.invalid_password_format'));
         }
 
         if (! \is_string($user->password) || ! Hash::check($password, $user->password)) {
-            return static::errorTranslated('auth.invalid_password', [], 401);
+            return static::errorResponse(__('api.auth.invalid_password'), 401);
         }
 
-        return static::successTranslated('auth.password_verified');
+        return static::successResponse([], __('api.auth.password_verified'));
     }
 
     /**
@@ -135,13 +135,13 @@ class AuthController extends Controller
 
         $password = $validatedData['password'];
         if (! \is_string($password)) {
-            return static::errorTranslated('auth.invalid_password_format');
+            return static::errorResponse(__('api.auth.invalid_password_format'));
         }
 
         $user->update([
             'password' => Hash::make($password),
         ]);
 
-        return static::successTranslated('auth.password_updated');
+        return static::successResponse([], __('api.auth.password_updated'));
     }
 }

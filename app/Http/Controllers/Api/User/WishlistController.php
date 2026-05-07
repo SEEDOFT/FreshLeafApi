@@ -31,7 +31,7 @@ class WishlistController extends Controller
 
         $wishlist->load(['items.vendorInventory.product', 'items.vendorInventory.vendor', 'items.vendorInventory.unit', 'items.status', 'items.type', 'status', 'type']);
 
-        return static::successTrans(new WishlistResource($wishlist), 'wishlist.retrieved');
+        return static::successResponse(new WishlistResource($wishlist), __('api.wishlist.retrieved'));
     }
 
     /**
@@ -56,18 +56,18 @@ class WishlistController extends Controller
 
         if ($wishlistItem) {
             $wishlistItem->delete();
-            $key = 'wishlist.item_removed';
+            $message = __('api.wishlist.item_removed');
         } else {
             $wishlist->items()->create([
                 'vendor_inventory_id' => $validated['vendor_inventory_id'],
                 'user_wishlist_item_status_id' => UserWishlistItemStatus::ACTIVE,
                 'user_wishlist_item_type_id' => UserWishlistItemType::DEFAULT_TYPE ?? 1,
             ]);
-            $key = 'wishlist.item_added';
+            $message = __('api.wishlist.item_added');
         }
 
         $wishlist->load(['items.vendorInventory.product', 'items.vendorInventory.vendor', 'items.vendorInventory.unit', 'items.status', 'items.type', 'status', 'type']);
 
-        return static::successTrans(new WishlistResource($wishlist), $key);
+        return static::successResponse(new WishlistResource($wishlist), $message);
     }
 }

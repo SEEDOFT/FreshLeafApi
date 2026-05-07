@@ -32,9 +32,9 @@ class PaymentMethodController extends Controller
             ->orderBy('created_at', 'desc')
             ->simplePaginate($request->integer('per_page', 10));
 
-        return $this->successTrans(
+        return $this->successResponse(
             PaymentMethodResource::collection($paymentMethods),
-            'payment_method.payment_methods_retrieved'
+            __('api.payment_method.payment_methods_retrieved')
         );
     }
 
@@ -48,12 +48,12 @@ class PaymentMethodController extends Controller
         $paymentMethod = $user->paymentMethods()->active()->find($id);
 
         if (! $paymentMethod) {
-            return $this->notFoundTrans('payment_method.not_found');
+            return $this->notFoundResponse(__('api.payment_method.not_found'));
         }
 
         Gate::authorize('view', $paymentMethod);
 
-        return $this->successTrans(new PaymentMethodResource($paymentMethod), 'payment_method.retrieved');
+        return $this->successResponse(new PaymentMethodResource($paymentMethod), __('api.payment_method.retrieved'));
     }
 
     /**
@@ -91,10 +91,9 @@ class PaymentMethodController extends Controller
             'billing_zip_code' => $data['billing_zip_code'],
         ]);
 
-        return $this->successTrans(
+        return $this->successResponse(
             new PaymentMethodResource($paymentMethod),
-            'payment_method.created',
-            [],
+            __('api.payment_method.created'),
             201
         );
     }
@@ -109,7 +108,7 @@ class PaymentMethodController extends Controller
         $paymentMethod = $user->paymentMethods()->active()->find($id);
 
         if (! $paymentMethod) {
-            return $this->notFoundTrans('payment_method.not_found');
+            return $this->notFoundResponse(__('api.payment_method.not_found'));
         }
 
         Gate::authorize('update', $paymentMethod);
@@ -124,9 +123,9 @@ class PaymentMethodController extends Controller
 
         $paymentMethod->update($data);
 
-        return $this->successTrans(
+        return $this->successResponse(
             new PaymentMethodResource($paymentMethod),
-            'payment_method.updated'
+            __('api.payment_method.updated')
         );
     }
 
@@ -140,7 +139,7 @@ class PaymentMethodController extends Controller
         $paymentMethod = $user->paymentMethods()->active()->find($id);
 
         if (! $paymentMethod) {
-            return $this->notFoundTrans('payment_method.not_found');
+            return $this->notFoundResponse(__('api.payment_method.not_found'));
         }
 
         Gate::authorize('update', $paymentMethod);
@@ -155,9 +154,9 @@ class PaymentMethodController extends Controller
 
         $paymentMethod->update($data);
 
-        return $this->successTrans(
+        return $this->successResponse(
             new PaymentMethodResource($paymentMethod),
-            'payment_method.replaced'
+            __('api.payment_method.replaced')
         );
     }
 
@@ -171,7 +170,7 @@ class PaymentMethodController extends Controller
         $paymentMethod = $user->paymentMethods()->active()->find($id);
 
         if (! $paymentMethod) {
-            return $this->notFoundTrans('payment_method.not_found');
+            return $this->notFoundResponse(__('api.payment_method.not_found'));
         }
 
         Gate::authorize('delete', $paymentMethod);
@@ -182,6 +181,6 @@ class PaymentMethodController extends Controller
             'deleted_at' => \now(),
         ]);
 
-        return $this->successTrans('payment_method.deleted');
+        return $this->successResponse([], __('api.payment_method.deleted'));
     }
 }

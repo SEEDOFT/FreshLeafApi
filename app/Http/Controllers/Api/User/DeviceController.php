@@ -27,13 +27,10 @@ class DeviceController extends Controller
             ]
         );
 
-        return static::successTrans(
-            [
-                'device_token' => $device->device_token,
-                'device_type' => $device->device_type,
-            ],
-            'device.registered'
-        );
+        return static::successResponse([
+            'device_token' => $device->device_token,
+            'device_type' => $device->device_type,
+        ], __('api.device.registered'));
     }
 
     /**
@@ -43,6 +40,6 @@ class DeviceController extends Controller
     {
         UserDevice::where('device_token', $token)->update(['is_active' => false]);
 
-        return static::successTrans('device.deactivated');
+        return static::successResponse([], __('api.device.deactivated'));
     }
 }

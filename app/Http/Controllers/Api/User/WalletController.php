@@ -25,9 +25,9 @@ class WalletController extends Controller
         $user = $this->authenticatedUser($request);
         $wallets = $this->walletService->getUserWallets($user, $request->integer('per_page', 10));
 
-        return static::successTrans(
+        return static::successResponse(
             WalletResource::collection($wallets),
-            'wallet.wallets_retrieved'
+            __('api.wallet.wallets_retrieved')
         );
     }
 
@@ -40,12 +40,12 @@ class WalletController extends Controller
         $wallet = $user->wallets()->with('currency')->find($id);
 
         if (! $wallet) {
-            return static::notFoundTranslated('wallet.not_found');
+            return static::notFoundResponse(__('api.wallet.not_found'));
         }
 
-        return static::successTrans(
+        return static::successResponse(
             new WalletResource($wallet),
-            'wallet.retrieved'
+            __('api.wallet.retrieved')
         );
     }
 
@@ -58,14 +58,14 @@ class WalletController extends Controller
         $wallet = $user->wallets()->with('currency')->find($id);
 
         if (! $wallet) {
-            return static::notFoundTranslated('wallet.not_found');
+            return static::notFoundResponse(__('api.wallet.not_found'));
         }
 
         $histories = $this->walletService->getWalletHistory($wallet, $request->integer('per_page', 10));
 
-        return static::successTrans(
+        return static::successResponse(
             WalletHistoryResource::collection($histories),
-            'wallet.history_retrieved'
+            __('api.wallet.history_retrieved')
         );
     }
 }

@@ -25,9 +25,9 @@ class ProfileController extends Controller
     {
         $user = $this->authenticatedUser($request);
 
-        return static::successTrans(
+        return static::successResponse(
             new UserResource($user->loadMissing('userProfile')),
-            'profile.retrieved'
+            __('api.profile.retrieved')
         );
     }
 
@@ -59,9 +59,9 @@ class ProfileController extends Controller
 
         $key = $isReplace ? 'profile.replaced' : 'profile.updated';
 
-        return static::successTrans(
+        return static::successResponse(
             new UserResource($updatedUser),
-            $key
+            __("api.{$key}")
         );
     }
 
@@ -77,6 +77,6 @@ class ProfileController extends Controller
             'deleted_at' => now(),
         ]);
 
-        return static::successTrans('profile.deleted');
+        return static::successResponse([], __('api.profile.deleted'));
     }
 }

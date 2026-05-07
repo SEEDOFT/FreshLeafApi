@@ -24,12 +24,12 @@ class UserPinController extends Controller
         $profile = UserProfile::firstOrCreateForUser($user);
 
         if ($profile->hasPin()) {
-            return static::errorTranslated('pin.already_set', [], 422);
+            return static::errorResponse(__('api.pin.already_set'), 422);
         }
 
         $profile->setPin($validatedData['pin']);
 
-        return static::successTrans('pin.set_success');
+        return static::successResponse([], __('api.pin.set_success'));
     }
 
     /**
@@ -43,12 +43,12 @@ class UserPinController extends Controller
         $profile = $user->userProfile;
 
         if ($profile === null || ! $profile->verifyPin($validatedData['current_pin'])) {
-            return static::errorTranslated('pin.invalid_current_pin', [], 401);
+            return static::errorResponse(__('api.pin.invalid_current_pin'), 401);
         }
 
         $profile->setPin($validatedData['pin']);
 
-        return static::successTrans('pin.updated_success');
+        return static::successResponse([], __('api.pin.updated_success'));
     }
 
     /**
@@ -62,14 +62,14 @@ class UserPinController extends Controller
         $profile = $user->userProfile;
 
         if ($profile === null || ! $profile->hasPin()) {
-            return static::errorTranslated('pin.not_set', [], 422);
+            return static::errorResponse(__('api.pin.not_set'), 422);
         }
 
         if (! $profile->verifyPin($validatedData['pin'])) {
-            return static::errorTranslated('pin.invalid_pin', [], 401);
+            return static::errorResponse(__('api.pin.invalid_pin'), 401);
         }
 
-        return static::successTrans('pin.verified');
+        return static::successResponse([], __('api.pin.verified'));
     }
 
     /**
@@ -85,6 +85,6 @@ class UserPinController extends Controller
 
         $profile->setPin($validatedData['pin']);
 
-        return static::successTrans('pin.reset_success');
+        return static::successResponse([], __('api.pin.reset_success'));
     }
 }

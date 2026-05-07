@@ -48,11 +48,11 @@ class SupportChatController extends Controller
             Notification::send($admins, new NewSupportTicketNotification($ticket));
         }
 
-        return static::successTrans([
+        return static::successResponse([
             'id' => $ticket->id,
             'status' => $ticket->status,
             'created_at' => $ticket->created_at?->toIso8601String(),
-        ], 'support_chat.session_created');
+        ], __('api.support_chat.session_created'));
     }
 
     /**
@@ -66,12 +66,11 @@ class SupportChatController extends Controller
 
         broadcast(new SupportTyping((int) $validatedData['ticket_id'], 'user'))->toOthers();
 
-        return static::successTrans('support_chat.typing');
+        return static::successResponse([], __('api.support_chat.typing'));
     }
 
     /**
      * Send a message in the support ticket, supporting optional file upload.
-     * Note: 'file' key is used as-is since it's the API contract.
      */
     public function sendMessage(Request $request): JsonResponse
     {
@@ -80,7 +79,6 @@ class SupportChatController extends Controller
             'message' => ['nullable', 'string', 'max:1200'],
         ]);
 
-        // Handle file separately to avoid PHP reserved word issues
         $filePath = null;
         if ($request->hasFile('attachment')) {
             $filePath = $request->file('attachment')->store('support/files', 'public');
@@ -90,7 +88,7 @@ class SupportChatController extends Controller
         $ticket = SupportTicket::findOrFail((int) $validated['ticket_id']);
 
         if ($ticket->user_id !== $user->id) {
-            return static::unauthorizedTrans('support_chat.unauthorized_access');
+            return static::unauthorizedResponse(__('api.support_chat.unauthorized_access'));
         }
 
         $message = SupportMessage::create([
@@ -111,9 +109,9 @@ class SupportChatController extends Controller
             ->get();
         Notification::send($admins, new NewSupportMessageNotification($message));
 
-        return static::successTrans(
+        return static::successResponse(
             new SupportMessageResource($message),
-            'support_chat.message_sent'
+            __('api.support_chat.message_sent')
         );
     }
 
@@ -130,10 +128,9 @@ class SupportChatController extends Controller
         $ticket = SupportTicket::findOrFail((int) $validatedData['ticket_id']);
 
         if ($ticket->user_id !== $user->id) {
-            return static::unauthorizedTrans('support_chat.unauthorized_access');
+            return static::unauthorizedResponse(__('api.support_chat.unauthorized_access'));
         }
 
-        // Mark admin messages as read
         $ticket->messages()
             ->where('sender_type', 'admin')
             ->where('is_read', false)
@@ -141,9 +138,9 @@ class SupportChatController extends Controller
 
         $messages = $ticket->messages()->oldest()->get();
 
-        return static::successTrans(
+        return static::successResponse(
             SupportMessageResource::collection($messages),
-            'support_chat.messages_retrieved'
+            __('api.support_chat.messages_retrieved')
         );
     }
 
@@ -159,7 +156,7 @@ class SupportChatController extends Controller
             ->first();
 
         if (! $ticket) {
-            return static::successTrans(['count' => 0], 'support_chat.no_unread');
+            return static::successResponse(['count' => 0], __('api.support_chat.no_unread'));
         }
 
         $count = $ticket->messages()
@@ -167,6 +164,6 @@ class SupportChatController extends Controller
             ->where('is_read', false)
             ->count();
 
-        return static::successTrans(['count' => $count], 'support_chat.unread_retrieved');
+        return static::successResponse(['count' => $count], __('api.support_chat.unread_retrieved'));
     }
 }

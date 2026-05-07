@@ -37,9 +37,9 @@ class WalletTransactionController extends Controller
 
         $transactions = $query->simplePaginate($request->integer('per_page', 15));
 
-        return $this->successTrans(
+        return $this->successResponse(
             WalletTransactionResource::collection($transactions),
-            'wallet_transaction.transactions_retrieved'
+            __('api.wallet_transaction.transactions_retrieved')
         );
     }
 
@@ -61,10 +61,9 @@ class WalletTransactionController extends Controller
                 'note' => 'Transaction initiated',
             ]);
 
-            return $this->successTrans(
+            return $this->successResponse(
                 new WalletTransactionResource($transaction->load(['type', 'status'])),
-                'wallet_transaction.created',
-                [],
+                __('api.wallet_transaction.created'),
                 201
             );
         });
@@ -79,12 +78,12 @@ class WalletTransactionController extends Controller
             ->find($id);
 
         if (! $transaction) {
-            return $this->notFoundTrans('wallet_transaction.not_found');
+            return $this->notFoundResponse(__('api.wallet_transaction.not_found'));
         }
 
-        return $this->successTrans(
+        return $this->successResponse(
             new WalletTransactionResource($transaction),
-            'wallet_transaction.retrieved'
+            __('api.wallet_transaction.retrieved')
         );
     }
 
@@ -96,7 +95,7 @@ class WalletTransactionController extends Controller
         $transaction = WalletTransaction::find($id);
 
         if (! $transaction) {
-            return $this->notFoundTrans('wallet_transaction.not_found');
+            return $this->notFoundResponse(__('api.wallet_transaction.not_found'));
         }
 
         $user = $this->authenticatedUser($request);
@@ -115,9 +114,9 @@ class WalletTransactionController extends Controller
                 ]);
             }
 
-            return $this->successTrans(
+            return $this->successResponse(
                 new WalletTransactionResource($transaction->load(['type', 'status'])),
-                'wallet_transaction.updated'
+                __('api.wallet_transaction.updated')
             );
         });
     }
@@ -130,11 +129,11 @@ class WalletTransactionController extends Controller
         $transaction = WalletTransaction::find($id);
 
         if (! $transaction) {
-            return $this->notFoundTrans('wallet_transaction.not_found');
+            return $this->notFoundResponse(__('api.wallet_transaction.not_found'));
         }
 
         $transaction->delete();
 
-        return $this->successTrans('wallet_transaction.deleted');
+        return $this->successResponse([], __('api.wallet_transaction.deleted'));
     }
 }

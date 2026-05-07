@@ -40,12 +40,12 @@ class AiChatController extends Controller
             'last_message_at' => now(),
         ]);
 
-        return static::successTrans([
+        return static::successResponse([
             'session_id' => $session->session_id,
             'title' => $session->title,
             'created_at' => $session->created_at?->toIso8601String(),
             'updated_at' => $session->updated_at?->toIso8601String(),
-        ], 'ai_chat.chat_started');
+        ], __('api.ai_chat.chat_started'));
     }
 
     /**
@@ -54,7 +54,7 @@ class AiChatController extends Controller
     public function storeMessage(StoreChatMessageRequest $request): JsonResponse
     {
         if (! $this->aiService->healthCheck()) {
-            return static::errorTranslated('ai_chat.service_unavailable', [], 503);
+            return static::errorResponse(__('api.ai_chat.service_unavailable'), 503);
         }
 
         $validatedData = $request->validated();
@@ -65,7 +65,7 @@ class AiChatController extends Controller
             ->first();
 
         if (! $session) {
-            return static::notFoundTranslated('ai_chat.session_not_found');
+            return static::notFoundResponse(__('api.ai_chat.session_not_found'));
         }
 
         /** @var array{0: AiChatMessage, 1: AiChatMessage} */
@@ -108,12 +108,12 @@ class AiChatController extends Controller
                 return [$userMessage, $assistantMessage];
             });
 
-        return static::successTrans([
+        return static::successResponse([
             'session_id' => $session->session_id,
             'user_message_id' => $result[0]->message_id,
             'ai_message_id' => $result[1]->message_id,
             'status' => 'queued',
-        ], 'ai_chat.response_received');
+        ], __('api.ai_chat.response_received'));
     }
 
     /**
@@ -129,7 +129,7 @@ class AiChatController extends Controller
             ->first();
 
         if (! $session) {
-            return static::notFoundTranslated('ai_chat.session_not_found');
+            return static::notFoundResponse(__('api.ai_chat.session_not_found'));
         }
 
         $limit = $validatedData['limit'] ?? 100;
@@ -150,9 +150,9 @@ class AiChatController extends Controller
             ])
             ->values();
 
-        return static::successTrans([
+        return static::successResponse([
             'session_id' => $session->session_id,
             'messages' => $messages,
-        ], 'ai_chat.history_retrieved');
+        ], __('api.ai_chat.history_retrieved'));
     }
 }

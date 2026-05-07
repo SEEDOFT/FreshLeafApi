@@ -32,7 +32,7 @@ class CartController extends Controller
 
         $cart->load(['items.vendorInventory.product', 'items.vendorInventory.vendor', 'items.vendorInventory.unit', 'items.status', 'items.type', 'status', 'type']);
 
-        return static::successTrans(new CartResource($cart), 'cart.retrieved');
+        return static::successResponse(new CartResource($cart), __('api.cart.retrieved'));
     }
 
     /**
@@ -50,7 +50,7 @@ class CartController extends Controller
         $inventory = VendorInventory::findOrFail($validated['vendor_inventory_id']);
 
         if ($inventory->stock_quantity < $validated['quantity']) {
-            return static::errorTrans('cart.insufficient_stock');
+            return static::errorResponse(__('api.cart.insufficient_stock'));
         }
 
         $cart = Cart::firstOrCreate(
@@ -65,7 +65,7 @@ class CartController extends Controller
         if ($cartItem) {
             $newQuantity = $cartItem->quantity + $validated['quantity'];
             if ($inventory->stock_quantity < $newQuantity) {
-                return static::errorTrans('cart.insufficient_stock_total');
+                return static::errorResponse(__('api.cart.insufficient_stock_total'));
             }
             $cartItem->quantity = $newQuantity;
             $cartItem->subtotal = $newQuantity * $inventory->price;
@@ -83,7 +83,7 @@ class CartController extends Controller
 
         $cart->load(['items.vendorInventory.product', 'items.vendorInventory.vendor', 'items.vendorInventory.unit', 'items.status', 'items.type', 'status', 'type']);
 
-        return static::successTrans(new CartResource($cart), 'cart.item_added');
+        return static::successResponse(new CartResource($cart), __('api.cart.item_added'));
     }
 
     /**
@@ -104,7 +104,7 @@ class CartController extends Controller
         $inventory = $cartItem->vendorInventory;
 
         if ($inventory->stock_quantity < $validated['quantity']) {
-            return static::errorTrans('cart.insufficient_stock');
+            return static::errorResponse(__('api.cart.insufficient_stock'));
         }
 
         $cartItem->quantity = $validated['quantity'];
@@ -113,7 +113,7 @@ class CartController extends Controller
 
         $cart = $cartItem->cart->load(['items.vendorInventory.product', 'items.vendorInventory.vendor', 'items.vendorInventory.unit', 'items.status', 'items.type', 'status', 'type']);
 
-        return static::successTrans(new CartResource($cart), 'cart.item_updated');
+        return static::successResponse(new CartResource($cart), __('api.cart.item_updated'));
     }
 
     /**
@@ -132,6 +132,6 @@ class CartController extends Controller
 
         $cart->load(['items.vendorInventory.product', 'items.vendorInventory.vendor', 'items.vendorInventory.unit', 'items.status', 'items.type', 'status', 'type']);
 
-        return static::successTrans(new CartResource($cart), 'cart.item_removed');
+        return static::successResponse(new CartResource($cart), __('api.cart.item_removed'));
     }
 }

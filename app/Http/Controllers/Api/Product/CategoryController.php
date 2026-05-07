@@ -20,7 +20,7 @@ class CategoryController extends Controller
         $categories = ProductCategory::active()
             ->simplePaginate($request->integer('per_page', 10));
 
-        return static::successTrans($categories, 'category.categories_retrieved');
+        return static::successResponse($categories, __('api.category.categories_retrieved'));
     }
 
     /**
@@ -29,7 +29,7 @@ class CategoryController extends Controller
     public function show(ProductCategory $category, Request $request): JsonResponse
     {
         if ($category->product_category_status_id !== ProductCategoryStatus::ACTIVE) {
-            return static::notFoundTranslated('category.not_found');
+            return static::notFoundResponse(__('api.category.not_found'));
         }
 
         if ($request->boolean('include_products')) {
@@ -38,6 +38,6 @@ class CategoryController extends Controller
             }]);
         }
 
-        return static::successTrans($category, 'category.retrieved');
+        return static::successResponse($category, __('api.category.retrieved'));
     }
 }

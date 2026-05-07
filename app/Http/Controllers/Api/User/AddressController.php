@@ -28,7 +28,7 @@ class AddressController extends Controller
 
         $addresses = $this->addressService->getUserAddresses($user, $request->integer('per_page', 10));
 
-        return static::successTrans(AddressResource::collection($addresses), 'address.addresses_retrieved');
+        return static::successResponse(AddressResource::collection($addresses), __('api.address.addresses_retrieved'));
     }
 
     /**
@@ -40,10 +40,10 @@ class AddressController extends Controller
         $address = $user->addresses()->active()->find($id);
 
         if (! $address) {
-            return static::notFoundTranslated('address.not_found');
+            return static::notFoundResponse(__('api.address.not_found'));
         }
 
-        return static::successTrans(new AddressResource($address), 'address.retrieved');
+        return static::successResponse(new AddressResource($address), __('api.address.retrieved'));
     }
 
     /**
@@ -54,7 +54,7 @@ class AddressController extends Controller
         $user = $this->authenticatedUser($request);
         $address = $this->addressService->createAddress($user, $request->validated());
 
-        return static::successTrans(new AddressResource($address), 'address.created', [], 201);
+        return static::successResponse(new AddressResource($address), __('api.address.created'), 201);
     }
 
     /**
@@ -66,12 +66,12 @@ class AddressController extends Controller
         $address = $user->addresses()->active()->find($id);
 
         if (! $address) {
-            return static::notFoundTranslated('address.not_found');
+            return static::notFoundResponse(__('api.address.not_found'));
         }
 
         $address = $this->addressService->updateAddress($address, $request->validated());
 
-        return static::successTrans(new AddressResource($address), 'address.updated');
+        return static::successResponse(new AddressResource($address), __('api.address.updated'));
     }
 
     /**
@@ -83,12 +83,12 @@ class AddressController extends Controller
         $address = $user->addresses()->active()->find($id);
 
         if (! $address) {
-            return static::notFoundTranslated('address.not_found');
+            return static::notFoundResponse(__('api.address.not_found'));
         }
 
         $address = $this->addressService->replaceAddress($address, $request->validated());
 
-        return static::successTrans(new AddressResource($address), 'address.replaced');
+        return static::successResponse(new AddressResource($address), __('api.address.replaced'));
     }
 
     /**
@@ -100,11 +100,11 @@ class AddressController extends Controller
         $address = $user->addresses()->active()->find($id);
 
         if (! $address) {
-            return static::notFoundTranslated('address.not_found');
+            return static::notFoundResponse(__('api.address.not_found'));
         }
 
         $this->addressService->deleteAddress($address);
 
-        return static::successTrans('address.deleted');
+        return static::successResponse([], __('api.address.deleted'));
     }
 }

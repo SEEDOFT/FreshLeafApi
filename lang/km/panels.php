@@ -153,6 +153,7 @@ return [
             'last_name' => 'នាមត្រកូល',
             'email' => 'អ៊ីមែល',
             'phone' => 'ទូរស័ព្ទ',
+            'contact_phone' => 'ទូរស័ព្ទទំនាក់ទំនង',
             'note' => 'កំណត់ចំណាំ',
             'password' => 'ពាក្យសម្ងាត់',
             'password_confirmation' => 'បញ្ជាក់ពាក្យសម្ងាត់',
@@ -187,10 +188,6 @@ return [
         'add_to_store' => 'បន្ថែម',
     ],
     'vendor' => [
-        'business_name' => 'ឈ្មោះ',
-        'contact_phone' => 'ទូរ',
-        'city' => 'ក',
-        'province' => 'ខ',
-        'address' => 'អ',
+        // Business fields are in form.fields.* (business_name, contact_phone, city, province, address)
     ],
 ];

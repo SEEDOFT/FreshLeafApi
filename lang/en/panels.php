@@ -190,10 +190,6 @@ return [
         'add_to_store' => 'Add to Store',
     ],
     'vendor' => [
-        'business_name' => 'Business Name',
-        'contact_phone' => 'Contact Phone',
-        'city' => 'City',
-        'province' => 'Province',
-        'address' => 'Address',
+        // Business fields are in form.fields.* (business_name, contact_phone, city, province, address)
     ],
 ];

@@ -34,6 +34,8 @@ class TestNotificationController extends Controller
         $user = User::find($userId);
 
         if (! $user instanceof User) {
+            Log::warning('TestNotification: User not found', ['user_id' => $userId]);
+
             return static::errorResponse(
                 'User not found',
                 404,
@@ -44,7 +46,17 @@ class TestNotificationController extends Controller
         $fcmTokens = $user->routeNotificationForFcm();
         $tokenCount = count($fcmTokens);
 
+        Log::info('TestNotification: FCM tokens retrieved', [
+            'user_id' => $userId,
+            'token_count' => $tokenCount,
+            'tokens' => $fcmTokens,
+        ]);
+
         if ($tokenCount === 0) {
+            Log::warning('TestNotification: No active devices for user', [
+                'user_id' => $userId,
+            ]);
+
             return static::errorResponse(
                 'User has no registered devices',
                 400,
@@ -52,7 +64,19 @@ class TestNotificationController extends Controller
             );
         }
 
+        Log::info('TestNotification: About to send notification', [
+            'user_id' => $userId,
+            'title' => $title,
+            'body' => $body,
+            'data' => $data,
+        ]);
+
         $user->notify(new TestNotification($title, $body, $data));
+
+        Log::info('TestNotification: Notification sent successfully', [
+            'user_id' => $userId,
+            'tokens_sent' => $tokenCount,
+        ]);
 
         return static::successResponse(
             [

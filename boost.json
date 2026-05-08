@@ -2,12 +2,14 @@
     "agents": [
         "codex",
         "opencode",
-        "gemini"
+        "gemini",
+        "claude_code",
+        "copilot"
     ],
     "cloud": false,
     "guidelines": true,
     "mcp": true,
-    "nightwatch_mcp": false,
+    "nightwatch": false,
     "packages": [
         "filament/filament"
     ],

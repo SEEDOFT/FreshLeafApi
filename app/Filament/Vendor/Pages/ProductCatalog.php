@@ -21,6 +21,7 @@ use Filament\Tables\Columns\Layout\Stack;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Concerns\InteractsWithTable;
 use Filament\Tables\Contracts\HasTable;
+use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Override;
 
@@ -29,7 +30,7 @@ class ProductCatalog extends Page implements HasTable
     use InteractsWithTable;
 
     #[Override]
-    protected static BackedEnum|string|null $navigationIcon = 'heroicon-o-building-storefront';
+    protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-building-storefront';
 
     #[Override]
     protected string $view = 'filament.vendor.pages.product-catalog';
@@ -67,6 +68,11 @@ class ProductCatalog extends Page implements HasTable
                         ->badge()
                         ->color('info'),
                 ]),
+            ])
+            ->filters([
+                SelectFilter::make('product_category_id')
+                    ->label(__('admin.resources.product.system_category'))
+                    ->relationship('productCategory', 'name_en'),
             ])
             ->actions([
                 Action::make('addToStore')

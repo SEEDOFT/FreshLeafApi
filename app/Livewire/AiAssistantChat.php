@@ -91,7 +91,7 @@ class AiAssistantChat extends Component
     {
         $user = UserSessionSecurity::getAuthorizedUser();
 
-        if (! $user) {
+        if (! $user || ! $user->isActive()) {
             return;
         }
 

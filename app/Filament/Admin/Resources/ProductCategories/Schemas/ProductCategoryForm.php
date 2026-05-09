@@ -68,6 +68,7 @@ class ProductCategoryForm
                                         FileUpload::make('image_url')
                                             ->label(__('admin.resources.product_category.image'))
                                             ->image()
+                                            ->disk('public')
                                             ->directory('product-categories'),
                                     ]),
                             ]),

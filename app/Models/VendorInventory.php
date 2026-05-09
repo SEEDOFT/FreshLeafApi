@@ -38,7 +38,7 @@ use Illuminate\Support\Carbon;
  * @property-read Unit $unit
  * @property-read VendorInventoryStatus $status
  */
-#[Table('vendor_inventories', key: 'id')]
+#[Table('vendor_inventories', key: 'id', keyType: 'int')]
 #[Fillable([
     'vendor_id',
     'product_id',
@@ -81,7 +81,7 @@ class VendorInventory extends Model
      */
     public function vendor(): BelongsTo
     {
-        return $this->belongsTo(User::class, 'vendor_id');
+        return $this->belongsTo(User::class, 'vendor_id', 'id');
     }
 
     /**

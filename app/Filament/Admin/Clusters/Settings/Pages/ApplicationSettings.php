@@ -6,6 +6,7 @@ namespace App\Filament\Admin\Clusters\Settings\Pages;
 
 use App\Filament\Admin\Clusters\Settings;
 use App\Models\Setting;
+use BackedEnum;
 use Filament\Actions\Action;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
@@ -30,7 +31,7 @@ class ApplicationSettings extends Page
     }
 
     #[Override]
-    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-cog-8-tooth';
+    protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-cog-8-tooth';
 
     #[Override]
     protected string $view = 'filament.pages.shared.form-page';
@@ -62,6 +63,7 @@ class ApplicationSettings extends Page
                         TextInput::make('commission_percentage')
                             ->label(__('admin.settings.app_settings.commission_fee'))
                             ->numeric()
+                            ->minValue(0)
                             ->suffix('%')
                             ->helperText(__('admin.settings.app_settings.commission_fee_helper'))
                             ->required(static fn (string $operation): bool => $operation === 'create')->dehydrated(static fn (mixed $state): bool => filled($state)),

@@ -116,7 +116,7 @@ return [
     | Support Chat API Messages
     |--------------------------------------------------------------------------
     */
-'support_chat' => [
+    'support_chat' => [
         'session_created' => 'Support chat session created',
         'message_sent' => 'Message sent successfully',
         'messages_retrieved' => 'Messages retrieved successfully',

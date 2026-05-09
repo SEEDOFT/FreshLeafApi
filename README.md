@@ -17,10 +17,11 @@ A Laravel 13 REST API powering a multi-vendor organic vegetable marketplace. Thi
 
 ## Features
 
-- **Multi-Vendor Marketplace**: Support for individual vendor stores and product management.
+- **Multi-Vendor Marketplace**: Support for individual vendor stores, product management, and dedicated vendor order tracking.
 - **Admin Commission System**: Automated tracking of commission fees on completed orders.
 - **Payment Processing**: Multi-method support (Wallet, Credit/Debit, ABA, ACLEDA, COD)
 - **Wallet System**: Internal wallet tracking with full transaction history and CRUD support
+- **User Wishlist**: API support for users to save and toggle favorite products.
 - **AI Chat**: Session-based AI chat with real-time SSE streaming over Laravel Reverb (private WebSocket channels)
 - **Offline AI**: Native integration with `llama.cpp` for local testing without external dependencies
 - **Authentication**: Laravel Sanctum for API token auth

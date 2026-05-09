@@ -18,7 +18,7 @@ return new class extends Migration
             $table->dropForeign(['product_id']);
             $table->dropForeign(['product_variant_id']);
             $table->dropColumn(['product_id', 'product_variant_id']);
-            
+
             $table->foreignId('vendor_inventory_id')->nullable()->constrained('vendor_inventories');
         });
 
@@ -42,7 +42,7 @@ return new class extends Migration
         Schema::table('order_items', static function (Blueprint $table) {
             $table->dropForeign(['vendor_inventory_id']);
             $table->dropColumn(['vendor_inventory_id']);
-            
+
             $table->foreignId('product_id')->nullable()->constrained('products');
             $table->foreignId('product_variant_id')->nullable()->constrained('product_variants');
         });

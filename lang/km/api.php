@@ -116,7 +116,7 @@ return [
     | Support Chat API Messages
     |--------------------------------------------------------------------------
     */
-'support_chat' => [
+    'support_chat' => [
         'session_created' => 'សម្ភាសន៍គាំទ្របានបង្កើត',
         'message_sent' => 'សារបានផ្ញើ',
         'messages_retrieved' => 'សារទាំងអស់បានទាញយក',

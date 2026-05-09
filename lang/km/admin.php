@@ -362,6 +362,7 @@ return [
             'add_nutrition' => 'បន្ថែមព័ត៌មានអាហាររូបត្ថម្ភ',
             'nutrition_key' => 'ព័ត៌មាន',
             'nutrition_value' => 'តម្លៃ',
+            'product_inventory' => 'ស្តុកផលិតផល',
             'product_category' => 'ប្រភេទផលិតផល',
             'product_type' => 'ប្រភេទផលិតផល',
             'product_status' => 'ស្ថានភាពផលិតផល',

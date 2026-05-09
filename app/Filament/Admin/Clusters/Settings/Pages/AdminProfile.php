@@ -80,12 +80,9 @@ class AdminProfile extends Page
                                 FileUpload::make('image')
                                     ->label(__('admin.profile.avatar'))
                                     ->avatar()
-                                    ->imageEditor()
-                                    ->disk('public')
                                     ->directory('users')
-                                    ->maxSize(6144)
-                                    ->alignCenter()
-                                    ->columnSpan(1),
+                                    ->disk('public') // ← add this
+                                    ->alignCenter(),
                                 Grid::make(2)
                                     ->schema([
                                         TextInput::make('first_name')
@@ -122,10 +119,7 @@ class AdminProfile extends Page
                                 'en' => 'English (ភាសាអង់គ្លេស)',
                             ])
                             ->required(static fn (string $operation): bool => $operation === 'create')
-                            ->dehydrated(static fn (mixed $state): bool => filled($state))
-                            ->native(false)
-                            ->searchable()
-                            ->preload(),
+                            ->dehydrated(static fn (mixed $state): bool => filled($state)),
                     ])->columns(2),
 
                 Section::make(__('admin.profile.professional_details'))

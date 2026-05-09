@@ -336,6 +336,7 @@ return [
             'add_nutrition' => 'Add Nutrition Fact',
             'nutrition_key' => 'Fact',
             'nutrition_value' => 'Value',
+            'product_inventory' => 'Product Inventory',
             'product_category' => 'Product Category',
             'product_type' => 'Product Type',
             'product_status' => 'Product Status',

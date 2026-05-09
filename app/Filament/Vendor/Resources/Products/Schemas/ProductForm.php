@@ -18,9 +18,30 @@ class ProductForm
     {
         return $schema
             ->components([
+                Section::make(__('admin.resources.product.general_info'))
+                    ->columns(2)
+                    ->schema([
+                        TextInput::make('product.description_en')
+                            ->label(__('admin.resources.product.description_en'))
+                            ->disabled()
+                            ->dehydrated(false)
+                            ->columnSpanFull(),
+                        TextInput::make('product.description_km')
+                            ->label(__('admin.resources.product.description_km'))
+                            ->disabled()
+                            ->dehydrated(false)
+                            ->columnSpanFull(),
+                    ]),
+
                 Section::make(__('admin.resources.product.pricing_inventory'))
                     ->columns(2)
                     ->schema([
+                        Select::make('product.product_category_id')
+                            ->label(__('admin.resources.product.system_category'))
+                            ->relationship('product.productCategory', 'name_en')
+                            ->disabled()
+                            ->dehydrated(false)
+                            ->columnSpanFull(),
                         Select::make('product_id')
                             ->label(__('admin.resources.product.label'))
                             ->relationship('product', 'name_en')

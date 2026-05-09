@@ -26,9 +26,16 @@ class AddressController extends Controller
     {
         $user = $this->authenticatedUser($request);
 
-        $addresses = $this->addressService->getUserAddresses($user, $request->integer('per_page', 10));
+        $addresses = $this->addressService
+            ->getUserAddresses(
+                $user,
+                $request->integer('per_page', 10)
+            );
 
-        return static::successResponse(AddressResource::collection($addresses), __('api.address.addresses_retrieved'));
+        return static::successResponse(
+            AddressResource::collection($addresses),
+            __('api.address.addresses_retrieved')
+        );
     }
 
     /**

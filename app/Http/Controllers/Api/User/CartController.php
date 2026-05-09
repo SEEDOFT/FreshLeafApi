@@ -30,7 +30,15 @@ class CartController extends Controller
             ['user_cart_type_id' => UserCartType::DEFAULT]
         );
 
-        $cart->load(['items.vendorInventory.product', 'items.vendorInventory.vendor', 'items.vendorInventory.unit', 'items.status', 'items.type', 'status', 'type']);
+        $cart->load([
+            'items.vendorInventory.product',
+            'items.vendorInventory.vendor',
+            'items.vendorInventory.unit',
+            'items.status',
+            'items.type',
+            'status',
+            'type'
+        ]);
 
         return static::successResponse(new CartResource($cart), __('api.cart.retrieved'));
     }
@@ -81,7 +89,15 @@ class CartController extends Controller
             ]);
         }
 
-        $cart->load(['items.vendorInventory.product', 'items.vendorInventory.vendor', 'items.vendorInventory.unit', 'items.status', 'items.type', 'status', 'type']);
+        $cart->load([
+            'items.vendorInventory.product',
+            'items.vendorInventory.vendor',
+            'items.vendorInventory.unit',
+            'items.status',
+            'items.type',
+            'status',
+            'type'
+        ]);
 
         return static::successResponse(new CartResource($cart), __('api.cart.item_added'));
     }
@@ -111,7 +127,15 @@ class CartController extends Controller
         $cartItem->subtotal = $validated['quantity'] * $cartItem->unit_price;
         $cartItem->save();
 
-        $cart = $cartItem->cart->load(['items.vendorInventory.product', 'items.vendorInventory.vendor', 'items.vendorInventory.unit', 'items.status', 'items.type', 'status', 'type']);
+        $cart = $cartItem->cart->load([
+            'items.vendorInventory.product',
+            'items.vendorInventory.vendor',
+            'items.vendorInventory.unit',
+            'items.status',
+            'items.type',
+            'status',
+            'type'
+        ]);
 
         return static::successResponse(new CartResource($cart), __('api.cart.item_updated'));
     }
@@ -130,7 +154,15 @@ class CartController extends Controller
         $cart = $cartItem->cart;
         $cartItem->delete();
 
-        $cart->load(['items.vendorInventory.product', 'items.vendorInventory.vendor', 'items.vendorInventory.unit', 'items.status', 'items.type', 'status', 'type']);
+        $cart->load([
+            'items.vendorInventory.product',
+            'items.vendorInventory.vendor',
+            'items.vendorInventory.unit',
+            'items.status',
+            'items.type',
+            'status',
+            'type'
+        ]);
 
         return static::successResponse(new CartResource($cart), __('api.cart.item_removed'));
     }

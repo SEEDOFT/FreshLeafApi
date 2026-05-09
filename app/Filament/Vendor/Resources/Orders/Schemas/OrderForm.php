@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Filament\Vendor\Resources\Orders\Schemas;
 
 use Filament\Forms\Components\DatePicker;
@@ -24,7 +26,6 @@ class OrderForm
                             ->dehydrated(false),
                         TextInput::make('user.name')
                             ->label(__('admin.resources.order.customer'))
-                            ->getStateUsing(static fn (mixed $record) => "{$record->user->first_name} {$record->user->last_name}")
                             ->disabled()
                             ->dehydrated(false),
                         TextInput::make('user.phone_number')
@@ -53,7 +54,6 @@ class OrderForm
                     ->schema([
                         TextInput::make('delivery_address_label')
                             ->label(__('admin.resources.order.delivery_address'))
-                            ->getStateUsing(fn ($record) => $record->address?->label ?? '-')
                             ->disabled()
                             ->dehydrated(false),
                         DatePicker::make('delivery_date')

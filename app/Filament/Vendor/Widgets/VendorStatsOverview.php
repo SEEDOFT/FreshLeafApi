@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace App\Filament\Vendor\Widgets;
 
 use App\Models\Order;
-use App\Models\Product;
 use App\Models\User;
+use App\Models\VendorInventory;
 use App\Models\Wallet;
 use Filament\Widgets\StatsOverviewWidget as BaseWidget;
 use Filament\Widgets\StatsOverviewWidget\Stat;
@@ -44,9 +44,9 @@ class VendorStatsOverview extends BaseWidget
             return [];
         }
 
-        $productCount = Product::where('user_id', $user->id)->count();
+        $productCount = VendorInventory::where('vendor_id', $user->id)->count();
 
-        $todayOrders = Order::whereHas('items.product', fn ($q) => $q->where('user_id', $user->id))
+        $todayOrders = Order::whereHas('items.vendorInventory', fn ($q) => $q->where('vendor_id', $user->id))
             ->whereDate('created_at', now())
             ->count();
 

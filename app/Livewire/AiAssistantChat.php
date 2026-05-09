@@ -421,7 +421,7 @@ class AiAssistantChat extends Component
         $this->finalizePendingMessage();
     }
 
-    public function sendUserMessage(): void
+    public function sendMessage(): void
     {
         if (trim($this->message) === '' || $this->isTyping) {
             return;
@@ -464,6 +464,8 @@ class AiAssistantChat extends Component
         $this->updateSessionMetadata($userId, $userMessage);
         ProcessAiChatMessageJob::dispatch(
             userId: $userId,
+            sessionId: $this->activeSessionUlid,
+            messageId: $assistantMsgId,
             prompt: $userMessage,
             history: $this->getChatHistory($userId)
         );

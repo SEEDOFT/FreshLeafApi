@@ -29,7 +29,15 @@ class WishlistController extends Controller
             ['user_wishlist_type_id' => UserWishlistType::DEFAULT]
         );
 
-        $wishlist->load(['items.vendorInventory.product', 'items.vendorInventory.vendor', 'items.vendorInventory.unit', 'items.status', 'items.type', 'status', 'type']);
+        $wishlist->load([
+            'items.vendorInventory.product',
+            'items.vendorInventory.vendor',
+            'items.vendorInventory.unit',
+            'items.status',
+            'items.type',
+            'status',
+            'type'
+        ]);
 
         return static::successResponse(new WishlistResource($wishlist), __('api.wishlist.retrieved'));
     }
@@ -61,12 +69,20 @@ class WishlistController extends Controller
             $wishlist->items()->create([
                 'vendor_inventory_id' => $validated['vendor_inventory_id'],
                 'user_wishlist_item_status_id' => UserWishlistItemStatus::ACTIVE,
-                'user_wishlist_item_type_id' => UserWishlistItemType::DEFAULT_TYPE ?? 1,
+                'user_wishlist_item_type_id' => UserWishlistItemType::DEFAULT,
             ]);
             $message = __('api.wishlist.item_added');
         }
 
-        $wishlist->load(['items.vendorInventory.product', 'items.vendorInventory.vendor', 'items.vendorInventory.unit', 'items.status', 'items.type', 'status', 'type']);
+        $wishlist->load([
+            'items.vendorInventory.product',
+            'items.vendorInventory.vendor',
+            'items.vendorInventory.unit',
+            'items.status',
+            'items.type',
+            'status',
+            'type'
+        ]);
 
         return static::successResponse(new WishlistResource($wishlist), $message);
     }

@@ -71,6 +71,7 @@ return [
             'complete' => 'បញ្ចប់ការចុះឈ្មោះ',
             'already_have_account' => 'មានគណនីរួចហើយ?',
             'login_here' => 'ចូលប្រើនៅទីនេះ',
+            'phone_registered' => 'លេខទូរស័ព្ទនេះត្រូវបានចុះឈ្មោះរួចហើយ។',
             'steps' => [
                 'account' => 'គណនី',
                 'account_desc' => 'ព័ត៌មានមូលដ្ឋានសម្រាប់ចូលប្រើ',
@@ -122,6 +123,7 @@ return [
             'basic_info' => 'ព័ត៌មានមូលដ្ឋាន',
             'visuals' => 'រូបភាពបង្ហាញ',
             'status' => 'ស្ថានភាព',
+            'created_at' => 'ថ្ងៃបង្កើត',
         ],
         'vendor_inventory' => [
             'label' => 'ស្តុកអ្នកផ្គត់ផ្គង់',
@@ -358,6 +360,7 @@ return [
             'categorization' => 'ការបែងចែកប្រភេទ',
             'pricing_inventory' => 'តម្លៃ និងស្តុក',
             'traceability' => 'ការតាមដានប្រភព',
+            'organic_traceability' => 'ការតាមដានប្រភពសរីរាង្គ',
             'nutrition_data' => 'អាហាររូបត្ថម្ភ និងទិន្នន័យ',
             'add_nutrition' => 'បន្ថែមព័ត៌មានអាហាររូបត្ថម្ភ',
             'nutrition_key' => 'ព័ត៌មាន',
@@ -371,8 +374,16 @@ return [
             'variant' => 'ជម្រើសផលិតផល',
             'quantity_in_unit' => 'បរិមាណក្នុងមួយឯកតា',
             'add_to_store' => 'បន្ថែមទៅក្នុងហាង',
+            'adjust_stock' => 'កែតម្រូវស្តុក',
+            'adjustment_type' => 'ប្រភេទនៃការកែតម្រូវ',
+            'quantity_change' => 'ចំនួនផ្លាស់ប្តូរ',
+            'proof_photo' => 'រូបភាពបញ្ជាក់',
+            'proof' => 'ភស្តុតាង',
+            'adjustment_detail' => 'ព័ត៌មានលម្អិតនៃការកែតម្រូវ',
+            'reason' => 'មូលហេតុ',
             'notifications' => [
                 'added_to_store' => 'បានបន្ថែមផលិតផលទៅក្នុងស្តុកហាងរបស់អ្នកដោយជោគជ័យ។',
+                'stock_adjusted' => 'បានកែតម្រូវបរិមាណស្តុកដោយជោគជ័យ។',
             ],
             'farming_methods' => [
                 'certified_organic' => 'សរីរាង្គមានវិញ្ញាបនបត្រ',

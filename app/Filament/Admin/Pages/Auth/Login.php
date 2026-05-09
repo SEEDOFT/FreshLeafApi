@@ -28,17 +28,7 @@ class Login extends BaseLogin
     #[Override]
     public function getSubHeading(): string|Htmlable|null
     {
-        if (! Filament::hasRegistration()) {
-            return __('admin.auth.login.subheading');
-        }
-
-        return new HtmlString(
-            __('admin.auth.login.subheading').' '.
-            __('admin.auth.login.not_having_account').' '.
-            '<a class="text-primary-600 font-medium hover:text-primary-500" href="'.Filament::getRegistrationUrl().'">'.
-            __('admin.auth.login.register_here').
-            '</a>'
-        );
+        return __('admin.auth.login.subheading');
     }
 
     #[Override]

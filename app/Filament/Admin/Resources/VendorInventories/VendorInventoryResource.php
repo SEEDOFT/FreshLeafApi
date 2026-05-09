@@ -6,6 +6,7 @@ namespace App\Filament\Admin\Resources\VendorInventories;
 
 use App\Filament\Admin\Resources\VendorInventories\Pages\ListVendorInventories;
 use App\Filament\Admin\Resources\VendorInventories\Pages\ViewVendorInventory;
+use App\Filament\Admin\Resources\VendorInventories\RelationManagers\AdjustmentsRelationManager;
 use App\Filament\Admin\Resources\VendorInventories\Schemas\VendorInventoryInfolist;
 use App\Filament\Admin\Resources\VendorInventories\Tables\VendorInventoryTable;
 use App\Models\VendorInventory;
@@ -58,7 +59,7 @@ class VendorInventoryResource extends Resource
     public static function getRelations(): array
     {
         return [
-            //
+            AdjustmentsRelationManager::class,
         ];
     }
 

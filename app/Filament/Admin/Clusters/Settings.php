@@ -16,7 +16,10 @@ class Settings extends Cluster
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedCog6Tooth;
 
     #[Override]
-    protected static ?string $navigationLabel = 'Account Settings';
+    public static function getNavigationLabel(): string
+    {
+        return __('admin.navigation.settings');
+    }
 
     #[Override]
     protected static bool $shouldRegisterNavigation = false;

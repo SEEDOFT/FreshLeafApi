@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Filament\Vendor\Resources\Products;
 
+use App\Filament\Admin\Resources\VendorInventories\RelationManagers\AdjustmentsRelationManager;
 use App\Filament\Vendor\Resources\Products\Pages\CreateProduct;
 use App\Filament\Vendor\Resources\Products\Pages\EditProduct;
 use App\Filament\Vendor\Resources\Products\Pages\ListProducts;
@@ -89,7 +90,7 @@ class ProductResource extends Resource
     public static function getRelations(): array
     {
         return [
-            //
+            AdjustmentsRelationManager::class,
         ];
     }
 

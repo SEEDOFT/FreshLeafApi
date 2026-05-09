@@ -48,8 +48,8 @@ class CartItemResource extends JsonResource
                     'image_url' => $this->vendorInventory->product->image_url ?? null,
                 ] : null,
             ]),
-            'created_at' => \optional($this->created_at)->toIso8601String(),
-            'updated_at' => \optional($this->updated_at)->toIso8601String(),
+            'created_at' => $this->created_at->toIso8601String(),
+            'updated_at' => $this->updated_at->toIso8601String(),
         ];
     }
 }

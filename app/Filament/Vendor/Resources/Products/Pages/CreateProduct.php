@@ -16,7 +16,7 @@ class CreateProduct extends CreateRecord
     #[Override]
     protected function mutateFormDataBeforeCreate(array $data): array
     {
-        $data['user_id'] = auth()->id();
+        $data['vendor_id'] = auth()->id();
 
         return $data;
     }

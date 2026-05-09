@@ -7,6 +7,7 @@ namespace App\Http\Controllers\Api\Product;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\Product\VendorInventoryResource;
 use App\Models\VendorInventory;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -28,19 +29,21 @@ class ProductController extends Controller
                 'vendor',
                 'status',
             ])
-            ->when($request->filled('category_id'), function ($query) use ($request) {
-                $query->whereHas('product', fn ($q) => $q->where('product_category_id', $request->input('category_id')));
+            ->when($request->filled('category_id'), function (Builder $query) use ($request) {
+                $query->whereHas('product', static  fn (Builder $q) =>
+                $q->where('product_category_id', $request->input('category_id')));
             })
-            ->when($request->filled('search'), function ($query) use ($request) {
+            ->when($request->filled('search'), function (Builder $query) use ($request) {
                 $search = $request->input('search');
-                $query->whereHas('product', fn ($q) => $q->where('name_en', 'like', "%{$search}%")
+                $query->whereHas('product', static fn (Builder $query) =>
+                $query->where('name_en', 'like', "%{$search}%")
                     ->orWhere('name_km', 'like', "%{$search}%")
                 );
             })
             ->orderByDesc('id')
             ->simplePaginate($request->integer('per_page', 15));
 
-        return static::successTrans(
+        return static::successResponse(
             VendorInventoryResource::collection($listings),
             'product.products_retrieved'
         );
@@ -56,10 +59,10 @@ class ProductController extends Controller
             ->find($id);
 
         if (! $listing) {
-            return static::notFoundTranslated('product.not_found');
+            return static::notFoundResponse('product.not_found');
         }
 
-        return static::successTrans(
+        return static::successResponse(
             new VendorInventoryResource($listing->load([
                 'product.productCategory',
                 'product.type',

@@ -64,11 +64,6 @@ class CartItem extends Model
      *
      * @return BelongsTo<Cart, $this>
      */
-    /**
-     * Get the cart that owns the cart item.
-     *
-     * @return BelongsTo<Cart, $this>
-     */
     public function cart(): BelongsTo
     {
         return $this->belongsTo(Cart::class, 'cart_id', 'id');

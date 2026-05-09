@@ -12,8 +12,10 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\DB;
 
 /**
  * @property int $id
@@ -112,6 +114,35 @@ class VendorInventory extends Model
     public function status(): BelongsTo
     {
         return $this->belongsTo(VendorInventoryStatus::class, 'inventory_status_id');
+    }
+
+    /**
+     * Get the adjustments for this inventory.
+     *
+     * @return HasMany<InventoryAdjustment, $this>
+     */
+    public function adjustments(): HasMany
+    {
+        return $this->hasMany(InventoryAdjustment::class);
+    }
+
+    /**
+     * Adjust the stock quantity and log it.
+     */
+    public function adjustStock(float $change, string $type, string $reason = null, ?string $proofImagePath = null, string $notes = null): void
+    {
+        DB::transaction(function () use ($change, $type, $reason, $proofImagePath, $notes) {
+            $this->increment('stock_quantity', $change);
+
+            $this->adjustments()->create([
+                'user_id' => auth()->id(),
+                'quantity_change' => $change,
+                'type' => $type,
+                'reason' => $reason,
+                'proof_image_path' => $proofImagePath,
+                'notes' => $notes,
+            ]);
+        });
     }
 
     /**

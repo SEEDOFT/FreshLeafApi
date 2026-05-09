@@ -40,6 +40,11 @@ class UserProfile extends Model
     /** @use HasFactory<UserProfileFactory> */
     use HasFactory;
 
+    /**
+     * @inheritDoc
+     *
+     * @return array<string, mixed>
+     */
     protected function casts(): array
     {
         return [

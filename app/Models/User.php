@@ -25,6 +25,11 @@ use Illuminate\Support\Carbon;
 use Laravel\Sanctum\HasApiTokens;
 use Override;
 
+use function is_string;
+use function array_values;
+use function array_filter;
+use function is_numeric;
+
 /**
  * @property int $id
  * @property string $first_name
@@ -39,15 +44,6 @@ use Override;
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  * @property Carbon|null $deleted_at
- * @property-read UserType $userType
- * @property-read UserStatus $userStatus
- * @property-read UserProfile|null $userProfile
- * @property-read VendorProfile|null $vendorProfile
- * @property-read AdminProfile|null $adminProfile
- * @property-read Address[]|HasMany<Address, $this> $addresses
- * @property-read PaymentMethod[]|HasMany<PaymentMethod, $this> $paymentMethods
- * @property-read Wallet[]|HasMany<Wallet, $this> $wallets
- * @property-read UserDevice[]|HasMany<UserDevice, $this> $devices
  */
 #[Table('users', key: 'id', keyType: 'int')]
 #[Fillable([
@@ -244,7 +240,7 @@ class User extends Authenticatable implements FilamentUser, HasName
 
     /**
      * Specifies the user's FCM tokens for notifications.
-    /**
+     *
      * @return list<string>
      */
     public function routeNotificationForFcm(): array
@@ -255,7 +251,7 @@ class User extends Authenticatable implements FilamentUser, HasName
             ->toArray();
 
         /** @var list<string> $filteredTokens */
-        $filteredTokens = \array_values(\array_filter($tokens, static fn (mixed $token): bool => \is_string($token)));
+        $filteredTokens = array_values(array_filter($tokens, static fn (mixed $token): bool => is_string($token)));
 
         return $filteredTokens;
     }
@@ -265,12 +261,10 @@ class User extends Authenticatable implements FilamentUser, HasName
      */
     public function ensureDefaultWallets(): void
     {
-        $khrCurrencyId = Currency::where('code', Currency::KHR)
-            ->value('id');
-        $usdCurrencyId = Currency::where('code', Currency::USD)
-            ->value('id');
+        $khrCurrencyId = Currency::find(Currency::KHR)->value('id');
+        $usdCurrencyId = Currency::find(Currency::USD)->value('id');
 
-        if (! \is_numeric($khrCurrencyId) || ! \is_numeric($usdCurrencyId)) {
+        if (! is_numeric($khrCurrencyId) || ! is_numeric($usdCurrencyId)) {
             return;
         }
 
@@ -294,8 +288,8 @@ class User extends Authenticatable implements FilamentUser, HasName
                 'wallet_id' => $freshKhrWallet->id,
                 'currency_id' => $khrCurrencyId,
                 'balance' => $freshKhrWallet->balance,
-                'created_at' => now(),
-                'updated_at' => now(),
+                'created_at' => Carbon::now(),
+                'updated_at' => Carbon::now(),
             ]);
         }
 

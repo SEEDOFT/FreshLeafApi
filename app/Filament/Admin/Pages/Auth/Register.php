@@ -185,8 +185,7 @@ class Register extends BaseRegister
             ->schema([
                 configure_country_select(
                     Select::make('country_iso')
-                        ->label(__('admin.auth.register.country'))
-                )
+                        ->label(__('admin.auth.register.country')))
                     ->required(static fn (string $operation): bool => $operation === 'create')
                     ->dehydrated(static fn (mixed $state): bool => filled($state))
                     ->columnSpan(3),
@@ -211,7 +210,7 @@ class Register extends BaseRegister
                                 ->exists();
 
                             if ($exists) {
-                                $fail('This phone number is already registered.');
+                                $fail(__('admin.auth.register.phone_registered'));
                             }
                         };
                     })

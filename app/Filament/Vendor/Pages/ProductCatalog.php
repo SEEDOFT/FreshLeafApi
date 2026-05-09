@@ -16,11 +16,16 @@ use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Notifications\Notification;
 use Filament\Pages\Page;
+use Filament\Schemas\Components\Section;
 use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\Layout\Stack;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Concerns\InteractsWithTable;
 use Filament\Tables\Contracts\HasTable;
+use Filament\Infolists\Components\ImageEntry;
+use Filament\Infolists\Components\KeyValueEntry;
+use Filament\Infolists\Components\TextEntry;
+use Filament\Schemas\Schema;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Override;
@@ -75,6 +80,44 @@ class ProductCatalog extends Page implements HasTable
                     ->relationship('productCategory', 'name_en'),
             ])
             ->actions([
+                Action::make('view')
+                    ->label(__('admin.resources.product.view_detail'))
+                    ->icon('heroicon-o-eye')
+                    ->color('gray')
+                    ->infolist(fn (Schema $infolist): Schema => $infolist
+                        ->schema([
+                            Section::make(__('admin.resources.product.general_info'))
+                                ->columns(2)
+                                ->schema([
+                                    ImageEntry::make('image_url')
+                                        ->label(__('admin.resources.product.image'))
+                                        ->columnSpanFull()
+                                        ->circular(),
+                                    TextEntry::make('name_en')
+                                        ->label(__('admin.resources.product.name_en'))
+                                        ->weight('bold'),
+                                    TextEntry::make('name_km')
+                                        ->label(__('admin.resources.product.name_km')),
+                                    TextEntry::make('productCategory.name_en')
+                                        ->label(__('admin.resources.product.system_category'))
+                                        ->badge()
+                                        ->color('info'),
+                                    TextEntry::make('defaultUnit.name')
+                                        ->label(__('admin.resources.product.default_unit')),
+                                    TextEntry::make('description_en')
+                                        ->label(__('admin.resources.product.description_en'))
+                                        ->columnSpanFull()
+                                        ->placeholder('-'),
+                                    TextEntry::make('description_km')
+                                        ->label(__('admin.resources.product.description_km'))
+                                        ->columnSpanFull()
+                                        ->placeholder('-'),
+                                    KeyValueEntry::make('nutrition_data')
+                                        ->label(__('admin.resources.product.nutrition_data'))
+                                        ->columnSpanFull()
+                                        ->visible(fn ($record) => ! empty($record->nutrition_data)),
+                                ]),
+                        ])),
                 Action::make('addToStore')
                     ->label(__('admin.resources.product.add_to_store'))
                     ->icon('heroicon-o-plus')

@@ -17,6 +17,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 
+use function is_string;
+
 class AuthController extends Controller
 {
     /**
@@ -31,12 +33,7 @@ class AuthController extends Controller
             ->where('phone_number', $validatedData['phone_number'])
             ->first();
 
-        $password = $validatedData['password'];
-        if (! \is_string($password)) {
-            return static::errorResponse(__('api.auth.invalid_password_format'));
-        }
-
-        if (! $user || ! \is_string($user->password) || ! Hash::check($password, $user->password)) {
+        if (! $user || ! Hash::check($validatedData['password'], $user->password)) {
             return static::errorResponse(__('api.auth.login_failed'), 401);
         }
 
@@ -61,23 +58,20 @@ class AuthController extends Controller
 
         /** @var User $user */
         $user = DB::transaction(static function () use ($validatedData): User {
-            $password = $validatedData['password'];
-            if (! \is_string($password)) {
-                throw new \Exception('Invalid password format');
-            }
 
             $user = User::create([
                 'first_name' => $validatedData['first_name'],
                 'last_name' => $validatedData['last_name'],
                 'email' => $validatedData['email'] ?? null,
                 'phone_number' => $validatedData['phone_number'],
-                'password' => Hash::make($password),
+                'password' => Hash::make($validatedData['password']),
                 'user_type_id' => UserType::USER,
                 'user_status_id' => UserStatus::ACTIVE,
             ]);
 
             $user->userProfile()->create([
-                'preferred_language' => 'en',
+                'locale' => 'en',
+                'prefer_theme' => 'system',
             ]);
 
             $user->ensureDefaultWallets();

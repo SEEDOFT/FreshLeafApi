@@ -71,6 +71,7 @@ return [
             'complete' => 'Complete Registration',
             'already_have_account' => 'Already have an account?',
             'login_here' => 'Login here',
+            'phone_registered' => 'This phone number is already registered.',
             'steps' => [
                 'account' => 'Account',
                 'account_desc' => 'Basic information for login.',
@@ -112,6 +113,7 @@ return [
             'basic_info' => 'Basic Information',
             'visuals' => 'Visuals',
             'status' => 'Status',
+            'created_at' => 'Created At',
         ],
         'security' => [
             'label' => 'Security',
@@ -332,6 +334,7 @@ return [
             'categorization' => 'Categorization',
             'pricing_inventory' => 'Pricing & Inventory',
             'traceability' => 'Traceability',
+            'organic_traceability' => 'Organic Traceability',
             'nutrition_data' => 'Nutrition & Data',
             'add_nutrition' => 'Add Nutrition Fact',
             'nutrition_key' => 'Fact',
@@ -345,8 +348,16 @@ return [
             'variant' => 'Variant',
             'quantity_in_unit' => 'Quantity in Unit',
             'add_to_store' => 'Add to Store',
+            'adjust_stock' => 'Adjust Stock',
+            'adjustment_type' => 'Adjustment Type',
+            'quantity_change' => 'Quantity Change',
+            'proof_photo' => 'Proof Photo',
+            'proof' => 'Proof',
+            'adjustment_detail' => 'Adjustment Detail',
+            'reason' => 'Reason',
             'notifications' => [
                 'added_to_store' => 'Product added to your store inventory.',
+                'stock_adjusted' => 'Stock quantity adjusted successfully.',
             ],
             'farming_methods' => [
                 'certified_organic' => 'Certified Organic',
@@ -371,6 +382,8 @@ return [
         'general' => [
             'not_provided' => 'Not Provided',
         ],
+        'created_at' => 'Created At',
+        'updated_at' => 'Updated At',
         'timestamps' => 'Time Stamps',
     ],
     'profile' => [

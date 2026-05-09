@@ -30,7 +30,8 @@ use Illuminate\Support\Carbon;
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  * @property Carbon|null $deleted_at
- * @property-read Address $active
+ *
+ * @method static Builder<Address>|Address active()
  */
 #[Table('addresses', key: 'id', keyType: 'int')]
 #[Fillable([

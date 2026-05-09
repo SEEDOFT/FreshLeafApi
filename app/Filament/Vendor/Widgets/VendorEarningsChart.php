@@ -29,14 +29,14 @@ class VendorEarningsChart extends ChartWidget
         // Calculate daily earnings based on items belonging to this vendor in paid orders
         $data = DB::table('order_items')
             ->join('orders', 'order_items.order_id', '=', 'orders.id')
-            ->join('products', 'order_items.product_id', '=', 'products.id')
+            ->join('vendor_inventories', 'order_items.vendor_inventory_id', '=', 'vendor_inventories.id')
             ->join('payment_statuses', 'orders.payment_status_id', '=', 'payment_statuses.id')
-            // ->where('products.user_id', $user->id)
+            ->where('vendor_inventories.vendor_id', $user->id)
             ->where('payment_statuses.code', 'paid')
             ->where('orders.created_at', '>=', now()->subDays(30))
             ->select(
                 DB::raw('DATE(orders.created_at) as date'),
-                DB::raw('SUM(order_items.subtotal) as total')
+                DB::raw('SUM(order_items.vendor_net_amount) as total')
             )
             ->groupBy('date')
             ->orderBy('date')

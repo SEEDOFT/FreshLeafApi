@@ -9,6 +9,10 @@ use Illuminate\Database\Eloquent\Attributes\Table;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Cache;
 
+use function is_array;
+use function is_bool;
+use function is_numeric;
+
 /**
  * @property int $id
  * @property string $key
@@ -17,14 +21,24 @@ use Illuminate\Support\Facades\Cache;
  * @property string $type
  */
 #[Table('settings', key: 'id', keyType: 'int')]
-#[Fillable([
-    'key',
-    'value',
-    'group',
-    'type',
-])]
+#[Fillable(['key', 'value', 'group', 'type'])]
 class Setting extends Model
 {
+    /**
+     * {@inheritDoc}
+     *
+     * @return array<string, string>
+     */
+    protected function casts(): array
+    {
+        return [
+            'key' => 'string',
+            'value' => 'string',
+            'group' => 'string',
+            'type' => 'string',
+        ];
+    }
+
     /**
      * Get a setting value by key.
      */

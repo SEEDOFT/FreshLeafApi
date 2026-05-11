@@ -7,24 +7,33 @@ namespace App\Models;
 use Database\Factories\WalletTransactionTypeFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Table;
+use Illuminate\Database\Eloquent\Attributes\UseFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
-#[Table('wallet_transaction_types', key: 'id')]
-#[Fillable(['code', 'name'])]
+/**
+ * @property int $id
+ * @property string $code
+ * @property string $name_en
+ * @property string $name_km
+ * @property-read WalletTransaction[] $transactions
+ */
+#[Table('wallet_transaction_types', key: 'id', keyType: 'int', incrementing: false)]
+#[Fillable(['code', 'name_en', 'name_km'])]
+#[UseFactory(WalletTransactionTypeFactory::class)]
 class WalletTransactionType extends Model
 {
     /** @use HasFactory<WalletTransactionTypeFactory> */
     use HasFactory;
 
-    public const int TOP_UP = 1;
+    public const int DEPOSIT = 1;
 
-    public const int PURCHASE = 2;
+    public const int WITHDRAWAL = 2;
 
-    public const int REFUND = 3;
+    public const int PAYMENT = 3;
 
-    public const int WITHDRAWAL = 4;
+    public const int REFUND = 4;
 
     /**
      * Get the transactions for this type.

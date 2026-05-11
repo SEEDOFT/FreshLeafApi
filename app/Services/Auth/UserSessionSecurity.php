@@ -12,8 +12,6 @@ class UserSessionSecurity
 {
     /**
      * Get the authorized user for the current session, applying hardened security checks.
-     *
-     * Logic: SELECT id FROM users WHERE user_type_id = ? and user_status_id = 2 and phone_number = ?
      */
     public static function getAuthorizedUser(): ?User
     {
@@ -24,9 +22,7 @@ class UserSessionSecurity
             return null;
         }
 
-        // Hardened check
-        return User::query()
-            ->where('id', $user->id)
+        return User::where('id', $user->id)
             ->where('user_type_id', $user->user_type_id)
             ->where('user_status_id', UserStatus::ACTIVE)
             ->where('phone_number', $user->phone_number)

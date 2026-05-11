@@ -17,13 +17,14 @@ use Illuminate\Support\Carbon;
 /**
  * @property int $id
  * @property string $code
- * @property string $name
+ * @property string $name_en
+ * @property string $name_km
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  * @property-read Collection<int, User> $users
  */
-#[Table('user_statuses', key: 'id')]
-#[Fillable(['code', 'name'])]
+#[Table('user_statuses', key: 'id', keyType: 'int', incrementing: false)]
+#[Fillable(['code', 'name_en', 'name_km'])]
 #[UseFactory(UserStatusFactory::class)]
 class UserStatus extends Model
 {

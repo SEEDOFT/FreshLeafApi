@@ -9,14 +9,28 @@ use Illuminate\Database\Seeder;
 
 class UserWishlistItemTypeSeeder extends Seeder
 {
+    /**
+     * Run the database seeds.
+     */
     public function run(): void
     {
-        $items = [
-            ['id' => 1, 'code' => 'default', 'name' => 'Default'],
+        $types = [
+            [
+                'id' => 1,
+                'code' => 'PRODUCT',
+                'name_en' => 'Product',
+                'name_km' => 'ផលិតផល',
+            ],
+            [
+                'id' => 2,
+                'code' => 'SERVICE',
+                'name_en' => 'Service',
+                'name_km' => 'សេវាកម្ម',
+            ],
         ];
 
-        foreach ($items as $item) {
-            UserWishlistItemType::query()->updateOrCreate(['id' => $item['id']], ['code' => $item['code'], 'name' => $item['name']]);
+        foreach ($types as $type) {
+            UserWishlistItemType::create($type);
         }
     }
 }

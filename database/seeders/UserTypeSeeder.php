@@ -15,16 +15,28 @@ class UserTypeSeeder extends Seeder
     public function run(): void
     {
         $types = [
-            ['id' => UserType::USER, 'name' => 'User'],
-            ['id' => UserType::VENDOR, 'name' => 'Vendor'],
-            ['id' => UserType::ADMIN, 'name' => 'Admin'],
+            [
+                'id' => 1,
+                'code' => 'ADMIN',
+                'name_en' => 'ADMIN',
+                'name_km' => 'អ្នកគ្រប់គ្រងប្រព័ន្ធ',
+            ],
+            [
+                'id' => 2,
+                'code' => 'VENDOR',
+                'name_en' => 'VENDOR',
+                'name_km' => 'អ្នកលក់',
+            ],
+            [
+                'id' => 3,
+                'code' => 'CONSUMER',
+                'name_en' => 'CONSUMER',
+                'name_km' => 'អ្នកប្រើប្រាស់',
+            ],
         ];
 
         foreach ($types as $type) {
-            UserType::updateOrCreate(
-                ['id' => $type['id']],
-                ['name' => $type['name']]
-            );
+            UserType::create($type);
         }
     }
 }

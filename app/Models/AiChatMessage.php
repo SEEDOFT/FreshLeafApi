@@ -39,6 +39,8 @@ use Illuminate\Support\Carbon;
 class AiChatMessage extends Model
 {
     /**
+     * Get the session that owns the AI chat message.
+     *
      * @return BelongsTo<AiChatSession, $this>
      */
     public function session(): BelongsTo
@@ -47,6 +49,8 @@ class AiChatMessage extends Model
     }
 
     /**
+     * Get the user that owns the AI chat message.
+     *
      * @return BelongsTo<User, $this>
      */
     public function user(): BelongsTo

@@ -9,15 +9,28 @@ use Illuminate\Database\Seeder;
 
 class UserWishlistStatusSeeder extends Seeder
 {
+    /**
+     * Run the database seeds.
+     */
     public function run(): void
     {
-        $items = [
-            ['id' => 1, 'code' => 'active', 'name' => 'Active'],
-            ['id' => 2, 'code' => 'archived', 'name' => 'Archived'],
+        $types = [
+            [
+                'id' => 1,
+                'code' => 'ACTIVE',
+                'name_en' => 'Active',
+                'name_km' => 'សកម្ម',
+            ],
+            [
+                'id' => 2,
+                'code' => 'ARCHIVED',
+                'name_en' => 'Archived',
+                'name_km' => 'បានរក្សាទុក',
+            ],
         ];
 
-        foreach ($items as $item) {
-            UserWishlistStatus::query()->updateOrCreate(['id' => $item['id']], ['code' => $item['code'], 'name' => $item['name']]);
+        foreach ($types as $type) {
+            UserWishlistStatus::create($type);
         }
     }
 }

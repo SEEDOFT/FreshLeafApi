@@ -15,14 +15,15 @@ use Illuminate\Support\Carbon;
 
 /**
  * @property int $id
- * @property int $code
- * @property string $name
+ * @property string $code
+ * @property string $name_en
+ * @property string $name_km
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  * @property-read Collection<int, User> $users
  */
-#[Table('user_types', key: 'id')]
-#[Fillable(['code', 'name'])]
+#[Table('user_types', key: 'id', keyType: 'int', incrementing: false)]
+#[Fillable(['code', 'name_en', 'name_km'])]
 #[UseFactory(UserTypeFactory::class)]
 class UserType extends Model
 {
@@ -30,7 +31,7 @@ class UserType extends Model
 
     public const int VENDOR = 2;
 
-    public const int USER = 3;
+    public const int CONSUMER = 3;
 
     /**
      * Get the users for this type.

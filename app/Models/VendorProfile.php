@@ -11,8 +11,41 @@ use Illuminate\Database\Eloquent\Attributes\UseFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Carbon;
 
-#[Table('vendor_profiles', key: 'id')]
+/**
+ * @property int $id
+ * @property int $user_id
+ * @property string $locale
+ * @property string $prefer_theme
+ * @property string $business_name
+ * @property string $shop_description
+ * @property string $contact_phone
+ * @property string $city
+ * @property string $province
+ * @property string $address
+ * @property string $opening_time
+ * @property string $closing_time
+ * @property bool $is_open
+ * @property bool $is_verified
+ * @property Carbon|null $approved_at
+ * @property Carbon|null $rejected_at
+ * @property int|null $approved_by_admin_id
+ * @property int|null $rejected_by_admin_id
+ * @property string|null $approve_reason
+ * @property string|null $reject_reason
+ * @property array $meta
+ * @property string|null $id_card_front
+ * @property string|null $id_card_back
+ * @property string|null $store_front_image
+ * @property string|null $organic_certificate_url
+ * @property string|null $bank_name
+ * @property string|null $bank_account_name
+ * @property string|null $bank_account_number
+ * @property string|null $bank_qr_code
+ * @property-read User $user
+ */
+#[Table('vendor_profiles', key: 'id', keyType: 'int')]
 #[Fillable([
     'user_id',
     'locale',

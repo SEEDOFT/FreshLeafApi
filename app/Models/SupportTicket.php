@@ -34,7 +34,7 @@ class SupportTicket extends Model
      */
     public function user(): BelongsTo
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(User::class, 'user_id', 'id');
     }
 
     /**
@@ -44,7 +44,7 @@ class SupportTicket extends Model
      */
     public function messages(): HasMany
     {
-        return $this->hasMany(SupportMessage::class)->orderBy('created_at');
+        return $this->hasMany(SupportMessage::class, 'id', 'id')->orderBy('created_at');
     }
 
     /**
@@ -54,6 +54,6 @@ class SupportTicket extends Model
      */
     public function latestMessage(): HasOne
     {
-        return $this->hasOne(SupportMessage::class)->latestOfMany();
+        return $this->hasOne(SupportMessage::class, 'id', 'id')->latestOfMany();
     }
 }

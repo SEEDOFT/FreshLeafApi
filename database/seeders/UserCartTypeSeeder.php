@@ -11,13 +11,13 @@ class UserCartTypeSeeder extends Seeder
 {
     public function run(): void
     {
-        $items = [
-            ['id' => 1, 'code' => 'default', 'name' => 'Default'],
-            ['id' => 2, 'code' => 'scheduled', 'name' => 'Scheduled'],
+        $data = [
+            ['id' => 1, 'code' => 'STANDARD', 'name_en' => 'Standard', 'name_km' => 'ទូទៅ'],
+            ['id' => 2, 'code' => 'BULK', 'name_en' => 'Bulk', 'name_km' => 'លក់ដុំ'],
         ];
 
-        foreach ($items as $item) {
-            UserCartType::query()->updateOrCreate(['id' => $item['id']], ['code' => $item['code'], 'name' => $item['name']]);
+        foreach ($data as $d) {
+            UserCartType::updateOrCreate(['id' => $d['id']], $d);
         }
     }
 }

@@ -17,10 +17,12 @@ class AiService implements AiProviderContract
      *
      * @param  GeminiService  $geminiService  The Gemini AI provider service.
      * @param  OllamaService  $ollamaService  The Ollama AI provider service.
+     * @param  ZenService  $zenService  The Zen AI provider service.
      */
     public function __construct(
         private GeminiService $geminiService,
         private OllamaService $ollamaService,
+        private ZenService $zenService,
     ) {}
 
     /**
@@ -49,9 +51,13 @@ class AiService implements AiProviderContract
      * {@inheritDoc}
      */
     #[Override]
-    public function generateContentWithHistory(array $history, string $prompt, array $options = []): string
-    {
-        return $this->resolveProvider()->generateContentWithHistory($history, $prompt, $options);
+    public function generateContentWithHistory(
+        array $history,
+        string $prompt,
+        array $options = []
+    ): string {
+        return $this->resolveProvider()
+            ->generateContentWithHistory($history, $prompt, $options);
     }
 
     /**
@@ -63,7 +69,8 @@ class AiService implements AiProviderContract
         string $prompt,
         array $options = [],
     ): string {
-        return $this->resolveProvider()->generateContentWithSystemPrompt($systemPrompt, $prompt, $options);
+        return $this->resolveProvider()
+            ->generateContentWithSystemPrompt($systemPrompt, $prompt, $options);
     }
 
     /**
@@ -116,7 +123,10 @@ class AiService implements AiProviderContract
         return match ($providerName) {
             'gemini' => $this->geminiService,
             'ollama' => $this->ollamaService,
-            default => throw new Exception("Configured AI provider [{$providerName}] is not supported."),
+            'zen' => $this->zenService,
+            default => throw new Exception(
+                "Configured AI provider [{$providerName}] is not supported."
+            ),
         };
     }
 }

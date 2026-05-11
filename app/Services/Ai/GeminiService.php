@@ -12,6 +12,10 @@ use Illuminate\Support\Facades\Http;
 use Override;
 use Psr\Http\Message\StreamInterface;
 
+use function config;
+use function is_array;
+use function is_string;
+
 class GeminiService implements AiProviderContract
 {
     private string $apiKey;
@@ -29,11 +33,11 @@ class GeminiService implements AiProviderContract
      */
     public function __construct()
     {
-        $apiKey = config('services.gemini.api_key');
-        $model = config('services.gemini.model', 'gemini-2.0-flash');
+        $apiKey = (string) config('services.gemini.api_key');
+        $model = (string) config('services.gemini.model', 'gemini-2.0-flash');
 
-        $this->apiKey = \is_string($apiKey) ? $apiKey : '';
-        $this->model = \is_string($model) ? $model : 'gemini-2.0-flash';
+        $this->apiKey = $apiKey;
+        $this->model = $model;
     }
 
     /**
@@ -43,9 +47,12 @@ class GeminiService implements AiProviderContract
     public function healthCheck(): bool
     {
         try {
-            $response = Http::timeout(5)->get($this->baseUrl.'/models/'.$this->model, [
-                'key' => $this->apiKey,
-            ]);
+            $response = Http::timeout(5)
+                ->get($this->baseUrl.'/models/'.$this->model,
+                    [
+                        'key' => $this->apiKey,
+                    ],
+                );
 
             return $response->successful();
         } catch (Exception) {
@@ -54,25 +61,18 @@ class GeminiService implements AiProviderContract
     }
 
     /**
-     * Generate content based on a prompt without history.
-     *
-     * @param  string  $prompt  The user prompt to generate content for.
-     * @param  array<string, mixed>  $options  Optional generation parameters:
-     *                                         - temperature: float (default: 0.7)
-     *                                         - topP: float (default: 0.9)
-     *                                         - topK: int (default: 40)
-     *                                         - maxOutputTokens: int (default: 4096)
-     * @return string The generated content from Gemini.
-     *
-     * @throws Exception If the API key is missing, the request fails, or the response is invalid.
+     * {@inheritDoc}
      */
+    #[Override]
     public function generateContent(string $prompt, array $options = []): string
     {
         $contents = [
             [
                 'role' => 'user',
                 'parts' => [
-                    ['text' => $prompt],
+                    [
+                        'text' => $prompt,
+                    ],
                 ],
             ],
         ];
@@ -81,31 +81,28 @@ class GeminiService implements AiProviderContract
     }
 
     /**
-     * Generate content based on a prompt and conversation history.
-     *
-     * @param  array<int, array<string, mixed>>  $history  An array of previous messages in the conversation. Each message should have a 'role' (e.g., 'user' or 'assistant') and 'content'.
-     * @param  string  $prompt  The user prompt to generate content for.
-     * @param  array<string, mixed>  $options  Optional generation parameters:
-     *                                         - temperature: float (default: 0.7)
-     *                                         - topP: float (default: 0.9)
-     *                                         - topK: int (default: 40)
-     *                                         - maxOutputTokens: int (default: 4096)
-     * @return string The generated content from Gemini.
-     *
-     * @throws Exception If the API key is missing, the request fails, or the response is invalid.
+     * {@inheritDoc}
      */
-    public function generateContentWithHistory(array $history, string $prompt, array $options = []): string
-    {
+    #[Override]
+    public function generateContentWithHistory(
+        array $history,
+        string $prompt,
+        array $options = []
+    ): string {
         $contents = [];
 
         foreach ($history as $message) {
-            $content = (\is_array($message) && isset($message['content']) && \is_string($message['content'])) ? $message['content'] : '';
+            $content = (is_array($message) &&
+                        isset($message['content']) &&
+                        is_string($message['content']))
+                ? $message['content'] : '';
 
             if ($content === '') {
                 continue;
             }
 
-            $role = (\is_array($message) && ($message['role'] ?? 'user') === 'assistant') ? 'model' : 'user';
+            $role = (is_array($message) && ($message['role'] ?? 'user') === 'assistant')
+                    ? 'model' : 'user';
 
             $contents[] = [
                 'role' => $role,
@@ -126,18 +123,7 @@ class GeminiService implements AiProviderContract
     }
 
     /**
-     * Generate content based on a system prompt and user prompt without history.
-     *
-     * @param  string  $systemPrompt  The system instruction to guide the model's response.
-     * @param  string  $prompt  The user prompt to generate content for.
-     * @param  array<string, mixed>  $options  Optional generation parameters:
-     *                                         - temperature: float (default: 0.7)
-     *                                         - topP: float (default: 0.9)
-     *                                         - topK: int (default: 40)
-     *                                         - maxOutputTokens: int (default: 4096)
-     * @return string The generated content from Gemini.
-     *
-     * @throws Exception If the API key is missing, the request fails, or the response is invalid.
+     * {@inheritDoc}
      */
     public function generateContentWithSystemPrompt(
         string $systemPrompt,
@@ -157,20 +143,9 @@ class GeminiService implements AiProviderContract
     }
 
     /**
-     * Generate content based on a system prompt, conversation history, and user prompt.
-     *
-     * @param  string  $systemPrompt  The system instruction to guide the model's response.
-     * @param  array<int, array<string, mixed>>  $history  An array of previous messages in the conversation. Each message should have a 'role' (e.g., 'user' or 'assistant') and 'content'.
-     * @param  string  $prompt  The user prompt to generate content for.
-     * @param  array<string, mixed>  $options  Optional generation parameters:
-     *                                         - temperature: float (default: 0.7)
-     *                                         - topP: float (default: 0.9)
-     *                                         - topK: int (default: 40)
-     *                                         - maxOutputTokens: int (default: 4096)
-     * @return string The generated content from Gemini.
-     *
-     * @throws Exception If the API key is missing, the request fails, or the response is invalid.
+     * {@inheritDoc}
      */
+    #[Override]
     public function generateContentWithSystemPromptAndHistory(
         string $systemPrompt,
         array $history,
@@ -180,13 +155,17 @@ class GeminiService implements AiProviderContract
         $contents = [];
 
         foreach ($history as $message) {
-            $content = (\is_array($message) && isset($message['content']) && \is_string($message['content'])) ? $message['content'] : '';
+            $content = (is_array($message) &&
+                        isset($message['content']) &&
+                        is_string($message['content']))
+                ? $message['content'] : '';
 
             if ($content === '') {
                 continue;
             }
 
-            $role = (\is_array($message) && ($message['role'] ?? 'user') === 'assistant') ? 'model' : 'user';
+            $role = (is_array($message) && ($message['role'] ?? 'user') === 'assistant')
+                ? 'model' : 'user';
 
             $contents[] = [
                 'role' => $role,
@@ -207,17 +186,9 @@ class GeminiService implements AiProviderContract
     }
 
     /**
-     * Stream content based on a system prompt, conversation history, and user prompt.
-     *
-     * @param  string  $systemPrompt  The system instruction to guide the model's response.
-     * @param  array<int, array<string, mixed>>  $history  An array of previous messages in the conversation.
-     * @param  string  $prompt  The user prompt to generate content for.
-     * @param  callable(string): void  $onChunk  A callback function that is invoked for each generated text chunk.
-     * @param  array<string, mixed>  $options  Optional generation parameters.
-     * @return string The full generated content from Gemini.
-     *
-     * @throws Exception If the API key is missing, the request fails, or the response is invalid.
+     * {@inheritDoc}
      */
+    #[Override]
     public function streamContentWithSystemPromptAndHistory(
         string $systemPrompt,
         array $history,
@@ -225,20 +196,20 @@ class GeminiService implements AiProviderContract
         callable $onChunk,
         array $options = [],
     ): string {
-        if ($this->apiKey === '') {
-            throw new Exception('Gemini API key is missing');
-        }
-
         $contents = [];
 
         foreach ($history as $message) {
-            $content = (\is_array($message) && isset($message['content']) && \is_string($message['content'])) ? $message['content'] : '';
+            $content = (\is_array($message) &&
+                        isset($message['content']) &&
+                        \is_string($message['content']))
+                    ? $message['content'] : '';
 
             if ($content === '') {
                 continue;
             }
 
-            $role = (\is_array($message) && ($message['role'] ?? 'user') === 'assistant') ? 'model' : 'user';
+            $role = (\is_array($message) && ($message['role'] ?? 'user') === 'assistant')
+                    ? 'model' : 'user';
 
             $contents[] = [
                 'role' => $role,
@@ -300,7 +271,11 @@ class GeminiService implements AiProviderContract
                 $content = $candidate['content'] ?? null;
                 $parts = \is_array($content) ? ($content['parts'] ?? null) : null;
 
-                if (\is_array($parts) && isset($parts[0]) && \is_array($parts[0]) && isset($parts[0]['text']) && \is_string($parts[0]['text'])) {
+                if (\is_array($parts) &&
+                    isset($parts[0]) &&
+                    \is_array($parts[0]) &&
+                    isset($parts[0]['text']) &&
+                    \is_string($parts[0]['text'])) {
                     $text = $parts[0]['text'];
                     $fullText .= $text;
                     $onChunk($text);
@@ -493,6 +468,7 @@ class GeminiService implements AiProviderContract
     {
         $message = $response->json('error.message');
 
-        return 'Gemini API error ('.$response->status().'): '.(\is_string($message) ? $message : 'Unknown Gemini API error');
+        return 'Gemini API error ('.$response->status().'): '.(\is_string($message)
+            ? $message : 'Unknown Gemini API error');
     }
 }

@@ -12,6 +12,9 @@ use Illuminate\Support\Facades\Http;
 use Override;
 use Psr\Http\Message\StreamInterface;
 
+use function config;
+use function trim;
+
 class OllamaService implements AiProviderContract
 {
     private string $baseUrl;
@@ -29,9 +32,9 @@ class OllamaService implements AiProviderContract
      */
     public function __construct()
     {
-        $this->baseUrl = \rtrim((string) \config('ai.providers.ollama.base_url', 'http://127.0.0.1:11434'), '/');
-        $this->model = (string) \config('ai.providers.ollama.model', 'qwen2.5:1.5b');
-        $this->timeout = (int) \config('ai.providers.ollama.timeout', 60);
+        $this->baseUrl = (string) config('ai.providers.ollama.base_url');
+        $this->model = (string) config('ai.providers.ollama.model');
+        $this->timeout = (int) config('ai.providers.ollama.timeout');
     }
 
     /**
@@ -50,16 +53,9 @@ class OllamaService implements AiProviderContract
     }
 
     /**
-     * Generate AI content based on a simple user prompt.
-     *
-     * @param  string  $prompt  The user's input prompt to generate content from.
-     * @param  array<string, mixed>  $options  Optional parameters for generation, such as temperature and max output tokens.
-     * @return string The generated content from the AI model.
-     *
-     * This method constructs a message payload with the user's prompt and sends it to the Ollama API.
-     * It handles the response and returns the generated content as a string. If any errors occur during
-     * the request, an exception is thrown with a descriptive error message.
+     * {@inheritDoc}
      */
+    #[Override]
     public function generateContent(string $prompt, array $options = []): string
     {
         $messages = [
@@ -73,19 +69,14 @@ class OllamaService implements AiProviderContract
     }
 
     /**
-     * Generate AI content based on a conversation history and a new user prompt.
-     *
-     * @param  array<int, array<string, mixed>>  $history  An array of previous messages in the conversation, each with a role and content.
-     * @param  string  $prompt  The new user prompt to generate content from.
-     * @param  array<string, mixed>  $options  Optional parameters for generation, such as temperature and max output tokens.
-     * @return string The generated content from the AI model.
-     *
-     * This method constructs a message payload that includes the conversation history followed by the new user prompt.
-     * It sends this payload to the Ollama API and returns the generated content. If any errors occur during
-     * the request, an exception is thrown with a descriptive error message.
+     * {@inheritDoc}
      */
-    public function generateContentWithHistory(array $history, string $prompt, array $options = []): string
-    {
+    #[Override]
+    public function generateContentWithHistory(
+        array $history,
+        string $prompt,
+        array $options = []
+    ): string {
         $messages = [];
 
         foreach ($history as $message) {
@@ -96,7 +87,8 @@ class OllamaService implements AiProviderContract
             }
 
             $messages[] = [
-                'role' => ($message['role'] ?? 'user') === 'assistant' ? 'assistant' : 'user',
+                'role' => ($message['role'] ?? 'user') === 'assistant'
+                            ? 'assistant' : 'user',
                 'content' => $content,
             ];
         }
@@ -110,17 +102,9 @@ class OllamaService implements AiProviderContract
     }
 
     /**
-     * Generate AI content based on a system prompt and a new user prompt.
-     *
-     * @param  string  $systemPrompt  A system-level instruction or context for the AI model to follow.
-     * @param  string  $prompt  The new user prompt to generate content from.
-     * @param  array<string, mixed>  $options  Optional parameters for generation, such as temperature and max output tokens.
-     * @return string The generated content from the AI model.
-     *
-     * This method constructs a message payload that includes a system prompt at the beginning and the new user prompt.
-     * It sends this payload to the Ollama API and returns the generated content. If any errors occur during
-     * the request, an exception is thrown with a descriptive error message.
+     * {@inheritDoc}
      */
+    #[Override]
     public function generateContentWithSystemPrompt(
         string $systemPrompt,
         string $prompt,
@@ -141,18 +125,9 @@ class OllamaService implements AiProviderContract
     }
 
     /**
-     * Generate AI content based on a system prompt, conversation history, and a new user prompt.
-     *
-     * @param  string  $systemPrompt  A system-level instruction or context for the AI model to follow.
-     * @param  array<int, array<string, mixed>>  $history  An array of previous messages in the conversation, each with a role and content.
-     * @param  string  $prompt  The new user prompt to generate content from.
-     * @param  array<string, mixed>  $options  Optional parameters for generation, such as temperature and max output tokens.
-     * @return string The generated content from the AI model.
-     *
-     * This method constructs a message payload that includes a system prompt at the beginning, followed by the conversation history and the new user prompt.
-     * It sends this payload to the Ollama API and returns the generated content. If any errors occur during
-     * the request, an exception is thrown with a descriptive error message.
+     * {@inheritDoc}
      */
+    #[Override]
     public function generateContentWithSystemPromptAndHistory(
         string $systemPrompt,
         array $history,
@@ -174,7 +149,8 @@ class OllamaService implements AiProviderContract
             }
 
             $messages[] = [
-                'role' => ($message['role'] ?? 'user') === 'assistant' ? 'assistant' : 'user',
+                'role' => ($message['role'] ?? 'user') === 'assistant'
+                            ? 'assistant' : 'user',
                 'content' => $content,
             ];
         }
@@ -188,17 +164,9 @@ class OllamaService implements AiProviderContract
     }
 
     /**
-     * Stream AI content based on a system prompt, conversation history, and a new user prompt.
-     *
-     * @param  string  $systemPrompt  A system-level instruction or context for the AI model to follow.
-     * @param  array<int, array<string, mixed>>  $history  An array of previous messages in the conversation, each with a role and content.
-     * @param  string  $prompt  The new user prompt to generate content from.
-     * @param  callable(string): void  $onChunk  A callback function that is invoked for each generated text chunk.
-     * @param  array<string, mixed>  $options  Optional parameters for generation.
-     * @return string The full generated content from the AI model.
-     *
-     * @throws Exception If there is a connection issue or if the API returns an error response.
+     * {@inheritDoc}
      */
+    #[Override]
     public function streamContentWithSystemPromptAndHistory(
         string $systemPrompt,
         array $history,
@@ -216,7 +184,8 @@ class OllamaService implements AiProviderContract
                 continue;
             }
             $messages[] = [
-                'role' => ($message['role'] ?? 'user') === 'assistant' ? 'assistant' : 'user',
+                'role' => ($message['role'] ?? 'user') === 'assistant'
+                            ? 'assistant' : 'user',
                 'content' => $content,
             ];
         }
@@ -294,7 +263,7 @@ class OllamaService implements AiProviderContract
             }
         }
 
-        return \trim($line);
+        return trim($line);
     }
 
     /**

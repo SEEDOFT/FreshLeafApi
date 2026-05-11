@@ -18,18 +18,14 @@ class VerificationDocumentController extends Controller
      */
     public function show(Request $request, string $path): JsonResponse|StreamedResponse
     {
-        $user = $this->authenticatedUser($request);
-
-        if ($user->user_type_id !== UserType::ADMIN) {
-            return static::errorResponse('Unauthorized access to sensitive documents.', 403);
-        }
+        $user = $this->authenticatedUser($request, UserType::ADMIN);
 
         if (str_contains($path, '..')) {
-            return static::errorResponse('', 404);
+            return static::errorResponse('Document not found.', 404);
         }
 
         if (! Storage::disk('local')->exists($path)) {
-            return static::errorResponse('', 404);
+            return static::errorResponse('Document not found.', 404);
         }
 
         return Storage::disk('local')->response($path);

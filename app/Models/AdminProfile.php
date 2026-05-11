@@ -27,7 +27,7 @@ use Illuminate\Support\Carbon;
  * @property Carbon|null $updated_at
  * @property-read User $user
  */
-#[Table('admin_profiles', key: 'id')]
+#[Table('admin_profiles', key: 'id', keyType: 'int')]
 #[Fillable([
     'user_id',
     'locale',
@@ -44,6 +44,11 @@ class AdminProfile extends Model
     /** @use HasFactory<AdminProfileFactory> */
     use HasFactory;
 
+    /**
+     * {@inheritDoc}
+     *
+     * @return array<string, string>
+     */
     protected function casts(): array
     {
         return [

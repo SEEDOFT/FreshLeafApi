@@ -14,45 +14,45 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('payment_methods', static function (Blueprint $table) {
-            $table->id();
+            $table->unsignedBigInteger('id')->primary();
             $table->string('name');
             $table->string('code')->unique();
             $table->string('image')->nullable();
             $table->string('account_name')->nullable();
             $table->string('account_number')->nullable();
             $table->string('qr_code')->nullable();
-            $table->foreignId('status_id')->constrained('payment_method_statuses');
-            $table->foreignId('type_id')->constrained('payment_method_types');
+            $table->unsignedBigInteger('status_id');
+            $table->unsignedBigInteger('type_id');
             $table->text('instructions')->nullable();
             $table->boolean('is_active')->default(true);
             $table->timestamps();
         });
 
         Schema::create('carts', static function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('user_id')->constrained()->cascadeOnDelete();
-            $table->foreignId('status_id')->constrained('user_cart_statuses');
-            $table->foreignId('type_id')->constrained('user_cart_types');
+            $table->unsignedBigInteger('id')->primary();
+            $table->unsignedBigInteger('user_id');
+            $table->unsignedBigInteger('status_id');
+            $table->unsignedBigInteger('type_id');
             $table->timestamps();
         });
 
         Schema::create('cart_items', static function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('cart_id')->constrained()->cascadeOnDelete();
-            $table->foreignId('vendor_inventory_id')->constrained('vendor_inventories');
+            $table->unsignedBigInteger('id')->primary();
+            $table->unsignedBigInteger('cart_id');
+            $table->unsignedBigInteger('vendor_inventory_id');
             $table->integer('quantity');
-            $table->foreignId('status_id')->constrained('user_cart_item_statuses');
-            $table->foreignId('type_id')->constrained('user_cart_item_types');
+            $table->unsignedBigInteger('status_id');
+            $table->unsignedBigInteger('type_id');
             $table->timestamps();
         });
 
         Schema::create('orders', static function (Blueprint $table) {
-            $table->id();
+            $table->unsignedBigInteger('id')->primary();
             $table->string('order_number')->unique();
-            $table->foreignId('user_id')->constrained();
-            $table->foreignId('status_id')->constrained('order_statuses');
-            $table->foreignId('type_id')->constrained('order_types');
-            $table->foreignId('currency_id')->constrained();
+            $table->unsignedBigInteger('user_id');
+            $table->unsignedBigInteger('status_id');
+            $table->unsignedBigInteger('type_id');
+            $table->unsignedBigInteger('currency_id');
             $table->decimal('subtotal', 16, 2);
             $table->decimal('tax', 16, 2)->default(0);
             $table->decimal('shipping_fee', 16, 2)->default(0);
@@ -65,9 +65,9 @@ return new class extends Migration
         });
 
         Schema::create('order_items', static function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('order_id')->constrained()->cascadeOnDelete();
-            $table->foreignId('vendor_inventory_id')->constrained('vendor_inventories');
+            $table->unsignedBigInteger('id')->primary();
+            $table->unsignedBigInteger('order_id');
+            $table->unsignedBigInteger('vendor_inventory_id');
             $table->decimal('price', 16, 2);
             $table->integer('quantity');
             $table->decimal('subtotal', 16, 2);
@@ -77,12 +77,12 @@ return new class extends Migration
         });
 
         Schema::create('payments', static function (Blueprint $table) {
-            $table->id();
+            $table->unsignedBigInteger('id')->primary();
             $table->string('payment_number')->unique();
-            $table->foreignId('order_id')->constrained();
-            $table->foreignId('payment_method_id')->constrained();
-            $table->foreignId('status_id')->constrained('payment_statuses');
-            $table->foreignId('type_id')->constrained('payment_types');
+            $table->unsignedBigInteger('order_id');
+            $table->unsignedBigInteger('payment_method_id');
+            $table->unsignedBigInteger('status_id');
+            $table->unsignedBigInteger('type_id');
             $table->decimal('amount', 16, 2);
             $table->string('transaction_id')->nullable();
             $table->timestamp('paid_at')->nullable();

@@ -66,7 +66,7 @@ class Cart extends Model
      */
     public function status(): BelongsTo
     {
-        return $this->belongsTo(UserCartStatus::class, 'user_cart_status_id');
+        return $this->belongsTo(UserCartStatus::class, 'user_cart_status_id', 'id');
     }
 
     /**
@@ -76,6 +76,6 @@ class Cart extends Model
      */
     public function type(): BelongsTo
     {
-        return $this->belongsTo(UserCartType::class, 'user_cart_type_id');
+        return $this->belongsTo(UserCartType::class, 'user_cart_type_id', 'id');
     }
 }

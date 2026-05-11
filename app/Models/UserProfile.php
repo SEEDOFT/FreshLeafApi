@@ -19,14 +19,14 @@ use Illuminate\Support\Facades\Hash;
  * @property int $user_id
  * @property string|null $pin
  * @property string|null $gender
- * @property string|null $locale
+ * @property string $locale
  * @property string $prefer_theme
  * @property Carbon|null $date_of_birth
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  * @property-read User $user
  */
-#[Table('user_profiles', key: 'id')]
+#[Table('user_profiles', key: 'id', keyType: 'int')]
 #[Fillable([
     'user_id',
     'pin',

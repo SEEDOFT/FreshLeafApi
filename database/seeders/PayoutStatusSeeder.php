@@ -4,22 +4,21 @@ declare(strict_types=1);
 
 namespace Database\Seeders;
 
-use App\Models\PaymentStatus;
+use App\Models\PayoutStatus;
 use Illuminate\Database\Seeder;
 
-class PaymentStatusSeeder extends Seeder
+class PayoutStatusSeeder extends Seeder
 {
     public function run(): void
     {
         $data = [
             ['id' => 1, 'code' => 'PENDING', 'name_en' => 'Pending', 'name_km' => 'រង់ចាំ'],
-            ['id' => 2, 'code' => 'COMPLETED', 'name_en' => 'Completed', 'name_km' => 'បានទូទាត់'],
+            ['id' => 2, 'code' => 'PAID', 'name_en' => 'Paid', 'name_km' => 'បានទូទាត់'],
             ['id' => 3, 'code' => 'FAILED', 'name_en' => 'Failed', 'name_km' => 'បរាជ័យ'],
-            ['id' => 4, 'code' => 'REFUNDED', 'name_en' => 'Refunded', 'name_km' => 'បានសងប្រាក់'],
         ];
 
         foreach ($data as $d) {
-            PaymentStatus::updateOrCreate(['id' => $d['id']], $d);
+            PayoutStatus::updateOrCreate(['id' => $d['id']], $d);
         }
     }
 }

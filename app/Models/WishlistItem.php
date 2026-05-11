@@ -9,7 +9,18 @@ use Illuminate\Database\Eloquent\Attributes\Table;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-#[Table('user_wishlist_items', key: 'id')]
+/**
+ * @property int $id
+ * @property int $user_wishlist_id
+ * @property int $vendor_inventory_id
+ * @property int $user_wishlist_item_status_id
+ * @property int $user_wishlist_item_type_id
+ * @property-read Wishlist $wishlist
+ * @property-read VendorInventory $vendorInventory
+ * @property-read UserWishlistItemStatus $status
+ * @property-read UserWishlistItemType $type
+ */
+#[Table('user_wishlist_items', key: 'id', keyType: 'int')]
 #[Fillable([
     'user_wishlist_id',
     'vendor_inventory_id',
@@ -35,7 +46,7 @@ class WishlistItem extends Model
      */
     public function vendorInventory(): BelongsTo
     {
-        return $this->belongsTo(VendorInventory::class, 'vendor_inventory_id');
+        return $this->belongsTo(VendorInventory::class, 'vendor_inventory_id', 'id');
     }
 
     /**
@@ -45,7 +56,11 @@ class WishlistItem extends Model
      */
     public function status(): BelongsTo
     {
-        return $this->belongsTo(UserWishlistItemStatus::class, 'user_wishlist_item_status_id');
+        return $this->belongsTo(
+            UserWishlistItemStatus::class,
+            'user_wishlist_item_status_id',
+            'id'
+        );
     }
 
     /**
@@ -55,6 +70,10 @@ class WishlistItem extends Model
      */
     public function type(): BelongsTo
     {
-        return $this->belongsTo(UserWishlistItemType::class, 'user_wishlist_item_type_id');
+        return $this->belongsTo(
+            UserWishlistItemType::class,
+            'user_wishlist_item_type_id',
+            'id'
+        );
     }
 }

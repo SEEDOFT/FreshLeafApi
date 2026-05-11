@@ -14,17 +14,29 @@ class VendorInventoryStatusSeeder extends Seeder
      */
     public function run(): void
     {
-        $statuses = [
-            ['id' => VendorInventoryStatus::ACTIVE, 'code' => 'active', 'name' => 'Active'],
-            ['id' => VendorInventoryStatus::INACTIVE, 'code' => 'inactive', 'name' => 'Inactive'],
-            ['id' => VendorInventoryStatus::OUT_OF_STOCK, 'code' => 'out_of_stock', 'name' => 'Out of Stock'],
+        $types = [
+            [
+                'id' => 1,
+                'code' => 'AVAILABLE',
+                'name_en' => 'Available',
+                'name_km' => 'មានលក់',
+            ],
+            [
+                'id' => 2,
+                'code' => 'OUT_OF_STOCK',
+                'name_en' => 'Out of Stock',
+                'name_km' => 'អស់ពីស្តុក',
+            ],
+            [
+                'id' => 3,
+                'code' => 'HIDDEN',
+                'name_en' => 'Hidden',
+                'name_km' => 'លាក់',
+            ],
         ];
 
-        foreach ($statuses as $status) {
-            VendorInventoryStatus::query()->updateOrCreate(
-                ['id' => $status['id']],
-                ['code' => $status['code'], 'name' => $status['name']]
-            );
+        foreach ($types as $type) {
+            VendorInventoryStatus::create($type);
         }
     }
 }

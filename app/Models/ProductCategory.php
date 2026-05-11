@@ -33,7 +33,7 @@ use Illuminate\Support\Facades\App;
  * @property-read int|null $products_count
  * @property-read ProductCategoryStatus $status
  */
-#[Table('product_categories')]
+#[Table('product_categories', key: 'id', keyType: 'int', incrementing: false)]
 #[Fillable([
     'product_category_status_id',
     'name_en',

@@ -15,44 +15,50 @@ return new class extends Migration
     {
         // User & Auth
         Schema::create('user_statuses', static function (Blueprint $table) {
-            $table->id();
+            $table->unsignedBigInteger('id')->primary();
             $table->string('code')->unique();
-            $table->string('name');
+            $table->string('name_en');
+            $table->string('name_km');
             $table->timestamps();
         });
 
         Schema::create('user_types', static function (Blueprint $table) {
-            $table->id();
+            $table->unsignedBigInteger('id')->primary();
             $table->string('code')->unique();
-            $table->string('name');
+            $table->string('name_en');
+            $table->string('name_km');
             $table->timestamps();
         });
 
         // Products & Categories
         Schema::create('product_statuses', static function (Blueprint $table) {
-            $table->id();
+            $table->unsignedBigInteger('id')->primary();
             $table->string('code')->unique();
-            $table->string('name');
+            $table->string('name_en');
+            $table->string('name_km');
             $table->timestamps();
         });
 
         Schema::create('product_types', static function (Blueprint $table) {
-            $table->id();
+            $table->unsignedBigInteger('id')->primary();
             $table->string('code')->unique();
-            $table->string('name');
+            $table->string('name_en');
+            $table->string('name_km');
             $table->timestamps();
         });
 
         Schema::create('product_category_statuses', static function (Blueprint $table) {
-            $table->id();
+            $table->unsignedBigInteger('id')->primary();
             $table->string('code')->unique();
-            $table->string('name');
+            $table->string('name_en');
+            $table->string('name_km');
             $table->timestamps();
         });
 
         Schema::create('units', static function (Blueprint $table) {
-            $table->id();
-            $table->string('name');
+            $table->unsignedBigInteger('id')->primary();
+            $table->string('name_en');
+            $table->string('name_km');
             $table->string('symbol');
             $table->decimal('conversion_to_base', 16, 8)->default(1);
             $table->timestamps();
@@ -60,164 +66,186 @@ return new class extends Migration
 
         // Orders & Payments
         Schema::create('order_statuses', static function (Blueprint $table) {
-            $table->id();
+            $table->unsignedBigInteger('id')->primary();
             $table->string('code')->unique();
-            $table->string('name');
+            $table->string('name_en');
+            $table->string('name_km');
             $table->integer('sort_order')->default(0);
             $table->string('color')->nullable();
             $table->timestamps();
         });
 
         Schema::create('order_types', static function (Blueprint $table) {
-            $table->id();
+            $table->unsignedBigInteger('id')->primary();
             $table->string('code')->unique();
-            $table->string('name');
+            $table->string('name_en');
+            $table->string('name_km');
             $table->timestamps();
         });
 
         Schema::create('payment_statuses', static function (Blueprint $table) {
-            $table->id();
+            $table->unsignedBigInteger('id')->primary();
             $table->string('code')->unique();
-            $table->string('name');
+            $table->string('name_en');
+            $table->string('name_km');
             $table->timestamps();
         });
 
         Schema::create('payment_types', static function (Blueprint $table) {
-            $table->id();
+            $table->unsignedBigInteger('id')->primary();
             $table->string('code')->unique();
-            $table->string('name');
+            $table->string('name_en');
+            $table->string('name_km');
             $table->timestamps();
         });
 
         Schema::create('payment_method_statuses', static function (Blueprint $table) {
-            $table->id();
+            $table->unsignedBigInteger('id')->primary();
             $table->string('code')->unique();
-            $table->string('name');
+            $table->string('name_en');
+            $table->string('name_km');
             $table->timestamps();
         });
 
         Schema::create('payment_method_types', static function (Blueprint $table) {
-            $table->id();
+            $table->unsignedBigInteger('id')->primary();
             $table->string('code')->unique();
-            $table->string('name');
+            $table->string('name_en');
+            $table->string('name_km');
             $table->timestamps();
         });
 
         // Finance
         Schema::create('currencies', static function (Blueprint $table) {
-            $table->id();
-            $table->string('name');
+            $table->unsignedBigInteger('id')->primary();
             $table->string('code')->unique();
+            $table->string('name_en');
+            $table->string('name_km');
             $table->string('symbol');
             $table->timestamps();
             $table->softDeletes();
         });
 
         Schema::create('wallet_transaction_statuses', static function (Blueprint $table) {
-            $table->id();
+            $table->unsignedBigInteger('id')->primary();
             $table->string('code')->unique();
-            $table->string('name');
+            $table->string('name_en');
+            $table->string('name_km');
             $table->timestamps();
         });
 
         Schema::create('wallet_transaction_types', static function (Blueprint $table) {
-            $table->id();
+            $table->unsignedBigInteger('id')->primary();
             $table->string('code')->unique();
-            $table->string('name');
+            $table->string('name_en');
+            $table->string('name_km');
             $table->timestamps();
         });
 
         Schema::create('payout_statuses', static function (Blueprint $table) {
-            $table->id();
-            $table->string('name');
+            $table->unsignedBigInteger('id')->primary();
             $table->string('code')->unique();
+            $table->string('name_en');
+            $table->string('name_km');
             $table->timestamps();
         });
 
         Schema::create('payout_methods', static function (Blueprint $table) {
-            $table->id();
-            $table->string('name');
+            $table->unsignedBigInteger('id')->primary();
             $table->string('code')->unique();
+            $table->string('name_en');
+            $table->string('name_km');
             $table->timestamps();
         });
 
         // Inventory
         Schema::create('vendor_inventory_statuses', static function (Blueprint $table) {
-            $table->id();
+            $table->unsignedBigInteger('id')->primary();
             $table->string('code')->unique();
-            $table->string('name');
+            $table->string('name_en');
+            $table->string('name_km');
             $table->timestamps();
         });
 
         // Notifications
         Schema::create('notification_types', static function (Blueprint $table) {
-            $table->id();
+            $table->unsignedBigInteger('id')->primary();
             $table->string('code')->unique();
-            $table->string('name');
+            $table->string('name_en');
+            $table->string('name_km');
             $table->timestamps();
         });
 
         Schema::create('notification_statuses', static function (Blueprint $table) {
-            $table->id();
+            $table->unsignedBigInteger('id')->primary();
             $table->string('code')->unique();
-            $table->string('name');
+            $table->string('name_en');
+            $table->string('name_km');
             $table->timestamps();
         });
 
         // Cart & Wishlist
         Schema::create('user_cart_statuses', static function (Blueprint $table) {
-            $table->id();
+            $table->unsignedBigInteger('id')->primary();
             $table->string('code')->unique();
-            $table->string('name');
+            $table->string('name_en');
+            $table->string('name_km');
             $table->timestamps();
         });
 
         Schema::create('user_cart_types', static function (Blueprint $table) {
-            $table->id();
+            $table->unsignedBigInteger('id')->primary();
             $table->string('code')->unique();
-            $table->string('name');
+            $table->string('name_en');
+            $table->string('name_km');
             $table->timestamps();
         });
 
         Schema::create('user_cart_item_statuses', static function (Blueprint $table) {
-            $table->id();
+            $table->unsignedBigInteger('id')->primary();
             $table->string('code')->unique();
-            $table->string('name');
+            $table->string('name_en');
+            $table->string('name_km');
             $table->timestamps();
         });
 
         Schema::create('user_cart_item_types', static function (Blueprint $table) {
-            $table->id();
+            $table->unsignedBigInteger('id')->primary();
             $table->string('code')->unique();
-            $table->string('name');
+            $table->string('name_en');
+            $table->string('name_km');
             $table->timestamps();
         });
 
         Schema::create('user_wishlist_statuses', static function (Blueprint $table) {
-            $table->id();
+            $table->unsignedBigInteger('id')->primary();
             $table->string('code')->unique();
-            $table->string('name');
+            $table->string('name_en');
+            $table->string('name_km');
             $table->timestamps();
         });
 
         Schema::create('user_wishlist_types', static function (Blueprint $table) {
-            $table->id();
+            $table->unsignedBigInteger('id')->primary();
             $table->string('code')->unique();
-            $table->string('name');
+            $table->string('name_en');
+            $table->string('name_km');
             $table->timestamps();
         });
 
         Schema::create('user_wishlist_item_statuses', static function (Blueprint $table) {
-            $table->id();
+            $table->unsignedBigInteger('id')->primary();
             $table->string('code')->unique();
-            $table->string('name');
+            $table->string('name_en');
+            $table->string('name_km');
             $table->timestamps();
         });
 
         Schema::create('user_wishlist_item_types', static function (Blueprint $table) {
-            $table->id();
+            $table->unsignedBigInteger('id')->primary();
             $table->string('code')->unique();
-            $table->string('name');
+            $table->string('name_en');
+            $table->string('name_km');
             $table->timestamps();
         });
     }

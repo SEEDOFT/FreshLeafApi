@@ -18,12 +18,11 @@ return new class extends Migration
             $table->string('first_name');
             $table->string('last_name');
             $table->string('email')->nullable();
-            $table->timestamp('email_verified_at')->nullable();
-            $table->foreignId('user_type_id');
-            $table->foreignId('user_status_id');
+            $table->datetime('email_verified_at')->nullable();
+            $table->unsignedBigInteger('user_type_id');
+            $table->unsignedBigInteger('user_status_id');
             $table->string('phone_number');
-            $table->string('image')->nullable();
-            $table->string('locale')->default('en');
+            $table->string('image')->nullable()->default('user.png');
             $table->string('password');
             $table->rememberToken();
             $table->timestamps();
@@ -44,6 +43,51 @@ return new class extends Migration
             $table->longText('payload');
             $table->integer('last_activity')->index();
         });
+
+        Schema::create('cache', static function (Blueprint $table) {
+            $table->string('key')->primary();
+            $table->mediumText('value');
+            $table->bigInteger('expiration')->index();
+        });
+
+        Schema::create('cache_locks', static function (Blueprint $table) {
+            $table->string('key')->primary();
+            $table->string('owner');
+            $table->bigInteger('expiration')->index();
+        });
+
+        Schema::create('jobs', static function (Blueprint $table) {
+            $table->id();
+            $table->string('queue')->index();
+            $table->longText('payload');
+            $table->unsignedTinyInteger('attempts');
+            $table->unsignedInteger('reserved_at')->nullable();
+            $table->unsignedInteger('available_at');
+            $table->unsignedInteger('created_at');
+        });
+
+        Schema::create('job_batches', static function (Blueprint $table) {
+            $table->string('id')->primary();
+            $table->string('name');
+            $table->integer('total_jobs');
+            $table->integer('pending_jobs');
+            $table->integer('failed_jobs');
+            $table->longText('failed_job_ids');
+            $table->mediumText('options')->nullable();
+            $table->integer('cancelled_at')->nullable();
+            $table->integer('created_at');
+            $table->integer('finished_at')->nullable();
+        });
+
+        Schema::create('failed_jobs', static function (Blueprint $table) {
+            $table->id();
+            $table->string('uuid')->unique();
+            $table->text('connection');
+            $table->text('queue');
+            $table->longText('payload');
+            $table->longText('exception');
+            $table->timestamp('failed_at')->useCurrent();
+        });
     }
 
     /**
@@ -54,5 +98,10 @@ return new class extends Migration
         Schema::dropIfExists('users');
         Schema::dropIfExists('password_reset_tokens');
         Schema::dropIfExists('sessions');
+        Schema::dropIfExists('cache');
+        Schema::dropIfExists('cache_locks');
+        Schema::dropIfExists('jobs');
+        Schema::dropIfExists('job_batches');
+        Schema::dropIfExists('failed_jobs');
     }
 };

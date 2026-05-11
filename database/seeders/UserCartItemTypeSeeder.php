@@ -9,15 +9,26 @@ use Illuminate\Database\Seeder;
 
 class UserCartItemTypeSeeder extends Seeder
 {
+    /**
+     * Run the database seeds.
+     */
     public function run(): void
     {
         $items = [
-            ['id' => 1, 'code' => 'standard', 'name' => 'Standard'],
-            ['id' => 2, 'code' => 'subscription', 'name' => 'Subscription'],
+            [
+                'id' => 1,
+                'code' => 'standard',
+                'name' => 'Standard',
+            ],
+            [
+                'id' => 2,
+                'code' => 'subscription',
+                'name' => 'Subscription',
+            ],
         ];
 
         foreach ($items as $item) {
-            UserCartItemType::query()->updateOrCreate(['id' => $item['id']], ['code' => $item['code'], 'name' => $item['name']]);
+            UserCartItemType::create($item);
         }
     }
 }

@@ -9,16 +9,34 @@ use Illuminate\Database\Seeder;
 
 class UserCartStatusSeeder extends Seeder
 {
+    /**
+     * Run the database seeds.
+     */
     public function run(): void
     {
-        $items = [
-            ['id' => 1, 'code' => 'active', 'name' => 'Active'],
-            ['id' => 2, 'code' => 'abandoned', 'name' => 'Abandoned'],
-            ['id' => 3, 'code' => 'converted', 'name' => 'Converted'],
+        $data = [
+            [
+                'id' => 1,
+                'code' => 'ACTIVE',
+                'name_en' => 'Active',
+                'name_km' => 'សកម្ម',
+            ],
+            [
+                'id' => 2,
+                'code' => 'CONVERTED',
+                'name_en' => 'Converted to Order',
+                'name_km' => 'បានប្តូរជាការបញ្ជាទិញ',
+            ],
+            [
+                'id' => 3,
+                'code' => 'EXPIRED',
+                'name_en' => 'Expired',
+                'name_km' => 'ផុតកំណត់',
+            ],
         ];
 
-        foreach ($items as $item) {
-            UserCartStatus::query()->updateOrCreate(['id' => $item['id']], ['code' => $item['code'], 'name' => $item['name']]);
+        foreach ($data as $d) {
+            UserCartStatus::create($d);
         }
     }
 }

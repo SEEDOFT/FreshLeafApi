@@ -32,8 +32,7 @@ class ProductType extends Model
 
     /**
      * Get the products for the product type.
-     */
-    /**
+     *
      * @return HasMany<Product, $this>
      */
     public function products(): HasMany

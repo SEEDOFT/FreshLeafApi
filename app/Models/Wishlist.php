@@ -10,6 +10,16 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
+/**
+ * @property int $id
+ * @property int $user_id
+ * @property int $user_wishlist_status_id
+ * @property int $user_wishlist_type_id
+ * @property-read User $user
+ * @property-read UserWishlistStatus $status
+ * @property-read UserWishlistType $type
+ * @property-read WishlistItem[] $items
+ */
 #[Table('user_wishlists', key: 'id', keyType: 'int')]
 #[Fillable([
     'user_id',

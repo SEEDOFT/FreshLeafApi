@@ -100,36 +100,14 @@ class User extends Authenticatable implements FilamentUser, HasName
      * Get the user's current locale from their profile.
      */
     public string $currentLocale {
-        get {
-            $profile = match ($this->user_type_id) {
-                UserType::ADMIN => $this->adminProfile,
-                UserType::VENDOR => $this->vendorProfile,
-                UserType::USER => $this->userProfile,
-                default => null,
-            };
-
-            $default = config('app.locale');
-
-            return ($profile !== null && $profile->locale !== null)
-                ? $profile->locale : (is_string($default) ? $default : 'en');
-        }
+        get => $this->userProfile->locale;
     }
 
     /**
      * Get the user's current theme from their profile.
      */
     public string $currentTheme {
-        get {
-            $profile = match ($this->user_type_id) {
-                UserType::ADMIN => $this->adminProfile,
-                UserType::VENDOR => $this->vendorProfile,
-                UserType::USER => $this->userProfile,
-                default => null,
-            };
-
-            return ($profile !== null && $profile->prefer_theme !== null)
-                ? $profile->prefer_theme : 'system';
-        }
+        get => $this->userProfile->prefer_theme;
     }
 
     /**
@@ -265,10 +243,12 @@ class User extends Authenticatable implements FilamentUser, HasName
             ->toArray();
 
         /** @var list<string> $filteredTokens */
-        $filteredTokens = array_values(array_filter($tokens, static fn (mixed $token): bool => is_string($token)));
-        // $filteredTokens = $tokens
-        //     |> (fn($t) => array_filter($t, fn(mixed $token): bool => is_string($token)))
-        //     |> array_values(...);
+        $filteredTokens = array_values(
+            array_filter(
+                $tokens,
+                static fn (mixed $token): bool => is_string($token)
+            )
+        );
 
         return $filteredTokens;
     }

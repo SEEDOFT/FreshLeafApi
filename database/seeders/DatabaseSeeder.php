@@ -18,13 +18,30 @@ class DatabaseSeeder extends Seeder
     public function run(): void
     {
         $this->call([
+            // User & Auth
             UserStatusSeeder::class,
             UserTypeSeeder::class,
-            DefaultSuperAdminSeeder::class,
-            PaymentMethodTypeSeeder::class,
+
+            // Finance
+            CurrencySeeder::class,
+            PaymentStatusSeeder::class,
+            PaymentTypeSeeder::class,
             PaymentMethodStatusSeeder::class,
+            PaymentMethodTypeSeeder::class,
+            PayoutStatusSeeder::class,
+            PayoutMethodSeeder::class,
+            WalletTransactionStatusSeeder::class,
+
+            // Product & Inventory
+            UnitSeeder::class,
+            ProductStatusSeeder::class,
+            ProductTypeSeeder::class,
             ProductCategoryStatusSeeder::class,
             VendorInventoryStatusSeeder::class,
+
+            // Order & Cart
+            OrderStatusSeeder::class,
+            OrderTypeSeeder::class,
             UserCartStatusSeeder::class,
             UserCartTypeSeeder::class,
             UserCartItemStatusSeeder::class,
@@ -33,25 +50,10 @@ class DatabaseSeeder extends Seeder
             UserWishlistTypeSeeder::class,
             UserWishlistItemStatusSeeder::class,
             UserWishlistItemTypeSeeder::class,
-            // OperationUserSeeder::class,
-            // SupplierSeeder::class,
-            ProductStatusSeeder::class,
-            ProductTypeSeeder::class,
-            UnitSeeder::class,
-            ProductCategorySeeder::class,
-            ProductSeeder::class,
-            ProductSampleSeeder::class,
-            ProductVariantSeeder::class,
-            ProductDiscountSeeder::class,
-            ExchangeRateSeeder::class,
-            CommissionSettingSeeder::class,
-            WalletTransactionSeeder::class,
-        ]);
 
-        User::factory()->create([
-            'first_name' => 'Test',
-            'last_name' => 'User',
-            'email' => 'test@example.com',
+            // Notifications & System
+            NotificationStatusSeeder::class,
+            NotificationTypeSeeder::class,
         ]);
     }
 }

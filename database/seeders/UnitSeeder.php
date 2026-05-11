@@ -14,24 +14,25 @@ class UnitSeeder extends Seeder
      */
     public function run(): void
     {
-        $units = [
-            ['name' => 'Kilogram', 'symbol' => 'kg', 'conversion_to_base' => 1],
-            ['name' => 'Gram', 'symbol' => 'g', 'conversion_to_base' => 0.001],
-            ['name' => 'Quantity', 'symbol' => 'qty', 'conversion_to_base' => 1],
-            ['name' => 'Bunch', 'symbol' => 'bunch', 'conversion_to_base' => 1],
-            ['name' => 'Pack', 'symbol' => 'pack', 'conversion_to_base' => 1],
-            ['name' => 'Tray', 'symbol' => 'tray', 'conversion_to_base' => 1],
-            ['name' => 'Piece', 'symbol' => 'piece', 'conversion_to_base' => 1],
+        $data = [
+            [
+                'id' => 1,
+                'name_en' => 'Kilogram',
+                'name_km' => 'គីឡូក្រាម',
+                'symbol' => 'kg',
+                'conversion_to_base' => 1.0,
+            ],
+            [
+                'id' => 2,
+                'name_en' => 'Gram',
+                'name_km' => 'ក្រាម',
+                'symbol' => 'g',
+                'conversion_to_base' => 0.001,
+            ],
         ];
 
-        foreach ($units as $unit) {
-            Unit::query()->updateOrCreate(
-                ['symbol' => $unit['symbol']],
-                [
-                    'name' => $unit['name'],
-                    'conversion_to_base' => $unit['conversion_to_base'],
-                ]
-            );
+        foreach ($data as $d) {
+            Unit::create($d);
         }
     }
 }

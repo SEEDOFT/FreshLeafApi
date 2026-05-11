@@ -14,17 +14,14 @@ class ProductStatusSeeder extends Seeder
      */
     public function run(): void
     {
-        $statuses = [
-            ['id' => ProductStatus::ACTIVE, 'code' => 'active', 'name' => 'Active'],
-            ['id' => ProductStatus::INACTIVE, 'code' => 'inactive', 'name' => 'Inactive'],
-            ['id' => ProductStatus::DRAFT, 'code' => 'draft', 'name' => 'Draft'],
+        $data = [
+            ['id' => 1, 'code' => 'DRAFT', 'name_en' => 'Draft', 'name_km' => 'ព្រាង'],
+            ['id' => 2, 'code' => 'PUBLISHED', 'name_en' => 'Published', 'name_km' => 'បានផ្សព្វផ្សាយ'],
+            ['id' => 3, 'code' => 'ARCHIVED', 'name_en' => 'Archived', 'name_km' => 'បានរក្សាទុក'],
         ];
 
-        foreach ($statuses as $status) {
-            ProductStatus::query()->updateOrCreate(
-                ['id' => $status['id']],
-                ['code' => $status['code'], 'name' => $status['name']]
-            );
+        foreach ($data as $d) {
+            ProductStatus::updateOrCreate(['id' => $d['id']], $d);
         }
     }
 }

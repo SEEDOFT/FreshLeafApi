@@ -12,6 +12,8 @@ use Illuminate\Support\Facades\Http;
 use Override;
 use Psr\Http\Message\StreamInterface;
 
+use function config;
+
 class ZenService implements AiProviderContract
 {
     private string $apiKey;
@@ -22,12 +24,19 @@ class ZenService implements AiProviderContract
 
     private int $timeout;
 
+    /**
+     * ZenService constructor.
+     *
+     * Initializes the service with configuration values for the base URL, model, and timeout.
+     * These values are retrieved from the application's configuration files, allowing for
+     * easy customization without modifying the code.
+     */
     public function __construct()
     {
-        $this->apiKey = (string) \config('ai.providers.zen.api_key', '');
-        $this->baseUrl = \rtrim((string) \config('ai.providers.zen.base_url', ''), '/');
-        $this->model = (string) \config('ai.providers.zen.model', 'zen-free');
-        $this->timeout = (int) \config('ai.providers.zen.timeout', 40);
+        $this->apiKey = (string) config('ai.providers.zen.api_key');
+        $this->baseUrl = (string) config('ai.providers.zen.base_url');
+        $this->model = (string) config('ai.providers.zen.model');
+        $this->timeout = (int) config('ai.providers.zen.timeout');
     }
 
     /**
@@ -65,8 +74,11 @@ class ZenService implements AiProviderContract
      * {@inheritDoc}
      */
     #[Override]
-    public function generateContentWithHistory(array $history, string $prompt, array $options = []): string
-    {
+    public function generateContentWithHistory(
+        array $history,
+        string $prompt,
+        array $options = []
+    ): string {
         $messages = [];
 
         foreach ($history as $message) {
@@ -77,7 +89,8 @@ class ZenService implements AiProviderContract
             }
 
             $messages[] = [
-                'role' => ($message['role'] ?? 'user') === 'assistant' ? 'assistant' : 'user',
+                'role' => ($message['role'] ?? 'user') === 'assistant'
+                            ? 'assistant' : 'user',
                 'content' => $content,
             ];
         }
@@ -138,7 +151,8 @@ class ZenService implements AiProviderContract
             }
 
             $messages[] = [
-                'role' => ($message['role'] ?? 'user') === 'assistant' ? 'assistant' : 'user',
+                'role' => ($message['role'] ?? 'user') === 'assistant'
+                            ? 'assistant' : 'user',
                 'content' => $content,
             ];
         }
@@ -317,9 +331,15 @@ class ZenService implements AiProviderContract
         return $content;
     }
 
+    /**
+     * Extract the error message from the response.
+     */
     private function extractErrorMessage(Response $response): string
     {
-        $message = (string) ($response->json('error.message') ?? $response->json('message') ?? 'Unknown Zen API error');
+        $message = (string) ($response->json('error.message')
+                                ?? $response->json('message')
+                                ?? 'Unknown Zen API error'
+        );
 
         return 'Zen API error ('.$response->status().'): '.$message;
     }

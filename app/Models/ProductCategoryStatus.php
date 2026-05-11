@@ -15,10 +15,11 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 /**
  * @property int $id
  * @property string $code
- * @property string $name
+ * @property string $name_en
+ * @property string $name_km
  */
-#[Table('product_category_statuses', key: 'id', keyType: 'int')]
-#[Fillable(['code', 'name'])]
+#[Table('product_category_statuses', key: 'id', keyType: 'int', incrementing: false)]
+#[Fillable(['code', 'name_en', 'name_km'])]
 #[UseFactory(ProductCategoryStatusFactory::class)]
 class ProductCategoryStatus extends Model
 {

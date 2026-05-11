@@ -17,14 +17,15 @@ use Illuminate\Support\Carbon;
 /**
  * @property int $id
  * @property string $code
- * @property string $name
+ * @property string $name_en
+ * @property string $name_km
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  * @property-read Collection<int, Notification> $notifications
  * @property-read int|null $notifications_count
  */
-#[Table('notification_statuses', key: 'id')]
-#[Fillable(['name'])]
+#[Table('notification_statuses', key: 'id', keyType: 'int', incrementing: false)]
+#[Fillable(['code', 'name_en', 'name_km'])]
 #[UseFactory(NotificationStatusFactory::class)]
 class NotificationStatus extends Model
 {

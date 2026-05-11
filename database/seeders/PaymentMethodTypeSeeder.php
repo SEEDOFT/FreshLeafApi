@@ -9,27 +9,16 @@ use Illuminate\Database\Seeder;
 
 class PaymentMethodTypeSeeder extends Seeder
 {
-    /**
-     * Run the database seeds.
-     */
     public function run(): void
     {
-        $types = [
-            ['id' => PaymentMethodType::WALLET, 'code' => 'wallet', 'name' => 'Wallet'],
-            ['id' => PaymentMethodType::CREDIT_DEBIT, 'code' => 'credit_debit', 'name' => 'Credit / Debit Card'],
-            ['id' => PaymentMethodType::ABA, 'code' => 'aba', 'name' => 'ABA'],
-            ['id' => PaymentMethodType::ACLEDA, 'code' => 'acleda', 'name' => 'ACLEDA'],
+        $data = [
+            ['id' => 1, 'code' => 'BANK', 'name_en' => 'Bank', 'name_km' => 'ធនាគារ'],
+            ['id' => 2, 'code' => 'WALLET', 'name_en' => 'Wallet', 'name_km' => 'កាបូបលុយ'],
+            ['id' => 3, 'code' => 'CASH', 'name_en' => 'Cash', 'name_km' => 'សាច់ប្រាក់'],
         ];
 
-        PaymentMethodType::query()
-            ->whereNotIn('id', \array_column($types, 'id'))
-            ->delete();
-
-        foreach ($types as $type) {
-            PaymentMethodType::updateOrCreate(
-                ['id' => $type['id']],
-                ['code' => $type['code'], 'name' => $type['name']]
-            );
+        foreach ($data as $d) {
+            PaymentMethodType::updateOrCreate(['id' => $d['id']], $d);
         }
     }
 }

@@ -23,7 +23,7 @@ use Illuminate\Support\Carbon;
  * @property-read Collection<int, AiChatMessage> $messages
  * @property-read User $user
  */
-#[Table('ai_chat_sessions', key: 'id')]
+#[Table('ai_chat_sessions', key: 'id', keyType: 'int')]
 #[Fillable([
     'user_id',
     'session_id',

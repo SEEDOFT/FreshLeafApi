@@ -23,7 +23,11 @@ class WalletController extends Controller
     public function index(Request $request): JsonResponse
     {
         $user = $this->authenticatedUser($request);
-        $wallets = $this->walletService->getUserWallets($user, $request->integer('per_page', 10));
+        $wallets = $this->walletService
+            ->getUserWallets(
+                $user,
+                $request->integer('per_page', 10)
+            );
 
         return static::successResponse(
             WalletResource::collection($wallets),
@@ -61,7 +65,11 @@ class WalletController extends Controller
             return static::notFoundResponse(__('api.wallet.not_found'));
         }
 
-        $histories = $this->walletService->getWalletHistory($wallet, $request->integer('per_page', 10));
+        $histories = $this->walletService
+            ->getWalletHistory(
+                $wallet,
+                $request->integer('per_page', 10)
+            );
 
         return static::successResponse(
             WalletHistoryResource::collection($histories),

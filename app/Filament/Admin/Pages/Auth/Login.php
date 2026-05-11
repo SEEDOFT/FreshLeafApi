@@ -4,16 +4,13 @@ declare(strict_types=1);
 
 namespace App\Filament\Admin\Pages\Auth;
 
+use App\Filament\Forms\Components\PhoneNumberInput;
 use App\Models\UserStatus;
 use App\Models\UserType;
 use Filament\Auth\Pages\Login as BaseLogin;
-use Filament\Facades\Filament;
-use Filament\Forms\Components\Select;
-use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Schema;
 use Illuminate\Contracts\Support\Htmlable;
-use Illuminate\Support\HtmlString;
 use Illuminate\Validation\ValidationException;
 use Override;
 
@@ -47,34 +44,18 @@ class Login extends BaseLogin
     {
         return Grid::make(5)
             ->schema([
-                configure_country_select(
-                    Select::make('country_iso')
-                        ->label(__('admin.auth.register.country')))
-                    ->required(static fn (string $operation): bool => $operation === 'create')
-                    ->dehydrated(static fn (mixed $state): bool => filled($state))
-                    ->columnSpan(3),
-                TextInput::make('phone_number_input')
+                PhoneNumberInput::make('phone_number')
                     ->label(__('admin.auth.login.phone'))
-                    ->placeholder('012 345 678')
-                    ->required(static fn (string $operation): bool => $operation === 'create')
-                    ->dehydrated(static fn (mixed $state): bool => filled($state))
-                    ->mask('999 999 999')
-                    ->autofocus()
-                    ->autocomplete()
-                    ->columnSpan(2),
+                    ->required()
+                    ->columnSpanFull(),
             ]);
     }
 
     #[Override]
     protected function getCredentialsFromFormData(array $data): array
     {
-        $countryIso = $data['country_iso'] ?? 'KH';
-        $phoneInput = preg_replace('/[^0-9]/', '', $data['phone_number_input'] ?? '');
-        $dialCode = get_dial_code($countryIso);
-        $fullPhone = $dialCode.ltrim($phoneInput, '0');
-
         return array_filter([
-            'phone_number' => $fullPhone,
+            'phone_number' => $data['phone_number'],
             'password' => $data['password'],
             'user_status_id' => UserStatus::ACTIVE,
             'user_type_id' => UserType::ADMIN,

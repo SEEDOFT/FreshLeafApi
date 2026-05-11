@@ -43,7 +43,7 @@ class Payment extends Model
     use HasFactory;
 
     /**
-     * Get the attributes that should be cast.
+     * {@inheritDoc}
      *
      * @return array<string, string>
      */
@@ -56,8 +56,7 @@ class Payment extends Model
 
     /**
      * Get the order that owns the payment.
-     */
-    /**
+     *
      * @return BelongsTo<Order, $this>
      */
     public function order(): BelongsTo
@@ -67,8 +66,7 @@ class Payment extends Model
 
     /**
      * Get the payment type.
-     */
-    /**
+     *
      * @return BelongsTo<PaymentType, $this>
      */
     public function type(): BelongsTo
@@ -78,8 +76,7 @@ class Payment extends Model
 
     /**
      * Get the payment status.
-     */
-    /**
+     *
      * @return BelongsTo<PaymentStatus, $this>
      */
     public function status(): BelongsTo

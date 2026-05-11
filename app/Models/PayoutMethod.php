@@ -8,13 +8,13 @@ use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Table;
 use Illuminate\Database\Eloquent\Model;
 
-#[Table('payout_methods', key: 'id')]
+#[Table('payout_methods', key: 'id', keyType: 'int')]
 #[Fillable(['name', 'code'])]
 class PayoutMethod extends Model
 {
-    public const BANK_TRANSFER = 'bank_transfer';
+    public const string BANK_TRANSFER = 'bank_transfer';
 
-    public const WALLET = 'wallet';
+    public const string WALLET = 'wallet';
 
-    public const CASH = 'cash';
+    public const string CASH = 'cash';
 }

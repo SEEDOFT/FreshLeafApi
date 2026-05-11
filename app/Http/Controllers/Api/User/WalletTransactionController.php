@@ -8,15 +8,21 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\User\WalletTransaction\StoreWalletTransactionRequest;
 use App\Http\Requests\User\WalletTransaction\UpdateWalletTransactionRequest;
 use App\Http\Resources\User\WalletTransactionResource;
+use App\Models\Wallet;
 use App\Models\WalletTransaction;
 use App\Models\WalletTransactionHistory;
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
 class WalletTransactionController extends Controller
 {
+    /** @var list<string> */
+    private const array RELATIONSHIPS = [
+        'type',
+        'status',
+    ];
+
     /**
      * Display a listing of the user's wallet transactions.
      */
@@ -25,10 +31,9 @@ class WalletTransactionController extends Controller
         $user = $this->authenticatedUser($request);
 
         $query = WalletTransaction::whereHas(
-            'wallet', static function (Builder $query) use ($user) {
-                $query->where('user_id', $user->id);
-            })
-            ->with(['type', 'status'])
+            'wallet', static fn (Wallet $wallet) => $wallet->where('user_id', $user->id)
+        )
+            ->with(self::RELATIONSHIPS)
             ->orderByDesc('id');
 
         if ($request->has('wallet_id')) {
@@ -50,23 +55,36 @@ class WalletTransactionController extends Controller
     {
         $user = $this->authenticatedUser($request);
 
-        return DB::transaction(function () use ($request, $user): JsonResponse {
-            $transaction = WalletTransaction::create($request->validated());
+        /** @var WalletTransaction $transaction */
+        $transaction = DB::transaction(
+            static function () use ($request): WalletTransaction {
+                $validatedData = $request->validated();
 
-            WalletTransactionHistory::create([
-                'wallet_transaction_id' => $transaction->id,
-                'from_wallet_transaction_status_id' => null,
-                'to_wallet_transaction_status_id' => $transaction->wallet_transaction_status_id,
-                'changed_by_user_id' => $user->id,
-                'note' => 'Transaction initiated',
-            ]);
+                $transaction = WalletTransaction::create([
+                    'wallet_id' => $validatedData['wallet_id'],
+                    'wallet_transaction_type_id' => $validatedData['wallet_transaction_type_id'],
+                    'amount' => $validatedData['amount'],
+                    'currency' => $validatedData['currency'],
+                    'description' => $validatedData['description'],
+                    'payment_method_id' => $validatedData['payment_method_id'],
+                    'reference_number' => $validatedData['reference_number'],
+                    'transaction_date' => $validatedData['transaction_date'],
+                    'wallet_transaction_status_id' => $validatedData['wallet_transaction_status_id'],
+                ]);
 
-            return $this->successResponse(
-                new WalletTransactionResource($transaction->load(['type', 'status'])),
-                __('api.wallet_transaction.created'),
-                201
-            );
-        });
+                WalletTransactionHistory::create([
+                    'wallet_transaction_id' => $transaction->id,
+                    'wallet_transaction_status_id' => $transaction->wallet_transaction_status_id,
+                ]);
+
+                return $transaction;
+            });
+
+        return $this->successResponse(
+            new WalletTransactionResource($transaction->load(self::RELATIONSHIPS)),
+            __('api.wallet_transaction.created'),
+            201
+        );
     }
 
     /**
@@ -74,7 +92,7 @@ class WalletTransactionController extends Controller
      */
     public function show(string $id): JsonResponse
     {
-        $transaction = WalletTransaction::with(['type', 'status', 'wallet'])
+        $transaction = WalletTransaction::with(['wallet', ...self::RELATIONSHIPS])
             ->find($id);
 
         if (! $transaction) {
@@ -99,6 +117,7 @@ class WalletTransactionController extends Controller
         }
 
         $user = $this->authenticatedUser($request);
+
         $oldStatusId = $transaction->wallet_transaction_status_id;
 
         return DB::transaction(function () use ($request, $transaction, $user, $oldStatusId): JsonResponse {
@@ -115,7 +134,7 @@ class WalletTransactionController extends Controller
             }
 
             return $this->successResponse(
-                new WalletTransactionResource($transaction->load(['type', 'status'])),
+                new WalletTransactionResource($transaction->load(self::RELATIONSHIPS)),
                 __('api.wallet_transaction.updated')
             );
         });
@@ -134,6 +153,6 @@ class WalletTransactionController extends Controller
 
         $transaction->delete();
 
-        return $this->successResponse([], __('api.wallet_transaction.deleted'));
+        return $this->successResponse(message: __('api.wallet_transaction.deleted'));
     }
 }

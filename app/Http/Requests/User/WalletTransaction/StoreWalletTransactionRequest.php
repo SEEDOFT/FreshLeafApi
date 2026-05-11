@@ -7,7 +7,8 @@ namespace App\Http\Requests\User\WalletTransaction;
 use App\Models\User;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Validation\Rule;
+
+use function auth;
 
 class StoreWalletTransactionRequest extends FormRequest
 {
@@ -16,7 +17,7 @@ class StoreWalletTransactionRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return \auth()->check();
+        return auth()->check();
     }
 
     /**
@@ -26,17 +27,11 @@ class StoreWalletTransactionRequest extends FormRequest
      */
     public function rules(): array
     {
-        /** @var User|null $user */
-        $user = $this->user();
-
         return [
             'wallet_id' => [
                 'required',
                 'integer',
-                Rule::exists('wallets', 'id')
-                    ->where(function ($query) use ($user) {
-                        $query->where('user_id', $user?->id);
-                    }),
+                'exists:wallet,id',
             ],
             'wallet_transaction_type_id' => [
                 'required',

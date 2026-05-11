@@ -8,6 +8,8 @@ use App\Services\Contracts\AiProviderContract;
 use Exception;
 use Override;
 
+use function config;
+
 class AiService implements AiProviderContract
 {
     /**
@@ -74,7 +76,13 @@ class AiService implements AiProviderContract
         string $prompt,
         array $options = [],
     ): string {
-        return $this->resolveProvider()->generateContentWithSystemPromptAndHistory($systemPrompt, $history, $prompt, $options);
+        return $this->resolveProvider()
+            ->generateContentWithSystemPromptAndHistory(
+                $systemPrompt,
+                $history,
+                $prompt,
+                $options,
+            );
     }
 
     /**
@@ -88,7 +96,14 @@ class AiService implements AiProviderContract
         callable $onChunk,
         array $options = [],
     ): string {
-        return $this->resolveProvider()->streamContentWithSystemPromptAndHistory($systemPrompt, $history, $prompt, $onChunk, $options);
+        return $this->resolveProvider()
+            ->streamContentWithSystemPromptAndHistory(
+                $systemPrompt,
+                $history,
+                $prompt,
+                $onChunk,
+                $options,
+            );
     }
 
     /**
@@ -96,7 +111,7 @@ class AiService implements AiProviderContract
      */
     private function resolveProvider(): AiProviderContract
     {
-        $providerName = (string) \config('ai.default', 'ollama');
+        $providerName = (string) config('ai.default', 'ollama');
 
         return match ($providerName) {
             'gemini' => $this->geminiService,

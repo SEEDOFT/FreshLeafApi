@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Filament\Vendor\Pages\Auth;
 
+use App\Filament\Forms\Components\PhoneNumberInput;
 use App\Models\User;
 use App\Models\UserStatus;
 use App\Models\UserType;
@@ -11,7 +12,6 @@ use Closure;
 use Filament\Auth\Pages\Register as BaseRegister;
 use Filament\Facades\Filament;
 use Filament\Forms\Components\FileUpload;
-use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Components\Utilities\Get;
@@ -21,6 +21,7 @@ use Filament\Schemas\Schema;
 use Illuminate\Contracts\Support\Htmlable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\HtmlString;
 use Override;
@@ -183,19 +184,10 @@ class Register extends BaseRegister
     {
         return Grid::make(5)
             ->schema([
-                configure_country_select(
-                    Select::make('country_iso')
-                        ->label(__('admin.auth.register.country'))
-                )
-                    ->required(static fn (string $operation): bool => $operation === 'create')
-                    ->dehydrated(static fn (mixed $state): bool => filled($state))
-                    ->columnSpan(3),
-                TextInput::make('phone_number_input')
-                    ->label(__('admin.auth.register.phone'))
-                    ->placeholder('12 345 678')
-                    ->required(static fn (string $operation): bool => $operation === 'create')
-                    ->dehydrated(static fn (mixed $state): bool => filled($state))
-                    ->mask('999 999 999')
+                PhoneNumberInput::make('phone_number')
+                    ->label(__('admin.auth.login.phone'))
+                    ->required()
+                    ->columnSpanFull()
                     ->rule(static function (Get $get) {
                         return static function (string $attribute, $value, Closure $fail) use ($get) {
                             $dialCode = get_dial_code($get('country_iso'));
@@ -214,9 +206,7 @@ class Register extends BaseRegister
                                 $fail('This phone number is already registered.');
                             }
                         };
-                    })
-                    ->maxLength(20)
-                    ->columnSpan(2),
+                    }),
             ]);
     }
 
@@ -269,16 +259,15 @@ class Register extends BaseRegister
 
     protected function afterRegister(): void
     {
-        // Logout the auto-logged-in user
-        auth()->logout();
-
+        Auth::logout();
+        session()->invalidate();
         $this->redirect(route('filament.vendor.auth.login'));
     }
 
     #[Override]
     protected function isRegisterRateLimited(string $email): bool
     {
-        $phone = $this->data['phone_number_input'] ?? '';
+        $phone = $this->data['phone_number'] ?? '';
 
         return parent::isRegisterRateLimited($phone);
     }

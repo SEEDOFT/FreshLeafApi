@@ -1,5 +1,4 @@
-<div
-    data-auth-page="vendor-login"
+<div data-auth-page="vendor-login"
     class="flex min-h-screen relative overflow-hidden bg-slate-50 dark:bg-zinc-950 font-khmer selection:bg-emerald-100 selection:text-emerald-900">
     <!-- Ambient Mobile/Global Background -->
     <div class="absolute inset-0 z-0 pointer-events-none">
@@ -37,7 +36,7 @@
                     </svg>
                 </div>
                 <span class="text-3xl font-bold tracking-tight text-white drop-shadow-sm">Fresh<span
-                        class="text-emerald-400">Leaf</span></span>
+                        class="text-emerald-400">Leaf Organics</span></span>
             </div>
 
             <div class="my-auto animate-fade-in-up">
@@ -59,7 +58,7 @@
 
             <div class="flex items-center justify-between border-t border-white/10 pt-10 mt-auto opacity-60">
                 <div class="text-sm font-medium tracking-wide">
-                    &copy; {{ date('Y') }} FreshLeaf Marketplace.
+                    &copy; {{ date('Y') }} FreshLeaf Organics.
                 </div>
                 <div class="flex gap-6 text-sm font-semibold">
                     <a href="#" class="hover:text-emerald-400 transition-colors">Privacy</a>
@@ -84,15 +83,15 @@
                             d="M11.722 19.028c0 .503-.408.911-.91.911-.503 0-.911-.408-.911-.91V11.23c0-.503.408-.911.91-.911.503 0 .911.408.911.91v7.798zM7.157 18.035c-.416.282-.975.172-1.257-.244-.282-.416-.172-.975.244-1.257l6.452-4.381c.416-.282.975-.172 1.257.244.282.416.172.975-.244 1.257l-6.452 4.381zM11.722 13.756c0 .503-.408.911-.91.911-.503 0-.911-.408-.911-.91v-2.526c0-.503.408-.911.91-.911.503 0 .911.408.911.91v2.526z" />
                     </svg>
                 </div>
-                <h2 class="text-3xl font-extrabold text-zinc-900 dark:text-white tracking-tight">FreshLeaf <span
+                <h2 class="text-3xl font-extrabold text-zinc-900 dark:text-white tracking-tight">FreshLeaf Organics<span
                         class="text-emerald-600 dark:text-emerald-400">Vendor</span></h2>
             </div>
 
             <div class="mb-10 text-center lg:text-left animate-fade-in-up">
-                <h2 class="text-4xl font-extrabold text-zinc-900 dark:text-white tracking-tight mb-3">
+                <h2 class="text-center text-4xl font-extrabold text-zinc-900 dark:text-white tracking-tight mb-3">
                     {{ $this->getHeading() }}
                 </h2>
-                <p class="text-zinc-500 dark:text-zinc-400 font-khmer text-lg leading-relaxed opacity-80">
+                <p class="text-center text-zinc-500 dark:text-zinc-400 font-khmer text-lg leading-relaxed opacity-80">
                     {{ $this->getSubheading() }}
                 </p>
             </div>
@@ -129,7 +128,7 @@
 
             <div
                 class="mt-12 text-center text-sm font-medium text-zinc-400 dark:text-zinc-600 font-khmer opacity-60 lg:hidden">
-                &copy; {{ date('Y') }} FreshLeaf Marketplace. <br> Powered by Organic Innovation.
+                &copy; {{ date('Y') }} FreshLeaf Organics. <br> Powered by Organic Innovation.
             </div>
         </div>
     </div>

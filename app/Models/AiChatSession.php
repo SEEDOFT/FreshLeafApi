@@ -18,10 +18,10 @@ use Illuminate\Support\Carbon;
  * @property string $session_id
  * @property string|null $title
  * @property Carbon|null $last_message_at
- * @property Carbon|null $created_at
- * @property Carbon|null $updated_at
+ * @property Carbon $created_at
+ * @property Carbon $updated_at
  * @property-read Collection<int, AiChatMessage> $messages
- * @property-read User|null $user
+ * @property-read User $user
  */
 #[Table('ai_chat_sessions', key: 'id')]
 #[Fillable([
@@ -45,6 +45,8 @@ class AiChatSession extends Model
     }
 
     /**
+     * Get the user that owns the chat session.
+     *
      * @return BelongsTo<User, $this>
      */
     public function user(): BelongsTo
@@ -53,6 +55,8 @@ class AiChatSession extends Model
     }
 
     /**
+     * Get the chat messages for the session.
+     *
      * @return HasMany<AiChatMessage, $this>
      */
     public function messages(): HasMany

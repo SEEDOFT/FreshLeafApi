@@ -4,17 +4,15 @@ declare(strict_types=1);
 
 namespace App\Filament\Admin\Pages\Auth;
 
+use App\Filament\Forms\Components\PhoneNumberInput;
 use App\Models\User;
 use App\Models\UserStatus;
 use App\Models\UserType;
-use Closure;
 use Filament\Auth\Pages\Register as BaseRegister;
 use Filament\Facades\Filament;
 use Filament\Forms\Components\FileUpload;
-use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Components\Grid;
-use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Components\Wizard;
 use Filament\Schemas\Components\Wizard\Step;
 use Filament\Schemas\Schema;
@@ -82,8 +80,6 @@ class Register extends BaseRegister
                             Grid::make(2)->schema([
                                 TextInput::make('business_name')
                                     ->label(__('admin.auth.register.business_name'))
-                                    ->required(static fn (string $operation): bool => $operation === 'create')
-                                    ->dehydrated(static fn (mixed $state): bool => filled($state))
                                     ->maxLength(255),
                                 TextInput::make('contact_phone')
                                     ->label(__('admin.resources.vendor.contact_phone'))
@@ -183,39 +179,10 @@ class Register extends BaseRegister
     {
         return Grid::make(5)
             ->schema([
-                configure_country_select(
-                    Select::make('country_iso')
-                        ->label(__('admin.auth.register.country')))
-                    ->required(static fn (string $operation): bool => $operation === 'create')
-                    ->dehydrated(static fn (mixed $state): bool => filled($state))
-                    ->columnSpan(3),
-                TextInput::make('phone_number_input')
-                    ->label(__('admin.auth.register.phone'))
-                    ->placeholder('12 345 678')
-                    ->required(static fn (string $operation): bool => $operation === 'create')
-                    ->dehydrated(static fn (mixed $state): bool => filled($state))
-                    ->mask('999 999 999')
-                    ->rule(static function (Get $get) {
-                        return static function (string $attribute, $value, Closure $fail) use ($get) {
-                            $dialCode = get_dial_code($get('country_iso'));
-                            $fullPhone = $dialCode.ltrim($value, '0');
-                            $exists = User::where('phone_number', $fullPhone)
-                                ->where('user_type_id', UserType::VENDOR)
-                                ->whereIn('user_status_id', [
-                                    UserStatus::ACTIVE,
-                                    UserStatus::PENDING,
-                                    UserStatus::INACTIVE,
-                                ])
-                                ->whereNull('deleted_at')
-                                ->exists();
-
-                            if ($exists) {
-                                $fail(__('admin.auth.register.phone_registered'));
-                            }
-                        };
-                    })
-                    ->maxLength(20)
-                    ->columnSpan(2),
+                PhoneNumberInput::make('phone_number')
+                    ->label(__('admin.auth.login.phone'))
+                    ->required()
+                    ->columnSpanFull(),
             ]);
     }
 

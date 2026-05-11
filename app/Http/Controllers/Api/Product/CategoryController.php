@@ -6,7 +6,6 @@ namespace App\Http\Controllers\Api\Product;
 
 use App\Http\Controllers\Controller;
 use App\Models\ProductCategory;
-use App\Models\ProductCategoryStatus;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -26,16 +25,12 @@ class CategoryController extends Controller
     /**
      * Get a specific category with its products.
      */
-    public function show(ProductCategory $category, Request $request): JsonResponse
+    public function show(string $id, Request $request): JsonResponse
     {
-        if ($category->product_category_status_id !== ProductCategoryStatus::ACTIVE) {
-            return static::notFoundResponse(__('api.category.not_found'));
-        }
+        $category = ProductCategory::where('id', $id)->active()->first();
 
-        if ($request->boolean('include_products')) {
-            $category->load(['products' => static function ($query) {
-                $query->active();
-            }]);
+        if (! $category) {
+            return static::notFoundResponse(__('api.category.not_found'));
         }
 
         return static::successResponse($category, __('api.category.retrieved'));

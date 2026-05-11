@@ -21,7 +21,7 @@ class WalletTransactionsTable
             ->columns([
                 TextColumn::make('wallet.user.name')
                     ->label(__('admin.resources.wallet_transaction.user'))
-                    ->getStateUsing(fn (WalletTransaction $record) => "{$record->wallet->user?->first_name} {$record->wallet->user?->last_name}")
+                    ->getStateUsing(static fn (WalletTransaction $record) => "{$record->wallet->user->first_name} {$record->wallet->user->last_name}")
                     ->searchable(['first_name', 'last_name'])
                     ->sortable(),
                 TextColumn::make('type.name')

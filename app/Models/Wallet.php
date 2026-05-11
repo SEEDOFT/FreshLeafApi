@@ -13,6 +13,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Collection;
 
 /**
  * @property int $id
@@ -21,6 +22,10 @@ use Illuminate\Support\Carbon;
  * @property int $currency_id
  * @property Carbon $created_at
  * @property Carbon $updated_at
+ * @property-read User $user
+ * @property-read Currency $currency
+ * @property-read Collection<int, WalletHistory> $histories
+ * @property-read Collection<int, WalletTransaction> $transactions
  */
 #[Table('wallets', key: 'id', keyType: 'int')]
 #[Fillable([

@@ -8,6 +8,7 @@ use Database\Factories\VendorInventoryFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Scope;
 use Illuminate\Database\Eloquent\Attributes\Table;
+use Illuminate\Database\Eloquent\Attributes\UseFactory;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -56,13 +57,14 @@ use Illuminate\Support\Facades\DB;
     'shelf_life_days',
     'batch_images',
 ])]
+#[UseFactory(VendorInventoryFactory::class)]
 class VendorInventory extends Model
 {
     /** @use HasFactory<VendorInventoryFactory> */
     use HasFactory, SoftDeletes;
 
     /**
-     * Get the attributes that should be cast.
+     * {@inheritDoc}
      *
      * @return array<string, string>
      */
@@ -93,7 +95,7 @@ class VendorInventory extends Model
      */
     public function product(): BelongsTo
     {
-        return $this->belongsTo(Product::class, 'product_id');
+        return $this->belongsTo(Product::class, 'product_id', 'id');
     }
 
     /**
@@ -103,7 +105,7 @@ class VendorInventory extends Model
      */
     public function unit(): BelongsTo
     {
-        return $this->belongsTo(Unit::class, 'unit_id');
+        return $this->belongsTo(Unit::class, 'unit_id', 'id');
     }
 
     /**
@@ -113,7 +115,11 @@ class VendorInventory extends Model
      */
     public function status(): BelongsTo
     {
-        return $this->belongsTo(VendorInventoryStatus::class, 'inventory_status_id');
+        return $this->belongsTo(
+            VendorInventoryStatus::class,
+            'inventory_status_id',
+            'id',
+        );
     }
 
     /**
@@ -129,9 +135,20 @@ class VendorInventory extends Model
     /**
      * Adjust the stock quantity and log it.
      */
-    public function adjustStock(float $change, string $type, string $reason = null, ?string $proofImagePath = null, string $notes = null): void
-    {
-        DB::transaction(function () use ($change, $type, $reason, $proofImagePath, $notes) {
+    public function adjustStock(
+        float $change,
+        string $type,
+        ?string $reason = null,
+        ?string $proofImagePath = null,
+        ?string $notes = null,
+    ): void {
+        DB::transaction(function () use (
+            $change,
+            $type,
+            $reason,
+            $proofImagePath,
+            $notes,
+        ) {
             $this->increment('stock_quantity', $change);
 
             $this->adjustments()->create([
@@ -148,7 +165,7 @@ class VendorInventory extends Model
     /**
      * Scope a query to only include active inventory items.
      *
-     * @param  Builder<self>  $query
+     * @param  Builder<VendorInventory>  $query
      */
     #[Scope]
     protected function active($query): void

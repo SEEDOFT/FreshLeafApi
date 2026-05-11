@@ -7,6 +7,7 @@ namespace App\Models;
 use Database\Factories\WalletTransactionHistoryFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Table;
+use Illuminate\Database\Eloquent\Attributes\UseFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -26,7 +27,7 @@ use Illuminate\Support\Carbon;
  * @property Carbon|null $updated_at
  * @property-read WalletTransaction $transaction
  */
-#[Table('wallet_transaction_histories', key: 'id')]
+#[Table('wallet_transaction_histories', key: 'id', keyType: 'int')]
 #[Fillable([
     'wallet_transaction_id',
     'wallet_id',
@@ -36,6 +37,7 @@ use Illuminate\Support\Carbon;
     'payment_method_id',
     'transaction_date',
 ])]
+#[UseFactory(WalletTransactionHistoryFactory::class)]
 class WalletTransactionHistory extends Model
 {
     /** @use HasFactory<WalletTransactionHistoryFactory> */
@@ -48,6 +50,10 @@ class WalletTransactionHistory extends Model
      */
     public function transaction(): BelongsTo
     {
-        return $this->belongsTo(WalletTransaction::class, 'wallet_transaction_id', 'id');
+        return $this->belongsTo(
+            WalletTransaction::class,
+            'wallet_transaction_id',
+            'id'
+        );
     }
 }

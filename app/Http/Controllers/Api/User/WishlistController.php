@@ -36,7 +36,7 @@ class WishlistController extends Controller
             'items.status',
             'items.type',
             'status',
-            'type'
+            'type',
         ]);
 
         return static::successResponse(new WishlistResource($wishlist), __('api.wishlist.retrieved'));
@@ -81,7 +81,7 @@ class WishlistController extends Controller
             'items.status',
             'items.type',
             'status',
-            'type'
+            'type',
         ]);
 
         return static::successResponse(new WishlistResource($wishlist), $message);

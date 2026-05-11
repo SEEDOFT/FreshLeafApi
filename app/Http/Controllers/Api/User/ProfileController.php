@@ -11,6 +11,7 @@ use App\Models\UserStatus;
 use App\Services\ProfileService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
 
 class ProfileController extends Controller
 {
@@ -47,8 +48,10 @@ class ProfileController extends Controller
         return $this->handleProfileUpdate($request, true);
     }
 
-    private function handleProfileUpdate(UpdateProfileRequest $request, bool $isReplace): JsonResponse
-    {
+    private function handleProfileUpdate(
+        UpdateProfileRequest $request,
+        bool $isReplace
+    ): JsonResponse {
         $user = $this->authenticatedUser($request);
 
         $updatedUser = $this->profileService->updateProfile(
@@ -74,9 +77,9 @@ class ProfileController extends Controller
 
         $user->update([
             'user_status_id' => UserStatus::DELETED,
-            'deleted_at' => now(),
+            'deleted_at' => Carbon::now(),
         ]);
 
-        return static::successResponse([], __('api.profile.deleted'));
+        return static::successResponse(message: __('api.profile.deleted'));
     }
 }

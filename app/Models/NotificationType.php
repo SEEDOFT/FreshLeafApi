@@ -33,8 +33,7 @@ class NotificationType extends Model
 
     /**
      * Get the notifications for the type.
-     */
-    /**
+     *
      * @return HasMany<Notification, $this>
      */
     public function notifications(): HasMany

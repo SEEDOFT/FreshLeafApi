@@ -33,8 +33,7 @@ class OrderType extends Model
 
     /**
      * Get the orders for the type.
-     */
-    /**
+     *
      * @return HasMany<Order, $this>
      */
     public function orders(): HasMany

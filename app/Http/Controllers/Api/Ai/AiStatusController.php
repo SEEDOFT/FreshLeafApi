@@ -12,6 +12,9 @@ class AiStatusController extends Controller
 {
     public function __construct(private AiService $aiService) {}
 
+    /**
+     * Checking AI Service Health
+     */
     public function check(): JsonResponse
     {
         return static::successResponse([

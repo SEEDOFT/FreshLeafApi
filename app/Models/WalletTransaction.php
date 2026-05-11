@@ -7,6 +7,7 @@ namespace App\Models;
 use Database\Factories\WalletTransactionFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Table;
+use Illuminate\Database\Eloquent\Attributes\UseFactory;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -32,8 +33,9 @@ use Illuminate\Support\Carbon;
  * @property-read WalletTransactionStatus $status
  * @property-read Collection<int, WalletTransactionHistory> $histories
  */
-#[Table('wallet_transactions', key: 'id')]
+#[Table('wallet_transactions', key: 'id', keyType: 'int')]
 #[Fillable([
+    'wallet_transaction_id',
     'wallet_id',
     'wallet_transaction_type_id',
     'wallet_transaction_status_id',
@@ -41,11 +43,17 @@ use Illuminate\Support\Carbon;
     'payment_method_id',
     'transaction_date',
 ])]
+#[UseFactory(WalletTransactionFactory::class)]
 class WalletTransaction extends Model
 {
     /** @use HasFactory<WalletTransactionFactory> */
     use HasFactory;
 
+    /**
+     * {@inheritDoc}
+     *
+     * @return array<string, mixed>
+     */
     protected function casts(): array
     {
         return [
@@ -53,7 +61,8 @@ class WalletTransaction extends Model
             'wallet_id' => 'integer',
             'wallet_transaction_type_id' => 'integer',
             'wallet_transaction_status_id' => 'integer',
-            'reference_id' => 'integer',
+            'transaction_date' => 'datetime',
+            'reference_code' => 'string',
         ];
     }
 
@@ -74,7 +83,11 @@ class WalletTransaction extends Model
      */
     public function type(): BelongsTo
     {
-        return $this->belongsTo(WalletTransactionType::class, 'wallet_transaction_type_id', 'id');
+        return $this->belongsTo(
+            WalletTransactionType::class,
+            'wallet_transaction_type_id',
+            'id'
+        );
     }
 
     /**
@@ -84,7 +97,11 @@ class WalletTransaction extends Model
      */
     public function status(): BelongsTo
     {
-        return $this->belongsTo(WalletTransactionStatus::class, 'wallet_transaction_status_id', 'id');
+        return $this->belongsTo(
+            WalletTransactionStatus::class,
+            'wallet_transaction_status_id',
+            'id'
+        );
     }
 
     /**
@@ -94,6 +111,10 @@ class WalletTransaction extends Model
      */
     public function histories(): HasMany
     {
-        return $this->hasMany(WalletTransactionHistory::class, 'wallet_transaction_id', 'id');
+        return $this->hasMany(
+            WalletTransactionHistory::class,
+            'wallet_transaction_id',
+            'id'
+        );
     }
 }

@@ -9,11 +9,12 @@ use App\Http\Requests\User\PaymentMethod\ReplacePaymentMethodRequest;
 use App\Http\Requests\User\PaymentMethod\StorePaymentMethodRequest;
 use App\Http\Requests\User\PaymentMethod\UpdatePaymentMethodRequest;
 use App\Http\Resources\User\PaymentMethodResource;
-use App\Models\PaymentMethod;
 use App\Models\PaymentMethodStatus;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Carbon;
+
+use function array_merge;
 
 class PaymentMethodController extends Controller
 {
@@ -24,15 +25,13 @@ class PaymentMethodController extends Controller
     {
         $user = $this->authenticatedUser($request);
 
-        Gate::authorize('viewAny', PaymentMethod::class);
-
         $paymentMethods = $user->paymentMethods()
             ->active()
             ->orderBy('is_default', 'desc')
             ->orderBy('created_at', 'desc')
             ->simplePaginate($request->integer('per_page', 10));
 
-        return $this->successResponse(
+        return static::successResponse(
             PaymentMethodResource::collection($paymentMethods),
             __('api.payment_method.payment_methods_retrieved')
         );
@@ -41,19 +40,19 @@ class PaymentMethodController extends Controller
     /**
      * Display the specified payment method.
      */
-    public function show(Request $request, string $id): JsonResponse
+    public function show(string $id, Request $request): JsonResponse
     {
         $user = $this->authenticatedUser($request);
-
         $paymentMethod = $user->paymentMethods()->active()->find($id);
 
         if (! $paymentMethod) {
-            return $this->notFoundResponse(__('api.payment_method.not_found'));
+            return static::notFoundResponse(__('api.payment_method.not_found'));
         }
 
-        Gate::authorize('view', $paymentMethod);
-
-        return $this->successResponse(new PaymentMethodResource($paymentMethod), __('api.payment_method.retrieved'));
+        return static::successResponse(
+            new PaymentMethodResource($paymentMethod),
+            __('api.payment_method.retrieved')
+        );
     }
 
     /**
@@ -63,9 +62,7 @@ class PaymentMethodController extends Controller
     {
         $user = $this->authenticatedUser($request);
 
-        Gate::authorize('create', PaymentMethod::class);
-
-        $data = \array_merge(
+        $data = array_merge(
             $request->validated(),
             ['payment_method_status_id' => PaymentMethodStatus::ACTIVE]
         );
@@ -101,17 +98,14 @@ class PaymentMethodController extends Controller
     /**
      * Update the specified payment method in storage.
      */
-    public function update(UpdatePaymentMethodRequest $request, string $id): JsonResponse
+    public function update(string $id, UpdatePaymentMethodRequest $request): JsonResponse
     {
         $user = $this->authenticatedUser($request);
-
         $paymentMethod = $user->paymentMethods()->active()->find($id);
 
         if (! $paymentMethod) {
             return $this->notFoundResponse(__('api.payment_method.not_found'));
         }
-
-        Gate::authorize('update', $paymentMethod);
 
         $data = $request->validated();
 
@@ -132,27 +126,24 @@ class PaymentMethodController extends Controller
     /**
      * Replace the specified payment method in storage.
      */
-    public function replace(ReplacePaymentMethodRequest $request, string $id): JsonResponse
+    public function replace(string $id, ReplacePaymentMethodRequest $request): JsonResponse
     {
         $user = $this->authenticatedUser($request);
-
         $paymentMethod = $user->paymentMethods()->active()->find($id);
 
         if (! $paymentMethod) {
             return $this->notFoundResponse(__('api.payment_method.not_found'));
         }
 
-        Gate::authorize('update', $paymentMethod);
+        $validatedData = $request->validated();
 
-        $data = $request->validated();
-
-        if ($data['is_default'] ?? false) {
+        if ($validatedData['is_default'] ?? false) {
             $user->paymentMethods()
                 ->where('id', '!=', $paymentMethod->id)
                 ->update(['is_default' => false]);
         }
 
-        $paymentMethod->update($data);
+        $paymentMethod->update($validatedData);
 
         return $this->successResponse(
             new PaymentMethodResource($paymentMethod),
@@ -166,21 +157,18 @@ class PaymentMethodController extends Controller
     public function destroy(Request $request, string $id): JsonResponse
     {
         $user = $this->authenticatedUser($request);
-
         $paymentMethod = $user->paymentMethods()->active()->find($id);
 
         if (! $paymentMethod) {
             return $this->notFoundResponse(__('api.payment_method.not_found'));
         }
 
-        Gate::authorize('delete', $paymentMethod);
-
         $paymentMethod->update([
             'payment_method_status_id' => PaymentMethodStatus::DELETE,
             'is_default' => false,
-            'deleted_at' => \now(),
+            'deleted_at' => Carbon::now(),
         ]);
 
-        return $this->successResponse([], __('api.payment_method.deleted'));
+        return $this->successResponse(message: __('api.payment_method.deleted'));
     }
 }

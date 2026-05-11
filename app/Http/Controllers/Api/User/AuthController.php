@@ -70,7 +70,7 @@ class AuthController extends Controller
             ]);
 
             $user->userProfile()->create([
-                'locale' => 'en',
+                'locale' => 'km',
                 'prefer_theme' => 'system',
             ]);
 
@@ -96,7 +96,7 @@ class AuthController extends Controller
 
         $user->tokens()->delete();
 
-        return static::successResponse([], __('api.auth.tokens_revoked'));
+        return static::successResponse(message: __('api.auth.tokens_revoked'));
     }
 
     /**
@@ -107,16 +107,14 @@ class AuthController extends Controller
         $validatedData = $request->validated();
         $user = $this->authenticatedUser($request);
 
-        $password = $validatedData['password'];
-        if (! \is_string($password)) {
-            return static::errorResponse(__('api.auth.invalid_password_format'));
-        }
-
-        if (! \is_string($user->password) || ! Hash::check($password, $user->password)) {
+        if (
+            ! is_string($user->password) ||
+            ! Hash::check($validatedData['password'], $user->password)
+        ) {
             return static::errorResponse(__('api.auth.invalid_password'), 401);
         }
 
-        return static::successResponse([], __('api.auth.password_verified'));
+        return static::successResponse(message: __('api.auth.password_verified'));
     }
 
     /**
@@ -127,15 +125,10 @@ class AuthController extends Controller
         $validatedData = $request->validated();
         $user = $this->authenticatedUser($request);
 
-        $password = $validatedData['password'];
-        if (! \is_string($password)) {
-            return static::errorResponse(__('api.auth.invalid_password_format'));
-        }
-
         $user->update([
-            'password' => Hash::make($password),
+            'password' => Hash::make($validatedData['password']),
         ]);
 
-        return static::successResponse([], __('api.auth.password_updated'));
+        return static::successResponse(message: __('api.auth.password_updated'));
     }
 }

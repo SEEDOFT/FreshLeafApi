@@ -16,13 +16,14 @@ class DeviceController extends Controller
      */
     public function store(StoreDeviceRequest $request): JsonResponse
     {
+        $validatedData = $request->validated();
         $user = $this->authenticatedUser($request);
 
         $device = UserDevice::updateOrCreate(
-            ['device_token' => $request->string('device_token')->toString()],
+            ['device_token' => $validatedData['device_token']],
             [
                 'user_id' => $user->id,
-                'device_type' => $request->string('device_type')->toString() ?: null,
+                'device_type' => $validatedData['device_type'] ?? null,
                 'is_active' => true,
             ]
         );
@@ -38,8 +39,9 @@ class DeviceController extends Controller
      */
     public function destroy(string $token): JsonResponse
     {
-        UserDevice::where('device_token', $token)->update(['is_active' => false]);
+        UserDevice::where('device_token', $token)
+            ->update(['is_active' => false]);
 
-        return static::successResponse([], __('api.device.deactivated'));
+        return static::successResponse(message: __('api.device.deactivated'));
     }
 }

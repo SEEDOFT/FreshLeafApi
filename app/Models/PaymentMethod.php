@@ -64,6 +64,11 @@ class PaymentMethod extends Model
     /** @use HasFactory<PaymentMethodFactory> */
     use HasFactory, SoftDeletes;
 
+    /**
+     * {@inheritDoc}
+     *
+     * @return array<string, mixed>
+     */
     protected function casts(): array
     {
         return [

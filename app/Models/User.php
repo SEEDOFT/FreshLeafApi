@@ -22,13 +22,13 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Collection;
 use Laravel\Sanctum\HasApiTokens;
 use Override;
 
-use function is_string;
-use function array_values;
 use function array_filter;
-use function is_numeric;
+use function array_values;
+use function is_string;
 
 /**
  * @property int $id
@@ -44,6 +44,18 @@ use function is_numeric;
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  * @property Carbon|null $deleted_at
+ * @property-read UserProfile $userProfile
+ * @property-read VendorProfile $vendorProfile
+ * @property-read AdminProfile $adminProfile
+ * @property-read UserType $type
+ * @property-read UserStatus $status
+ * @property-read string $fullName
+ * @property-read string $currentLocale
+ * @property-read string $currentTheme
+ * @property-read Collection<int, Address> $addresses
+ * @property-read Collection<int, PaymentMethod> $paymentMethods
+ * @property-read Collection<int, Wallet> $wallets
+ * @property-read Collection<int, UserDevice> $devices
  */
 #[Table('users', key: 'id', keyType: 'int')]
 #[Fillable([
@@ -98,7 +110,8 @@ class User extends Authenticatable implements FilamentUser, HasName
 
             $default = config('app.locale');
 
-            return ($profile !== null && $profile->locale !== null) ? $profile->locale : (\is_string($default) ? $default : 'en');
+            return ($profile !== null && $profile->locale !== null)
+                ? $profile->locale : (is_string($default) ? $default : 'en');
         }
     }
 
@@ -114,7 +127,8 @@ class User extends Authenticatable implements FilamentUser, HasName
                 default => null,
             };
 
-            return ($profile !== null && $profile->prefer_theme !== null) ? $profile->prefer_theme : 'system';
+            return ($profile !== null && $profile->prefer_theme !== null)
+                ? $profile->prefer_theme : 'system';
         }
     }
 
@@ -122,7 +136,7 @@ class User extends Authenticatable implements FilamentUser, HasName
      * Get the user's full name.
      */
     public string $fullName {
-        get => "{$this->first_name} {$this->last_name}";
+        get => "{$this->last_name} {$this->first_name}";
     }
 
     /**
@@ -131,7 +145,7 @@ class User extends Authenticatable implements FilamentUser, HasName
     #[Override]
     public function getFilamentName(): string
     {
-        return "{$this->first_name} {$this->last_name}";
+        return "{$this->last_name} {$this->first_name}";
     }
 
     /**
@@ -252,6 +266,9 @@ class User extends Authenticatable implements FilamentUser, HasName
 
         /** @var list<string> $filteredTokens */
         $filteredTokens = array_values(array_filter($tokens, static fn (mixed $token): bool => is_string($token)));
+        // $filteredTokens = $tokens
+        //     |> (fn($t) => array_filter($t, fn(mixed $token): bool => is_string($token)))
+        //     |> array_values(...);
 
         return $filteredTokens;
     }
@@ -261,55 +278,29 @@ class User extends Authenticatable implements FilamentUser, HasName
      */
     public function ensureDefaultWallets(): void
     {
-        $khrCurrencyId = Currency::find(Currency::KHR)->value('id');
-        $usdCurrencyId = Currency::find(Currency::USD)->value('id');
-
-        if (! is_numeric($khrCurrencyId) || ! is_numeric($usdCurrencyId)) {
-            return;
+        foreach ([Currency::KHR_ID, Currency::USD_ID] as $currencyId) {
+            $this->ensureWalletWithHistory($currencyId);
         }
+    }
 
-        $khrCurrencyId = (int) $khrCurrencyId;
-        $usdCurrencyId = (int) $usdCurrencyId;
-
-        if ($khrCurrencyId <= 0 || $usdCurrencyId <= 0) {
-            return;
-        }
-
-        $khrWallet = $this->wallets()->firstOrCreate(
-            ['user_id' => $this->id, 'currency_id' => $khrCurrencyId],
+    /**
+     * Ensure a specific wallet and its history.
+     */
+    private function ensureWalletWithHistory(int $currencyId): void
+    {
+        $wallet = $this->wallets()->firstOrCreate(
+            ['user_id' => $this->id, 'currency_id' => $currencyId],
             ['balance' => '0.00'],
         );
 
-        $freshKhrWallet = $khrWallet->fresh();
-
-        if ($freshKhrWallet) {
-            WalletHistory::insert([
-                'user_id' => $this->id,
-                'wallet_id' => $freshKhrWallet->id,
-                'currency_id' => $khrCurrencyId,
-                'balance' => $freshKhrWallet->balance,
-                'created_at' => Carbon::now(),
-                'updated_at' => Carbon::now(),
-            ]);
-        }
-
-        $usdWallet = $this->wallets()->firstOrCreate(
-            ['user_id' => $this->id, 'currency_id' => $usdCurrencyId],
-            ['balance' => '0.00'],
-        );
-
-        $freshUsdWallet = $usdWallet->fresh();
-
-        if ($freshUsdWallet) {
-            WalletHistory::insert([
-                'user_id' => $this->id,
-                'wallet_id' => $freshUsdWallet->id,
-                'currency_id' => $usdCurrencyId,
-                'balance' => $freshUsdWallet->balance,
-                'created_at' => now(),
-                'updated_at' => now(),
-            ]);
-        }
+        WalletHistory::insert([
+            'wallet_id' => $wallet->id,
+            'user_id' => $wallet->user_id,
+            'currency_id' => $wallet->currency_id,
+            'balance' => $wallet->balance,
+            'created_at' => $wallet->created_at,
+            'updated_at' => $wallet->updated_at,
+        ]);
     }
 
     /**

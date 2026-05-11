@@ -23,9 +23,55 @@ use Illuminate\Support\Facades\Notification;
 class SupportChatController extends Controller
 {
     /**
-     * Get or create the active support ticket for the user.
+     * Get all support tickets for the user.
+     */
+    public function getTickets(Request $request): JsonResponse
+    {
+        $user = $this->authenticatedUser($request);
+
+        $tickets = SupportTicket::where('user_id', $user->id)
+            ->latest()
+            ->get();
+
+        return static::successResponse(
+            $tickets->map(static function ($ticket) {
+                return [
+                    'id' => $ticket->id,
+                    'status' => $ticket->status,
+                    'created_at' => $ticket->created_at->toIso8601String(),
+                ];
+            })->toArray(),
+            __('api.support_chat.tickets_retrieved')
+        );
+    }
+
+    /**
+     * Get the active support ticket for the user.
      */
     public function getActiveTicket(Request $request): JsonResponse
+    {
+        $user = $this->authenticatedUser($request);
+
+        $ticket = SupportTicket::where('user_id', $user->id)
+            ->where('status', 'open')
+            ->latest()
+            ->first();
+
+        if (! $ticket) {
+            return static::successResponse(__('api.support_chat.no_active_ticket'));
+        }
+
+        return static::successResponse([
+            'id' => $ticket->id,
+            'status' => $ticket->status,
+            'created_at' => $ticket->created_at->toIso8601String(),
+        ], __('api.support_chat.session_retrieved'));
+    }
+
+    /**
+     * Create a new support ticket.
+     */
+    public function createTicket(Request $request): JsonResponse
     {
         $user = $this->authenticatedUser($request);
 
@@ -41,17 +87,17 @@ class SupportChatController extends Controller
 
             broadcast(new NewSupportTicket($ticket))->toOthers();
 
-            // Notify admins
             $admins = User::where('user_type_id', UserType::ADMIN)
                 ->where('user_status_id', UserStatus::ACTIVE)
                 ->get();
+
             Notification::send($admins, new NewSupportTicketNotification($ticket));
         }
 
         return static::successResponse([
             'id' => $ticket->id,
             'status' => $ticket->status,
-            'created_at' => $ticket->created_at?->toIso8601String(),
+            'created_at' => $ticket->created_at->toIso8601String(),
         ], __('api.support_chat.session_created'));
     }
 
@@ -66,7 +112,7 @@ class SupportChatController extends Controller
 
         broadcast(new SupportTyping((int) $validatedData['ticket_id'], 'user'))->toOthers();
 
-        return static::successResponse([], __('api.support_chat.typing'));
+        return static::successResponse(message: __('api.support_chat.typing'));
     }
 
     /**
@@ -74,18 +120,19 @@ class SupportChatController extends Controller
      */
     public function sendMessage(Request $request): JsonResponse
     {
-        $validated = $request->validate([
+        $validatedData = $request->validate([
             'ticket_id' => ['required', 'string', 'exists:support_tickets,id'],
             'message' => ['nullable', 'string', 'max:1200'],
         ]);
 
         $filePath = null;
+
         if ($request->hasFile('attachment')) {
             $filePath = $request->file('attachment')->store('support/files', 'public');
         }
 
         $user = $this->authenticatedUser($request);
-        $ticket = SupportTicket::findOrFail((int) $validated['ticket_id']);
+        $ticket = SupportTicket::findOrFail((int) $validatedData['ticket_id']);
 
         if ($ticket->user_id !== $user->id) {
             return static::unauthorizedResponse(__('api.support_chat.unauthorized_access'));
@@ -103,10 +150,10 @@ class SupportChatController extends Controller
 
         broadcast(new SupportMessageSent($message))->toOthers();
 
-        // Notify admins
         $admins = User::where('user_type_id', UserType::ADMIN)
             ->where('user_status_id', UserStatus::ACTIVE)
             ->get();
+
         Notification::send($admins, new NewSupportMessageNotification($message));
 
         return static::successResponse(

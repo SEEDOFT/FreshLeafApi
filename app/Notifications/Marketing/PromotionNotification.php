@@ -35,8 +35,8 @@ class PromotionNotification extends PushNotification
     /**
      * Create the FCM message representation.
      */
-    public function toFcm(object $notifiable): FcmMessage
+    public function toFcm(): FcmMessage
     {
-        return parent::toFcm($notifiable);
+        return parent::toFcm();
     }
 }

@@ -39,8 +39,7 @@ class PaymentType extends Model
 
     /**
      * Get the payments for the type.
-     */
-    /**
+     *
      * @return HasMany<Payment, $this>
      */
     public function payments(): HasMany

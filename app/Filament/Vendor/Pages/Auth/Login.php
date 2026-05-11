@@ -4,13 +4,12 @@ declare(strict_types=1);
 
 namespace App\Filament\Vendor\Pages\Auth;
 
+use App\Filament\Forms\Components\PhoneNumberInput;
 use App\Models\User;
 use App\Models\UserStatus;
 use App\Models\UserType;
 use Filament\Auth\Pages\Login as BaseLogin;
 use Filament\Facades\Filament;
-use Filament\Forms\Components\Select;
-use Filament\Forms\Components\TextInput;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Schema;
@@ -54,11 +53,10 @@ class Login extends BaseLogin
                     ->state(new HtmlString(
                         '<div class="text-sm text-center py-2">'.
                         __('admin.auth.login.not_having_account').' '.
-                        '<a class="text-emerald-600 font-bold hover:text-emerald-500 underline underline-offset-4" href="'.
+                        '<a class="text-emerald-600 font-bold hover:text-emerald-500" href="'.
                         Filament::getRegistrationUrl().'">'.
                         __('admin.auth.login.register_here').
-                        '</a>'.
-                        '</div>'
+                        '</a>'.'</div>'
                     ))
                     ->html(),
                 $this->getRememberFormComponent(),
@@ -70,21 +68,10 @@ class Login extends BaseLogin
     {
         return Grid::make(5)
             ->schema([
-                configure_country_select(
-                    Select::make('country_iso')
-                        ->label(__('admin.auth.register.country'))
-                )
-                    ->required()
-                    ->columnSpan(3),
-                TextInput::make('phone_number_input')
+                PhoneNumberInput::make('phone_number')
                     ->label(__('admin.auth.login.phone'))
-                    ->placeholder('012 345 678')
-                    ->required(static fn (string $operation): bool => $operation === 'create')
-                    ->dehydrated(static fn (mixed $state): bool => filled($state))
-                    ->mask('999 999 999')
-                    ->autofocus()
-                    ->autocomplete()
-                    ->columnSpan(2),
+                    ->required()
+                    ->columnSpanFull(),
             ]);
     }
 
@@ -92,20 +79,13 @@ class Login extends BaseLogin
     protected function getCredentialsFromFormData(array $data): array
     {
         $userTypeId = UserType::VENDOR;
-
-        $countryIso = $data['country_iso'] ?? 'KH';
-        $phoneInput = preg_replace('/[^0-9]/', '', $data['phone_number_input'] ?? '');
-        $dialCode = get_dial_code($countryIso);
-        $fullPhone = $dialCode.ltrim($phoneInput, '0');
-
         $credentials = [
-            'phone_number' => $fullPhone,
+            'phone_number' => $data['phone_number'],
             'password' => $data['password'],
             'user_type_id' => $userTypeId,
         ];
 
-        // Check if user exists and is pending
-        $user = User::where('phone_number', $fullPhone)
+        $user = User::where('phone_number', $data['phone_number'])
             ->where('user_type_id', $userTypeId)
             ->first();
 

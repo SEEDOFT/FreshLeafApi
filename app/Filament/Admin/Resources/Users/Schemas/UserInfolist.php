@@ -77,7 +77,7 @@ class UserInfolist
                                     ->label(new HtmlString('<strong>'.__('admin.resources.wallet.balance').'</strong>'))
                                     ->placeholder('0.00')
                                     ->getStateUsing(static function (Wallet $record): string {
-                                        $id = $record->currency?->id;
+                                        $id = $record->currency->id;
                                         $symbol = $record->currency->symbol ?? '';
                                         $balance = number_format((float) $record->balance, 2);
 

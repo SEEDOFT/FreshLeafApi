@@ -7,6 +7,8 @@ namespace App\Http\Requests\User\WalletTransaction;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 
+use function auth;
+
 class UpdateWalletTransactionRequest extends FormRequest
 {
     /**
@@ -14,7 +16,7 @@ class UpdateWalletTransactionRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return \auth()->check();
+        return auth()->check();
     }
 
     /**

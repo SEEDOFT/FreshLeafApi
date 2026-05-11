@@ -7,6 +7,8 @@ namespace App\Http\Requests\Ai;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 
+use function auth;
+
 class StoreChatMessageRequest extends FormRequest
 {
     /**
@@ -14,7 +16,7 @@ class StoreChatMessageRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return \auth()->check();
+        return auth()->check();
     }
 
     /**

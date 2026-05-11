@@ -18,6 +18,9 @@ use Illuminate\Support\Carbon;
  * @property float $balance
  * @property Carbon $created_at
  * @property Carbon $updated_at
+ * @property-read Wallet $wallet
+ * @property-read User $user
+ * @property-read Currency $currency
  */
 #[Table('wallet_histories', key: 'id', keyType: 'int')]
 #[Fillable([

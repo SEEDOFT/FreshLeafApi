@@ -88,3 +88,53 @@ if (! function_exists('configure_country_select')) {
             ->getOptionLabelUsing(static fn (mixed $value): string => get_country_selected_option_label($value));
     }
 }
+
+if (! function_exists('get_country_options_by_dial_code')) {
+    /**
+     * @return array<string, string>
+     */
+    function get_country_options_by_dial_code(string $dialCode): array
+    {
+        $options = [];
+
+        foreach (countries() as $country) {
+            $iso = $country['iso_3166_1_alpha2'];
+            $countryDialCode = get_dial_code($iso);
+
+            if ($countryDialCode !== $dialCode) {
+                continue;
+            }
+
+            $name = country(strtolower($iso))->getName();
+            $flagUrl = 'https://flagcdn.com/24x18/'.strtolower($iso).'.png';
+
+            $options[$iso] = "
+                <span class='freshleaf-country-option'>
+                    <img class='freshleaf-country-option-flag'
+                         src='{$flagUrl}'
+                         width='24' height='18'
+                         alt='{$name}'>
+                    <span class='freshleaf-country-option-name'>{$name}</span>
+                    <span class='freshleaf-country-option-code'>{$countryDialCode}</span>
+                </span>
+            ";
+        }
+
+        return $options;
+    }
+}
+
+if (! function_exists('configure_country_select')) {
+    function configure_country_select(Select $select): Select
+    {
+        $options = get_country_options_by_dial_code('+855');
+
+        return $select
+            ->options($options)
+            ->default('KH')
+            ->allowHtml()
+            ->searchable(false)  // disable search — only one option
+            ->optionsLimit(1)
+            ->getOptionLabelUsing(static fn (mixed $value): string => get_country_selected_option_label($value));
+    }
+}

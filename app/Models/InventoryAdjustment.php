@@ -4,24 +4,23 @@ declare(strict_types=1);
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Attributes\Fillable;
+use Illuminate\Database\Eloquent\Attributes\Table;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
+#[Table('inventory_adjustments', key: 'id', keyType: 'int')]
+#[Fillable([
+    'vendor_inventory_id',
+    'user_id',
+    'quantity_change',
+    'type',
+    'reason',
+    'proof_image_path',
+    'notes',
+])]
 class InventoryAdjustment extends Model
 {
-    use HasFactory;
-
-    protected $fillable = [
-        'vendor_inventory_id',
-        'user_id',
-        'quantity_change',
-        'type',
-        'reason',
-        'proof_image_path',
-        'notes',
-    ];
-
     /**
      * Get the vendor inventory that owns the adjustment.
      *

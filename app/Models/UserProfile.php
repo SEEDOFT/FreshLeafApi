@@ -41,7 +41,7 @@ class UserProfile extends Model
     use HasFactory;
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      *
      * @return array<string, mixed>
      */

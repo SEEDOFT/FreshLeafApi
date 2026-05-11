@@ -8,6 +8,7 @@ use Database\Factories\ProductCategoryFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Scope;
 use Illuminate\Database\Eloquent\Attributes\Table;
+use Illuminate\Database\Eloquent\Attributes\UseFactory;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -42,6 +43,7 @@ use Illuminate\Support\Facades\App;
     'image_url',
     'slug',
 ])]
+#[UseFactory(ProductCategoryFactory::class)]
 class ProductCategory extends Model
 {
     /** @use HasFactory<ProductCategoryFactory> */
@@ -63,14 +65,18 @@ class ProductCategory extends Model
      * Get the localized name of the category.
      */
     public string $localizedName {
-        get => App::getLocale() === 'km' ? ($this->name_km ?? $this->name_en) : $this->name_en;
+        get => App::getLocale() === 'km'
+            ? ($this->name_km ?? $this->name_en)
+            : $this->name_en;
     }
 
     /**
      * Get the localized description of the category.
      */
     public ?string $localizedDescription {
-        get => App::getLocale() === 'km' ? ($this->description_km ?? $this->description_en) : $this->description_en;
+        get => App::getLocale() === 'km'
+            ? ($this->description_km ?? $this->description_en)
+            : $this->description_en;
     }
 
     /**
@@ -80,7 +86,11 @@ class ProductCategory extends Model
      */
     public function status(): BelongsTo
     {
-        return $this->belongsTo(ProductCategoryStatus::class, 'product_category_status_id');
+        return $this->belongsTo(
+            ProductCategoryStatus::class,
+            'product_category_status_id',
+            'id',
+        );
     }
 
     /**
@@ -90,7 +100,11 @@ class ProductCategory extends Model
      */
     public function products(): HasMany
     {
-        return $this->hasMany(Product::class, 'product_category_id', 'id');
+        return $this->hasMany(
+            Product::class,
+            'product_category_id',
+            'id',
+        );
     }
 
     /**
@@ -101,6 +115,9 @@ class ProductCategory extends Model
     #[Scope]
     protected function active($query): void
     {
-        $query->where('product_category_status_id', ProductCategoryStatus::ACTIVE);
+        $query->where(
+            'product_category_status_id',
+            ProductCategoryStatus::ACTIVE,
+        );
     }
 }

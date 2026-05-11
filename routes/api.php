@@ -224,7 +224,9 @@ Route::prefix('v1')->name('v1.')->group(static function () {
             Route::controller(SupportChatController::class)
                 ->prefix('support')
                 ->group(static function () {
+                    Route::get('tickets', 'getTickets')->name('support.tickets');
                     Route::get('ticket', 'getActiveTicket')->name('support.ticket');
+                    Route::post('ticket', 'createTicket')->name('support.ticket.create');
                     Route::post('typing', 'sendTyping')->name('support.typing');
                     Route::post('message', 'sendMessage')->name('support.message');
                     Route::get('messages', 'getMessages')->name('support.messages');

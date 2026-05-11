@@ -12,11 +12,11 @@ use App\Jobs\ProcessAiChatMessageJob;
 use App\Models\AiChatMessage;
 use App\Models\AiChatSession;
 use App\Services\Ai\AiService;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
-
-use function now;
 
 class AiChatController extends Controller
 {
@@ -37,14 +37,14 @@ class AiChatController extends Controller
             'user_id' => $user->id,
         ], [
             'title' => $validatedData['title'] ?? null,
-            'last_message_at' => now(),
+            'last_message_at' => Carbon::now(),
         ]);
 
         return static::successResponse([
             'session_id' => $session->session_id,
             'title' => $session->title,
-            'created_at' => $session->created_at?->toIso8601String(),
-            'updated_at' => $session->updated_at?->toIso8601String(),
+            'created_at' => $session->created_at->toIso8601String(),
+            'updated_at' => $session->updated_at->toIso8601String(),
         ], __('api.ai_chat.chat_started'));
     }
 
@@ -92,7 +92,7 @@ class AiChatController extends Controller
                 ]);
 
                 $session->update([
-                    'last_message_at' => now(),
+                    'last_message_at' => Carbon::now(),
                 ]);
 
                 ProcessAiChatMessageJob::dispatch(
@@ -134,6 +134,18 @@ class AiChatController extends Controller
 
         $limit = $validatedData['limit'] ?? 100;
 
+        /**
+         * @var Collection<int, array{
+         *      session_id: string,
+         *      message_id: string,
+         *      role: string,
+         *      content: string,
+         *      status: string,
+         *      sequence: int,
+         *      timestamp: string,
+         *      error: string|null
+         * }>
+         */
         $messages = AiChatMessage::where('ai_chat_session_id', $session->id)
             ->orderBy('created_at')
             ->limit($limit)

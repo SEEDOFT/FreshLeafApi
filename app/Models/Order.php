@@ -67,6 +67,11 @@ class Order extends Model
     /** @use HasFactory<OrderFactory> */
     use HasFactory;
 
+    /**
+     * {@inheritDoc}
+     *
+     * @return array<string, string>
+     */
     protected function casts(): array
     {
         return [

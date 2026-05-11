@@ -23,7 +23,7 @@ use Illuminate\Support\Carbon;
  * @property-read Collection<int, PaymentMethod> $paymentMethods
  * @property-read int|null $payment_methods_count
  */
-#[Table('payment_method_types', key: 'id')]
+#[Table('payment_method_types', key: 'id', keyType: 'int')]
 #[Fillable(['code', 'name'])]
 #[UseFactory(PaymentMethodTypeFactory::class)]
 class PaymentMethodType extends Model

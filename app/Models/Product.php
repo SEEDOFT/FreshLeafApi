@@ -62,7 +62,7 @@ class Product extends Model
     use HasFactory, SoftDeletes;
 
     /**
-     * Get the attributes that should be cast.
+     * {@inheritDoc}
      *
      * @return array<string, string>
      */

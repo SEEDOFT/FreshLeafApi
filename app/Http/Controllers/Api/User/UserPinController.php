@@ -8,7 +8,6 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\User\Pin\SetPinRequest;
 use App\Http\Requests\User\Pin\UpdatePinRequest;
 use App\Http\Requests\User\Pin\VerifyPinRequest;
-use App\Models\UserProfile;
 use Illuminate\Http\JsonResponse;
 
 class UserPinController extends Controller
@@ -18,10 +17,9 @@ class UserPinController extends Controller
      */
     public function setPin(SetPinRequest $request): JsonResponse
     {
-        $user = $this->authenticatedUser($request);
-
         $validatedData = $request->validated();
-        $profile = UserProfile::firstOrCreateForUser($user);
+        $user = $this->authenticatedUser($request);
+        $profile = $user->userProfile;
 
         if ($profile->hasPin()) {
             return static::errorResponse(__('api.pin.already_set'), 422);
@@ -29,7 +27,7 @@ class UserPinController extends Controller
 
         $profile->setPin($validatedData['pin']);
 
-        return static::successResponse([], __('api.pin.set_success'));
+        return static::successResponse(message: __('api.pin.set_success'));
     }
 
     /**
@@ -37,18 +35,17 @@ class UserPinController extends Controller
      */
     public function updatePin(UpdatePinRequest $request): JsonResponse
     {
-        $user = $this->authenticatedUser($request);
-
         $validatedData = $request->validated();
+        $user = $this->authenticatedUser($request);
         $profile = $user->userProfile;
 
-        if ($profile === null || ! $profile->verifyPin($validatedData['current_pin'])) {
+        if (! $profile->verifyPin($validatedData['current_pin'])) {
             return static::errorResponse(__('api.pin.invalid_current_pin'), 401);
         }
 
         $profile->setPin($validatedData['pin']);
 
-        return static::successResponse([], __('api.pin.updated_success'));
+        return static::successResponse(message: __('api.pin.updated_success'));
     }
 
     /**
@@ -56,12 +53,11 @@ class UserPinController extends Controller
      */
     public function verifyPin(VerifyPinRequest $request): JsonResponse
     {
-        $user = $this->authenticatedUser($request);
-
         $validatedData = $request->validated();
+        $user = $this->authenticatedUser($request);
         $profile = $user->userProfile;
 
-        if ($profile === null || ! $profile->hasPin()) {
+        if (! $profile->hasPin()) {
             return static::errorResponse(__('api.pin.not_set'), 422);
         }
 
@@ -69,22 +65,21 @@ class UserPinController extends Controller
             return static::errorResponse(__('api.pin.invalid_pin'), 401);
         }
 
-        return static::successResponse([], __('api.pin.verified'));
+        return static::successResponse(message: __('api.pin.verified'));
     }
 
     /**
-     * Reset the user's PIN without requiring the current PIN (e.g., for
-     * forgotten PIN).
+     * Reset the user's PIN without requiring the current PIN
+     * (e.g., for forgotten PIN).
      */
     public function resetPin(SetPinRequest $request): JsonResponse
     {
-        $user = $this->authenticatedUser($request);
-
         $validatedData = $request->validated();
-        $profile = UserProfile::firstOrCreateForUser($user);
+        $user = $this->authenticatedUser($request);
+        $profile = $user->userProfile;
 
         $profile->setPin($validatedData['pin']);
 
-        return static::successResponse([], __('api.pin.reset_success'));
+        return static::successResponse(message: __('api.pin.reset_success'));
     }
 }

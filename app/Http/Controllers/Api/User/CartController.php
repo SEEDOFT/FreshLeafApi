@@ -37,7 +37,7 @@ class CartController extends Controller
             'items.status',
             'items.type',
             'status',
-            'type'
+            'type',
         ]);
 
         return static::successResponse(new CartResource($cart), __('api.cart.retrieved'));
@@ -96,7 +96,7 @@ class CartController extends Controller
             'items.status',
             'items.type',
             'status',
-            'type'
+            'type',
         ]);
 
         return static::successResponse(new CartResource($cart), __('api.cart.item_added'));
@@ -134,7 +134,7 @@ class CartController extends Controller
             'items.status',
             'items.type',
             'status',
-            'type'
+            'type',
         ]);
 
         return static::successResponse(new CartResource($cart), __('api.cart.item_updated'));
@@ -161,7 +161,7 @@ class CartController extends Controller
             'items.status',
             'items.type',
             'status',
-            'type'
+            'type',
         ]);
 
         return static::successResponse(new CartResource($cart), __('api.cart.item_removed'));

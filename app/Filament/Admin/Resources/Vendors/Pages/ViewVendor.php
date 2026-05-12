@@ -29,7 +29,7 @@ class ViewVendor extends ViewRecord
                 ->icon('heroicon-o-check-circle')
                 ->color('success')
                 ->visible(
-                    static fn (User $record) => $record->isType(UserType::VENDOR) &&
+                    static fn (User $record) => $record->isType(UserType::VENDOR_ID) &&
                     $record->vendorProfile && ! $record->vendorProfile->is_verified
                 )
                 ->action(static function (User $record, array $data) {
@@ -39,7 +39,7 @@ class ViewVendor extends ViewRecord
                         'approved_by_admin_id' => Auth::id(),
                         'approve_reason' => $data['note'] ?? null,
                     ]);
-                    $record->update(['user_status_id' => UserStatus::ACTIVE]);
+                    $record->update(['user_status_id' => UserStatus::ACTIVE_ID]);
 
                     Notification::make()
                         ->title(__('admin.resources.vendor.notifications.approved'))
@@ -57,7 +57,7 @@ class ViewVendor extends ViewRecord
                 ->icon('heroicon-o-x-circle')
                 ->color('danger')
                 ->visible(
-                    static fn (User $record) => $record->isType(UserType::VENDOR) &&
+                    static fn (User $record) => $record->isType(UserType::VENDOR_ID) &&
                     $record->vendorProfile &&
                     ! $record->vendorProfile->is_verified
                 )

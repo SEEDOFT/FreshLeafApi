@@ -25,12 +25,24 @@ use Illuminate\Support\Carbon;
  * @property-read int|null $notifications_count
  */
 #[Table('notification_types', key: 'id', keyType: 'int', incrementing: false)]
-#[Fillable(['code', 'name_en', 'name_km'])]
+#[Fillable(['id', 'name_en', 'name_km'])]
 #[UseFactory(NotificationTypeFactory::class)]
 class NotificationType extends Model
 {
     /** @use HasFactory<NotificationTypeFactory> */
     use HasFactory;
+
+    public const int ORDER_UPDATE_ID = 1;
+
+    public const int PROMOTION_ID = 2;
+
+    public const int SYSTEM_ID = 3;
+
+    public const string ORDER_UPDATE = 'ORDER_UPDATE';
+
+    public const string PROMOTION = 'PROMOTION';
+
+    public const string SYSTEM = 'SYSTEM';
 
     /**
      * Get the notifications for the type.

@@ -34,7 +34,7 @@ class SupportChatRealtimeTest extends TestCase
         ], ['id'], ['code', 'name']);
 
         UserType::upsert([
-            ['id' => UserType::USER, 'code' => 'USER', 'name' => 'User'],
+            ['id' => UserType::CONSUMER_ID, 'code' => 'USER', 'name' => 'User'],
             ['id' => UserType::VENDOR, 'code' => 'VENDOR', 'name' => 'Vendor'],
             ['id' => UserType::ADMIN, 'code' => 'ADMIN', 'name' => 'Admin'],
         ], ['id'], ['code', 'name']);
@@ -105,7 +105,7 @@ class SupportChatRealtimeTest extends TestCase
     public function test_user_message_send_touches_ticket_timestamp(): void
     {
         $user = User::factory()->create([
-            'user_type_id' => UserType::USER,
+            'user_type_id' => UserType::CONSUMER_ID,
             'user_status_id' => UserStatus::ACTIVE,
         ]);
         $ticket = SupportTicket::query()->create([
@@ -133,7 +133,7 @@ class SupportChatRealtimeTest extends TestCase
             'user_status_id' => UserStatus::ACTIVE,
         ]);
         $user = User::factory()->create([
-            'user_type_id' => UserType::USER,
+            'user_type_id' => UserType::CONSUMER_ID,
             'user_status_id' => UserStatus::ACTIVE,
         ]);
         $ticket = SupportTicket::query()->create([

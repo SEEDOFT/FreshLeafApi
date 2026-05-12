@@ -29,12 +29,15 @@ class UserResource extends JsonResource
             'last_name' => $this->last_name,
             'email' => $this->email,
             'phone_number' => $this->phone_number,
-            'image' => Storage::url('users/'.$this->image),
+            'image' => $this->when(
+                $this->image !== null,
+                fn () => Storage::url('users/'.$this->image)
+            ),
             'set_pin' => (bool) ($this->userProfile->pin ?? false),
-            'locale' => $this->userProfile->locale ?? config('app.locale'),
-            'prefer_theme' => $this->userProfile->prefer_theme ?? 'system',
-            'created_at' => $this->created_at,
-            'updated_at' => $this->updated_at,
+            'locale' => $this->userProfile->locale,
+            'theme' => $this->userProfile->theme,
+            'created_at' => $this->created_at->toIso8601String(),
+            'updated_at' => $this->updated_at->toIso8601String(),
         ];
     }
 }

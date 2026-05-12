@@ -31,20 +31,26 @@ class ListVendors extends ListRecords
         return [
             'all' => Tab::make('All'),
             'pending' => Tab::make('Pending Approval')
-                ->modifyQueryUsing(static fn (Builder $query) => $query->where('user_status_id', UserStatus::PENDING))
+                ->modifyQueryUsing(
+                    static fn (Builder $query) => $query->where('user_status_id', UserStatus::PENDING_ID)
+                )
                 ->icon('heroicon-m-clock')
                 ->badge(function (): int {
                     $query = $this->getTableQuery();
 
                     return $query
-                        ? (clone $query)->where('user_status_id', UserStatus::PENDING)->count()
+                        ? (clone $query)->where('user_status_id', UserStatus::PENDING_ID)->count()
                         : 0;
                 }),
             'active' => Tab::make('Active')
-                ->modifyQueryUsing(static fn (Builder $query) => $query->where('user_status_id', UserStatus::ACTIVE))
+                ->modifyQueryUsing(
+                    static fn (Builder $query) => $query->where('user_status_id', UserStatus::ACTIVE_ID)
+                )
                 ->icon('heroicon-m-check-circle'),
             'inactive' => Tab::make('Inactive')
-                ->modifyQueryUsing(static fn (Builder $query) => $query->where('user_status_id', UserStatus::INACTIVE))
+                ->modifyQueryUsing(
+                    static fn (Builder $query) => $query->where('user_status_id', UserStatus::INACTIVE_ID)
+                )
                 ->icon('heroicon-m-x-circle'),
         ];
     }

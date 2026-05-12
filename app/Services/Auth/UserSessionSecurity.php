@@ -24,7 +24,7 @@ class UserSessionSecurity
 
         return User::where('id', $user->id)
             ->where('user_type_id', $user->user_type_id)
-            ->where('user_status_id', UserStatus::ACTIVE)
+            ->where('user_status_id', UserStatus::ACTIVE_ID)
             ->where('phone_number', $user->phone_number)
             ->first();
     }

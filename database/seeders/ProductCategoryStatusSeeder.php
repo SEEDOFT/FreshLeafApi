@@ -9,25 +9,26 @@ use Illuminate\Database\Seeder;
 
 class ProductCategoryStatusSeeder extends Seeder
 {
+    /**
+     * Run the database seeds.
+     */
     public function run(): void
     {
-        $data = [
+        $statuses = [
             [
                 'id' => 1,
-                'code' => 'ACTIVE',
                 'name_en' => 'Active',
                 'name_km' => 'សកម្ម',
             ],
             [
                 'id' => 2,
-                'code' => 'INACTIVE',
                 'name_en' => 'Inactive',
                 'name_km' => 'អសកម្ម',
             ],
         ];
 
-        foreach ($data as $d) {
-            ProductCategoryStatus::create($d);
+        foreach ($statuses as $status) {
+            ProductCategoryStatus::create($status);
         }
     }
 }

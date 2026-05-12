@@ -66,17 +66,21 @@ return new class extends Migration
         // Finance & Payouts
         Schema::create('exchange_rates', static function (Blueprint $table) {
             $table->id();
-            $table->foreignId('from_currency_id')->constrained('currencies');
-            $table->foreignId('to_currency_id')->constrained('currencies');
+            $table->unsignedBigInteger('from_currency_id');
+            $table->unsignedBigInteger('to_currency_id');
             $table->decimal('rate', 16, 8);
             $table->timestamps();
+            $table->softDeletes();
         });
 
         Schema::create('exchange_rate_histories', static function (Blueprint $table) {
             $table->id();
-            $table->foreignId('exchange_rate_id')->constrained()->cascadeOnDelete();
+            $table->unsignedBigInteger('exchange_rate_id');
+            $table->unsignedBigInteger('from_currency_id');
+            $table->unsignedBigInteger('to_currency_id');
             $table->decimal('rate', 16, 8);
             $table->timestamps();
+            $table->softDeletes();
         });
 
         Schema::create('payouts', static function (Blueprint $table) {

@@ -20,11 +20,27 @@ use Illuminate\Support\Carbon;
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  */
-#[Table('units', key: 'id', keyType: 'int')]
-#[Fillable(['name', 'symbol', 'conversion_to_base'])]
+#[Table('units', key: 'id', keyType: 'int', incrementing: false)]
+#[Fillable(['id', 'name_en', 'name_km', 'symbol', 'conversion_to_base'])]
 #[UseFactory(UnitFactory::class)]
 class Unit extends Model
 {
     /** @use HasFactory<UnitFactory> */
     use HasFactory;
+
+    /**
+     * {@inheritDoc}
+     *
+     * @return array<string, string>
+     */
+    protected function casts(): array
+    {
+        return [
+            'id' => 'int',
+            'name_en' => 'string',
+            'name_km' => 'string',
+            'symbol' => 'string',
+            'conversion_to_base' => 'float',
+        ];
+    }
 }

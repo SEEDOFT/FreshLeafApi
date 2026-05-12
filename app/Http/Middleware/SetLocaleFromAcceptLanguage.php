@@ -55,7 +55,7 @@ class SetLocaleFromAcceptLanguage
         $preferredLocale = match ($user->user_type_id) {
             UserType::ADMIN => $user->adminProfile?->locale,
             UserType::VENDOR => $user->vendorProfile?->locale,
-            UserType::USER => $user->userProfile?->locale,
+            UserType::CONSUMER_ID => $user->userProfile?->locale,
             default => null,
         };
 

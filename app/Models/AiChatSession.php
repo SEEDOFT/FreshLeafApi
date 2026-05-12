@@ -18,8 +18,8 @@ use Illuminate\Support\Carbon;
  * @property string $session_id
  * @property string|null $title
  * @property Carbon|null $last_message_at
- * @property Carbon $created_at
- * @property Carbon $updated_at
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
  * @property-read Collection<int, AiChatMessage> $messages
  * @property-read User $user
  */

@@ -16,22 +16,24 @@ class WalletTransactionStatusSeeder extends Seeder
     {
         $types = [
             [
-                'id' => 1,
-                'code' => 'PENDING',
+                'id' => WalletTransactionStatus::PENDING_ID,
                 'name_en' => 'Pending',
                 'name_km' => 'រង់ចាំ',
             ],
             [
-                'id' => 2,
-                'code' => 'COMPLETED',
+                'id' => WalletTransactionStatus::COMPLETED_ID,
                 'name_en' => 'Completed',
                 'name_km' => 'បានបញ្ចប់',
             ],
             [
-                'id' => 3,
-                'code' => 'FAILED',
+                'id' => WalletTransactionStatus::FAILED_ID,
                 'name_en' => 'Failed',
                 'name_km' => 'បរាជ័យ',
+            ],
+            [
+                'id' => WalletTransactionStatus::CANCELLED_ID,
+                'name_en' => 'Cancelled',
+                'name_km' => 'បានលុបចោល',
             ],
         ];
 

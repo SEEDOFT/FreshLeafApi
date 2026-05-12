@@ -25,19 +25,29 @@ use Illuminate\Support\Carbon;
  * @property-read Collection<int, Payment> $payments
  * @property-read int|null $payments_count
  */
-#[Table('payment_statuses', key: 'id')]
-#[Fillable(['name'])]
+#[Table('payment_statuses', key: 'id', keyType: 'int', incrementing: false)]
+#[Fillable(['id', 'name_en', 'name_km'])]
 #[UseFactory(PaymentStatusFactory::class)]
 class PaymentStatus extends Model
 {
     /** @use HasFactory<PaymentStatusFactory> */
     use HasFactory;
 
-    public const int ACTIVE = 1;
+    public const int PENDING_ID = 1;
 
-    public const int INACTIVE = 2;
+    public const int COMPLETED_ID = 2;
 
-    public const int DELETE = 3;
+    public const int FAILED_ID = 3;
+
+    public const int REFUNDED_ID = 4;
+
+    public const string PENDING = 'PENDING';
+
+    public const string COMPLETED = 'COMPLETED';
+
+    public const string FAILED = 'FAILED';
+
+    public const string REFUNDED = 'REFUNDED';
 
     /**
      * Get the orders for the payment status.

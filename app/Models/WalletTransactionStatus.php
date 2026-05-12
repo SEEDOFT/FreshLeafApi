@@ -11,29 +11,40 @@ use Illuminate\Database\Eloquent\Attributes\UseFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Carbon;
 
 /**
  * @property int $id
  * @property string $code
  * @property string $name_en
  * @property string $name_km
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
  * @property-read WalletTransaction[] $transactions
  */
 #[Table('wallet_transaction_statuses', key: 'id', keyType: 'int', incrementing: false)]
-#[Fillable(['code', 'name_en', 'name_km'])]
+#[Fillable(['id', 'name_en', 'name_km'])]
 #[UseFactory(WalletTransactionStatusFactory::class)]
 class WalletTransactionStatus extends Model
 {
     /** @use HasFactory<WalletTransactionStatusFactory> */
     use HasFactory;
 
-    public const int PENDING = 1;
+    public const int PENDING_ID = 1;
 
-    public const int COMPLETED = 2;
+    public const int COMPLETED_ID = 2;
 
-    public const int FAILED = 3;
+    public const int FAILED_ID = 3;
 
-    public const int CANCELLED = 4;
+    public const int CANCELLED_ID = 4;
+
+    public const string PENDING = 'PENDING';
+
+    public const string COMPLETED = 'COMPLETED';
+
+    public const string FAILED = 'FAILED';
+
+    public const string CANCELLED = 'CANCELLED';
 
     /**
      * Get the transactions for this status.
@@ -42,6 +53,10 @@ class WalletTransactionStatus extends Model
      */
     public function transactions(): HasMany
     {
-        return $this->hasMany(WalletTransaction::class, 'wallet_transaction_status_id', 'id');
+        return $this->hasMany(
+            WalletTransaction::class,
+            'wallet_transaction_status_id',
+            'id'
+        );
     }
 }

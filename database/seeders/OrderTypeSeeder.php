@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace Database\Seeders;
 
-use App\Models\PaymentType;
+use App\Models\OrderType;
 use Illuminate\Database\Seeder;
 
-class PaymentTypeSeeder extends Seeder
+class OrderTypeSeeder extends Seeder
 {
     /**
      * Run the database seeds.
@@ -16,14 +16,14 @@ class PaymentTypeSeeder extends Seeder
     {
         $types = [
             [
-                'id' => PaymentType::ORDER_ID,
-                'name_en' => 'Order',
-                'name_km' => 'ការទូទាត់ការបញ្ជាទិញ',
+                'id' => OrderType::STANDARD_ID,
+                'name_en' => 'Standard',
+                'name_km' => 'ស្តង់ដារ',
             ],
         ];
 
         foreach ($types as $type) {
-            PaymentType::create($type);
+            OrderType::create($type);
         }
     }
 }

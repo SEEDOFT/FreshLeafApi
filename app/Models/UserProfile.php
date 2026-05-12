@@ -20,20 +20,14 @@ use Illuminate\Support\Facades\Hash;
  * @property string|null $pin
  * @property string|null $gender
  * @property string $locale
- * @property string $prefer_theme
+ * @property string $theme
  * @property Carbon|null $date_of_birth
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  * @property-read User $user
  */
 #[Table('user_profiles', key: 'id', keyType: 'int')]
-#[Fillable([
-    'user_id',
-    'pin',
-    'gender',
-    'locale',
-    'prefer_theme',
-])]
+#[Fillable(['user_id', 'pin', 'gender', 'locale', 'theme'])]
 #[UseFactory(UserProfileFactory::class)]
 class UserProfile extends Model
 {

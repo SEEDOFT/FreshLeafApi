@@ -29,7 +29,7 @@ class AuthController extends Controller
         $validatedData = $request->validated();
 
         /** @var User|null $user */
-        $user = User::ofType(UserType::USER)
+        $user = User::ofType(UserType::CONSUMER_ID)
             ->where('phone_number', $validatedData['phone_number'])
             ->first();
 
@@ -58,23 +58,26 @@ class AuthController extends Controller
 
         /** @var User $user */
         $user = DB::transaction(static function () use ($validatedData): User {
-
             $user = User::create([
                 'first_name' => $validatedData['first_name'],
                 'last_name' => $validatedData['last_name'],
                 'email' => $validatedData['email'] ?? null,
+                'email_verified_at' => null,
                 'phone_number' => $validatedData['phone_number'],
+                'phone_number_verified_at' => null,
                 'password' => Hash::make($validatedData['password']),
-                'user_type_id' => UserType::USER,
-                'user_status_id' => UserStatus::ACTIVE,
+                'user_type_id' => UserType::CONSUMER_ID,
+                'user_status_id' => UserStatus::ACTIVE_ID,
             ]);
 
             $user->userProfile()->create([
                 'locale' => 'km',
-                'prefer_theme' => 'system',
+                'theme' => 'system',
             ]);
 
             $user->ensureDefaultWallets();
+
+            $user->ensureDefaultPaymentMethod();
 
             return $user;
         });

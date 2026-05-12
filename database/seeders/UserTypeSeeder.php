@@ -16,20 +16,17 @@ class UserTypeSeeder extends Seeder
     {
         $types = [
             [
-                'id' => 1,
-                'code' => 'ADMIN',
+                'id' => UserType::ADMIN_ID,
                 'name_en' => 'ADMIN',
                 'name_km' => 'អ្នកគ្រប់គ្រងប្រព័ន្ធ',
             ],
             [
-                'id' => 2,
-                'code' => 'VENDOR',
+                'id' => UserType::VENDOR_ID,
                 'name_en' => 'VENDOR',
                 'name_km' => 'អ្នកលក់',
             ],
             [
-                'id' => 3,
-                'code' => 'CONSUMER',
+                'id' => UserType::CONSUMER_ID,
                 'name_en' => 'CONSUMER',
                 'name_km' => 'អ្នកប្រើប្រាស់',
             ],

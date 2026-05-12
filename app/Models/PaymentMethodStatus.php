@@ -23,19 +23,25 @@ use Illuminate\Support\Carbon;
  * @property-read Collection<int, PaymentMethod> $paymentMethods
  * @property-read int|null $paymentMethods_count
  */
-#[Table('payment_method_statuses', key: 'id')]
-#[Fillable(['name'])]
+#[Table('payment_method_statuses', key: 'id', keyType: 'int', incrementing: false)]
+#[Fillable(['id', 'name_en', 'name_km'])]
 #[UseFactory(PaymentMethodStatusFactory::class)]
 class PaymentMethodStatus extends Model
 {
     /** @use HasFactory<PaymentMethodStatusFactory> */
     use HasFactory;
 
-    public const int ACTIVE = 1;
+    public const int ACTIVE_ID = 1;
 
-    public const int INACTIVE = 2;
+    public const int INACTIVE_ID = 2;
 
-    public const int DELETE = 3;
+    public const int DELETE_ID = 3;
+
+    public const string ACTIVE = 'ACTIVE';
+
+    public const string INACTIVE = 'INACTIVE';
+
+    public const string DELETE = 'DELETED';
 
     /**
      * Get the payment methods for the status.

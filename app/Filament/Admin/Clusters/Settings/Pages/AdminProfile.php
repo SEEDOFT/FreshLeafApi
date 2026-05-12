@@ -52,6 +52,7 @@ class AdminProfile extends Page
     public function mount(): void
     {
         $user = Auth::user();
+
         if (! $user) {
             return;
         }
@@ -145,11 +146,13 @@ class AdminProfile extends Page
     public function save(): void
     {
         $user = Auth::user();
+
         if (! $user) {
             return;
         }
 
         $form = $this->getSchema('form');
+        
         if (! $form) {
             return;
         }

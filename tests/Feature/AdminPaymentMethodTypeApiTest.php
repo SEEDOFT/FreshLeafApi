@@ -116,7 +116,7 @@ class AdminPaymentMethodTypeApiTest extends TestCase
             'phone_number' => '+85510000204',
             'email' => 'user-payment-type@test.local',
             'password' => bcrypt('password123'),
-            'user_type_id' => UserType::USER,
+            'user_type_id' => UserType::CONSUMER_ID,
             'user_status_id' => UserStatus::ACTIVE,
         ]);
 

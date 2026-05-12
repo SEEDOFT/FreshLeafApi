@@ -10,6 +10,7 @@ use App\Http\Requests\User\PaymentMethod\StorePaymentMethodRequest;
 use App\Http\Requests\User\PaymentMethod\UpdatePaymentMethodRequest;
 use App\Http\Resources\User\PaymentMethodResource;
 use App\Models\PaymentMethodStatus;
+use App\Models\PaymentMethodType;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
@@ -27,6 +28,7 @@ class PaymentMethodController extends Controller
 
         $paymentMethods = $user->paymentMethods()
             ->active()
+            ->isType(PaymentMethodType::CREDIT_DEBIT_ID)
             ->orderBy('is_default', 'desc')
             ->orderBy('created_at', 'desc')
             ->simplePaginate($request->integer('per_page', 10));
@@ -43,7 +45,10 @@ class PaymentMethodController extends Controller
     public function show(string $id, Request $request): JsonResponse
     {
         $user = $this->authenticatedUser($request);
-        $paymentMethod = $user->paymentMethods()->active()->find($id);
+        $paymentMethod = $user->paymentMethods()
+            ->active()
+            ->isType(PaymentMethodType::CREDIT_DEBIT_ID)
+            ->find($id);
 
         if (! $paymentMethod) {
             return static::notFoundResponse(__('api.payment_method.not_found'));
@@ -64,11 +69,13 @@ class PaymentMethodController extends Controller
 
         $data = array_merge(
             $request->validated(),
-            ['payment_method_status_id' => PaymentMethodStatus::ACTIVE]
+            ['payment_method_status_id' => PaymentMethodStatus::ACTIVE_ID]
         );
 
         if ($data['is_default'] ?? false) {
-            $user->paymentMethods()->update(['is_default' => false]);
+            $user->paymentMethods()
+                ->isType(PaymentMethodType::CREDIT_DEBIT_ID)
+                ->update(['is_default' => false]);
         }
 
         $paymentMethod = $user->paymentMethods()->create([

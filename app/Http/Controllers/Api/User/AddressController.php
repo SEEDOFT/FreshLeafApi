@@ -50,7 +50,10 @@ class AddressController extends Controller
             return static::notFoundResponse(__('api.address.not_found'));
         }
 
-        return static::successResponse(new AddressResource($address), __('api.address.retrieved'));
+        return static::successResponse(
+            new AddressResource($address),
+            __('api.address.retrieved')
+        );
     }
 
     /**
@@ -59,9 +62,13 @@ class AddressController extends Controller
     public function store(StoreAddressRequest $request): JsonResponse
     {
         $user = $this->authenticatedUser($request);
-        $address = $this->addressService->createAddress($user, $request->validated());
+        $address = $this->addressService
+            ->createAddress($user, $request->validated());
 
-        return static::successResponse(new AddressResource($address), __('api.address.created'), 201);
+        return static::successResponse(
+            new AddressResource($address),
+            __('api.address.created'),
+            201);
     }
 
     /**
@@ -76,9 +83,13 @@ class AddressController extends Controller
             return static::notFoundResponse(__('api.address.not_found'));
         }
 
-        $address = $this->addressService->updateAddress($address, $request->validated());
+        $address = $this->addressService
+            ->updateAddress($address, $request->validated());
 
-        return static::successResponse(new AddressResource($address), __('api.address.updated'));
+        return static::successResponse(
+            new AddressResource($address),
+            __('api.address.updated')
+        );
     }
 
     /**
@@ -93,9 +104,13 @@ class AddressController extends Controller
             return static::notFoundResponse(__('api.address.not_found'));
         }
 
-        $address = $this->addressService->replaceAddress($address, $request->validated());
+        $address = $this->addressService
+            ->replaceAddress($address, $request->validated());
 
-        return static::successResponse(new AddressResource($address), __('api.address.replaced'));
+        return static::successResponse(
+            new AddressResource($address),
+            __('api.address.replaced')
+        );
     }
 
     /**
@@ -112,6 +127,6 @@ class AddressController extends Controller
 
         $this->addressService->deleteAddress($address);
 
-        return static::successResponse([], __('api.address.deleted'));
+        return static::successResponse(message: __('api.address.deleted'));
     }
 }

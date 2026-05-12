@@ -9,15 +9,30 @@ use Illuminate\Database\Seeder;
 
 class CurrencySeeder extends Seeder
 {
+    /**
+     * Run the database seeds.
+     */
     public function run(): void
     {
-        $data = [
-            ['id' => 1, 'code' => 'USD', 'name_en' => 'US Dollar', 'name_km' => 'ដុល្លារអាមេរិក', 'symbol' => '$'],
-            ['id' => 2, 'code' => 'KHR', 'name_en' => 'Cambodian Riel', 'name_km' => 'រៀល', 'symbol' => '៛'],
+        $currencies = [
+            [
+                'id' => Currency::KHR_ID,
+                'code' => Currency::KHR,
+                'name_en' => 'Cambodian Riel',
+                'name_km' => 'រៀល',
+                'symbol' => '៛',
+            ],
+            [
+                'id' => Currency::USD_ID,
+                'code' => Currency::USD,
+                'name_en' => 'US Dollar',
+                'name_km' => 'ដុល្លារអាមេរិក',
+                'symbol' => '$',
+            ],
         ];
 
-        foreach ($data as $d) {
-            Currency::create($d);
+        foreach ($currencies as $currency) {
+            Currency::create($currency);
         }
     }
 }

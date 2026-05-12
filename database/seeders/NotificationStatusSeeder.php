@@ -9,15 +9,26 @@ use Illuminate\Database\Seeder;
 
 class NotificationStatusSeeder extends Seeder
 {
+    /**
+     * Run the database seeds.
+     */
     public function run(): void
     {
-        $data = [
-            ['id' => 1, 'code' => 'UNREAD', 'name_en' => 'Unread', 'name_km' => 'មិនទាន់អាន'],
-            ['id' => 2, 'code' => 'READ', 'name_en' => 'Read', 'name_km' => 'បានអាន'],
+        $statuses = [
+            [
+                'id' => NotificationStatus::UNREAD_ID,
+                'name_en' => 'Unread',
+                'name_km' => 'មិនទាន់អាន',
+            ],
+            [
+                'id' => NotificationStatus::READ_ID,
+                'name_en' => 'Read',
+                'name_km' => 'បានអាន',
+            ],
         ];
 
-        foreach ($data as $d) {
-            NotificationStatus::updateOrCreate(['id' => $d['id']], $d);
+        foreach ($statuses as $status) {
+            NotificationStatus::create($status);
         }
     }
 }

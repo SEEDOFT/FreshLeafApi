@@ -173,6 +173,8 @@ return [
         'item_added' => 'Item added to cart successfully',
         'item_updated' => 'Cart item updated successfully',
         'item_removed' => 'Item removed from cart successfully',
+        'checked_out' => 'Cart checked out successfully',
+        'empty' => 'Your cart is empty',
         'insufficient_stock' => 'Not enough stock available',
         'insufficient_stock_total' => 'Not enough stock available for the total quantity',
     ],

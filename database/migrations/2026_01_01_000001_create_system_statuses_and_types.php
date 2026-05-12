@@ -16,7 +16,6 @@ return new class extends Migration
         // User & Auth
         Schema::create('user_statuses', static function (Blueprint $table) {
             $table->unsignedBigInteger('id')->primary();
-            $table->string('code')->unique();
             $table->string('name_en');
             $table->string('name_km');
             $table->timestamps();
@@ -24,7 +23,6 @@ return new class extends Migration
 
         Schema::create('user_types', static function (Blueprint $table) {
             $table->unsignedBigInteger('id')->primary();
-            $table->string('code')->unique();
             $table->string('name_en');
             $table->string('name_km');
             $table->timestamps();
@@ -33,7 +31,6 @@ return new class extends Migration
         // Products & Categories
         Schema::create('product_statuses', static function (Blueprint $table) {
             $table->unsignedBigInteger('id')->primary();
-            $table->string('code')->unique();
             $table->string('name_en');
             $table->string('name_km');
             $table->timestamps();
@@ -41,7 +38,6 @@ return new class extends Migration
 
         Schema::create('product_types', static function (Blueprint $table) {
             $table->unsignedBigInteger('id')->primary();
-            $table->string('code')->unique();
             $table->string('name_en');
             $table->string('name_km');
             $table->timestamps();
@@ -49,7 +45,6 @@ return new class extends Migration
 
         Schema::create('product_category_statuses', static function (Blueprint $table) {
             $table->unsignedBigInteger('id')->primary();
-            $table->string('code')->unique();
             $table->string('name_en');
             $table->string('name_km');
             $table->timestamps();
@@ -67,17 +62,13 @@ return new class extends Migration
         // Orders & Payments
         Schema::create('order_statuses', static function (Blueprint $table) {
             $table->unsignedBigInteger('id')->primary();
-            $table->string('code')->unique();
             $table->string('name_en');
             $table->string('name_km');
-            $table->integer('sort_order')->default(0);
-            $table->string('color')->nullable();
             $table->timestamps();
         });
 
         Schema::create('order_types', static function (Blueprint $table) {
             $table->unsignedBigInteger('id')->primary();
-            $table->string('code')->unique();
             $table->string('name_en');
             $table->string('name_km');
             $table->timestamps();
@@ -85,7 +76,6 @@ return new class extends Migration
 
         Schema::create('payment_statuses', static function (Blueprint $table) {
             $table->unsignedBigInteger('id')->primary();
-            $table->string('code')->unique();
             $table->string('name_en');
             $table->string('name_km');
             $table->timestamps();
@@ -93,7 +83,6 @@ return new class extends Migration
 
         Schema::create('payment_types', static function (Blueprint $table) {
             $table->unsignedBigInteger('id')->primary();
-            $table->string('code')->unique();
             $table->string('name_en');
             $table->string('name_km');
             $table->timestamps();
@@ -101,7 +90,6 @@ return new class extends Migration
 
         Schema::create('payment_method_statuses', static function (Blueprint $table) {
             $table->unsignedBigInteger('id')->primary();
-            $table->string('code')->unique();
             $table->string('name_en');
             $table->string('name_km');
             $table->timestamps();
@@ -109,7 +97,6 @@ return new class extends Migration
 
         Schema::create('payment_method_types', static function (Blueprint $table) {
             $table->unsignedBigInteger('id')->primary();
-            $table->string('code')->unique();
             $table->string('name_en');
             $table->string('name_km');
             $table->timestamps();
@@ -123,12 +110,10 @@ return new class extends Migration
             $table->string('name_km');
             $table->string('symbol');
             $table->timestamps();
-            $table->softDeletes();
         });
 
         Schema::create('wallet_transaction_statuses', static function (Blueprint $table) {
             $table->unsignedBigInteger('id')->primary();
-            $table->string('code')->unique();
             $table->string('name_en');
             $table->string('name_km');
             $table->timestamps();
@@ -136,7 +121,6 @@ return new class extends Migration
 
         Schema::create('wallet_transaction_types', static function (Blueprint $table) {
             $table->unsignedBigInteger('id')->primary();
-            $table->string('code')->unique();
             $table->string('name_en');
             $table->string('name_km');
             $table->timestamps();
@@ -144,7 +128,6 @@ return new class extends Migration
 
         Schema::create('payout_statuses', static function (Blueprint $table) {
             $table->unsignedBigInteger('id')->primary();
-            $table->string('code')->unique();
             $table->string('name_en');
             $table->string('name_km');
             $table->timestamps();
@@ -152,7 +135,6 @@ return new class extends Migration
 
         Schema::create('payout_methods', static function (Blueprint $table) {
             $table->unsignedBigInteger('id')->primary();
-            $table->string('code')->unique();
             $table->string('name_en');
             $table->string('name_km');
             $table->timestamps();
@@ -161,7 +143,6 @@ return new class extends Migration
         // Inventory
         Schema::create('vendor_inventory_statuses', static function (Blueprint $table) {
             $table->unsignedBigInteger('id')->primary();
-            $table->string('code')->unique();
             $table->string('name_en');
             $table->string('name_km');
             $table->timestamps();
@@ -170,7 +151,6 @@ return new class extends Migration
         // Notifications
         Schema::create('notification_types', static function (Blueprint $table) {
             $table->unsignedBigInteger('id')->primary();
-            $table->string('code')->unique();
             $table->string('name_en');
             $table->string('name_km');
             $table->timestamps();
@@ -178,72 +158,21 @@ return new class extends Migration
 
         Schema::create('notification_statuses', static function (Blueprint $table) {
             $table->unsignedBigInteger('id')->primary();
-            $table->string('code')->unique();
             $table->string('name_en');
             $table->string('name_km');
             $table->timestamps();
         });
 
         // Cart & Wishlist
-        Schema::create('user_cart_statuses', static function (Blueprint $table) {
+        Schema::create('cart_statuses', static function (Blueprint $table) {
             $table->unsignedBigInteger('id')->primary();
-            $table->string('code')->unique();
             $table->string('name_en');
             $table->string('name_km');
             $table->timestamps();
         });
 
-        Schema::create('user_cart_types', static function (Blueprint $table) {
+        Schema::create('wishlist_statuses', static function (Blueprint $table) {
             $table->unsignedBigInteger('id')->primary();
-            $table->string('code')->unique();
-            $table->string('name_en');
-            $table->string('name_km');
-            $table->timestamps();
-        });
-
-        Schema::create('user_cart_item_statuses', static function (Blueprint $table) {
-            $table->unsignedBigInteger('id')->primary();
-            $table->string('code')->unique();
-            $table->string('name_en');
-            $table->string('name_km');
-            $table->timestamps();
-        });
-
-        Schema::create('user_cart_item_types', static function (Blueprint $table) {
-            $table->unsignedBigInteger('id')->primary();
-            $table->string('code')->unique();
-            $table->string('name_en');
-            $table->string('name_km');
-            $table->timestamps();
-        });
-
-        Schema::create('user_wishlist_statuses', static function (Blueprint $table) {
-            $table->unsignedBigInteger('id')->primary();
-            $table->string('code')->unique();
-            $table->string('name_en');
-            $table->string('name_km');
-            $table->timestamps();
-        });
-
-        Schema::create('user_wishlist_types', static function (Blueprint $table) {
-            $table->unsignedBigInteger('id')->primary();
-            $table->string('code')->unique();
-            $table->string('name_en');
-            $table->string('name_km');
-            $table->timestamps();
-        });
-
-        Schema::create('user_wishlist_item_statuses', static function (Blueprint $table) {
-            $table->unsignedBigInteger('id')->primary();
-            $table->string('code')->unique();
-            $table->string('name_en');
-            $table->string('name_km');
-            $table->timestamps();
-        });
-
-        Schema::create('user_wishlist_item_types', static function (Blueprint $table) {
-            $table->unsignedBigInteger('id')->primary();
-            $table->string('code')->unique();
             $table->string('name_en');
             $table->string('name_km');
             $table->timestamps();
@@ -255,18 +184,8 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('user_wishlist_item_types');
-        Schema::dropIfExists('user_wishlist_item_statuses');
-        Schema::dropIfExists('user_wishlist_types');
-        Schema::dropIfExists('user_wishlist_statuses');
-        Schema::dropIfExists('user_wishlist_item_types');
-        Schema::dropIfExists('user_wishlist_item_statuses');
-        Schema::dropIfExists('user_wishlist_types');
-        Schema::dropIfExists('user_wishlist_statuses');
-        Schema::dropIfExists('user_cart_item_types');
-        Schema::dropIfExists('user_cart_item_statuses');
-        Schema::dropIfExists('user_cart_types');
-        Schema::dropIfExists('user_cart_statuses');
+        Schema::dropIfExists('wishlist_statuses');
+        Schema::dropIfExists('cart_statuses');
         Schema::dropIfExists('notification_statuses');
         Schema::dropIfExists('notification_types');
         Schema::dropIfExists('vendor_inventory_statuses');

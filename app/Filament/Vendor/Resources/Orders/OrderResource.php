@@ -16,7 +16,9 @@ use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
+use Illuminate\Auth\AuthenticationException;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Facades\Auth;
 use Override;
 
 class OrderResource extends Resource
@@ -43,16 +45,25 @@ class OrderResource extends Resource
         $user = auth()->user();
 
         return $user instanceof User &&
-            $user->user_type_id === UserType::VENDOR &&
-            $user->user_status_id === UserStatus::ACTIVE &&
+            $user->user_type_id === UserType::VENDOR_ID &&
+            $user->user_status_id === UserStatus::ACTIVE_ID &&
             (bool) $user->vendorProfile?->is_verified;
     }
 
     #[Override]
     public static function getEloquentQuery(): Builder
     {
+        $user = Auth::user();
+
+        if (! $user) {
+            throw new AuthenticationException;
+        }
+
         return parent::getEloquentQuery()
-            ->whereHas('items.vendorInventory', fn ($query) => $query->where('vendor_id', auth()->id()));
+            ->whereHas(
+                'items.vendorInventory',
+                static fn (Builder $query) => $query->where('vendor_id', $user->id)
+            );
     }
 
     #[Override]

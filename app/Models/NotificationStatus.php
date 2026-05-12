@@ -25,17 +25,24 @@ use Illuminate\Support\Carbon;
  * @property-read int|null $notifications_count
  */
 #[Table('notification_statuses', key: 'id', keyType: 'int', incrementing: false)]
-#[Fillable(['code', 'name_en', 'name_km'])]
+#[Fillable(['id', 'name_en', 'name_km'])]
 #[UseFactory(NotificationStatusFactory::class)]
 class NotificationStatus extends Model
 {
     /** @use HasFactory<NotificationStatusFactory> */
     use HasFactory;
 
+    public const int UNREAD_ID = 1;
+
+    public const int READ_ID = 2;
+
+    public const string UNREAD = 'UNREAD';
+
+    public const string READ = 'READ';
+
     /**
      * Get the notifications for the status.
-     */
-    /**
+     *
      * @return HasMany<Notification, $this>
      */
     public function notifications(): HasMany

@@ -23,19 +23,17 @@ use Illuminate\Support\Carbon;
  * @property-read Collection<int, Payment> $payments
  * @property-read int|null $payments_count
  */
-#[Table('payment_types', key: 'id')]
-#[Fillable(['name'])]
+#[Table('payment_types', key: 'id', keyType: 'int', incrementing: false)]
+#[Fillable(['id', 'name_en', 'name_km'])]
 #[UseFactory(PaymentTypeFactory::class)]
 class PaymentType extends Model
 {
     /** @use HasFactory<PaymentTypeFactory> */
     use HasFactory;
 
-    public const int VISA = 1;
+    public const int ORDER_ID = 1;
 
-    public const int MASTER_CARD = 2;
-
-    public const int UNION_PAY = 3;
+    public const string ORDER = 'ORDER';
 
     /**
      * Get the payments for the type.

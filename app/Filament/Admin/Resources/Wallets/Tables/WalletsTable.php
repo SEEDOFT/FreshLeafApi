@@ -24,7 +24,7 @@ class WalletsTable
             ->columns([
                 TextColumn::make('name')
                     ->label(__('admin.resources.user.full_name'))
-                    ->getStateUsing(static fn (Wallet $record) => $record->user ? "{$record->user->last_name} {$record->user->first_name}" : '-')
+                    ->getStateUsing(static fn (Wallet $record) => $record->user ? $record->user->fullName : '-')
                     ->searchable(['first_name', 'last_name'])
                     ->sortable(),
                 TextColumn::make('user.email')
@@ -38,7 +38,7 @@ class WalletsTable
                 TextColumn::make('balance')
                     ->label(__('admin.resources.wallet.balance'))
                     ->getStateUsing(static function (Wallet $record): string {
-                        $id = $record->currency?->id;
+                        $id = $record->currency->id;
                         $symbol = $record->currency->symbol ?? '';
                         $balance = number_format((float) $record->balance, 2);
 

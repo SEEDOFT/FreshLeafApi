@@ -195,9 +195,9 @@ class Register extends BaseRegister
                             $exists = User::where('phone_number', $fullPhone)
                                 ->where('user_type_id', UserType::VENDOR)
                                 ->whereIn('user_status_id', [
-                                    UserStatus::ACTIVE,
-                                    UserStatus::PENDING,
-                                    UserStatus::INACTIVE,
+                                    UserStatus::ACTIVE_ID,
+                                    UserStatus::PENDING_ID,
+                                    UserStatus::INACTIVE_ID,
                                 ])
                                 ->whereNull('deleted_at')
                                 ->exists();
@@ -225,8 +225,8 @@ class Register extends BaseRegister
 
         unset($data['country_iso'], $data['phone_number_input']);
 
-        $data['user_type_id'] = UserType::VENDOR;
-        $data['user_status_id'] = UserStatus::PENDING;
+        $data['user_type_id'] = UserType::VENDOR_ID;
+        $data['user_status_id'] = UserStatus::PENDING_ID;
 
         return $data;
     }

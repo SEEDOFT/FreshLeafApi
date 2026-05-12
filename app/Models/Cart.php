@@ -8,36 +8,42 @@ use Database\Factories\CartFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Table;
 use Illuminate\Database\Eloquent\Attributes\UseFactory;
-use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Carbon;
 
 /**
  * @property int $id
  * @property int $user_id
- * @property int $user_cart_status_id
- * @property int $user_cart_type_id
+ * @property int $vendor_inventory_id
+ * @property int $cart_status_id
+ * @property float $quantity
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
- * @property-read Collection<int, CartItem> $items
  * @property-read User $user
- * @property-read UserCartStatus $status
- * @property-read UserCartType $type
+ * @property-read VendorInventory $vendorInventory
+ * @property-read CartStatus $status
  */
-#[Table('user_carts', key: 'id', keyType: 'int')]
-#[Fillable([
-    'user_id',
-    'user_cart_status_id',
-    'user_cart_type_id',
-])]
+#[Table('carts', key: 'id', keyType: 'int')]
+#[Fillable(['user_id', 'vendor_inventory_id', 'quantity', 'cart_status_id'])]
 #[UseFactory(CartFactory::class)]
 class Cart extends Model
 {
     /** @use HasFactory<CartFactory> */
     use HasFactory;
+
+    /**
+     * {@inheritDoc}
+     *
+     * @return array<string, string>
+     */
+    protected function casts(): array
+    {
+        return [
+            'quantity' => 'decimal:2',
+        ];
+    }
 
     /**
      * Get the user that owns the cart.
@@ -50,32 +56,22 @@ class Cart extends Model
     }
 
     /**
-     * Get the items for the cart.
+     * Get the vendor inventory attached to this cart row.
      *
-     * @return HasMany<CartItem, $this>
+     * @return BelongsTo<VendorInventory, $this>
      */
-    public function items(): HasMany
+    public function vendorInventory(): BelongsTo
     {
-        return $this->hasMany(CartItem::class, 'cart_id', 'id');
+        return $this->belongsTo(VendorInventory::class, 'vendor_inventory_id', 'id');
     }
 
     /**
      * Get the status that owns the cart.
      *
-     * @return BelongsTo<UserCartStatus, $this>
+     * @return BelongsTo<CartStatus, $this>
      */
     public function status(): BelongsTo
     {
-        return $this->belongsTo(UserCartStatus::class, 'user_cart_status_id', 'id');
-    }
-
-    /**
-     * Get the type that owns the cart.
-     *
-     * @return BelongsTo<UserCartType, $this>
-     */
-    public function type(): BelongsTo
-    {
-        return $this->belongsTo(UserCartType::class, 'user_cart_type_id', 'id');
+        return $this->belongsTo(CartStatus::class, 'cart_status_id', 'id');
     }
 }

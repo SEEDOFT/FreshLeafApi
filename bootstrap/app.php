@@ -209,12 +209,19 @@ return Application::configure(basePath: dirname(__DIR__))
                     ? $exception->getMessage()
                     : 'Something went wrong.';
 
+                $data = config('app.debug') ? [
+                    'exception' => get_class($exception),
+                    'file' => $exception->getFile(),
+                    'line' => $exception->getLine(),
+                    'trace' => $exception->getTrace(),
+                ] : [];
+
                 return response()->json(
                     $buildExceptionResponse(
                         code: $code,
                         success: false,
                         message: $message,
-                        data: [],
+                        data: $data,
                     ),
                     $code
                 );

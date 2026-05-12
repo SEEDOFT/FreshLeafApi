@@ -14,7 +14,7 @@ class UnitSeeder extends Seeder
      */
     public function run(): void
     {
-        $data = [
+        $units = [
             [
                 'id' => 1,
                 'name_en' => 'Kilogram',
@@ -29,10 +29,24 @@ class UnitSeeder extends Seeder
                 'symbol' => 'g',
                 'conversion_to_base' => 0.001,
             ],
+            [
+                'id' => 3,
+                'name_en' => 'Piece',
+                'name_km' => 'ដុំ',
+                'symbol' => 'pcs',
+                'conversion_to_base' => 1.0,
+            ],
+            [
+                'id' => 4,
+                'name_en' => 'Bundle',
+                'name_km' => 'បាច់',
+                'symbol' => 'bundle',
+                'conversion_to_base' => 1.0,
+            ],
         ];
 
-        foreach ($data as $d) {
-            Unit::create($d);
+        foreach ($units as $unit) {
+            Unit::create($unit);
         }
     }
 }

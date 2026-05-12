@@ -14,35 +14,31 @@ class UserStatusSeeder extends Seeder
      */
     public function run(): void
     {
-        $data = [
+        $statuses = [
             [
-                'id' => 1,
-                'code' => 'PENDING',
+                'id' => UserStatus::PENDING_ID,
                 'name_en' => 'PENDING',
                 'name_km' => 'រង់ចាំ',
             ],
             [
-                'id' => 2,
-                'code' => 'ACTIVE',
+                'id' => UserStatus::ACTIVE_ID,
                 'name_en' => 'ACTIVE',
                 'name_km' => 'សកម្ម',
             ],
             [
-                'id' => 3,
-                'code' => 'INACTIVE',
+                'id' => UserStatus::INACTIVE_ID,
                 'name_en' => 'INACTIVE',
                 'name_km' => 'អសកម្ម',
             ],
             [
-                'id' => 4,
-                'code' => 'DELETED',
+                'id' => UserStatus::DELETED_ID,
                 'name_en' => 'DELETED',
                 'name_km' => 'លុបចោល',
             ],
         ];
 
-        foreach ($data as $d) {
-            UserStatus::create($d);
+        foreach ($statuses as $status) {
+            UserStatus::create($status);
         }
     }
 }

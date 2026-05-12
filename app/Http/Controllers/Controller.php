@@ -20,7 +20,7 @@ abstract class Controller
      *
      * @throws AuthenticationException
      */
-    protected function authenticatedUser(Request $request, ?int $userType = UserType::USER): User
+    protected function authenticatedUser(Request $request, ?int $userType = UserType::CONSUMER_ID): User
     {
         /** @var User|null $user */
         $user = $request->user();
@@ -30,8 +30,9 @@ abstract class Controller
         }
 
         $authorizedUser = User::where('id', $user->id)
-            ->where('user_status_id', UserStatus::ACTIVE)
+            ->where('user_status_id', UserStatus::ACTIVE_ID)
             ->where('phone_number', $user->phone_number)
+            ->where('user_type_id', $userType)
             ->first();
 
         if (! $authorizedUser) {

@@ -4,33 +4,31 @@ declare(strict_types=1);
 
 namespace Database\Seeders;
 
-use App\Models\UserCartItemStatus;
+use App\Models\WishlistStatus;
 use Illuminate\Database\Seeder;
 
-class UserCartItemStatusSeeder extends Seeder
+class WishlistStatusSeeder extends Seeder
 {
     /**
      * Run the database seeds.
      */
     public function run(): void
     {
-        $data = [
+        $types = [
             [
-                'id' => 1,
-                'code' => 'ACTIVE',
+                'id' => WishlistStatus::ACTIVE_ID,
                 'name_en' => 'Active',
                 'name_km' => 'សកម្ម',
             ],
             [
-                'id' => 2,
-                'code' => 'REMOVED',
-                'name_en' => 'Removed',
+                'id' => WishlistStatus::DELETED_ID,
+                'name_en' => 'Deleted',
                 'name_km' => 'បានលុប',
             ],
         ];
 
-        foreach ($data as $d) {
-            UserCartItemStatus::create($d);
+        foreach ($types as $type) {
+            WishlistStatus::create($type);
         }
     }
 }

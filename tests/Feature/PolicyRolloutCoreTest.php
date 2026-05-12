@@ -200,7 +200,7 @@ class PolicyRolloutCoreTest extends TestCase
 
         Gate::policy(User::class, UserPolicy::class);
 
-        $response = Gate::forUser($owner)->inspect('view', [$otherUser, UserType::USER]);
+        $response = Gate::forUser($owner)->inspect('view', [$otherUser, UserType::CONSUMER_ID]);
 
         $this->assertTrue($response->denied());
         $this->assertSame(404, $response->status());
@@ -235,7 +235,7 @@ class PolicyRolloutCoreTest extends TestCase
             'long' => 104.9282,
         ]);
 
-        $response = Gate::forUser($owner)->inspect('view', [$address, UserType::USER]);
+        $response = Gate::forUser($owner)->inspect('view', [$address, UserType::CONSUMER_ID]);
 
         $this->assertTrue($response->denied());
         $this->assertSame(404, $response->status());
@@ -302,7 +302,7 @@ class PolicyRolloutCoreTest extends TestCase
             'balance' => '10.00',
         ]);
 
-        $response = Gate::forUser($owner)->inspect('view', [$wallet, UserType::USER]);
+        $response = Gate::forUser($owner)->inspect('view', [$wallet, UserType::CONSUMER_ID]);
 
         $this->assertTrue($response->denied());
         $this->assertSame(404, $response->status());

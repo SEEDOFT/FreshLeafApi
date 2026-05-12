@@ -16,20 +16,17 @@ class VendorInventoryStatusSeeder extends Seeder
     {
         $types = [
             [
-                'id' => 1,
-                'code' => 'AVAILABLE',
+                'id' => VendorInventoryStatus::AVAILABLE_ID,
                 'name_en' => 'Available',
                 'name_km' => 'មានលក់',
             ],
             [
-                'id' => 2,
-                'code' => 'OUT_OF_STOCK',
+                'id' => VendorInventoryStatus::OUT_OF_STOCK_ID,
                 'name_en' => 'Out of Stock',
                 'name_km' => 'អស់ពីស្តុក',
             ],
             [
-                'id' => 3,
-                'code' => 'HIDDEN',
+                'id' => VendorInventoryStatus::HIDDEN_ID,
                 'name_en' => 'Hidden',
                 'name_km' => 'លាក់',
             ],

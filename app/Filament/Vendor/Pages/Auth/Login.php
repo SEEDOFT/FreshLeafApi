@@ -89,7 +89,7 @@ class Login extends BaseLogin
             ->where('user_type_id', $userTypeId)
             ->first();
 
-        if ($user && $user->user_status_id === UserStatus::PENDING) {
+        if ($user && $user->user_status_id === UserStatus::PENDING_ID) {
             throw ValidationException::withMessages([
                 'data.phone_number_input' => __('admin.auth.login.pending'),
             ]);

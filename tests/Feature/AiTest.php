@@ -28,7 +28,7 @@ class AiTest extends TestCase
         ], ['id'], ['code', 'name']);
 
         UserType::upsert([
-            ['id' => UserType::USER, 'code' => 'USER', 'name' => 'User'],
+            ['id' => UserType::CONSUMER_ID, 'code' => 'USER', 'name' => 'User'],
             ['id' => UserType::VENDOR, 'code' => 'VENDOR', 'name' => 'Vendor'],
             ['id' => UserType::ADMIN, 'code' => 'ADMIN', 'name' => 'Admin'],
         ], ['id'], ['code', 'name']);
@@ -38,7 +38,7 @@ class AiTest extends TestCase
     {
         $user = User::factory()->create([
             'user_status_id' => UserStatus::ACTIVE,
-            'user_type_id' => UserType::USER,
+            'user_type_id' => UserType::CONSUMER_ID,
         ]);
 
         $token = $user->createToken('ai_session')->plainTextToken;
@@ -67,7 +67,7 @@ class AiTest extends TestCase
 
         $user = User::factory()->create([
             'user_status_id' => UserStatus::ACTIVE,
-            'user_type_id' => UserType::USER,
+            'user_type_id' => UserType::CONSUMER_ID,
         ]);
 
         $session = AiChatSession::query()->create([

@@ -57,8 +57,8 @@ class Login extends BaseLogin
         return array_filter([
             'phone_number' => $data['phone_number'],
             'password' => $data['password'],
-            'user_status_id' => UserStatus::ACTIVE,
-            'user_type_id' => UserType::ADMIN,
+            'user_status_id' => UserStatus::ACTIVE_ID,
+            'user_type_id' => UserType::ADMIN_ID,
         ]);
     }
 

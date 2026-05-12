@@ -3,6 +3,7 @@
 namespace App\Filament\Forms\Components;
 
 use Filament\Forms\Components\Field;
+use InvalidArgumentException;
 use Override;
 
 class PhoneNumberInput extends Field
@@ -28,6 +29,11 @@ class PhoneNumberInput extends Field
                 }
 
                 $cleaned = preg_replace('/\s+/', '', $state);
+
+                if (! $cleaned) {
+                    throw new InvalidArgumentException('Invalid phone number');
+                }
+
                 $cleaned = ltrim($cleaned, '0');
 
                 return $dialCode.$cleaned;
@@ -53,7 +59,19 @@ class PhoneNumberInput extends Field
 
     public function getCountryName(): string
     {
-        return country(strtolower($this->defaultIso))->getName();
+        $country = country(strtolower($this->defaultIso));
+
+        if (! $country) {
+            throw new InvalidArgumentException('Invalid country');
+        }
+
+        $countryName = $country->getName();
+
+        if (! $countryName) {
+            throw new InvalidArgumentException('Invalid country name');
+        }
+
+        return $countryName;
     }
 
     public function getFlagUrl(): string

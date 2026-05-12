@@ -27,11 +27,17 @@ use Illuminate\Support\Carbon;
 #[UseFactory(UserTypeFactory::class)]
 class UserType extends Model
 {
-    public const int ADMIN = 1;
+    public const int ADMIN_ID = 1;
 
-    public const int VENDOR = 2;
+    public const int VENDOR_ID = 2;
 
-    public const int CONSUMER = 3;
+    public const int CONSUMER_ID = 3;
+
+    public const string ADMIN = 'ADMIN';
+
+    public const string VENDOR = 'VENDOR';
+
+    public const string CONSUMER = 'CONSUMER';
 
     /**
      * Get the users for this type.

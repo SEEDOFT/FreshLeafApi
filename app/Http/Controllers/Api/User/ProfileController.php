@@ -76,7 +76,7 @@ class ProfileController extends Controller
         $user = $this->authenticatedUser($request);
 
         $user->update([
-            'user_status_id' => UserStatus::DELETED,
+            'user_status_id' => UserStatus::DELETED_ID,
             'deleted_at' => Carbon::now(),
         ]);
 

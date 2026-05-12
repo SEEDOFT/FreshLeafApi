@@ -17,7 +17,7 @@ use Illuminate\Support\Carbon;
  * @property int $id
  * @property int $user_id
  * @property string $locale
- * @property string $prefer_theme
+ * @property string $theme
  * @property string $business_name
  * @property string $shop_description
  * @property string $contact_phone
@@ -49,7 +49,7 @@ use Illuminate\Support\Carbon;
 #[Fillable([
     'user_id',
     'locale',
-    'prefer_theme',
+    'theme',
     'business_name',
     'shop_description',
     'contact_phone',

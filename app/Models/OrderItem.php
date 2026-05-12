@@ -45,10 +45,6 @@ class OrderItem extends Model
     /** @use HasFactory<OrderItemFactory> */
     use HasFactory;
 
-    public float $commission_amount;
-
-    public float $vendor_net_amount;
-
     /**
      * The "booted" method of the model.
      */
@@ -61,8 +57,8 @@ class OrderItem extends Model
             $commissionAmount = $subtotal * ($rate / 100.0);
             $vendorNetAmount = $subtotal - $commissionAmount;
 
-            $item->commission_amount = $commissionAmount;
-            $item->vendor_net_amount = $vendorNetAmount;
+            $item->setAttribute('commission_amount', $commissionAmount);
+            $item->setAttribute('vendor_net_amount', $vendorNetAmount);
         });
     }
 

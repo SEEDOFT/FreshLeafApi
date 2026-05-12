@@ -20,19 +20,15 @@ use Illuminate\Support\Collection;
  * @property int $user_id
  * @property float $balance
  * @property int $currency_id
- * @property Carbon $created_at
- * @property Carbon $updated_at
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
  * @property-read User $user
  * @property-read Currency $currency
  * @property-read Collection<int, WalletHistory> $histories
  * @property-read Collection<int, WalletTransaction> $transactions
  */
 #[Table('wallets', key: 'id', keyType: 'int')]
-#[Fillable([
-    'user_id',
-    'balance',
-    'currency_id',
-])]
+#[Fillable(['user_id', 'balance', 'currency_id'])]
 #[UseFactory(WalletFactory::class)]
 class Wallet extends Model
 {

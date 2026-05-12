@@ -26,7 +26,7 @@ class AuthTest extends TestCase
         ], ['id'], ['code', 'name']);
 
         UserType::upsert([
-            ['id' => UserType::USER, 'code' => 'USER', 'name' => 'User'],
+            ['id' => UserType::CONSUMER_ID, 'code' => 'USER', 'name' => 'User'],
             ['id' => UserType::VENDOR, 'code' => 'VENDOR', 'name' => 'Vendor'],
             ['id' => UserType::ADMIN, 'code' => 'ADMIN', 'name' => 'Admin'],
         ], ['id'], ['code', 'name']);
@@ -77,7 +77,7 @@ class AuthTest extends TestCase
             'phone_number' => '+855123456789',
             'password' => bcrypt('password123'),
             'user_status_id' => UserStatus::ACTIVE,
-            'user_type_id' => UserType::USER,
+            'user_type_id' => UserType::CONSUMER_ID,
         ]);
 
         $response = $this->postJson('/api/v1/auth/login', [
@@ -111,7 +111,7 @@ class AuthTest extends TestCase
             'phone_number' => '+855123456789',
             'password' => bcrypt('password123'),
             'user_status_id' => UserStatus::ACTIVE,
-            'user_type_id' => UserType::USER,
+            'user_type_id' => UserType::CONSUMER_ID,
         ]);
 
         $response = $this->postJson('/api/v1/auth/login', [
@@ -173,7 +173,7 @@ class AuthTest extends TestCase
             'first_name' => 'Normal',
             'last_name' => 'User',
             'phone_number' => '+85510000112',
-            'user_type_id' => UserType::USER,
+            'user_type_id' => UserType::CONSUMER_ID,
             'user_status_id' => UserStatus::ACTIVE,
         ]);
 
@@ -205,7 +205,7 @@ class AuthTest extends TestCase
 
         $this->assertDatabaseHas('users', [
             'phone_number' => '+85510000112',
-            'user_type_id' => UserType::USER,
+            'user_type_id' => UserType::CONSUMER_ID,
             'user_status_id' => UserStatus::ACTIVE,
         ]);
     }

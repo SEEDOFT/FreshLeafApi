@@ -12,7 +12,6 @@ use App\Jobs\ProcessAiChatMessageJob;
 use App\Models\AiChatMessage;
 use App\Models\AiChatSession;
 use App\Services\Ai\AiService;
-use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
@@ -134,18 +133,6 @@ class AiChatController extends Controller
 
         $limit = $validatedData['limit'] ?? 100;
 
-        /**
-         * @var Collection<int, array{
-         *      session_id: string,
-         *      message_id: string,
-         *      role: string,
-         *      content: string,
-         *      status: string,
-         *      sequence: int,
-         *      timestamp: string,
-         *      error: string|null
-         * }>
-         */
         $messages = AiChatMessage::where('ai_chat_session_id', $session->id)
             ->orderBy('created_at')
             ->limit($limit)

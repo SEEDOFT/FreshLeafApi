@@ -16,33 +16,35 @@ return new class extends Migration
         // User Profiles
         Schema::create('user_profiles', static function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id')->constrained()->cascadeOnDelete();
+            $table->unsignedBigInteger('user_id');
             $table->string('pin')->nullable();
             $table->string('gender')->nullable();
             $table->date('date_of_birth')->nullable();
             $table->string('locale')->default('en');
-            $table->string('prefer_theme')->default('light');
+            $table->string('theme')->default('system');
             $table->timestamps();
+            $table->softDeletes();
         });
 
         // Admin Profiles
         Schema::create('admin_profiles', static function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id')->constrained()->cascadeOnDelete();
+            $table->unsignedBigInteger('user_id');
             $table->string('department')->nullable();
             $table->string('job_title')->nullable();
             $table->string('office_phone')->nullable();
             $table->boolean('super_admin')->default(false);
             $table->text('permissions')->nullable();
             $table->string('locale')->default('en');
-            $table->string('prefer_theme')->default('light');
+            $table->string('theme')->default('system');
             $table->timestamps();
+            $table->softDeletes();
         });
 
         // Vendor Profiles
         Schema::create('vendor_profiles', static function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id')->constrained()->cascadeOnDelete();
+            $table->unsignedBigInteger('user_id');
             $table->string('business_name');
             $table->string('shop_description')->nullable();
             $table->string('contact_phone');
@@ -63,20 +65,21 @@ return new class extends Migration
             $table->boolean('is_verified')->default(false);
             $table->timestamp('approved_at')->nullable();
             $table->timestamp('rejected_at')->nullable();
-            $table->foreignId('approved_by_admin_id')->nullable()->constrained('users');
-            $table->foreignId('rejected_by_admin_id')->nullable()->constrained('users');
+            $table->unsignedBigInteger('approved_by_admin_id')->nullable();
+            $table->unsignedBigInteger('rejected_by_admin_id')->nullable();
             $table->text('approve_reason')->nullable();
             $table->text('reject_reason')->nullable();
             $table->text('meta')->nullable();
             $table->string('locale')->default('en');
-            $table->string('prefer_theme')->default('light');
+            $table->string('theme')->default('system');
             $table->timestamps();
+            $table->softDeletes();
         });
 
         // Addresses
         Schema::create('addresses', static function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id')->constrained()->cascadeOnDelete();
+            $table->unsignedBigInteger('user_id');
             $table->string('label')->default('Home');
             $table->string('recipient_name');
             $table->string('phone');
@@ -84,7 +87,7 @@ return new class extends Migration
             $table->string('address_line_2')->nullable();
             $table->string('city');
             $table->string('province');
-            $table->string('postal_code')->nullable();
+            $table->string('postal_code');
             $table->decimal('lat', 10, 8)->nullable();
             $table->decimal('long', 11, 8)->nullable();
             $table->string('address_map')->nullable();
@@ -95,19 +98,29 @@ return new class extends Migration
         // Wallets and Histories
         Schema::create('wallets', static function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id')->constrained()->cascadeOnDelete();
-            $table->foreignId('currency_id')->constrained();
-            $table->decimal('balance', 16, 2)->default(0);
+            $table->unsignedBigInteger('user_id');
+            $table->unsignedBigInteger('currency_id');
+            $table->decimal('balance', 16, 4)->default(0);
             $table->timestamps();
+
+            $table->index('user_id');
+            $table->index('currency_id');
+            $table->index('balance');
+            $table->unique(['user_id', 'currency_id']);
         });
 
         Schema::create('wallet_histories', static function (Blueprint $table) {
             $table->id();
-            $table->foreignId('wallet_id')->constrained()->cascadeOnDelete();
-            $table->foreignId('user_id')->constrained();
-            $table->foreignId('currency_id')->constrained();
-            $table->decimal('balance', 16, 2);
+            $table->unsignedBigInteger('wallet_id');
+            $table->unsignedBigInteger('user_id');
+            $table->unsignedBigInteger('currency_id');
+            $table->decimal('balance', 16, 4)->default(0);
             $table->timestamps();
+
+            $table->index('wallet_id');
+            $table->index('user_id');
+            $table->index('currency_id');
+            $table->index('balance');
         });
     }
 

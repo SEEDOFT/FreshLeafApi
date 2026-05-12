@@ -9,17 +9,36 @@ use Illuminate\Database\Seeder;
 
 class PaymentStatusSeeder extends Seeder
 {
+    /**
+     * Run the database seeds.
+     */
     public function run(): void
     {
-        $data = [
-            ['id' => 1, 'code' => 'PENDING', 'name_en' => 'Pending', 'name_km' => 'រង់ចាំ'],
-            ['id' => 2, 'code' => 'COMPLETED', 'name_en' => 'Completed', 'name_km' => 'បានទូទាត់'],
-            ['id' => 3, 'code' => 'FAILED', 'name_en' => 'Failed', 'name_km' => 'បរាជ័យ'],
-            ['id' => 4, 'code' => 'REFUNDED', 'name_en' => 'Refunded', 'name_km' => 'បានសងប្រាក់'],
+        $statuses = [
+            [
+                'id' => PaymentStatus::PENDING_ID,
+                'name_en' => 'Pending',
+                'name_km' => 'រង់ចាំ',
+            ],
+            [
+                'id' => PaymentStatus::COMPLETED_ID,
+                'name_en' => 'Completed',
+                'name_km' => 'បានទូទាត់',
+            ],
+            [
+                'id' => PaymentStatus::FAILED_ID,
+                'name_en' => 'Failed',
+                'name_km' => 'បរាជ័យ',
+            ],
+            [
+                'id' => PaymentStatus::REFUNDED_ID,
+                'name_en' => 'Refunded',
+                'name_km' => 'បានសងប្រាក់',
+            ],
         ];
 
-        foreach ($data as $d) {
-            PaymentStatus::updateOrCreate(['id' => $d['id']], $d);
+        foreach ($statuses as $status) {
+            PaymentStatus::create($status);
         }
     }
 }

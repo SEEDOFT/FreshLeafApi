@@ -4,12 +4,14 @@ declare(strict_types=1);
 
 namespace App\Http\Resources\Product;
 
+use App\Models\User;
 use App\Models\VendorInventory;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 /**
  * @mixin VendorInventory
+ * @mixin User
  */
 class VendorInventoryResource extends JsonResource
 {
@@ -31,22 +33,35 @@ class VendorInventoryResource extends JsonResource
             'packaging_type' => $this->packaging_type,
             'shelf_life_days' => $this->shelf_life_days,
             'batch_images' => $this->batch_images,
-            'status' => $this->whenLoaded('status', fn () => [
-                'id' => $this->inventory_status_id,
-                'name' => $this->status->name,
-            ]),
-            'unit' => $this->whenLoaded('unit', fn () => [
-                'id' => $this->unit_id,
-                'name' => $this->unit->name,
-                'symbol' => $this->unit->symbol,
-            ]),
-            'vendor' => $this->whenLoaded('vendor', fn () => [
-                'id' => $this->vendor_id,
-                'name' => trim("{$this->vendor->first_name} {$this->vendor->last_name}"),
-            ]),
-            'product' => $this->whenLoaded('product', fn () => new ProductResource($this->product)),
-            'created_at' => \optional($this->created_at)->toIso8601String(),
-            'updated_at' => \optional($this->updated_at)->toIso8601String(),
+            'status' => $this->whenLoaded(
+                'status',
+                fn () => [
+                    'id' => $this->inventory_status_id,
+                    'name' => $this->status->name,
+                ]
+            ),
+            'unit' => $this->whenLoaded(
+                'unit',
+                fn () => [
+                    'id' => $this->unit_id,
+                    'name' => $this->unit->name,
+                    'symbol' => $this->unit->symbol,
+                ]),
+            'vendor' => $this->whenLoaded(
+                'vendor',
+                fn () => [
+                    'id' => $this->vendor_id,
+                    'name' => $this->vendor->fullName,
+                    'phone' => $this->vendor->phone_number,
+                    'email' => $this->vendor->email,
+                ]
+            ),
+            'product' => $this->whenLoaded(
+                'product',
+                fn () => new ProductResource($this->product)
+            ),
+            'created_at' => $this->created_at->toIso8601String(),
+            'updated_at' => $this->updated_at->toIso8601String(),
         ];
     }
 }

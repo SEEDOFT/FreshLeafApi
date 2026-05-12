@@ -43,7 +43,7 @@ class BusinessProfile extends Page
         $user = Auth::user();
 
         $this->data = $user instanceof User
-            ? $user->vendorProfile?->toArray() ?? []
+            ? $user->vendorProfile->toArray() ?? []
             : [];
     }
 

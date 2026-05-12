@@ -23,13 +23,25 @@ use Illuminate\Support\Carbon;
  * @property-read Collection<int, Cart> $carts
  * @property-read int|null $carts_count
  */
-#[Table('cart_statuses', key: 'id')]
-#[Fillable(['name'])]
+#[Table('cart_statuses', key: 'id', keyType: 'int', incrementing: false)]
+#[Fillable(['id', 'name_en', 'name_km'])]
 #[UseFactory(CartStatusFactory::class)]
 class CartStatus extends Model
 {
     /** @use HasFactory<CartStatusFactory> */
     use HasFactory;
+
+    public const int ACTIVE_ID = 1;
+
+    public const string ACTIVE = 'ACTIVE';
+
+    public const int REMOVED_ID = 2;
+
+    public const string REMOVED = 'REMOVED';
+
+    public const int CHECKED_OUT_ID = 3;
+
+    public const string CHECKED_OUT = 'CHECKED_OUT';
 
     /**
      * Get the carts for the status.

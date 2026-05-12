@@ -62,8 +62,10 @@ use function is_string;
     'first_name',
     'last_name',
     'email',
-    'image',
+    'email_verified_at',
     'phone_number',
+    'phone_number_verified_at',
+    'image',
     'password',
     'user_type_id',
     'user_status_id',
@@ -85,12 +87,12 @@ class User extends Authenticatable implements FilamentUser, HasName
             return false;
         }
 
-        if ($panel->getId() === 'admin') {
-            return $this->isType(UserType::ADMIN);
+        if (strtoupper($panel->getId()) === UserType::ADMIN) {
+            return $this->isType(UserType::ADMIN_ID);
         }
 
-        if ($panel->getId() === 'vendor') {
-            return $this->isType(UserType::VENDOR);
+        if (strtoupper($panel->getId()) === UserType::VENDOR) {
+            return $this->isType(UserType::VENDOR_ID);
         }
 
         return false;
@@ -135,6 +137,7 @@ class User extends Authenticatable implements FilamentUser, HasName
     {
         return [
             'email_verified_at' => 'datetime',
+            'phone_number_verified_at' => 'datetime',
             'password' => 'hashed',
             'deleted_at' => 'datetime',
         ];
@@ -259,28 +262,39 @@ class User extends Authenticatable implements FilamentUser, HasName
     public function ensureDefaultWallets(): void
     {
         foreach ([Currency::KHR_ID, Currency::USD_ID] as $currencyId) {
-            $this->ensureWalletWithHistory($currencyId);
+            $wallet = $this->wallets()->firstOrCreate(
+                ['user_id' => $this->id, 'currency_id' => $currencyId],
+                ['balance' => '0.00'],
+            );
+
+            WalletHistory::insert([
+                'wallet_id' => $wallet->id,
+                'user_id' => $wallet->user_id,
+                'currency_id' => $wallet->currency_id,
+                'balance' => $wallet->balance,
+                'created_at' => $wallet->created_at,
+                'updated_at' => $wallet->updated_at,
+            ]);
         }
     }
 
     /**
-     * Ensure a specific wallet and its history.
+     * Ensure the user has default payment methods.
      */
-    private function ensureWalletWithHistory(int $currencyId): void
+    public function ensureDefaultPaymentMethod(): void
     {
-        $wallet = $this->wallets()->firstOrCreate(
-            ['user_id' => $this->id, 'currency_id' => $currencyId],
-            ['balance' => '0.00'],
-        );
-
-        WalletHistory::insert([
-            'wallet_id' => $wallet->id,
-            'user_id' => $wallet->user_id,
-            'currency_id' => $wallet->currency_id,
-            'balance' => $wallet->balance,
-            'created_at' => $wallet->created_at,
-            'updated_at' => $wallet->updated_at,
-        ]);
+        foreach ([
+            PaymentMethod::WALLET_ID,
+            PaymentMethod::ABA_ID,
+            PaymentMethod::ACLEDA_ID,
+            PaymentMethod::COD_ID,
+        ] as $paymentMethodId) {
+            PaymentMethod::create([
+                'user_id' => $this->id,
+                'payment_method_type_id' => $paymentMethodId,
+                'payment_method_status_id' => PaymentMethodStatus::ACTIVE_ID,
+            ]);
+        }
     }
 
     /**
@@ -313,7 +327,7 @@ class User extends Authenticatable implements FilamentUser, HasName
     #[Scope]
     protected function active(Builder $query): void
     {
-        $query->withStatus(UserStatus::ACTIVE);
+        $query->withStatus(UserStatus::ACTIVE_ID);
     }
 
     /**
@@ -329,6 +343,6 @@ class User extends Authenticatable implements FilamentUser, HasName
      */
     public function isActive(): bool
     {
-        return (int) $this->user_status_id === UserStatus::ACTIVE;
+        return (int) $this->user_status_id === UserStatus::ACTIVE_ID;
     }
 }

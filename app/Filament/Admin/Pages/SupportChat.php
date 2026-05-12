@@ -87,7 +87,6 @@ class SupportChat extends Page
     {
         $this->activeTicketId = $id;
 
-        // Mark messages as read
         SupportMessage::where('support_ticket_id', $id)
             ->where('sender_type', 'user')
             ->where('is_read', false)

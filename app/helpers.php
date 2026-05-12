@@ -16,13 +16,22 @@ if (! function_exists('app_setting')) {
 }
 
 if (! function_exists('get_dial_code')) {
+    /**
+     * Get dial code
+     */
     function get_dial_code(?string $countryIso, string $default = '+855'): string
     {
         if (blank($countryIso)) {
             return $default;
         }
 
-        $dialCode = country(strtolower($countryIso))->getCallingCode();
+        $country = country(strtolower($countryIso));
+
+        if (! $country) {
+            throw new InvalidArgumentException('Invalid country iso');
+        }
+
+        $dialCode = $country->getCallingCode();
 
         return filled($dialCode) ? '+'.$dialCode : $default;
     }
@@ -30,6 +39,8 @@ if (! function_exists('get_dial_code')) {
 
 if (! function_exists('get_country_options')) {
     /**
+     * Get list of country
+     *
      * @return array<string, string>
      */
     function get_country_options(): array
@@ -59,6 +70,9 @@ if (! function_exists('get_country_options')) {
 }
 
 if (! function_exists('get_country_selected_option_label')) {
+    /**
+     * Get selected country option
+     */
     function get_country_selected_option_label(mixed $value): string
     {
         $iso = strtolower((string) $value);
@@ -77,6 +91,9 @@ if (! function_exists('get_country_selected_option_label')) {
 }
 
 if (! function_exists('configure_country_select')) {
+    /**
+     * Select component for country
+     */
     function configure_country_select(Select $select): Select
     {
         return $select
@@ -91,6 +108,8 @@ if (! function_exists('configure_country_select')) {
 
 if (! function_exists('get_country_options_by_dial_code')) {
     /**
+     * Get list of country by dial code
+     *
      * @return array<string, string>
      */
     function get_country_options_by_dial_code(string $dialCode): array
@@ -125,6 +144,9 @@ if (! function_exists('get_country_options_by_dial_code')) {
 }
 
 if (! function_exists('configure_country_select')) {
+    /**
+     * Configure country select
+     */
     function configure_country_select(Select $select): Select
     {
         $options = get_country_options_by_dial_code('+855');
@@ -136,5 +158,15 @@ if (! function_exists('configure_country_select')) {
             ->searchable(false)  // disable search — only one option
             ->optionsLimit(1)
             ->getOptionLabelUsing(static fn (mixed $value): string => get_country_selected_option_label($value));
+    }
+}
+
+if (! function_exists('translate')) {
+    /**
+     * Translate text
+     */
+    function translate(?string $valueEn, ?string $valueKm): ?string
+    {
+        return request()->header('Accept-Language') === 'km' ? $valueKm : $valueEn;
     }
 }

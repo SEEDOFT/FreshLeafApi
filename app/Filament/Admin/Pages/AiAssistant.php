@@ -41,7 +41,7 @@ class AiAssistant extends Page
     public static function canAccess(): bool
     {
         return (bool) app_setting('enable_ai_assistant_admin', true)
-            && UserSessionSecurity::isAuthorizedAs(UserType::ADMIN);
+            && UserSessionSecurity::isAuthorizedAs(UserType::ADMIN_ID);
     }
 
     #[Override]

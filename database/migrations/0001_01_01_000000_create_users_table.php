@@ -22,11 +22,23 @@ return new class extends Migration
             $table->unsignedBigInteger('user_type_id');
             $table->unsignedBigInteger('user_status_id');
             $table->string('phone_number');
-            $table->string('image')->nullable()->default('user.png');
+            $table->datetime('phone_number_verified_at')->nullable();
+            $table->string('image')->default('user.png');
             $table->string('password');
             $table->rememberToken();
             $table->timestamps();
             $table->softDeletes();
+        });
+
+        Schema::create('personal_access_tokens', static function (Blueprint $table) {
+            $table->id();
+            $table->morphs('tokenable');
+            $table->text('name');
+            $table->string('token', 64)->unique();
+            $table->text('abilities')->nullable();
+            $table->timestamp('last_used_at')->nullable();
+            $table->timestamp('expires_at')->nullable()->index();
+            $table->timestamps();
         });
 
         Schema::create('password_reset_tokens', static function (Blueprint $table) {
@@ -96,6 +108,7 @@ return new class extends Migration
     public function down(): void
     {
         Schema::dropIfExists('users');
+        Schema::dropIfExists('personal_access_tokens');
         Schema::dropIfExists('password_reset_tokens');
         Schema::dropIfExists('sessions');
         Schema::dropIfExists('cache');

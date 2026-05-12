@@ -23,13 +23,17 @@ use Illuminate\Support\Carbon;
  * @property-read Collection<int, Order> $orders
  * @property-read int|null $orders_count
  */
-#[Table('order_types', key: 'id')]
-#[Fillable(['name'])]
+#[Table('order_types', key: 'id', keyType: 'int', incrementing: false)]
+#[Fillable(['id', 'name_en', 'name_km'])]
 #[UseFactory(OrderTypeFactory::class)]
 class OrderType extends Model
 {
     /** @use HasFactory<OrderTypeFactory> */
     use HasFactory;
+
+    public const int STANDARD_ID = 1;
+
+    public const string STANDARD = 'STANDARD';
 
     /**
      * Get the orders for the type.

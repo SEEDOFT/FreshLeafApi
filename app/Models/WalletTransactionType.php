@@ -20,20 +20,28 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @property-read WalletTransaction[] $transactions
  */
 #[Table('wallet_transaction_types', key: 'id', keyType: 'int', incrementing: false)]
-#[Fillable(['code', 'name_en', 'name_km'])]
+#[Fillable(['id', 'name_en', 'name_km'])]
 #[UseFactory(WalletTransactionTypeFactory::class)]
 class WalletTransactionType extends Model
 {
     /** @use HasFactory<WalletTransactionTypeFactory> */
     use HasFactory;
 
-    public const int DEPOSIT = 1;
+    public const int DEPOSIT_ID = 1;
 
-    public const int WITHDRAWAL = 2;
+    public const int WITHDRAWAL_ID = 2;
 
-    public const int PAYMENT = 3;
+    public const int PAYMENT_ID = 3;
 
-    public const int REFUND = 4;
+    public const int REFUND_ID = 4;
+
+    public const string DEPOSIT = 'DEPOSIT';
+
+    public const string WITHDRAWAL = 'WITHDRAWAL';
+
+    public const string PAYMENT = 'PAYMENT';
+
+    public const string REFUND = 'REFUND';
 
     /**
      * Get the transactions for this type.
@@ -42,6 +50,10 @@ class WalletTransactionType extends Model
      */
     public function transactions(): HasMany
     {
-        return $this->hasMany(WalletTransaction::class, 'wallet_transaction_type_id', 'id');
+        return $this->hasMany(
+            WalletTransaction::class,
+            'wallet_transaction_type_id',
+            'id'
+        );
     }
 }

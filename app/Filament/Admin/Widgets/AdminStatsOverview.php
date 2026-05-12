@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Filament\Admin\Widgets;
 
 use App\Models\Order;
+use App\Models\PaymentStatus;
 use App\Models\User;
 use App\Models\UserStatus;
 use App\Models\UserType;
@@ -25,14 +26,15 @@ class AdminStatsOverview extends BaseWidget
     #[Override]
     protected function getStats(): array
     {
-        $totalRevenue = (float) Order::whereHas('paymentStatus', static fn ($query) => $query->where('code', 'paid'))
+        $totalRevenue = (float) Order::query()
+            ->whereHas('paymentStatus', static fn ($query) => $query->where('id', PaymentStatus::COMPLETED_ID))
             ->sum('total_amount');
 
-        $consumerCount = User::where('user_type_id', UserType::USER)
-            ->where('user_status_id', UserStatus::ACTIVE)
+        $consumerCount = User::where('user_type_id', UserType::CONSUMER_ID)
+            ->where('user_status_id', UserStatus::ACTIVE_ID)
             ->count();
-        $vendorCount = User::where('user_type_id', UserType::VENDOR)
-            ->where('user_status_id', UserStatus::ACTIVE)
+        $vendorCount = User::where('user_type_id', UserType::VENDOR_ID)
+            ->where('user_status_id', UserStatus::ACTIVE_ID)
             ->count();
         $pendingVendors = VendorProfile::where('is_verified', false)
             ->count();

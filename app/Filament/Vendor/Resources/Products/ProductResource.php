@@ -56,8 +56,8 @@ class ProductResource extends Resource
         $user = auth()->user();
 
         return $user instanceof User &&
-            $user->user_type_id === UserType::VENDOR &&
-            $user->user_status_id === UserStatus::ACTIVE &&
+            $user->user_type_id === UserType::VENDOR_ID &&
+            $user->user_status_id === UserStatus::ACTIVE_ID &&
             (bool) $user->vendorProfile?->is_verified;
     }
 

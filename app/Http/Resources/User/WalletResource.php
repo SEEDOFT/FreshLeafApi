@@ -24,10 +24,9 @@ class WalletResource extends JsonResource
             'id' => $this->id,
             'balance' => $this->balance,
             'currency' => $this->relationLoaded('currency')
-                ? new CurrencyResource($this->currency)
-                : null,
-            'created_at' => $this->created_at,
-            'updated_at' => $this->updated_at,
+                ? new CurrencyResource($this->currency) : null,
+            'created_at' => $this->created_at?->toIso8601String(),
+            'updated_at' => $this->updated_at?->toIso8601String(),
         ];
     }
 }

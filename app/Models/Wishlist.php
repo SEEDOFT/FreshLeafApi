@@ -8,24 +8,20 @@ use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Table;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Carbon;
 
 /**
  * @property int $id
  * @property int $user_id
- * @property int $user_wishlist_status_id
- * @property int $user_wishlist_type_id
+ * @property int $wishlist_status_id
+ * @property int $vendor_inventory_id
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
  * @property-read User $user
- * @property-read UserWishlistStatus $status
- * @property-read UserWishlistType $type
- * @property-read WishlistItem[] $items
+ * @property-read WishlistStatus $status
  */
-#[Table('user_wishlists', key: 'id', keyType: 'int')]
-#[Fillable([
-    'user_id',
-    'user_wishlist_status_id',
-    'user_wishlist_type_id',
-])]
+#[Table('wishlists', key: 'id', keyType: 'int')]
+#[Fillable(['user_id', 'vendor_inventory_id', 'wishlist_status_id'])]
 class Wishlist extends Model
 {
     /**
@@ -39,32 +35,30 @@ class Wishlist extends Model
     }
 
     /**
-     * Get the items for the wishlist.
-     *
-     * @return HasMany<WishlistItem, $this>
-     */
-    public function items(): HasMany
-    {
-        return $this->hasMany(WishlistItem::class, 'user_wishlist_id');
-    }
-
-    /**
      * Get the status that owns the wishlist.
      *
-     * @return BelongsTo<UserWishlistStatus, $this>
+     * @return BelongsTo<WishlistStatus, $this>
      */
     public function status(): BelongsTo
     {
-        return $this->belongsTo(UserWishlistStatus::class, 'user_wishlist_status_id');
+        return $this->belongsTo(
+            WishlistStatus::class,
+            'wishlist_status_id',
+            'id'
+        );
     }
 
     /**
-     * Get the type that owns the wishlist.
+     * Get the vendor inventory attached to this cart row.
      *
-     * @return BelongsTo<UserWishlistType, $this>
+     * @return BelongsTo<VendorInventory, $this>
      */
-    public function type(): BelongsTo
+    public function vendorInventory(): BelongsTo
     {
-        return $this->belongsTo(UserWishlistType::class, 'user_wishlist_type_id');
+        return $this->belongsTo(
+            VendorInventory::class,
+            'vendor_inventory_id',
+            'id'
+        );
     }
 }

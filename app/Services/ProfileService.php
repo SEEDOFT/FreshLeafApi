@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Services;
 
 use App\Models\User;
-use App\Models\UserType;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
@@ -13,8 +12,8 @@ use Illuminate\Support\Str;
 
 class ProfileService
 {
-    /**
-     * Persist profile data.
+    public const array RELATIONSHIP = ['adminProfile', 'vendorProfile', 'userProfile'];
+
     /**
      * Update the user's profile.
      *
@@ -28,7 +27,8 @@ class ProfileService
 
         if ($image) {
             if ($user->image) {
-                Storage::disk(config('filesystems.default'))->delete('users/'.$user->image);
+                Storage::disk(config('filesystems.default'))
+                    ->delete('users/'.$user->image);
             }
             $data['image'] = $this->storeUserImage($image);
         }
@@ -37,17 +37,12 @@ class ProfileService
             'first_name', 'last_name', 'email', 'phone_number', 'password', 'image',
         ])));
 
-        // Update specific profile
-        match ($user->user_type_id) {
-            UserType::ADMIN => $user->adminProfile()->firstOrCreate(['user_id' => $user->id])->update($data),
-            UserType::VENDOR => $user->vendorProfile()->firstOrCreate(['user_id' => $user->id])->update($data),
-            UserType::USER => $user->userProfile()->firstOrCreate(['user_id' => $user->id])->update($data),
-            default => null,
-        };
+        $user->userProfile()->firstOrCreate(['user_id' => $user->id])->update($data);
 
         $freshUser = $user->fresh();
+
         if ($freshUser) {
-            $freshUser->load(['adminProfile', 'vendorProfile', 'userProfile']);
+            $freshUser->load(self::RELATIONSHIP);
         }
 
         return $freshUser;

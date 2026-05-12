@@ -24,7 +24,7 @@ class WalletApiTest extends TestCase
 
     public function test_user_can_list_own_wallets(): void
     {
-        $user = User::factory()->create(['user_type_id' => UserType::USER]);
+        $user = User::factory()->create(['user_type_id' => UserType::CONSUMER_ID]);
         $user->ensureDefaultWallets();
 
         Sanctum::actingAs($user);
@@ -38,9 +38,9 @@ class WalletApiTest extends TestCase
 
     public function test_user_cannot_view_other_user_wallet(): void
     {
-        $owner = User::factory()->create(['user_type_id' => UserType::USER]);
+        $owner = User::factory()->create(['user_type_id' => UserType::CONSUMER_ID]);
         $owner->ensureDefaultWallets();
-        $other = User::factory()->create(['user_type_id' => UserType::USER]);
+        $other = User::factory()->create(['user_type_id' => UserType::CONSUMER_ID]);
 
         $walletId = (int) $owner->wallets()->value('id');
 
@@ -52,7 +52,7 @@ class WalletApiTest extends TestCase
 
     public function test_user_can_view_wallet_history_with_currency_fields(): void
     {
-        $user = User::factory()->create(['user_type_id' => UserType::USER]);
+        $user = User::factory()->create(['user_type_id' => UserType::CONSUMER_ID]);
         $usdId = (int) Currency::query()->where('code', Currency::USD)->value('id');
 
         $wallet = Wallet::query()->create([
@@ -172,7 +172,7 @@ class WalletApiTest extends TestCase
 
     public function test_admin_cannot_view_other_user_wallet(): void
     {
-        $owner = User::factory()->create(['user_type_id' => UserType::USER]);
+        $owner = User::factory()->create(['user_type_id' => UserType::CONSUMER_ID]);
         $owner->ensureDefaultWallets();
         $admin = User::factory()->create(['user_type_id' => UserType::ADMIN]);
 

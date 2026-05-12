@@ -34,14 +34,15 @@ use Illuminate\Support\Carbon;
  * @property string $billing_zip_code
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
- * @property string|null $deleted_at
+ * @property Carbon|null $deleted_at
  * @property-read User $user
  * @property-read PaymentMethodType $type
  * @property-read PaymentMethodStatus $status
  *
  * @method static Builder<static>|PaymentMethod active()
+ * @method static Builder<static>|PaymentMethod isType()
  */
-#[Table('payment_methods', key: 'id')]
+#[Table('payment_methods', key: 'id', keyType: 'int')]
 #[Fillable([
     'user_id',
     'payment_method_type_id',
@@ -63,6 +64,16 @@ class PaymentMethod extends Model
 {
     /** @use HasFactory<PaymentMethodFactory> */
     use HasFactory, SoftDeletes;
+
+    public const int WALLET_ID = 1;
+
+    public const int CREDIT_DEBIT_ID = 2;
+
+    public const int ABA_ID = 3;
+
+    public const int ACLEDA_ID = 4;
+
+    public const int COD_ID = 5;
 
     /**
      * {@inheritDoc}
@@ -123,6 +134,17 @@ class PaymentMethod extends Model
     #[Scope]
     protected function active(Builder $query): void
     {
-        $query->where('payment_method_status_id', PaymentMethodStatus::ACTIVE);
+        $query->where('payment_method_status_id', PaymentMethodStatus::ACTIVE_ID);
+    }
+
+    /**
+     * Scope a query to only include payment methods of the specified type.
+     *
+     * @param  Builder<PaymentMethod>  $query
+     */
+    #[Scope]
+    protected function isType(Builder $query, int $typeId): void
+    {
+        $query->where('payment_method_type_id', $typeId);
     }
 }

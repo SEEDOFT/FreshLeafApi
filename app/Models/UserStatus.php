@@ -24,20 +24,20 @@ use Illuminate\Support\Carbon;
  * @property-read Collection<int, User> $users
  */
 #[Table('user_statuses', key: 'id', keyType: 'int', incrementing: false)]
-#[Fillable(['code', 'name_en', 'name_km'])]
+#[Fillable(['id', 'name_en', 'name_km'])]
 #[UseFactory(UserStatusFactory::class)]
 class UserStatus extends Model
 {
     /** @use HasFactory<UserStatusFactory> */
     use HasFactory;
 
-    public const int PENDING = 1;
+    public const int PENDING_ID = 1;
 
-    public const int ACTIVE = 2;
+    public const int ACTIVE_ID = 2;
 
-    public const int INACTIVE = 3;
+    public const int INACTIVE_ID = 3;
 
-    public const int DELETED = 4;
+    public const int DELETED_ID = 4;
 
     /**
      * Get the users for this status.

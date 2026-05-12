@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 use App\Http\Controllers\Api\Ai\AiChatController;
 use App\Http\Controllers\Api\Ai\AiStatusController;
-use App\Http\Controllers\Api\Product\CategoryController;
+use App\Http\Controllers\Api\Product\ProductCategoryController;
 use App\Http\Controllers\Api\Product\ProductController;
 use App\Http\Controllers\Api\User\AddressController;
 use App\Http\Controllers\Api\User\AuthController;
@@ -26,7 +26,7 @@ Route::prefix('v1')->name('v1.')->group(static function () {
     // Public Routes
     Route::prefix('categories')
         ->name('categories.')
-        ->controller(CategoryController::class)
+        ->controller(ProductCategoryController::class)
         ->group(static function () {
             Route::get('/', 'index')->name('index');
             Route::get('{category:slug}', 'show')->name('show');
@@ -130,6 +130,7 @@ Route::prefix('v1')->name('v1.')->group(static function () {
                 ->group(static function () {
                     Route::get('/', 'index')->name('index');
                     Route::post('/', 'store')->name('store');
+                    Route::post('checkout', 'checkout')->name('checkout');
                     Route::put('{itemId}', 'update')->name('update');
                     Route::delete('{itemId}', 'destroy')->name('destroy');
                 });

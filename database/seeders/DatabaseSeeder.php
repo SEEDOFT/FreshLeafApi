@@ -29,27 +29,18 @@ class DatabaseSeeder extends Seeder
             PaymentMethodStatusSeeder::class,
             PaymentMethodTypeSeeder::class,
             PayoutStatusSeeder::class,
-            PayoutMethodSeeder::class,
             WalletTransactionStatusSeeder::class,
 
             // Product & Inventory
             UnitSeeder::class,
             ProductStatusSeeder::class,
-            ProductTypeSeeder::class,
             ProductCategoryStatusSeeder::class,
             VendorInventoryStatusSeeder::class,
 
             // Order & Cart
-            OrderStatusSeeder::class,
             OrderTypeSeeder::class,
-            UserCartStatusSeeder::class,
-            UserCartTypeSeeder::class,
-            UserCartItemStatusSeeder::class,
-            UserCartItemTypeSeeder::class,
-            UserWishlistStatusSeeder::class,
-            UserWishlistTypeSeeder::class,
-            UserWishlistItemStatusSeeder::class,
-            UserWishlistItemTypeSeeder::class,
+            OrderStatusSeeder::class,
+            CartStatusSeeder::class,
 
             // Notifications & System
             NotificationStatusSeeder::class,

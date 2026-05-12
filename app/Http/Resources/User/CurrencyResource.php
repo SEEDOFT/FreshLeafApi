@@ -8,6 +8,8 @@ use App\Models\Currency;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
+use function translate;
+
 /**
  * @mixin Currency
  */
@@ -23,7 +25,7 @@ class CurrencyResource extends JsonResource
         return [
             'id' => $this->id,
             'code' => $this->code,
-            'name' => $this->name,
+            'name' => translate($this->name_en, $this->name_km),
             'symbol' => $this->symbol,
         ];
     }

@@ -17,8 +17,8 @@ use Illuminate\Support\Carbon;
  * @property int $id
  * @property int $user_id
  * @property string $status
- * @property Carbon $created_at
- * @property Carbon $updated_at
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
  * @property-read User $user
  * @property-read Collection|SupportMessage[] $messages
  * @property-read SupportMessage|null $latestMessage

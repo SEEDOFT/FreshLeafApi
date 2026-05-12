@@ -16,39 +16,52 @@ use Illuminate\Support\Carbon;
 
 /**
  * @property int $id
- * @property string $code
- * @property string $name
+ * @property string $name_en
+ * @property string $name_km
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  * @property-read Collection<int, PaymentMethod> $paymentMethods
  * @property-read int|null $payment_methods_count
  */
-#[Table('payment_method_types', key: 'id', keyType: 'int')]
-#[Fillable(['code', 'name'])]
+#[Table('payment_method_types', key: 'id', keyType: 'int', incrementing: false)]
+#[Fillable(['id', 'name_en', 'name_km'])]
 #[UseFactory(PaymentMethodTypeFactory::class)]
 class PaymentMethodType extends Model
 {
     /** @use HasFactory<PaymentMethodTypeFactory> */
     use HasFactory;
 
-    public const int WALLET = 1;
+    public const int WALLET_ID = 1;
 
-    public const int CREDIT_DEBIT = 2;
+    public const int CREDIT_DEBIT_ID = 2;
 
-    public const int ABA = 3;
+    public const int ABA_ID = 3;
 
-    public const int ACLEDA = 4;
+    public const int ACLEDA_ID = 4;
+
+    public const int COD_ID = 5;
+
+    public const string WALLET = 'WALLET';
+
+    public const string CREDIT_DEBIT = 'CREDIT_DEBIT';
+
+    public const string ABA = 'ABA';
+
+    public const string ACLEDA = 'ACLEDA';
+
+    public const string COD = 'COD';
 
     /**
-     * @return array<int>
+     * @return list<int>
      */
     public static function coreTypeIds(): array
     {
         return [
-            self::WALLET,
-            self::CREDIT_DEBIT,
-            self::ABA,
-            self::ACLEDA,
+            self::WALLET_ID,
+            self::CREDIT_DEBIT_ID,
+            self::ABA_ID,
+            self::ACLEDA_ID,
+            self::COD_ID,
         ];
     }
 

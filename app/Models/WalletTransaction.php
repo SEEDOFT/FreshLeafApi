@@ -35,7 +35,6 @@ use Illuminate\Support\Carbon;
  */
 #[Table('wallet_transactions', key: 'id', keyType: 'int')]
 #[Fillable([
-    'wallet_transaction_id',
     'wallet_id',
     'wallet_transaction_type_id',
     'wallet_transaction_status_id',

@@ -11,6 +11,7 @@ use App\Http\Resources\User\WalletTransactionResource;
 use App\Models\Wallet;
 use App\Models\WalletTransaction;
 use App\Models\WalletTransactionHistory;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -30,9 +31,11 @@ class WalletTransactionController extends Controller
     {
         $user = $this->authenticatedUser($request);
 
-        $query = WalletTransaction::whereHas(
-            'wallet', static fn (Wallet $wallet) => $wallet->where('user_id', $user->id)
-        )
+        $query = WalletTransaction::query()
+            ->whereHas(
+                'wallet',
+                static fn (Builder $wallet): Builder => $wallet->where('user_id', $user->id)
+            )
             ->with(self::RELATIONSHIPS)
             ->orderByDesc('id');
 

@@ -36,7 +36,7 @@ class VendorsTable
                     ->sortable(),
                 TextColumn::make('name')
                     ->label(__('admin.resources.vendor.owner'))
-                    ->getStateUsing(static fn (User $record) => "{$record->first_name} {$record->last_name}")
+                    ->getStateUsing(static fn (User $record) => $record->fullName)
                     ->searchable(['first_name', 'last_name']),
                 TextColumn::make('phone_number')
                     ->label(__('admin.resources.vendor.phone'))
@@ -88,8 +88,8 @@ class VendorsTable
                             'approve_reason' => $data['note'] ?? null,
                         ]);
                         $record->update([
-                            'user_type_id' => UserType::VENDOR,
-                            'user_status_id' => UserStatus::ACTIVE,
+                            'user_type_id' => UserType::VENDOR_ID,
+                            'user_status_id' => UserStatus::ACTIVE_ID,
                         ]);
                     })
                     ->form([
@@ -104,7 +104,7 @@ class VendorsTable
                     ->color('danger')
                     ->visible(
                         static fn (User $record) => $record->vendorProfile &&
-                    ! $record->vendorProfile->is_verified
+                        ! $record->vendorProfile->is_verified
                     )
                     ->action(static function (User $record, array $data) {
                         $record->vendorProfile->update([

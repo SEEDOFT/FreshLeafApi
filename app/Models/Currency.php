@@ -12,30 +12,30 @@ use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Carbon;
 
 /**
  * @property int $id
- * @property string $name
+ * @property string $name_en
+ * @property string $name_km
  * @property string $code
  * @property string $symbol
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
- * @property Carbon|null $deleted_at
  * @property Collection|Wallet[] $wallets
  */
 #[Table('currencies', key: 'id')]
 #[Fillable([
-    'name',
     'code',
+    'name_en',
+    'name_km',
     'symbol',
 ])]
 #[UseFactory(CurrencyFactory::class)]
 class Currency extends Model
 {
     /** @use HasFactory<CurrencyFactory> */
-    use HasFactory, SoftDeletes;
+    use HasFactory;
 
     public const string KHR = 'KHR';
 

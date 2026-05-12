@@ -6,11 +6,11 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Table;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Carbon;
-use Illuminate\Support\Facades\Auth;
 
 /**
  * @property int $id
@@ -51,24 +51,6 @@ class ExchangeRate extends Model
     private static array $rateCache = [];
 
     /**
-     * The "booted" method of the model.
-     */
-    protected static function booted(): void
-    {
-        static::saved(static function (ExchangeRate $exchangeRate): void {
-            if ($exchangeRate->wasRecentlyCreated || $exchangeRate->wasChanged('rate')) {
-                ExchangeRateHistory::create([
-                    'exchange_rate_id' => $exchangeRate->id,
-                    'changed_by_user_id' => Auth::id() ?? 1,
-                    'from_currency_id' => $exchangeRate->from_currency_id,
-                    'to_currency_id' => $exchangeRate->to_currency_id,
-                    'rate' => $exchangeRate->rate,
-                ]);
-            }
-        });
-    }
-
-    /**
      * Get the rate between two currencies by their codes.
      */
     public static function getRate(string $fromCode, string $toCode): float
@@ -80,8 +62,9 @@ class ExchangeRate extends Model
         }
 
         /** @var float|string|null $rate */
-        $rate = self::whereHas('fromCurrency', fn ($q) => $q->where('code', $fromCode))
-            ->whereHas('toCurrency', fn ($q) => $q->where('code', $toCode))
+        $rate = self::query()
+            ->whereHas('fromCurrency', static fn (Builder $query) => $query->where('code', $fromCode))
+            ->whereHas('toCurrency', static fn (Builder $query) => $query->where('code', $toCode))
             ->value('rate');
 
         return self::$rateCache[$cacheKey] = (float) ($rate ?? 1.0);

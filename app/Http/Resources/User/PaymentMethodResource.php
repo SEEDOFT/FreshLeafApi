@@ -8,6 +8,10 @@ use App\Models\PaymentMethod;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
+use function str_repeat;
+use function strlen;
+use function substr;
+
 /**
  * @mixin PaymentMethod
  */
@@ -50,11 +54,11 @@ class PaymentMethodResource extends JsonResource
             return null;
         }
 
-        $length = \strlen($cardNumber);
+        $length = strlen($cardNumber);
         if ($length <= 4) {
             return $cardNumber;
         }
 
-        return \str_repeat('*', $length - 4).\substr($cardNumber, -4);
+        return str_repeat('*', $length - 4).substr($cardNumber, -4);
     }
 }

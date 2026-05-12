@@ -51,7 +51,7 @@ class UserResource extends Resource
     public static function getEloquentQuery(): Builder
     {
         return parent::getEloquentQuery()
-            ->where('user_type_id', UserType::USER);
+            ->where('user_type_id', UserType::CONSUMER_ID);
     }
 
     #[Override]

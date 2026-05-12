@@ -166,7 +166,7 @@ class VendorInfolist
                                     ->placeholder($notProvided)
                                     ->label(__('admin.resources.wallet.balance'))
                                     ->getStateUsing(static function (Wallet $record): string {
-                                        $id = $record->currency?->id;
+                                        $id = $record->currency->id;
                                         $symbol = $record->currency->symbol ?? '';
                                         $balance = number_format((float) $record->balance, 2);
 

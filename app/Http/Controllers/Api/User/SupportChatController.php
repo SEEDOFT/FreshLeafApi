@@ -87,8 +87,8 @@ class SupportChatController extends Controller
 
             broadcast(new NewSupportTicket($ticket))->toOthers();
 
-            $admins = User::where('user_type_id', UserType::ADMIN)
-                ->where('user_status_id', UserStatus::ACTIVE)
+            $admins = User::where('user_type_id', UserType::ADMIN_ID)
+                ->where('user_status_id', UserStatus::ACTIVE_ID)
                 ->get();
 
             Notification::send($admins, new NewSupportTicketNotification($ticket));
@@ -150,8 +150,8 @@ class SupportChatController extends Controller
 
         broadcast(new SupportMessageSent($message))->toOthers();
 
-        $admins = User::where('user_type_id', UserType::ADMIN)
-            ->where('user_status_id', UserStatus::ACTIVE)
+        $admins = User::where('user_type_id', UserType::ADMIN_ID)
+            ->where('user_status_id', UserStatus::ACTIVE_ID)
             ->get();
 
         Notification::send($admins, new NewSupportMessageNotification($message));

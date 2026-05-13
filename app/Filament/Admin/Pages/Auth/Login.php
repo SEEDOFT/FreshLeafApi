@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace App\Filament\Admin\Pages\Auth;
 
+use App\Filament\Forms\Components\PasswordInput;
 use App\Filament\Forms\Components\PhoneNumberInput;
+use App\Models\User;
 use App\Models\UserStatus;
 use App\Models\UserType;
 use Filament\Auth\Pages\Login as BaseLogin;
@@ -16,6 +18,15 @@ use Override;
 
 class Login extends BaseLogin
 {
+    #[Override]
+    protected string $view = 'filament.admin.pages.auth.login';
+
+    #[Override]
+    public function getLayout(): string
+    {
+        return 'filament-panels::components.layout.base';
+    }
+
     #[Override]
     public function getHeading(): string|Htmlable
     {
@@ -34,7 +45,10 @@ class Login extends BaseLogin
         return $schema
             ->components([
                 $this->getPhoneNumberFormComponent(),
-                $this->getPasswordFormComponent(),
+                PasswordInput::make('password')
+                    ->label(__('admin.auth.login.password'))
+                    ->required()
+                    ->revealable(),
                 $this->getRememberFormComponent(),
             ])
             ->statePath('data');
@@ -54,6 +68,16 @@ class Login extends BaseLogin
     #[Override]
     protected function getCredentialsFromFormData(array $data): array
     {
+        $user = User::where('phone_number', $data['phone_number'])
+            ->where('user_type_id', UserType::ADMIN_ID)
+            ->first();
+
+        if ($user && $user->user_status_id === UserStatus::PENDING_ID) {
+            throw ValidationException::withMessages([
+                'data.phone_number' => __('admin.auth.login.pending'),
+            ]);
+        }
+
         return array_filter([
             'phone_number' => $data['phone_number'],
             'password' => $data['password'],
@@ -66,7 +90,7 @@ class Login extends BaseLogin
     protected function throwFailureValidationException(): never
     {
         throw ValidationException::withMessages([
-            'data.phone_number_input' => __('admin.auth.login.failed'),
+            'data.phone_number' => __('admin.auth.login.failed'),
         ]);
     }
 }

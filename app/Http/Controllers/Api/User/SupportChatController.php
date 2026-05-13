@@ -122,7 +122,8 @@ class SupportChatController extends Controller
     {
         $validatedData = $request->validate([
             'ticket_id' => ['required', 'string', 'exists:support_tickets,id'],
-            'message' => ['nullable', 'string', 'max:1200'],
+            'message' => ['required', 'string', 'max:1200'],
+            'attachment' => ['nullable', 'file', 'max:5120'],
         ]);
 
         $filePath = null;
@@ -142,7 +143,7 @@ class SupportChatController extends Controller
             'support_ticket_id' => $ticket->id,
             'sender_type' => 'user',
             'sender_id' => $user->id,
-            'message' => $validated['message'] ?? '',
+            'message' => $validatedData['message'] ?? '',
             'file_path' => $filePath,
         ]);
 

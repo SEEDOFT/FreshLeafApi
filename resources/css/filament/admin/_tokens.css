@@ -1,0 +1,28 @@
+[data-auth-page="freshleaf-admin"] {
+    --fl-auth-image: url('https://images.unsplash.com/photo-1523348837708-15d4a09cfac2?ixlib=rb-4.0.3&auto=format&fit=crop&w=1170&q=80');
+    --fl-auth-font: 'Noto Sans Khmer', 'Plus Jakarta Sans', system-ui, sans-serif;
+    --fl-auth-form-bg: #f5f8f4;
+    --fl-auth-form-bg-dark: #08110d;
+    --fl-auth-panel: rgba(255, 255, 255, 0.76);
+    --fl-auth-panel-dark: rgba(17, 24, 20, 0.72);
+    --fl-auth-card: rgba(255, 255, 255, 0.78);
+    --fl-auth-card-dark: rgba(18, 25, 22, 0.74);
+    --fl-auth-border: rgba(16, 185, 129, 0.16);
+    --fl-auth-border-strong: rgba(16, 185, 129, 0.32);
+    --fl-auth-text: #0f241a;
+    --fl-auth-muted: #5f7469;
+    --fl-auth-subtle: #8b9e95;
+    --fl-auth-text-dark: #f4fbf7;
+    --fl-auth-muted-dark: #b8c8bf;
+    --fl-auth-subtle-dark: #7e9188;
+    --fl-auth-primary: #059669;
+    --fl-auth-primary-strong: #047857;
+    --fl-auth-primary-soft: rgba(16, 185, 129, 0.12);
+    --fl-auth-media-width: minmax(32rem, 52vw);
+    --fl-auth-form-width: minmax(28rem, 1fr);
+    --fl-auth-radius-card: 2.25rem;
+    --fl-auth-radius-control: 1rem;
+    --fl-auth-shadow: 0 24px 70px rgba(15, 35, 26, 0.14);
+    --fl-auth-shadow-dark: 0 24px 70px rgba(0, 0, 0, 0.45);
+    --fl-auth-ease: cubic-bezier(0.16, 1, 0.3, 1);
+}

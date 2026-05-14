@@ -66,7 +66,8 @@ class ApplicationSettings extends Page
                             ->minValue(0)
                             ->suffix('%')
                             ->helperText(__('admin.settings.app_settings.commission_fee_helper'))
-                            ->required(static fn (string $operation): bool => $operation === 'create')->dehydrated(static fn (mixed $state): bool => filled($state)),
+                            ->required(fn (string $operation): bool => $operation === 'create')
+                            ->dehydrated(fn (mixed $state): bool => filled($state)),
                     ]),
 
                 Section::make(__('admin.settings.app_settings.localization'))
@@ -74,7 +75,8 @@ class ApplicationSettings extends Page
                     ->schema([
                         TextInput::make('timezone')
                             ->label(__('admin.settings.app_settings.timezone'))
-                            ->required(static fn (string $operation): bool => $operation === 'create')->dehydrated(static fn (mixed $state): bool => filled($state)),
+                            ->required(fn (string $operation): bool => $operation === 'create')
+                            ->dehydrated(fn (mixed $state): bool => filled($state)),
                     ])->columns(2),
 
                 Section::make(__('admin.settings.app_settings.notifications'))
@@ -101,6 +103,7 @@ class ApplicationSettings extends Page
     public function save(): void
     {
         $form = $this->getSchema('form');
+
         if (! $form) {
             return;
         }

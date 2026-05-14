@@ -171,7 +171,7 @@ class ProductCatalog extends Page implements HasTable
                             ->title(__('admin.resources.product.notifications.added_to_store'))
                             ->send();
 
-                        $this->redirect(ProductResource::getUrl());
+                        $this->redirect(ProductResource::getUrl(panel: 'vendor'));
                     }),
             ]);
     }

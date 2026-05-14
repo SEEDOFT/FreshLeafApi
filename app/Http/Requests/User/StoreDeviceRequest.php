@@ -28,7 +28,7 @@ class StoreDeviceRequest extends FormRequest
     {
         return [
             'device_token' => ['required', 'string', 'max:500'],
-            'device_type' => ['nullable', 'string', 'max:50'],
+            'device_type' => ['required', 'string', 'max:20', 'in:android,ios,web,windows'],
         ];
     }
 }

@@ -11,16 +11,17 @@ use App\Filament\Admin\Widgets\AdminRevenueChart;
 use App\Filament\Admin\Widgets\AdminStatsOverview;
 use App\Filament\ThemeColors;
 use App\Http\Middleware\SetLocaleFromAcceptLanguage;
+use Filament\Actions\Action;
 use Filament\Enums\ThemeMode;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\AuthenticateSession;
 use Filament\Http\Middleware\DisableBladeIconComponents;
 use Filament\Http\Middleware\DispatchServingFilamentEvent;
-use Filament\Navigation\MenuItem;
 use Filament\Navigation\NavigationGroup;
 use Filament\Pages\Dashboard;
 use Filament\Panel;
 use Filament\PanelProvider;
+use Filament\Support\Enums\Width;
 use Filament\View\PanelsRenderHook;
 use Filament\Widgets\AccountWidget;
 use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
@@ -44,43 +45,43 @@ class AdminPanelProvider extends PanelProvider
             ->login(Login::class)
             ->font('Noto Sans Khmer')
             ->spa()
-            ->viteTheme('resources/css/filament/panels/theme.css')
-            ->maxContentWidth('full')
+            ->viteTheme('resources/css/filament/admin/theme.css')
+            ->maxContentWidth(Width::Full)
             ->defaultThemeMode(ThemeMode::System)
             ->sidebarCollapsibleOnDesktop()
             ->userMenuItems([
-                'profile' => MenuItem::make()->visible(false),
-                'my-account' => MenuItem::make()
-                    ->label(static fn (): string => __('admin.navigation.my_profile'))
+                'profile' => Action::make('profile')->visible(false),
+                'my-account' => Action::make('my-account')
+                    ->label(__('admin.navigation.my_profile'))
                     ->icon('heroicon-o-user-circle')
-                    ->url(static fn (): string => AdminProfile::getUrl()),
-                'app-settings' => MenuItem::make()
-                    ->label(static fn (): string => __('admin.navigation.settings'))
+                    ->url(fn (): string => AdminProfile::getUrl(panel: 'admin')),
+                'app-settings' => Action::make('app-settings')
+                    ->label(__('admin.navigation.settings'))
                     ->icon('heroicon-o-cog-6-tooth')
-                    ->url(static fn (): string => ApplicationSettings::getUrl()),
+                    ->url(fn (): string => ApplicationSettings::getUrl(panel: 'admin')),
             ])
             ->renderHook(
                 PanelsRenderHook::BODY_END,
-                static fn (): string => view('filament.hooks.panel-assets')->render(),
+                fn (): string => view('filament.hooks.panel-assets')->render(),
             )
             ->colors(ThemeColors::getPalette())
             ->navigationGroups([
                 NavigationGroup::make()
-                    ->label(static fn (): string => __('admin.navigation.accounts')),
+                    ->label(__('admin.navigation.accounts')),
                 NavigationGroup::make()
-                    ->label(static fn (): string => __('admin.navigation.catalog')),
+                    ->label(__('admin.navigation.catalog')),
                 NavigationGroup::make()
-                    ->label(static fn (): string => __('admin.navigation.shop')),
+                    ->label(__('admin.navigation.shop')),
                 NavigationGroup::make()
-                    ->label(static fn (): string => __('admin.navigation.sales')),
+                    ->label(__('admin.navigation.sales')),
                 NavigationGroup::make()
-                    ->label(static fn (): string => __('admin.navigation.logistics')),
+                    ->label(__('admin.navigation.logistics')),
                 NavigationGroup::make()
-                    ->label(static fn (): string => __('admin.navigation.financial')),
+                    ->label(__('admin.navigation.financial')),
                 NavigationGroup::make()
-                    ->label(static fn (): string => __('admin.navigation.settings')),
+                    ->label(__('admin.navigation.settings')),
                 NavigationGroup::make()
-                    ->label(static fn (): string => __('admin.navigation.app_control')),
+                    ->label(__('admin.navigation.app_control')),
             ])
             ->discoverResources(in: app_path('Filament/Admin/Resources'), for: 'App\Filament\Admin\Resources')
             ->discoverPages(in: app_path('Filament/Admin/Pages'), for: 'App\Filament\Admin\Pages')

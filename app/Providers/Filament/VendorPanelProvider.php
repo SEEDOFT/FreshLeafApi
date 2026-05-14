@@ -12,12 +12,12 @@ use App\Filament\Vendor\Pages\Auth\Register;
 use App\Filament\Vendor\Widgets\VendorEarningsChart;
 use App\Filament\Vendor\Widgets\VendorStatsOverview;
 use App\Http\Middleware\SetLocaleFromAcceptLanguage;
+use Filament\Actions\Action;
 use Filament\Enums\ThemeMode;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\AuthenticateSession;
 use Filament\Http\Middleware\DisableBladeIconComponents;
 use Filament\Http\Middleware\DispatchServingFilamentEvent;
-use Filament\Navigation\MenuItem;
 use Filament\Navigation\NavigationGroup;
 use Filament\Pages\Dashboard;
 use Filament\Panel;
@@ -50,32 +50,32 @@ class VendorPanelProvider extends PanelProvider
             ->defaultThemeMode(ThemeMode::System)
             ->sidebarCollapsibleOnDesktop()
             ->userMenuItems([
-                'profile' => MenuItem::make()->visible(false),
-                'my-account' => MenuItem::make()
+                'profile' => Action::make()->visible(false),
+                'my-account' => Action::make()
                     ->label('My Profile')
                     ->icon('heroicon-o-user-circle')
-                    ->url(static fn (): string => VendorProfile::getUrl()),
-                'app-settings' => MenuItem::make()
+                    ->url(fn (): string => VendorProfile::getUrl(panel: 'vendor')),
+                'app-settings' => Action::make()
                     ->label('Store Settings')
                     ->icon('heroicon-o-cog-6-tooth')
-                    ->url(static fn (): string => BusinessProfile::getUrl()),
+                    ->url(fn (): string => BusinessProfile::getUrl(panel: 'vendor')),
             ])
             ->renderHook(
                 PanelsRenderHook::BODY_END,
-                static fn (): string => view('filament.hooks.panel-assets')->render(),
+                fn (): string => view('filament.hooks.panel-assets')->render(),
             )
             ->colors(ThemeColors::getPalette())
             ->navigationGroups([
                 NavigationGroup::make()
-                    ->label(static fn (): string => __('admin.navigation.shop')),
+                    ->label(__('admin.navigation.shop')),
                 NavigationGroup::make()
-                    ->label(static fn (): string => __('admin.navigation.catalog')),
+                    ->label(__('admin.navigation.catalog')),
                 NavigationGroup::make()
-                    ->label(static fn (): string => __('admin.navigation.sales')),
+                    ->label(__('admin.navigation.sales')),
                 NavigationGroup::make()
-                    ->label(static fn (): string => __('admin.navigation.financial')),
+                    ->label(__('admin.navigation.financial')),
                 NavigationGroup::make()
-                    ->label(static fn (): string => __('admin.navigation.settings')),
+                    ->label(__('admin.navigation.settings')),
             ])
             ->discoverResources(in: app_path('Filament/Vendor/Resources'), for: 'App\Filament\Vendor\Resources')
             ->discoverPages(in: app_path('Filament/Vendor/Pages'), for: 'App\Filament\Vendor\Pages')

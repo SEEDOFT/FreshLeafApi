@@ -13,6 +13,7 @@ use App\Services\Ai\AiService;
 use App\Services\Auth\UserSessionSecurity;
 use Filament\Facades\Filament;
 use Illuminate\Contracts\View\View;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\HtmlString;
@@ -20,7 +21,6 @@ use Illuminate\Support\Str;
 use Livewire\Component;
 
 use function __;
-use function auth;
 use function count;
 use function now;
 use function session;
@@ -98,8 +98,8 @@ class AiAssistantChat extends Component
         $panelId = Filament::getCurrentPanel()?->getId();
 
         $isAuthorized = match ($panelId) {
-            'admin' => $user->user_type_id === UserType::ADMIN,
-            'vendor' => $user->user_type_id === UserType::VENDOR,
+            'admin' => $user->user_type_id === UserType::ADMIN_ID,
+            'vendor' => $user->user_type_id === UserType::VENDOR_ID,
             default => false,
         };
 
@@ -160,8 +160,16 @@ class AiAssistantChat extends Component
     /** @return array<string, string> */
     public function getListeners(): array
     {
-        $userId = auth()->id();
-        if (! $userId || ! $this->activeSessionUlid) {
+        /** @var User|null $user */
+        $user = Auth::user();
+
+        if (! $user) {
+            return [];
+        }
+
+        $userId = $user->id;
+
+        if (! $this->activeSessionUlid) {
             return [];
         }
 
@@ -478,7 +486,7 @@ class AiAssistantChat extends Component
     {
         return AiChatMessage::create([
             'ai_chat_session_id' => $this->activeDbSessionId,
-            'user_id' => auth()->id(),
+            'user_id' => Auth::id(),
             'message_id' => (string) Str::ulid(),
             'role' => 'user',
             'content' => $content,
@@ -491,7 +499,7 @@ class AiAssistantChat extends Component
     {
         return AiChatMessage::create([
             'ai_chat_session_id' => $this->activeDbSessionId,
-            'user_id' => auth()->id(),
+            'user_id' => Auth::id(),
             'message_id' => $messageId,
             'role' => 'assistant',
             'content' => '',
@@ -535,7 +543,8 @@ class AiAssistantChat extends Component
     {
         $index = $this->findMessageIndexById($messageId);
 
-        return $index !== null && ($this->messages[$index]['status'] ?? null) === self::STATUS_FAILED;
+        return $index !== null &&
+            ($this->messages[$index]['status'] ?? null) === self::STATUS_FAILED;
     }
 
     public function render(): View
@@ -658,7 +667,11 @@ class AiAssistantChat extends Component
         }
     }
 
-    private function updateOrAppendAssistantMessage(string $messageId, string $content, string $status): void
+    private function updateOrAppendAssistantMessage(
+        string $messageId,
+        string $content,
+        string $status
+    ): void
     {
         $messageIndex = $this->findMessageIndexById($messageId);
 

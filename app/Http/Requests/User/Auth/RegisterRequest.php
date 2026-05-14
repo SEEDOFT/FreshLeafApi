@@ -36,7 +36,7 @@ class RegisterRequest extends FormRequest
                 'starts_with:+855',
                 Rule::unique('users', 'phone_number')
                     ->where(static function ($query): void {
-                        $query->where('user_type_id', UserType::CONSUMER_ID)
+                        $query->where('user_type_id', UserType::ADMIN_ID)
                             ->whereNull('deleted_at');
                     }),
             ],

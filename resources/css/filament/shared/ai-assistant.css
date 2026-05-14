@@ -1,0 +1,115 @@
+.ai-chat-shell {
+    @apply flex h-[calc(100vh-14rem)] overflow-hidden bg-white dark:bg-gray-900 rounded-3xl shadow-[0_20px_50px_rgba(0\,0\,0\,0.05)] dark:shadow-[0_20px_50px_rgba(0\,0\,0\,0.3)] border border-gray-200 dark:border-white/5;
+}
+
+.ai-chat-sidebar {
+    @apply w-80 flex-shrink-0 border-r border-gray-200 dark:border-white/5 flex flex-col transition-all duration-300;
+}
+
+.is-history-hidden .ai-chat-sidebar {
+    @apply -ml-80;
+}
+
+.ai-chat-sidebar-head {
+    @apply p-6 border-b border-gray-200 dark:border-white/5;
+}
+
+.ai-new-chat-btn {
+    @apply flex items-center gap-2 w-full px-4 py-2 bg-primary-600 text-white text-sm font-semibold rounded-lg hover:bg-primary-500 transition-colors;
+}
+
+.ai-session-list {
+    @apply flex-1 overflow-y-auto;
+}
+
+.ai-session-item-wrap {
+    @apply relative px-2 py-1;
+}
+
+.ai-session-item {
+    @apply w-full text-left p-4 rounded-lg hover:bg-gray-50 dark:hover:bg-white/5 transition-colors text-sm;
+}
+
+.ai-session-item.is-active {
+    @apply bg-primary-50 dark:bg-primary-500/10;
+}
+
+.ai-session-title {
+    @apply line-clamp-1 font-medium;
+}
+
+.ai-session-meta {
+    @apply text-[10px] text-gray-400;
+}
+
+.ai-session-delete-btn {
+    @apply absolute right-4 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 p-1 text-gray-400 hover:text-danger-500 transition-opacity;
+}
+
+.ai-chat-main {
+    @apply flex-1 flex flex-col min-w-0 bg-white dark:bg-gray-950;
+}
+
+.ai-chat-header {
+    @apply p-6 border-b border-gray-200 dark:border-white/5 flex justify-between items-center bg-white dark:bg-gray-900/50 backdrop-blur-md;
+}
+
+.ai-chat-header-title {
+    @apply flex items-center gap-3 font-bold text-gray-900 dark:text-white;
+}
+
+.ai-chat-status-pill {
+    @apply text-xs font-medium px-3 py-1 rounded-full;
+}
+
+.ai-chat-status-pill--connected {
+    @apply bg-emerald-100 text-emerald-700;
+}
+
+.ai-chat-status-pill--fallback {
+    @apply bg-amber-100 text-amber-700;
+}
+
+.ai-chat-status-pill--error {
+    @apply bg-red-100 text-red-700;
+}
+
+.ai-chat-thread {
+    @apply flex-1 overflow-y-auto p-8 space-y-8 bg-gray-50/50 dark:bg-gray-950;
+}
+
+.ai-message-row {
+    @apply flex items-end gap-3;
+}
+
+.ai-message-row--user {
+    @apply justify-end;
+}
+
+.ai-message-bubble {
+    @apply p-5 rounded-3xl text-sm leading-relaxed max-w-[70%];
+}
+
+.ai-message-bubble--user {
+    @apply bg-emerald-600 text-white rounded-tr-none shadow-lg shadow-emerald-500/20;
+}
+
+.ai-message-bubble--assistant {
+    @apply bg-white dark:bg-zinc-800 text-gray-900 dark:text-gray-100 rounded-tl-none border border-gray-200 dark:border-white/10;
+}
+
+.ai-message-author {
+    @apply text-[10px] font-bold uppercase tracking-widest opacity-50 mb-1;
+}
+
+.ai-chat-composer {
+    @apply p-6 border-t border-gray-200 dark:border-white/5 bg-white dark:bg-gray-900;
+}
+
+.ai-composer-input {
+    @apply w-full p-4 bg-gray-50 dark:bg-zinc-900 border border-gray-200 dark:border-white/10 rounded-2xl resize-none outline-none focus:border-primary-500;
+}
+
+.ai-composer-btn {
+    @apply p-4 bg-emerald-600 text-white rounded-2xl hover:bg-emerald-700 transition-colors;
+}

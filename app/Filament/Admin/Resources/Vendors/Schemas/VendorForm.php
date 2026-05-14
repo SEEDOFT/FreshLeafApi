@@ -23,25 +23,25 @@ class VendorForm
                     ->schema([
                         TextInput::make('first_name')
                             ->label(__('admin.resources.user.first_name'))
-                            ->required(static fn (string $operation): bool => $operation === 'create')
-                            ->dehydrated(static fn (mixed $state): bool => filled($state)),
+                            ->required(fn (string $operation): bool => $operation === 'create')
+                            ->dehydrated(fn (mixed $state): bool => filled($state)),
                         TextInput::make('last_name')
                             ->label(__('admin.resources.user.last_name'))
-                            ->required(static fn (string $operation): bool => $operation === 'create')
-                            ->dehydrated(static fn (mixed $state): bool => filled($state)),
+                            ->required(fn (string $operation): bool => $operation === 'create')
+                            ->dehydrated(fn (mixed $state): bool => filled($state)),
                         TextInput::make('email')
                             ->label(__('admin.resources.user.email'))
                             ->email(),
                         TextInput::make('phone_number')
                             ->label(__('admin.resources.user.phone'))
                             ->tel()
-                            ->required(static fn (string $operation): bool => $operation === 'create')
-                            ->dehydrated(static fn (mixed $state): bool => filled($state)),
+                            ->required(fn (string $operation): bool => $operation === 'create')
+                            ->dehydrated(fn (mixed $state): bool => filled($state)),
                         Select::make('user_status_id')
                             ->label(__('admin.resources.user.account_status'))
                             ->relationship('status', 'name')
-                            ->required(static fn (string $operation): bool => $operation === 'create')
-                            ->dehydrated(static fn (mixed $state): bool => filled($state)),
+                            ->required(fn (string $operation): bool => $operation === 'create')
+                            ->dehydrated(fn (mixed $state): bool => filled($state)),
                     ]),
 
                 Section::make(__('admin.resources.vendor.business_profile'))
@@ -51,7 +51,7 @@ class VendorForm
                             ->schema([
                                 TextInput::make('business_name')
                                     ->label(__('admin.resources.vendor.business_name'))
-                                    ->required(static fn (string $operation): bool => $operation === 'create'),
+                                    ->required(fn (string $operation): bool => $operation === 'create'),
                                 TextInput::make('contact_phone')
                                     ->label(__('admin.resources.vendor.contact_phone')),
                                 TextInput::make('city')
@@ -76,19 +76,19 @@ class VendorForm
                             ->image()
                             ->disk('local')
                             ->directory('vendor-verification')
-                            ->required(static fn (string $operation): bool => $operation === 'create'),
+                            ->required(fn (string $operation): bool => $operation === 'create'),
                         FileUpload::make('id_card_back')
                             ->label(__('admin.resources.vendor.id_card_back'))
                             ->image()
                             ->disk('local')
                             ->directory('vendor-verification')
-                            ->required(static fn (string $operation): bool => $operation === 'create'),
+                            ->required(fn (string $operation): bool => $operation === 'create'),
                         FileUpload::make('store_front_image')
                             ->label(__('admin.resources.vendor.store_photo'))
                             ->image()
                             ->disk('local')
                             ->directory('vendor-verification')
-                            ->required(static fn (string $operation): bool => $operation === 'create'),
+                            ->required(fn (string $operation): bool => $operation === 'create'),
                         FileUpload::make('organic_certificate_url')
                             ->label(__('admin.resources.vendor.organic_cert'))
                             ->disk('local')
@@ -106,16 +106,16 @@ class VendorForm
                                 'ABA' => 'ABA',
                                 'Acleda' => 'Acleda',
                             ])
-                            ->required(static fn (string $operation): bool => $operation === 'create')
+                            ->required(fn (string $operation): bool => $operation === 'create')
                             ->columnSpanFull(),
 
                         TextInput::make('bank_account_name')
                             ->label(__('admin.resources.vendor.account_holder'))
                             ->placeholder('KOY YOTRABOTH')
-                            ->required(static fn (string $operation): bool => $operation === 'create'),
+                            ->required(fn (string $operation): bool => $operation === 'create'),
                         TextInput::make('bank_account_number')
                             ->label(__('admin.resources.vendor.account_number'))
-                            ->required(static fn (string $operation): bool => $operation === 'create'),
+                            ->required(fn (string $operation): bool => $operation === 'create'),
 
                         FileUpload::make('bank_qr_code')
                             ->label(__('admin.resources.vendor.qr_code'))

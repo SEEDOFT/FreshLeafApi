@@ -10,7 +10,6 @@ use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Broadcasting\PrivateChannel;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcastNow;
 use Illuminate\Foundation\Events\Dispatchable;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 use Override;
 
@@ -37,18 +36,9 @@ class SupportMessageSent implements ShouldBroadcastNow
             new PrivateChannel('support.ticket.'.$this->message->support_ticket_id),
         ];
 
-        // Only broadcast to the admin channel if it's from a user
-        // (Admins don't need to notify other admins about their own replies via the admin channel)
-        if ($this->message->sender_type === 'user') {
+        if ($this->message->sender_type === SupportMessage::USER) {
             $channels[] = new PrivateChannel('support.admin');
         }
-
-        Log::info('[SupportMessageSent] Broadcasting to channels', [
-            'message_id' => $this->message->id,
-            'sender_type' => $this->message->sender_type,
-            'ticket_id' => $this->message->support_ticket_id,
-            'channels' => array_map(fn ($c) => $c->name, $channels),
-        ]);
 
         return $channels;
     }

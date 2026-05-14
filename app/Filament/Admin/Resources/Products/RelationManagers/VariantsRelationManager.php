@@ -30,22 +30,22 @@ class VariantsRelationManager extends RelationManager
                 Select::make('unit_id')
                     ->label(__('admin.resources.product.unit'))
                     ->relationship('unit', 'name')
-                    ->required(static fn (string $operation): bool => $operation === 'create')
-                    ->dehydrated(static fn (mixed $state): bool => filled($state)),
+                    ->required(fn (string $operation): bool => $operation === 'create')
+                    ->dehydrated(fn (mixed $state): bool => filled($state)),
                 TextInput::make('name')
                     ->label(__('admin.resources.unit.name'))
                     ->placeholder('e.g. 500g Pack, Bulk 5kg')
-                    ->required(static fn (string $operation): bool => $operation === 'create')
-                    ->dehydrated(static fn (mixed $state): bool => filled($state)),
+                    ->required(fn (string $operation): bool => $operation === 'create')
+                    ->dehydrated(fn (mixed $state): bool => filled($state)),
                 TextInput::make('quantity_in_unit')
                     ->label(__('admin.resources.product.quantity_in_unit'))
-                    ->required(static fn (string $operation): bool => $operation === 'create')
-                    ->dehydrated(static fn (mixed $state): bool => filled($state))
+                    ->required(fn (string $operation): bool => $operation === 'create')
+                    ->dehydrated(fn (mixed $state): bool => filled($state))
                     ->numeric(),
                 TextInput::make('price')
                     ->label(__('admin.resources.product.price'))
-                    ->required(static fn (string $operation): bool => $operation === 'create')
-                    ->dehydrated(static fn (mixed $state): bool => filled($state))
+                    ->required(fn (string $operation): bool => $operation === 'create')
+                    ->dehydrated(fn (mixed $state): bool => filled($state))
                     ->numeric()
                     ->prefix('$'),
             ]);

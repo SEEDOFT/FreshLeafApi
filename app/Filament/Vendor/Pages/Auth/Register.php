@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 namespace App\Filament\Vendor\Pages\Auth;
 
+use App\Filament\Forms\Components\PasswordInput;
 use App\Filament\Forms\Components\PhoneNumberInput;
 use App\Models\User;
 use App\Models\UserStatus;
 use App\Models\UserType;
 use Closure;
 use Filament\Auth\Pages\Register as BaseRegister;
-use Filament\Facades\Filament;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Components\Grid;
@@ -29,6 +29,14 @@ use Override;
 class Register extends BaseRegister
 {
     #[Override]
+    public function getLayout(): string
+    {
+        return 'filament-panels::components.layout.base';
+    }
+
+    protected string $view = 'filament.vendor.pages.auth.register';
+
+    #[Override]
     public function getHeading(): string|Htmlable
     {
         return __('admin.auth.register.title');
@@ -40,7 +48,7 @@ class Register extends BaseRegister
         return new HtmlString(
             __('admin.auth.register.subheading').' '.
             __('admin.auth.register.already_have_account').' '.
-            '<a class="text-primary-600 font-medium hover:text-primary-500" href="'.Filament::getLoginUrl().'">'.
+            '<a class="text-primary-600 font-medium hover:text-primary-500" href="'.route('filament.vendor.auth.login').'">'.
             __('admin.auth.register.login_here').
             '</a>'
         );
@@ -71,8 +79,14 @@ class Register extends BaseRegister
                             Grid::make(1)->schema([
                                 $this->getNameFormComponent(),
                                 $this->getPhoneNumberFormComponent(),
-                                $this->getPasswordFormComponent(),
-                                $this->getPasswordConfirmationFormComponent(),
+                                PasswordInput::make('password')
+                                    ->label(__('admin.auth.login.password'))
+                                    ->required()
+                                    ->revealable(),
+                                PasswordInput::make('password_confirmation')
+                                    ->label(__('admin.auth.register.password_confirm'))
+                                    ->required()
+                                    ->revealable(),
                             ]),
                         ]),
 
@@ -83,8 +97,8 @@ class Register extends BaseRegister
                             Grid::make(2)->schema([
                                 TextInput::make('business_name')
                                     ->label(__('admin.auth.register.business_name'))
-                                    ->required(static fn (string $operation): bool => $operation === 'create')
-                                    ->dehydrated(static fn (mixed $state): bool => filled($state))
+                                    ->required(fn (string $operation): bool => $operation === 'create')
+                                    ->dehydrated(fn (mixed $state): bool => filled($state))
                                     ->maxLength(255),
                                 TextInput::make('contact_phone')
                                     ->label(__('panels.form.fields.contact_phone'))
@@ -113,22 +127,22 @@ class Register extends BaseRegister
                                     ->image()
                                     ->disk('local')
                                     ->directory('vendor-verification')
-                                    ->required(static fn (string $operation): bool => $operation === 'create')
-                                    ->dehydrated(static fn (mixed $state): bool => filled($state)),
+                                    ->required(fn (string $operation): bool => $operation === 'create')
+                                    ->dehydrated(fn (mixed $state): bool => filled($state)),
                                 FileUpload::make('id_card_back')
                                     ->label(__('admin.auth.register.id_back'))
                                     ->image()
                                     ->disk('local')
                                     ->directory('vendor-verification')
-                                    ->required(static fn (string $operation): bool => $operation === 'create')
-                                    ->dehydrated(static fn (mixed $state): bool => filled($state)),
+                                    ->required(fn (string $operation): bool => $operation === 'create')
+                                    ->dehydrated(fn (mixed $state): bool => filled($state)),
                                 FileUpload::make('store_front_image')
                                     ->label(__('admin.auth.register.store_photo'))
                                     ->image()
                                     ->disk('local')
                                     ->directory('vendor-verification')
-                                    ->required(static fn (string $operation): bool => $operation === 'create')
-                                    ->dehydrated(static fn (mixed $state): bool => filled($state)),
+                                    ->required(fn (string $operation): bool => $operation === 'create')
+                                    ->dehydrated(fn (mixed $state): bool => filled($state)),
                                 FileUpload::make('organic_certificate_url')
                                     ->label(__('admin.auth.register.organic_cert'))
                                     ->disk('local')
@@ -144,18 +158,18 @@ class Register extends BaseRegister
                                 TextInput::make('bank_name')
                                     ->label(__('admin.auth.register.bank_name'))
                                     ->placeholder('e.g. ABA Bank')
-                                    ->required(static fn (string $operation): bool => $operation === 'create')
-                                    ->dehydrated(static fn (mixed $state): bool => filled($state))
+                                    ->required(fn (string $operation): bool => $operation === 'create')
+                                    ->dehydrated(fn (mixed $state): bool => filled($state))
                                     ->maxLength(255),
                                 TextInput::make('bank_account_name')
                                     ->label(__('admin.auth.register.account_holder'))
-                                    ->required(static fn (string $operation): bool => $operation === 'create')
-                                    ->dehydrated(static fn (mixed $state): bool => filled($state))
+                                    ->required(fn (string $operation): bool => $operation === 'create')
+                                    ->dehydrated(fn (mixed $state): bool => filled($state))
                                     ->maxLength(255),
                                 TextInput::make('bank_account_number')
                                     ->label(__('admin.auth.register.account_number'))
-                                    ->required(static fn (string $operation): bool => $operation === 'create')
-                                    ->dehydrated(static fn (mixed $state): bool => filled($state))
+                                    ->required(fn (string $operation): bool => $operation === 'create')
+                                    ->dehydrated(fn (mixed $state): bool => filled($state))
                                     ->maxLength(255),
                             ]),
                             FileUpload::make('bank_qr_code')
@@ -163,8 +177,8 @@ class Register extends BaseRegister
                                 ->image()
                                 ->disk('local')
                                 ->directory('vendor-verification')
-                                ->required(static fn (string $operation): bool => $operation === 'create')
-                                ->dehydrated(static fn (mixed $state): bool => filled($state)),
+                                ->required(fn (string $operation): bool => $operation === 'create')
+                                ->dehydrated(fn (mixed $state): bool => filled($state)),
                         ]),
                 ])
                     ->submitAction(

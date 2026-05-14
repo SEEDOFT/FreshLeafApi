@@ -8,32 +8,46 @@ use App\Models\User;
 use App\Models\UserType;
 use Illuminate\Support\Facades\Broadcast;
 
-Broadcast::channel('ai-chat.{userId}.{sessionId}', static function (User $user, string $userId, string $sessionId): bool {
-    if (! hash_equals((string) $user->id, $userId)) {
-        return false;
-    }
+Broadcast::channel(
+    channel: 'ai-chat.{userId}.{sessionId}',
+    callback: static function (
+        User $user,
+        string $userId,
+        string $sessionId
+    ): bool {
+        if ($user->id !== (int) $userId) {
+            return false;
+        }
 
-    return AiChatSession::where('session_id', $sessionId)
-        ->where('user_id', (int) $user->id)
-        ->exists();
-}, ['guards' => ['web', 'api', 'sanctum']]);
+        return AiChatSession::where('session_id', $sessionId)
+            ->where('user_id', $user->id)
+            ->exists();
 
-Broadcast::channel('support.ticket.{ticketId}', static function (User $user, string $ticketId): bool {
-    $ticket = SupportTicket::find((int) $ticketId);
+    },
+    options: ['guards' => ['web']]
+);
 
-    if (! $ticket) {
-        return false;
-    }
+Broadcast::channel(
+    channel: 'support.ticket.{ticketId}',
+    callback: static function (User $user, string $ticketId): bool {
+        $ticket = SupportTicket::find((int) $ticketId);
 
-    return (int) $user->id === (int) $ticket->user_id || $user->isType(UserType::ADMIN);
-}, ['guards' => ['web', 'api', 'sanctum']]);
+        if (! $ticket) {
+            return false;
+        }
 
-Broadcast::channel('support.admin', static function (User $user): bool {
-    Log::info('[Channels] support.admin authorization', [
-        'user_id' => $user->id,
-        'user_type_id' => $user->user_type_id,
-        'is_admin' => $user->isType(UserType::ADMIN),
-    ]);
+        return $user->id ===
+            (int) $ticket->user_id ||
+            $user->isType(UserType::ADMIN_ID);
+    },
 
-    return $user->isType(UserType::ADMIN);
-}, ['guards' => ['web', 'api', 'sanctum']]);
+    options: ['guards' => ['web']]
+);
+
+Broadcast::channel(
+    channel: 'support.admin',
+    callback: static function (User $user): bool {
+        return $user->isType(UserType::ADMIN_ID);
+    },
+    options: ['guards' => ['web']]
+);

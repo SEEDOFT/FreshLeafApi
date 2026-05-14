@@ -3,7 +3,6 @@ import './bootstrap';
 const supportPanelPath = '/admin/support-chat';
 
 const isAdminPanelPath = () => window.location.pathname.startsWith('/admin');
-
 const isSupportPanelPath = () => window.location.pathname === supportPanelPath;
 
 const buildSupportPanelUrl = (ticketId = null) => {

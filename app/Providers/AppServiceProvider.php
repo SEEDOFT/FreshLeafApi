@@ -14,6 +14,8 @@ use Illuminate\Support\ServiceProvider;
 use Kreait\Firebase\Messaging\SendReport;
 use NotificationChannels\Fcm\FcmChannel;
 
+use function class_exists;
+
 class AppServiceProvider extends ServiceProvider
 {
     /**
@@ -64,7 +66,10 @@ class AppServiceProvider extends ServiceProvider
             }
         });
 
-        if ($this->app->environment('local') && \class_exists(\Laravel\Telescope\TelescopeServiceProvider::class)) {
+        if (
+            $this->app->environment('local') &&
+            class_exists(\Laravel\Telescope\TelescopeServiceProvider::class
+            )) {
             $this->app->register(\Laravel\Telescope\TelescopeServiceProvider::class);
             $this->app->register(TelescopeServiceProvider::class);
         }

@@ -7,7 +7,6 @@ namespace App\Observers;
 use App\Models\Order;
 use App\Notifications\Order\NewOrderNotification;
 use App\Notifications\Order\OrderStatusUpdatedNotification;
-use Illuminate\Support\Facades\Notification;
 
 class OrderObserver
 {
@@ -18,9 +17,6 @@ class OrderObserver
     {
         // Notify the user who placed the order
         $order->user?->notify(new NewOrderNotification($order));
-
-        // Optionally notify admins (if applicable)
-        // Notification::send($admins, new NewOrderNotification($order));
     }
 
     /**

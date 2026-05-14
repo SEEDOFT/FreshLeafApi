@@ -36,6 +36,15 @@ return Application::configure(basePath: dirname(__DIR__))
         ]);
     })
     ->withExceptions(static function (Exceptions $exceptions): void {
+        $exceptions->report(static function (Throwable $exception): void {
+            Log::error($exception->getMessage(), [
+                'exception' => get_class($exception),
+                'file' => $exception->getFile(),
+                'line' => $exception->getLine(),
+                'trace' => $exception->getTraceAsString(),
+            ]);
+        })->stop();
+
         $buildExceptionResponse = static function (
             int $code,
             bool $success,

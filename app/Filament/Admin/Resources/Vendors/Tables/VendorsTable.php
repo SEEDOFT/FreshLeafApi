@@ -36,7 +36,7 @@ class VendorsTable
                     ->sortable(),
                 TextColumn::make('name')
                     ->label(__('admin.resources.vendor.owner'))
-                    ->getStateUsing(static fn (User $record) => $record->fullName)
+                    ->getStateUsing(fn (User $record) => $record->fullName)
                     ->searchable(['first_name', 'last_name']),
                 TextColumn::make('phone_number')
                     ->label(__('admin.resources.vendor.phone'))
@@ -44,7 +44,7 @@ class VendorsTable
                 TextColumn::make('status.name')
                     ->label(__('admin.resources.vendor.status'))
                     ->badge()
-                    ->color(static fn (string $state): string => match ($state) {
+                    ->color(fn (string $state): string => match ($state) {
                         'Active' => 'success',
                         'Pending' => 'warning',
                         'Inactive', 'Deleted' => 'danger',
@@ -77,7 +77,7 @@ class VendorsTable
                     ->icon('heroicon-o-check-circle')
                     ->color('success')
                     ->visible(
-                        static fn (User $record) => $record->vendorProfile &&
+                        fn (User $record) => $record->vendorProfile &&
                          ! $record->vendorProfile->is_verified
                     )
                     ->action(static function (User $record, array $data) {
@@ -103,7 +103,7 @@ class VendorsTable
                     ->icon('heroicon-o-x-circle')
                     ->color('danger')
                     ->visible(
-                        static fn (User $record) => $record->vendorProfile &&
+                        fn (User $record) => $record->vendorProfile &&
                         ! $record->vendorProfile->is_verified
                     )
                     ->action(static function (User $record, array $data) {
@@ -117,8 +117,8 @@ class VendorsTable
                     ->form([
                         Textarea::make('reason')
                             ->label(__('admin.resources.vendor.rejection_reason'))
-                            ->required(static fn (string $operation): bool => $operation === 'create')
-                            ->dehydrated(static fn (mixed $state): bool => filled($state)),
+                            ->required(fn (string $operation): bool => $operation === 'create')
+                            ->dehydrated(fn (mixed $state): bool => filled($state)),
                     ])
                     ->requiresConfirmation(),
             ])

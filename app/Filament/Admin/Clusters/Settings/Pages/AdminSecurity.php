@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Filament\Admin\Clusters\Settings\Pages;
 
 use App\Filament\Admin\Clusters\Settings;
-use App\Models\User;
+use BackedEnum;
 use Filament\Actions\Action;
 use Filament\Forms\Components\TextInput;
 use Filament\Notifications\Notification;
@@ -18,6 +18,8 @@ use Override;
 
 class AdminSecurity extends Page
 {
+    public bool $passwordVerified = false;
+
     #[Override]
     protected static ?string $cluster = Settings::class;
 
@@ -31,7 +33,7 @@ class AdminSecurity extends Page
     }
 
     #[Override]
-    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-lock-closed';
+    protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-lock-closed';
 
     #[Override]
     protected string $view = 'filament.pages.shared.form-page';
@@ -56,17 +58,28 @@ class AdminSecurity extends Page
                         TextInput::make('current_password')
                             ->label(__('admin.resources.security.current_password'))
                             ->password()
-                            ->required(static fn (string $operation): bool => $operation === 'create')->dehydrated(static fn (mixed $state): bool => filled($state))
-                            ->currentPassword(),
+                            ->required(fn (): bool => ! $this->passwordVerified)
+                            ->dehydrated(fn (mixed $state): bool => filled($state))
+                            ->currentPassword()
+                            ->columnSpan(1),
+                        Action::make('check_password')
+                            ->label(__('admin.resources.security.check_password'))
+                            ->action('checkPassword')
+                            ->color('primary')
+                            ->extraAttributes(['class' => 'flex items-end mt-7']),
                         TextInput::make('password')
                             ->label(__('admin.resources.security.password'))
                             ->password()
-                            ->required(static fn (string $operation): bool => $operation === 'create')->dehydrated(static fn (mixed $state): bool => filled($state))
-                            ->confirmed(),
+                            ->required(fn (): bool => $this->passwordVerified)
+                            ->dehydrated(fn (mixed $state): bool => filled($state))
+                            ->confirmed()
+                            ->columnSpan(1),
                         TextInput::make('password_confirmation')
                             ->label(__('admin.resources.security.password_confirmation'))
                             ->password()
-                            ->required(static fn (string $operation): bool => $operation === 'create')->dehydrated(static fn (mixed $state): bool => filled($state)),
+                            ->required(fn (): bool => $this->passwordVerified)
+                            ->dehydrated(fn (mixed $state): bool => filled($state))
+                            ->columnSpan(1),
                     ])->columns(2),
             ])
             ->statePath('data');
@@ -75,25 +88,32 @@ class AdminSecurity extends Page
     public function save(): void
     {
         $user = Auth::user();
+
+        if (! $user) {
+            return;
+        }
+
         $form = $this->getSchema('form');
-        if (! $user instanceof User || ! $form) {
+
+        if (! $form) {
             return;
         }
 
         $state = $form->getState();
 
-        $password = $state['password'] ?? null;
-
-        if ($password) {
+        if ($this->passwordVerified && filled($state['password'] ?? null)) {
             $user->update([
-                'password' => Hash::make($password),
+                'password' => Hash::make($state['password']),
             ]);
+
+            $this->passwordVerified = false;
+            $this->data['current_password'] = null;
+            $this->data['password'] = null;
+            $this->data['password_confirmation'] = null;
         }
 
-        $this->data = [];
-
         Notification::make()
-            ->title(__('admin.resources.security.success_notification'))
+            ->title(__('admin.settings.app_settings.success_notification'))
             ->success()
             ->send();
     }
@@ -107,7 +127,38 @@ class AdminSecurity extends Page
             Action::make('save')
                 ->label(__('admin.resources.security.update_password'))
                 ->submit('save')
-                ->keyBindings(['mod+s']),
+                ->keyBindings([]),
         ];
+    }
+
+    public function checkPassword(): void
+    {
+        $user = Auth::user();
+
+        if (! $user) {
+            return;
+        }
+
+        $currentPassword = $this->data['current_password'] ?? '';
+
+        if (! Hash::check($currentPassword, $user->password)) {
+            Notification::make()
+                ->title(__('admin.resources.security.password_incorrect'))
+                ->danger()
+                ->send();
+
+            $this->addError('data.current_password', __('admin.resources.security.password_incorrect'));
+
+            $this->passwordVerified = false;
+
+            return;
+        }
+
+        $this->passwordVerified = true;
+
+        Notification::make()
+            ->title(__('admin.resources.security.password_verified'))
+            ->success()
+            ->send();
     }
 }

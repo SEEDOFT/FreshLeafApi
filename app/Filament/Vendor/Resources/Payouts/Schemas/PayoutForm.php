@@ -17,8 +17,8 @@ class PayoutForm
             ->components([
                 TextInput::make('amount')
                     ->label(__('admin.resources.payout.amount'))
-                    ->required(static fn (string $operation): bool => $operation === 'create')
-                    ->dehydrated(static fn (mixed $state): bool => filled($state))
+                    ->required(fn (string $operation): bool => $operation === 'create')
+                    ->dehydrated(fn (mixed $state): bool => filled($state))
                     ->numeric()
                     ->prefix('$'),
                 TextInput::make('transaction_reference')

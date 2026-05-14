@@ -17,11 +17,11 @@ final class ThemeColors
     public static function getPalette(): array
     {
         return [
-            'primary' => '#10b981', // Vibrant Emerald
-            'success' => '#059669',
-            'warning' => '#f59e0b',
-            'danger' => '#ef4444',
-            'info' => '#3b82f6',
+            'primary' => '#2e5321', // Deep leaf green
+            'success' => '#3f7d2c',
+            'warning' => '#f6b93b',
+            'danger' => '#dc4c3f',
+            'info' => '#1e88e5',
             'gray' => Color::Zinc, // Clean Zinc Grays
         ];
     }
@@ -32,21 +32,21 @@ final class ThemeColors
      * @return array<string, string>
      */
     public const array BRAND = [
-        '50' => '#effaf2',
-        '100' => '#d9f2df',
-        '300' => '#7ccb8e',
-        '500' => '#2e9f58',
-        '700' => '#1f6e3b',
+        '50' => '#fbf8f2',
+        '100' => '#f3efe9',
+        '300' => '#3f6d2e',
+        '500' => '#2e5321',
+        '700' => '#1a3314',
     ];
 
     /**
-     * Accent colors (Amber/Gold palette).
+     * Accent colors (Brown/Peach palette).
      *
      * @return array<string, string>
      */
     public const array ACCENT = [
-        '500' => '#f4b400',
-        '600' => '#d89b00',
+        '500' => '#9e6844',
+        '600' => '#924a26',
     ];
 
     /**
@@ -57,11 +57,11 @@ final class ThemeColors
      * @return array<string, string>
      */
     public const array NEUTRAL = [
-        '50' => '#f8faf8',
-        '100' => '#eef2ef',
-        '300' => '#c5cfc7',
-        '500' => '#6b756d',
-        '900' => '#162018',
+        '50' => '#fcf9f5',
+        '100' => '#e5e5e5',
+        '300' => '#bdbdbd',
+        '500' => '#6b7260',
+        '900' => '#1a1a1a',
     ];
 
     /**

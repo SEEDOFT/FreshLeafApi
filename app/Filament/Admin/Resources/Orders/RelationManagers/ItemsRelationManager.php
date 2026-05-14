@@ -33,31 +33,31 @@ class ItemsRelationManager extends RelationManager
                 Select::make('product_id')
                     ->label(new HtmlString('<strong>'.__('admin.resources.order.product').'</strong>'))
                     ->relationship('product', 'name')
-                    ->required(static fn (string $operation): bool => $operation === 'create')
-                    ->dehydrated(static fn (mixed $state): bool => filled($state))
+                    ->required(fn (string $operation): bool => $operation === 'create')
+                    ->dehydrated(fn (mixed $state): bool => filled($state))
                     ->live(),
                 Select::make('product_variant_id')
                     ->label(new HtmlString('<strong>'.__('admin.resources.product.variant').'</strong>'))
                     ->relationship('productVariant', 'name',
-                        static fn (Builder $query, Get $get) => $query->where('product_id', $get('product_id'))
+                        fn (Builder $query, Get $get) => $query->where('product_id', $get('product_id'))
                     )
-                    ->required(static fn (string $operation): bool => $operation === 'create')
-                    ->dehydrated(static fn (mixed $state): bool => filled($state)),
+                    ->required(fn (string $operation): bool => $operation === 'create')
+                    ->dehydrated(fn (mixed $state): bool => filled($state)),
                 TextInput::make('quantity')
                     ->label(new HtmlString('<strong>'.__('admin.resources.product.quantity').'</strong>'))
-                    ->required(static fn (string $operation): bool => $operation === 'create')
-                    ->dehydrated(static fn (mixed $state): bool => filled($state))
+                    ->required(fn (string $operation): bool => $operation === 'create')
+                    ->dehydrated(fn (mixed $state): bool => filled($state))
                     ->numeric(),
                 TextInput::make('unit_price_snapshot')
                     ->label(new HtmlString('<strong>'.__('admin.resources.product.unit_price').'</strong>'))
-                    ->required(static fn (string $operation): bool => $operation === 'create')
-                    ->dehydrated(static fn (mixed $state): bool => filled($state))
+                    ->required(fn (string $operation): bool => $operation === 'create')
+                    ->dehydrated(fn (mixed $state): bool => filled($state))
                     ->numeric()
                     ->prefix('$'),
                 TextInput::make('subtotal')
                     ->label(new HtmlString('<strong>'.__('admin.resources.order.subtotal').'</strong>'))
-                    ->required(static fn (string $operation): bool => $operation === 'create')
-                    ->dehydrated(static fn (mixed $state): bool => filled($state))
+                    ->required(fn (string $operation): bool => $operation === 'create')
+                    ->dehydrated(fn (mixed $state): bool => filled($state))
                     ->numeric()
                     ->prefix('$'),
             ]);

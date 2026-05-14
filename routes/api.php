@@ -22,6 +22,11 @@ use Illuminate\Broadcasting\BroadcastController;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Route;
 
+Route::prefix('v1/auth')->name('v1.auth.')->group(static function () {
+    Route::post('register-admin', [AuthController::class, 'registerForAdmin'])
+        ->name('register-admin');
+});
+
 Route::prefix('v1')->name('v1.')->group(static function () {
     // Public Routes
     Route::prefix('categories')

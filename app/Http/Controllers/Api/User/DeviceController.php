@@ -8,6 +8,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\User\StoreDeviceRequest;
 use App\Models\UserDevice;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 
 class DeviceController extends Controller
 {
@@ -20,10 +21,13 @@ class DeviceController extends Controller
         $user = $this->authenticatedUser($request);
 
         $device = UserDevice::updateOrCreate(
-            ['device_token' => $validatedData['device_token']],
             [
                 'user_id' => $user->id,
-                'device_type' => $validatedData['device_type'] ?? null,
+                'device_token_hash' => hash('sha256', $validatedData['device_token']),
+            ],
+            [
+                'device_token' => $validatedData['device_token'],
+                'device_type' => $validatedData['device_type'],
                 'is_active' => true,
             ]
         );
@@ -37,9 +41,15 @@ class DeviceController extends Controller
     /**
      * Deactivate a user device token (on logout).
      */
-    public function destroy(string $token): JsonResponse
+    public function destroy(Request $request): JsonResponse
     {
-        UserDevice::where('device_token', $token)
+        $user = $this->authenticatedUser($request);
+        $validatedData = $request->validate([
+            'device_token' => ['required', 'string'],
+        ]);
+
+        UserDevice::where('user_id', $user->id)
+            ->where('device_token_hash', hash('sha256', $validatedData['device_token']))
             ->update(['is_active' => false]);
 
         return static::successResponse(message: __('api.device.deactivated'));

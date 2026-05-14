@@ -1,0 +1,366 @@
+@font-face {
+    font-family: 'Noto Sans Khmer';
+    src: url('../../../fonts/noto_sans_khmer/NotoSansKhmer-Regular.ttf') format('truetype');
+    font-weight: 400;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Noto Sans Khmer';
+    src: url('../../../fonts/noto_sans_khmer/NotoSansKhmer-Medium.ttf') format('truetype');
+    font-weight: 500;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Noto Sans Khmer';
+    src: url('../../../fonts/noto_sans_khmer/NotoSansKhmer-SemiBold.ttf') format('truetype');
+    font-weight: 600;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Noto Sans Khmer';
+    src: url('../../../fonts/noto_sans_khmer/NotoSansKhmer-Bold.ttf') format('truetype');
+    font-weight: 700;
+    font-style: normal;
+    font-display: swap;
+}
+
+/**
+ * Modern UI Redesign: Glassmorphism & Premium SaaS Look (Dark Mode Compatible)
+ */
+
+:root {
+    --font-family: 'Noto Sans Khmer', 'Plus Jakarta Sans', sans-serif;
+    --freshleaf-brand-50: #effaf2;
+    --freshleaf-brand-100: #d9f2df;
+    --freshleaf-brand-300: #7ccb8e;
+    --freshleaf-brand-500: #10b981;
+    --freshleaf-brand-700: #047857;
+    --freshleaf-accent-500: #f59e0b;
+    --freshleaf-accent-600: #d97706;
+    --freshleaf-neutral-50: #f9fafb;
+    --freshleaf-neutral-100: #f3f4f6;
+    --freshleaf-neutral-300: #d1d5db;
+    --freshleaf-neutral-500: #6b7280;
+    --freshleaf-neutral-900: #111827;
+}
+
+/* Modern App Body Background */
+.fi-body {
+    font-family: var(--font-family);
+    line-height: 1.6;
+    background-color: var(--freshleaf-neutral-50);
+    background-image:
+        radial-gradient(at 0% 0%, rgba(16, 185, 129, 0.05) 0px, transparent 50%),
+        radial-gradient(at 100% 0%, rgba(59, 130, 246, 0.05) 0px, transparent 50%);
+}
+
+.dark .fi-body {
+    background-color: #09090b;
+    /* Zinc 950 */
+    background-image:
+        radial-gradient(at 0% 0%, rgba(16, 185, 129, 0.1) 0px, transparent 40%),
+        radial-gradient(at 100% 0%, rgba(30, 41, 59, 0.2) 0px, transparent 40%);
+}
+
+/* Floating Glassmorphism Sidebar */
+@media (min-width: 1024px) {
+    .fi-sidebar {
+        margin: 1rem;
+        height: calc(100vh - 2rem) !important;
+        border-radius: 1.5rem !important;
+        border: 1px solid rgba(255, 255, 255, 0.5) !important;
+        background: rgba(255, 255, 255, 0.7) !important;
+        backdrop-filter: blur(12px) !important;
+        box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1) !important;
+    }
+
+    .dark .fi-sidebar {
+        border-color: rgba(255, 255, 255, 0.05) !important;
+        background: rgba(24, 24, 27, 0.6) !important;
+        /* Zinc 900 */
+        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5) !important;
+    }
+}
+
+/* Glassmorphism Topbar */
+.fi-topbar {
+    margin: 1rem 1rem 0 1rem;
+    border-radius: 1rem !important;
+    background: rgba(255, 255, 255, 0.7) !important;
+    backdrop-filter: blur(8px) !important;
+    border: 1px solid rgba(255, 255, 255, 0.5) !important;
+    box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.05) !important;
+}
+
+.dark .fi-topbar {
+    background: rgba(24, 24, 27, 0.6) !important;
+    border-color: rgba(255, 255, 255, 0.05) !important;
+}
+
+/* Modern Card Styling (Sections & Tables) */
+.fi-section,
+.fi-ta-ctn {
+    border: none !important;
+    background: white !important;
+    box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.05), 0 4px 6px -4px rgb(0 0 0 / 0.05) !important;
+    border-radius: 1.25rem !important;
+    overflow: hidden;
+}
+
+.dark .fi-section,
+.dark .fi-ta-ctn {
+    background: #18181b !important;
+    /* Zinc 900 */
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.2) !important;
+}
+
+/* Navigation Item Refinement */
+.fi-sidebar-item-button {
+    border-radius: 0.75rem !important;
+    margin: 0.125rem 0.5rem !important;
+}
+
+.fi-sidebar-item-active {
+    background: linear-gradient(to right, rgba(16, 185, 129, 0.1), rgba(16, 185, 129, 0.02)) !important;
+}
+
+.dark .fi-sidebar-item-active {
+    background: linear-gradient(to right, rgba(16, 185, 129, 0.2), transparent) !important;
+}
+
+/* Table Header Refinement */
+.fi-ta-header-cell {
+    background: #f8fafc !important;
+    text-transform: uppercase !important;
+    font-size: 0.75rem !important;
+    letter-spacing: 0.05em !important;
+    color: #64748b !important;
+    border-bottom: 1px solid #f1f5f9 !important;
+}
+
+.dark .fi-ta-header-cell {
+    background: #27272a !important;
+    /* Zinc 800 */
+    color: #a1a1aa !important;
+    border-bottom-color: #3f3f46 !important;
+}
+
+/* Custom Modern Scrollbar */
+::-webkit-scrollbar {
+    width: 6px;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #e2e8f0;
+    border-radius: 10px;
+}
+
+.dark ::-webkit-scrollbar-thumb {
+    background: #3f3f46;
+}
+
+/* Modern Dropdown Redesign */
+.fi-dropdown-panel {
+    border: 1px solid rgba(255, 255, 255, 0.5) !important;
+    background: rgba(255, 255, 255, 0.8) !important;
+    backdrop-filter: blur(16px) !important;
+    border-radius: 1rem !important;
+    box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1) !important;
+}
+
+.dark .fi-dropdown-panel {
+    border-color: rgba(255, 255, 255, 0.05) !important;
+    background: rgba(24, 24, 27, 0.8) !important;
+}
+
+.fi-dropdown-list-item {
+    border-radius: 0.5rem !important;
+    margin: 0.25rem 0.5rem !important;
+    transition: all 0.2s ease !important;
+}
+
+.fi-dropdown-list-item:hover {
+    background: rgba(16, 185, 129, 0.1) !important;
+    color: #10b981 !important;
+}
+
+/* Pagination Refinement */
+.fi-ta-pagination {
+    margin-top: auto !important;
+    padding: 1.25rem !important;
+    border-top: 1px solid #f1f5f9 !important;
+    background: #fcfdfe !important;
+}
+
+.dark .fi-ta-pagination {
+    border-top-color: #27272a !important;
+    background: rgba(24, 24, 27, 0.4) !important;
+}
+
+.fi-pagination-item {
+    border-radius: 0.5rem !important;
+    transition: all 0.2s ease !important;
+}
+
+/* Ensure Table Container is flex for pagination anchoring */
+.fi-ta-ctn {
+    display: flex !important;
+    flex-direction: column !important;
+    min-height: 200px !important;
+}
+
+.fi-ta-content {
+    flex-grow: 1 !important;
+}
+
+/* ============================================
+ * Stats Overview Widget - Remove Borders
+ * ============================================ */
+
+/* Target stat containers */
+.fi-wi-stats-overview [role="region"]>div {
+    border: none !important;
+    box-shadow: none !important;
+}
+
+/* Target individual stat cards */
+[class*="fi-stats-overview"]>* {
+    border: 0 !important;
+    outline: none !important;
+    box-shadow: none !important;
+}
+
+/* Filament v3 stat card selectors */
+.fi-stats-overview-stat {
+    border: none !important;
+    box-shadow: none !important;
+}
+
+/* Generic stat card without border */
+div[class*="stat"] {
+    border: none !important;
+}
+
+/* Country select labels: dropdown shows name, selected value shows flag + code only. */
+.freshleaf-country-option {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    min-width: 0;
+    width: 100%;
+}
+
+.freshleaf-country-option-flag {
+    flex-shrink: 0;
+    border-radius: 2px;
+    object-fit: cover;
+}
+
+.freshleaf-country-option-name {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.freshleaf-country-option-code {
+    margin-left: auto;
+    color: #6b7280;
+    font-size: 0.75rem;
+    white-space: nowrap;
+}
+
+.fi-select-input-value-label .freshleaf-country-option {
+    width: auto;
+}
+
+.fi-select-input-value-label .freshleaf-country-option-name {
+    display: none;
+}
+
+.fi-select-input-value-label .freshleaf-country-option-code {
+    margin-left: 0;
+    font-size: inherit;
+}
+
+.freshleaf-support-toast {
+    position: fixed;
+    right: 1rem;
+    bottom: 1rem;
+    z-index: 60;
+    display: flex;
+    width: min(24rem, calc(100vw - 2rem));
+    align-items: flex-start;
+    gap: 0.75rem;
+    border: 1px solid rgba(16, 185, 129, 0.22);
+    border-radius: 1rem;
+    background: rgba(255, 255, 255, 0.96);
+    padding: 1rem;
+    color: #111827;
+    text-align: left;
+    box-shadow: 0 20px 35px -18px rgba(15, 23, 42, 0.35);
+    opacity: 0;
+    transform: translateY(0.75rem);
+    transition: opacity 180ms ease, transform 180ms ease;
+}
+
+.dark .freshleaf-support-toast {
+    border-color: rgba(52, 211, 153, 0.22);
+    background: rgba(24, 24, 27, 0.96);
+    color: #f9fafb;
+    box-shadow: 0 20px 35px -18px rgba(0, 0, 0, 0.75);
+}
+
+.freshleaf-support-toast.is-visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.freshleaf-support-toast__icon {
+    display: grid;
+    width: 2.5rem;
+    height: 2.5rem;
+    flex-shrink: 0;
+    place-items: center;
+    border-radius: 999px;
+    background: rgba(16, 185, 129, 0.12);
+    color: #059669;
+}
+
+.freshleaf-support-toast__icon svg {
+    width: 1.35rem;
+    height: 1.35rem;
+}
+
+.freshleaf-support-toast__content {
+    min-width: 0;
+}
+
+.freshleaf-support-toast__title,
+.freshleaf-support-toast__body {
+    display: block;
+}
+
+.freshleaf-support-toast__title {
+    font-weight: 700;
+    line-height: 1.25;
+}
+
+.freshleaf-support-toast__body {
+    margin-top: 0.2rem;
+    overflow: hidden;
+    color: #6b7280;
+    font-size: 0.875rem;
+    line-height: 1.35;
+    text-overflow: ellipsis;
+}
+
+.dark .freshleaf-support-toast__body {
+    color: #a1a1aa;
+}

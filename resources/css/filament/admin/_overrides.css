@@ -1,0 +1,74 @@
+[data-auth-page="freshleaf-admin"] .fi-fo-field-wrp {
+    margin: 0;
+}
+
+[data-auth-page="freshleaf-admin"] label {
+    color: var(--fl-auth-text) !important;
+    font-size: 0.82rem !important;
+    font-weight: 700 !important;
+}
+
+.dark [data-auth-page="freshleaf-admin"] label {
+    color: var(--fl-auth-text-dark) !important;
+}
+
+[data-auth-page="freshleaf-admin"] .fi-fo-field-wrp > div > div {
+    overflow: hidden !important;
+    border: 1px solid rgba(15, 35, 26, 0.1) !important;
+    border-radius: var(--fl-auth-radius-control) !important;
+    background: rgba(255, 255, 255, 0.74) !important;
+    box-shadow: none !important;
+    transition:
+        border-color 180ms ease,
+        background 180ms ease,
+        box-shadow 180ms ease !important;
+}
+
+.dark [data-auth-page="freshleaf-admin"] .fi-fo-field-wrp > div > div {
+    border-color: rgba(255, 255, 255, 0.1) !important;
+    background: rgba(255, 255, 255, 0.06) !important;
+}
+
+[data-auth-page="freshleaf-admin"] .fi-fo-field-wrp > div > div:focus-within {
+    border-color: var(--fl-auth-primary) !important;
+    background: #ffffff !important;
+    box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.1) !important;
+}
+
+.dark [data-auth-page="freshleaf-admin"] .fi-fo-field-wrp > div > div:focus-within {
+    background: rgba(255, 255, 255, 0.09) !important;
+}
+
+[data-auth-page="freshleaf-admin"] input {
+    color: var(--fl-auth-text) !important;
+    font-family: var(--fl-auth-font) !important;
+    font-size: 0.95rem !important;
+}
+
+.dark [data-auth-page="freshleaf-admin"] input {
+    color: var(--fl-auth-text-dark) !important;
+}
+
+[data-auth-page="freshleaf-admin"] .fl-auth__submit {
+    min-height: 3.25rem !important;
+    border: 0 !important;
+    border-radius: var(--fl-auth-radius-control) !important;
+    background: linear-gradient(135deg, var(--fl-auth-primary-strong), var(--fl-auth-primary)) !important;
+    box-shadow: 0 14px 28px rgba(5, 150, 105, 0.22) !important;
+    font-size: 0.96rem !important;
+    font-weight: 800 !important;
+    transition:
+        transform 180ms ease,
+        box-shadow 180ms ease,
+        filter 180ms ease !important;
+}
+
+[data-auth-page="freshleaf-admin"] .fl-auth__submit:hover {
+    filter: saturate(1.08);
+    transform: translateY(-1px);
+    box-shadow: 0 18px 34px rgba(5, 150, 105, 0.28) !important;
+}
+
+[data-auth-page="freshleaf-admin"] .fl-auth__submit:active {
+    transform: translateY(0);
+}

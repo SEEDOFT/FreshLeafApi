@@ -23,21 +23,21 @@ class WalletForm
                         Select::make('user_id')
                             ->label(new HtmlString('<strong>'.__('admin.resources.wallet.user').'</strong>'))
                             ->relationship('user', 'first_name')
-                            ->getOptionLabelFromRecordUsing(static fn (User $record) => "{$record->first_name} {$record->last_name}")
+                            ->getOptionLabelFromRecordUsing(fn (User $record) => "{$record->first_name} {$record->last_name}")
                             ->searchable()
                             ->preload()
-                            ->required(static fn (string $operation): bool => $operation === 'create')
-                            ->dehydrated(static fn (mixed $state): bool => filled($state)),
+                            ->required(fn (string $operation): bool => $operation === 'create')
+                            ->dehydrated(fn (mixed $state): bool => filled($state)),
                         Select::make('currency_id')
                             ->label(new HtmlString('<strong>'.__('admin.resources.wallet.currency').'</strong>'))
                             ->relationship('currency', 'name')
-                            ->required(static fn (string $operation): bool => $operation === 'create')
-                            ->dehydrated(static fn (mixed $state): bool => filled($state)),
+                            ->required(fn (string $operation): bool => $operation === 'create')
+                            ->dehydrated(fn (mixed $state): bool => filled($state)),
                         TextInput::make('balance')
                             ->label(new HtmlString('<strong>'.__('admin.resources.wallet.balance').'</strong>'))
                             ->numeric()
-                            ->required(static fn (string $operation): bool => $operation === 'create')
-                            ->dehydrated(static fn (mixed $state): bool => filled($state))
+                            ->required(fn (string $operation): bool => $operation === 'create')
+                            ->dehydrated(fn (mixed $state): bool => filled($state))
                             ->default(0),
                     ]),
             ]);

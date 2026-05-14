@@ -29,7 +29,7 @@ class ViewVendor extends ViewRecord
                 ->icon('heroicon-o-check-circle')
                 ->color('success')
                 ->visible(
-                    static fn (User $record) => $record->isType(UserType::VENDOR_ID) &&
+                    fn (User $record) => $record->isType(UserType::VENDOR_ID) &&
                     $record->vendorProfile && ! $record->vendorProfile->is_verified
                 )
                 ->action(static function (User $record, array $data) {
@@ -57,7 +57,7 @@ class ViewVendor extends ViewRecord
                 ->icon('heroicon-o-x-circle')
                 ->color('danger')
                 ->visible(
-                    static fn (User $record) => $record->isType(UserType::VENDOR_ID) &&
+                    fn (User $record) => $record->isType(UserType::VENDOR_ID) &&
                     $record->vendorProfile &&
                     ! $record->vendorProfile->is_verified
                 )
@@ -77,8 +77,8 @@ class ViewVendor extends ViewRecord
                 ->form([
                     Textarea::make('reason')
                         ->label(__('admin.resources.vendor.rejection_reason'))
-                        ->required(static fn (string $operation): bool => $operation === 'create')
-                        ->dehydrated(static fn (mixed $state): bool => filled($state)),
+                        ->required(fn (string $operation): bool => $operation === 'create')
+                        ->dehydrated(fn (mixed $state): bool => filled($state)),
                 ])
                 ->requiresConfirmation(),
         ];

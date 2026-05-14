@@ -56,7 +56,7 @@ class NewSupportTicket implements ShouldBroadcastNow
             'user_id' => $this->ticket->user_id,
             'user_name' => $this->ticket->user->fullName,
             'status' => $this->ticket->status,
-            'created_at' => $this->ticket->created_at->toIso8601String(),
+            'created_at' => $this->ticket->created_at?->toIso8601String(),
         ];
     }
 }

@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Table;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Carbon;
 
 /**
@@ -16,8 +17,8 @@ use Illuminate\Support\Carbon;
  * @property string $sender_type
  * @property int $sender_id
  * @property string $message
- * @property bool $is_read
  * @property string|null $file_path
+ * @property bool $is_read
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  * @property-read SupportTicket $ticket
@@ -29,11 +30,17 @@ use Illuminate\Support\Carbon;
     'sender_type',
     'sender_id',
     'message',
-    'is_read',
     'file_path',
+    'is_read',
 ])]
 class SupportMessage extends Model
 {
+    use SoftDeletes;
+
+    public const string ADMIN = 'admin';
+
+    public const string USER = 'user';
+
     /**
      * Get the support ticket that this message belongs to.
      *
@@ -46,7 +53,6 @@ class SupportMessage extends Model
 
     /**
      * Get the sender of the message.
-     * Note: Admins are stored in the same users table but with a specific user_type_id.
      *
      * @return BelongsTo<User, $this>
      */

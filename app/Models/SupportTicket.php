@@ -27,6 +27,10 @@ use Illuminate\Support\Carbon;
 #[Fillable(['user_id', 'status'])]
 class SupportTicket extends Model
 {
+    public const string OPEN = 'open';
+
+    public const string RESOLVED = 'resolved';
+
     /**
      * The user who created the support ticket.
      *
@@ -44,7 +48,8 @@ class SupportTicket extends Model
      */
     public function messages(): HasMany
     {
-        return $this->hasMany(SupportMessage::class, 'id', 'id')->orderBy('created_at');
+        return $this->hasMany(SupportMessage::class, 'id', 'id')
+            ->orderBy('created_at');
     }
 
     /**
@@ -54,6 +59,7 @@ class SupportTicket extends Model
      */
     public function latestMessage(): HasOne
     {
-        return $this->hasOne(SupportMessage::class, 'id', 'id')->latestOfMany();
+        return $this->hasOne(SupportMessage::class, 'id', 'id')
+            ->latestOfMany();
     }
 }

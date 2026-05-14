@@ -58,8 +58,8 @@ class BusinessProfile extends Page
                             ->schema([
                                 TextInput::make('business_name')
                                     ->label(__('panels.vendor.business_name'))
-                                    ->required(static fn (string $operation): bool => $operation === 'create')
-                                    ->dehydrated(static fn (mixed $state): bool => filled($state))
+                                    ->required(fn (string $operation): bool => $operation === 'create')
+                                    ->dehydrated(fn (mixed $state): bool => filled($state))
                                     ->maxLength(255),
                                 TextInput::make('contact_phone')
                                     ->label(__('panels.form.fields.contact_phone'))

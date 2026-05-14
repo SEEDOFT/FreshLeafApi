@@ -17,6 +17,7 @@ use Illuminate\Support\Carbon;
  * @property int $id
  * @property int $user_id
  * @property string $device_token
+ * @property string $device_token_hash
  * @property string|null $device_type
  * @property bool $is_active
  * @property Carbon|null $created_at
@@ -24,7 +25,7 @@ use Illuminate\Support\Carbon;
  * @property-read User $user
  */
 #[Table('user_devices', key: 'id', keyType: 'int')]
-#[Fillable(['user_id', 'device_token', 'device_type', 'is_active'])]
+#[Fillable(['user_id', 'device_token', 'device_token_hash', 'device_type', 'is_active'])]
 #[UseFactory(UserDeviceFactory::class)]
 class UserDevice extends Model
 {
@@ -41,6 +42,7 @@ class UserDevice extends Model
         return [
             'user_id' => 'integer',
             'is_active' => 'boolean',
+            'device_token' => 'encrypted',
         ];
     }
 

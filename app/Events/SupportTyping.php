@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Events;
 
+use App\Models\SupportMessage;
 use Illuminate\Broadcasting\Channel;
 use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Broadcasting\PrivateChannel;
@@ -35,7 +36,7 @@ class SupportTyping implements ShouldBroadcastNow
             new PrivateChannel('support.ticket.'.$this->ticketId),
         ];
 
-        if ($this->senderType === 'user') {
+        if ($this->senderType === SupportMessage::USER) {
             $channels[] = new PrivateChannel('support.admin');
         }
 

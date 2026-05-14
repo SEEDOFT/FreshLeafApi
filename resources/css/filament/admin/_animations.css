@@ -1,0 +1,28 @@
+@keyframes fl-auth-enter {
+    from {
+        opacity: 0;
+        transform: translateY(18px) scale(0.98);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+.fl-anim-enter {
+    animation: fl-auth-enter 520ms var(--fl-auth-ease) both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .fl-anim-enter {
+        animation: none;
+    }
+
+    [data-auth-page="freshleaf-admin"] *,
+    [data-auth-page="freshleaf-admin"] *::before,
+    [data-auth-page="freshleaf-admin"] *::after {
+        transition-duration: 1ms !important;
+        animation-duration: 1ms !important;
+    }
+}

@@ -30,23 +30,23 @@ class OrderForm
                             ->getOptionLabelFromRecordUsing(fn ($record) => "{$record->first_name} {$record->last_name}")
                             ->searchable()
                             ->preload()
-                            ->required(static fn (string $operation): bool => $operation === 'create')->dehydrated(static fn (mixed $state): bool => filled($state)),
+                            ->required(fn (string $operation): bool => $operation === 'create')->dehydrated(fn (mixed $state): bool => filled($state)),
                         Select::make('order_type_id')
                             ->label(__('admin.resources.order.type'))
                             ->relationship('type', 'name')
-                            ->required(static fn (string $operation): bool => $operation === 'create')->dehydrated(static fn (mixed $state): bool => filled($state)),
+                            ->required(fn (string $operation): bool => $operation === 'create')->dehydrated(fn (mixed $state): bool => filled($state)),
                         Select::make('order_status_id')
                             ->label(__('admin.resources.order.status'))
                             ->relationship('status', 'name')
-                            ->required(static fn (string $operation): bool => $operation === 'create')->dehydrated(static fn (mixed $state): bool => filled($state)),
+                            ->required(fn (string $operation): bool => $operation === 'create')->dehydrated(fn (mixed $state): bool => filled($state)),
                         Select::make('payment_status_id')
                             ->label(__('admin.resources.order.payment_status'))
                             ->relationship('paymentStatus', 'name')
-                            ->required(static fn (string $operation): bool => $operation === 'create')->dehydrated(static fn (mixed $state): bool => filled($state)),
+                            ->required(fn (string $operation): bool => $operation === 'create')->dehydrated(fn (mixed $state): bool => filled($state)),
                         Select::make('address_id')
                             ->label(__('admin.resources.order.address'))
                             ->relationship('address', 'label')
-                            ->required(static fn (string $operation): bool => $operation === 'create')->dehydrated(static fn (mixed $state): bool => filled($state)),
+                            ->required(fn (string $operation): bool => $operation === 'create')->dehydrated(fn (mixed $state): bool => filled($state)),
                     ]),
 
                 Section::make(__('admin.resources.order.logistics'))
@@ -84,7 +84,7 @@ class OrderForm
                             ->label(__('admin.resources.order.total'))
                             ->numeric()
                             ->prefix('$')
-                            ->required(static fn (string $operation): bool => $operation === 'create')->dehydrated(static fn (mixed $state): bool => filled($state)),
+                            ->required(fn (string $operation): bool => $operation === 'create')->dehydrated(fn (mixed $state): bool => filled($state)),
                     ]),
             ]);
     }

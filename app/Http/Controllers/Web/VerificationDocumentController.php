@@ -18,7 +18,7 @@ class VerificationDocumentController extends Controller
      */
     public function show(Request $request, string $path): JsonResponse|StreamedResponse
     {
-        $user = $this->authenticatedUser($request, UserType::ADMIN);
+        $user = $this->authenticatedUser($request, UserType::ADMIN_ID);
 
         if (str_contains($path, '..')) {
             return static::errorResponse('Document not found.', 404);

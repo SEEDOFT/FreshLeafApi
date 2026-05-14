@@ -6,6 +6,7 @@ namespace App\Models;
 
 use Database\Factories\UserFactory;
 use Filament\Models\Contracts\FilamentUser;
+use Filament\Models\Contracts\HasAvatar;
 use Filament\Models\Contracts\HasName;
 use Filament\Panel;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
@@ -23,6 +24,7 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Storage;
 use Laravel\Sanctum\HasApiTokens;
 use Override;
 
@@ -72,10 +74,16 @@ use function is_string;
 ])]
 #[Hidden(['password', 'remember_token'])]
 #[UseFactory(UserFactory::class)]
-class User extends Authenticatable implements FilamentUser, HasName
+class User extends Authenticatable implements FilamentUser, HasAvatar, HasName
 {
     /** @use HasFactory<UserFactory> */
     use HasApiTokens, HasFactory, Notifiable, SoftDeletes;
+
+    #[Override]
+    public function getFilamentAvatarUrl(): ?string
+    {
+        return $this->avatarUrl;
+    }
 
     /**
      * Determine whether the user can access the given panel.
@@ -109,7 +117,7 @@ class User extends Authenticatable implements FilamentUser, HasName
      * Get the user's current theme from their profile.
      */
     public string $currentTheme {
-        get => $this->userProfile->prefer_theme;
+        get => $this->userProfile->theme;
     }
 
     /**
@@ -117,6 +125,13 @@ class User extends Authenticatable implements FilamentUser, HasName
      */
     public string $fullName {
         get => "{$this->last_name} {$this->first_name}";
+    }
+
+    /**
+     * Get the user's avatar URL.
+     */
+    public string $avatarUrl {
+        get => $this->image ? Storage::url('users/'.$this->image) : null;
     }
 
     /**

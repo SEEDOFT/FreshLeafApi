@@ -91,6 +91,38 @@ class AuthController extends Controller
     }
 
     /**
+     * Admin registration (for testing)
+     */
+    public function registerForAdmin(RegisterRequest $request): JsonResponse
+    {
+        $validatedData = $request->validated();
+
+        DB::transaction(static function () use ($validatedData): void {
+            $user = User::create([
+                'first_name' => $validatedData['first_name'],
+                'last_name' => $validatedData['last_name'],
+                'email' => $validatedData['email'] ?? null,
+                'email_verified_at' => null,
+                'phone_number' => $validatedData['phone_number'],
+                'phone_number_verified_at' => null,
+                'password' => Hash::make($validatedData['password']),
+                'user_type_id' => UserType::ADMIN_ID,
+                'user_status_id' => UserStatus::ACTIVE_ID,
+            ]);
+
+            $user->adminProfile()->create([
+                'locale' => 'km',
+                'theme' => 'system',
+                'super_admin' => true,
+            ]);
+
+            $user->ensureDefaultWallets();
+        });
+
+        return static::successResponse(message: __('api.auth.register_success'), code: 201);
+    }
+
+    /**
      * User Logout
      */
     public function logout(Request $request): JsonResponse

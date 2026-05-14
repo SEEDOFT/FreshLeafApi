@@ -24,23 +24,23 @@ class WalletTransactionForm
                             ->relationship('wallet.user', 'first_name')
                             ->getOptionLabelFromRecordUsing(fn ($record) => "{$record->first_name} {$record->last_name} ({$record->wallets->first()?->currency->code})")
                             ->searchable()
-                            ->required(static fn (string $operation): bool => $operation === 'create')
-                            ->dehydrated(static fn (mixed $state): bool => filled($state)),
+                            ->required(fn (string $operation): bool => $operation === 'create')
+                            ->dehydrated(fn (mixed $state): bool => filled($state)),
                         Select::make('wallet_transaction_type_id')
                             ->label(__('admin.resources.wallet_transaction.type'))
                             ->relationship('type', 'name')
-                            ->required(static fn (string $operation): bool => $operation === 'create')
-                            ->dehydrated(static fn (mixed $state): bool => filled($state)),
+                            ->required(fn (string $operation): bool => $operation === 'create')
+                            ->dehydrated(fn (mixed $state): bool => filled($state)),
                         Select::make('wallet_transaction_status_id')
                             ->label(__('admin.resources.wallet_transaction.status'))
                             ->relationship('status', 'name')
-                            ->required(static fn (string $operation): bool => $operation === 'create')
-                            ->dehydrated(static fn (mixed $state): bool => filled($state)),
+                            ->required(fn (string $operation): bool => $operation === 'create')
+                            ->dehydrated(fn (mixed $state): bool => filled($state)),
                         TextInput::make('amount')
                             ->label(__('admin.resources.wallet_transaction.amount'))
                             ->numeric()
-                            ->required(static fn (string $operation): bool => $operation === 'create')
-                            ->dehydrated(static fn (mixed $state): bool => filled($state))
+                            ->required(fn (string $operation): bool => $operation === 'create')
+                            ->dehydrated(fn (mixed $state): bool => filled($state))
                             ->prefix('$'),
                         TextInput::make('reference_type')
                             ->label(__('admin.resources.wallet_transaction.ref_type')),

@@ -21,7 +21,7 @@ class ListProducts extends ListRecords
         return [
             Action::make('create')
                 ->label(__('panels.form.add_product'))
-                ->url(static fn (): string => ProductCatalog::getUrl()),
+                ->url(static fn (): string => ProductCatalog::getUrl(panel: 'vendor')),
         ];
     }
 }

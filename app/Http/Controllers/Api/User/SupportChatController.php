@@ -8,6 +8,7 @@ use App\Events\NewSupportTicket;
 use App\Events\SupportMessageSent;
 use App\Events\SupportTyping;
 use App\Http\Controllers\Controller;
+use App\Http\Resources\SupportChat\SupportTicketResource;
 use App\Http\Resources\User\SupportMessageResource;
 use App\Models\SupportMessage;
 use App\Models\SupportTicket;
@@ -20,6 +21,8 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Notification;
 
+use function broadcast;
+
 class SupportChatController extends Controller
 {
     /**
@@ -31,16 +34,10 @@ class SupportChatController extends Controller
 
         $tickets = SupportTicket::where('user_id', $user->id)
             ->latest()
-            ->get();
+            ->simplePaginate($request->integer('per_page', 10));
 
         return static::successResponse(
-            $tickets->map(static function ($ticket) {
-                return [
-                    'id' => $ticket->id,
-                    'status' => $ticket->status,
-                    'created_at' => $ticket->created_at->toIso8601String(),
-                ];
-            })->toArray(),
+            SupportTicketResource::collection($tickets),
             __('api.support_chat.tickets_retrieved')
         );
     }
@@ -53,7 +50,7 @@ class SupportChatController extends Controller
         $user = $this->authenticatedUser($request);
 
         $ticket = SupportTicket::where('user_id', $user->id)
-            ->where('status', 'open')
+            ->where('status', SupportTicket::OPEN)
             ->latest()
             ->first();
 
@@ -61,11 +58,9 @@ class SupportChatController extends Controller
             return static::successResponse(__('api.support_chat.no_active_ticket'));
         }
 
-        return static::successResponse([
-            'id' => $ticket->id,
-            'status' => $ticket->status,
-            'created_at' => $ticket->created_at->toIso8601String(),
-        ], __('api.support_chat.session_retrieved'));
+        return static::successResponse(
+            new SupportTicketResource($ticket),
+            __('api.support_chat.session_retrieved'));
     }
 
     /**
@@ -76,13 +71,13 @@ class SupportChatController extends Controller
         $user = $this->authenticatedUser($request);
 
         $ticket = SupportTicket::where('user_id', $user->id)
-            ->where('status', 'open')
+            ->where('status', SupportTicket::OPEN)
             ->first();
 
         if (! $ticket) {
             $ticket = SupportTicket::create([
                 'user_id' => $user->id,
-                'status' => 'open',
+                'status' => SupportTicket::OPEN,
             ]);
 
             broadcast(new NewSupportTicket($ticket))->toOthers();
@@ -94,11 +89,10 @@ class SupportChatController extends Controller
             Notification::send($admins, new NewSupportTicketNotification($ticket));
         }
 
-        return static::successResponse([
-            'id' => $ticket->id,
-            'status' => $ticket->status,
-            'created_at' => $ticket->created_at->toIso8601String(),
-        ], __('api.support_chat.session_created'));
+        return static::successResponse(
+            new SupportTicketResource($ticket),
+            __('api.support_chat.session_created')
+        );
     }
 
     /**
@@ -110,7 +104,11 @@ class SupportChatController extends Controller
             'ticket_id' => ['required', 'exists:support_tickets,id'],
         ]);
 
-        broadcast(new SupportTyping((int) $validatedData['ticket_id'], 'user'))->toOthers();
+        broadcast(
+            new SupportTyping(
+                (int) $validatedData['ticket_id'], SupportMessage::USER
+            )
+        )->toOthers();
 
         return static::successResponse(message: __('api.support_chat.typing'));
     }
@@ -123,13 +121,14 @@ class SupportChatController extends Controller
         $validatedData = $request->validate([
             'ticket_id' => ['required', 'string', 'exists:support_tickets,id'],
             'message' => ['required', 'string', 'max:1200'],
-            'attachment' => ['nullable', 'file', 'max:5120'],
+            'attachment' => ['nullable', 'file', 'max:5120', 'mimes:png,jpg,jpeg,pdf'],
         ]);
 
         $filePath = null;
 
         if ($request->hasFile('attachment')) {
-            $filePath = $request->file('attachment')->store('support/files', 'public');
+            $filePath = $request->file('attachment')
+                ->store('support/files', 'public');
         }
 
         $user = $this->authenticatedUser($request);
@@ -143,7 +142,7 @@ class SupportChatController extends Controller
             'support_ticket_id' => $ticket->id,
             'sender_type' => 'user',
             'sender_id' => $user->id,
-            'message' => $validatedData['message'] ?? '',
+            'message' => $validatedData['message'],
             'file_path' => $filePath,
         ]);
 
@@ -180,7 +179,7 @@ class SupportChatController extends Controller
         }
 
         $ticket->messages()
-            ->where('sender_type', 'admin')
+            ->where('sender_type', SupportMessage::ADMIN)
             ->where('is_read', false)
             ->update(['is_read' => true]);
 
@@ -200,11 +199,14 @@ class SupportChatController extends Controller
         $user = $this->authenticatedUser($request);
 
         $ticket = SupportTicket::where('user_id', $user->id)
-            ->where('status', 'open')
+            ->where('status', SupportTicket::OPEN)
             ->first();
 
         if (! $ticket) {
-            return static::successResponse(['count' => 0], __('api.support_chat.no_unread'));
+            return static::successResponse(
+                ['count' => 0],
+                __('api.support_chat.no_unread')
+            );
         }
 
         $count = $ticket->messages()
@@ -212,6 +214,9 @@ class SupportChatController extends Controller
             ->where('is_read', false)
             ->count();
 
-        return static::successResponse(['count' => $count], __('api.support_chat.unread_retrieved'));
+        return static::successResponse(
+            ['count' => $count],
+            __('api.support_chat.unread_retrieved')
+        );
     }
 }

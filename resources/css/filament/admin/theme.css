@@ -1,0 +1,15 @@
+@import '../../../../vendor/filament/filament/resources/css/theme.css';
+@import '../shared/core/tokens.css';
+@import '../shared/base.css';
+@import '../shared/ai-chat.css';
+@import '../shared/support-chat.css';
+@import '../shared/ai-assistant.css';
+@import './_tokens.css';
+@import './_animations.css';
+@import './_auth.css';
+@import './_overrides.css';
+
+@source '../../../../app/Filament/**/*';
+@source '../../../../app/Livewire/**/*';
+@source '../../../../resources/views/filament/**/*';
+@source '../../../../resources/views/livewire/**/*';

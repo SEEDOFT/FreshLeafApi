@@ -12,12 +12,14 @@ use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\App;
 
 /**
  * @property int $id
  * @property string $code
  * @property string $name_en
  * @property string $name_km
+ * @property string $translated_name
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  * @property-read Collection<int, User> $users
@@ -47,5 +49,10 @@ class UserType extends Model
     public function users(): HasMany
     {
         return $this->hasMany(User::class, 'user_type_id', 'id');
+    }
+
+    public function getTranslatedNameAttribute(): ?string
+    {
+        return $this->{'name_'.App::currentLocale()};
     }
 }

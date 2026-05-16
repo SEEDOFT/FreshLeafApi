@@ -26,10 +26,6 @@ return new class extends Migration
             $table->string('id_card_back')->nullable();
             $table->string('store_front_image')->nullable();
             $table->string('organic_certificate_url')->nullable();
-            $table->string('bank_name')->nullable();
-            $table->string('bank_account_name')->nullable();
-            $table->string('bank_account_number')->nullable();
-            $table->string('bank_qr_code')->nullable();
             $table->time('opening_time')->nullable();
             $table->time('closing_time')->nullable();
             $table->boolean('is_open')->default(true);

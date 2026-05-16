@@ -66,7 +66,7 @@ class ProductForm
                             ->label(__('admin.resources.product.status'))
                             ->relationship('status', 'name')
                             ->required()
-                            ->default(VendorInventoryStatus::ACTIVE),
+                            ->default(VendorInventoryStatus::AVAILABLE_ID),
                     ]),
 
                 Section::make(__('admin.resources.product.organic_traceability'))

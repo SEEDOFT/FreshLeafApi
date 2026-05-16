@@ -34,15 +34,11 @@ use Illuminate\Support\Carbon;
  * @property int|null $rejected_by_admin_id
  * @property string|null $approve_reason
  * @property string|null $reject_reason
- * @property array $meta
+ * @property array<string, mixed> $meta
  * @property string|null $id_card_front
  * @property string|null $id_card_back
  * @property string|null $store_front_image
  * @property string|null $organic_certificate_url
- * @property string|null $bank_name
- * @property string|null $bank_account_name
- * @property string|null $bank_account_number
- * @property string|null $bank_qr_code
  * @property-read User $user
  */
 #[Table('vendor_profiles', key: 'id', keyType: 'int')]
@@ -71,10 +67,6 @@ use Illuminate\Support\Carbon;
     'id_card_back',
     'store_front_image',
     'organic_certificate_url',
-    'bank_name',
-    'bank_account_name',
-    'bank_account_number',
-    'bank_qr_code',
 ])]
 #[UseFactory(VendorProfileFactory::class)]
 class VendorProfile extends Model

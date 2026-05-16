@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Filament\Admin\Resources\Products\Tables;
 
+use App\Models\Product;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
@@ -14,6 +15,7 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Filters\TrashedFilter;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
 
 class ProductsTable
 {
@@ -22,14 +24,14 @@ class ProductsTable
         return $table
             ->stackedOnMobile()
             ->columns([
-                TextColumn::make('name_en')
-                    ->label(__('admin.resources.product.name_en'))
-                    ->searchable()
-                    ->sortable(),
-                TextColumn::make('name_km')
-                    ->label(__('admin.resources.product.name_km'))
-                    ->searchable()
-                    ->sortable(),
+                TextColumn::make('name')
+                    ->label(__('admin.resources.product.name'))
+                    ->getStateUsing(fn (Product $record): string => $record->localizedName)
+                    ->sortable(query: function (Builder $query, string $direction) {
+                        $column = app()->getLocale() === 'km' ? 'name_km' : 'name_en';
+                        $query->orderBy($column, $direction);
+                    })
+                    ->searchable(['name_en', 'name_km']),
                 TextColumn::make('productCategory.name_en')
                     ->label(__('admin.resources.product.system_category'))
                     ->sortable(),

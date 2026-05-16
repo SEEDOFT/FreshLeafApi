@@ -79,11 +79,11 @@ class CartController extends Controller
             $cartRow->quantity = $newQuantity;
             $cartRow->save();
         } else {
-            Cart::query()->create([
+            Cart::create([
                 'user_id' => $user->id,
                 'vendor_inventory_id' => $inventory->id,
                 'quantity' => $quantity,
-                'cart_status_id' => CartStatus::ACTIVE,
+                'cart_status_id' => CartStatus::ACTIVE_ID,
             ]);
         }
 
@@ -127,7 +127,7 @@ class CartController extends Controller
             ->whereKey($itemId)
             ->firstOrFail();
 
-        $cartRow->cart_status_id = CartStatus::REMOVED;
+        $cartRow->cart_status_id = CartStatus::REMOVED_ID;
         $cartRow->save();
 
         return $this->index($request);

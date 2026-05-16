@@ -7,6 +7,7 @@ namespace App\Http\Controllers\Api\Product;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\Product\VendorInventoryResource;
 use App\Models\Product;
+use App\Models\ProductStatus;
 use App\Models\VendorInventory;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\JsonResponse;
@@ -33,19 +34,19 @@ class ProductController extends Controller
     public function index(Request $request): JsonResponse
     {
         $listings = VendorInventory::active()
-            ->whereHas('product', static fn (Product $product) => $product->active())
+            ->whereHas('product', static fn (Builder $query) => $query->where('product_status_id', ProductStatus::ACTIVE))
             ->with(self::RELATIONSHIPS)
             ->when($request->filled('category_id'),
                 static function (Builder $query) use ($request) {
                     $query->whereHas('product',
-                        static fn (Product $product) => $product->where('product_category_id', $request->input('category_id'))
+                        static fn (Builder $product) => $product->where('product_category_id', $request->input('category_id'))
                     );
                 })
             ->when($request->filled('search'),
                 static function (Builder $query) use ($request) {
                     $search = $request->input('search');
                     $query->whereHas('product',
-                        static fn (Product $product) => $product->where('name_en', 'like', "%{$search}%")
+                        static fn (Builder $product) => $product->where('name_en', 'like', "%{$search}%")
                             ->orWhere('name_km', 'like', "%{$search}%")
                     );
                 })
@@ -64,7 +65,7 @@ class ProductController extends Controller
     public function show(int $id, Request $request): JsonResponse
     {
         $listing = VendorInventory::active()
-            ->whereHas('product', static fn (Product $product) => $product->active())
+            ->whereHas('product', static fn (Builder $query) => $query->where('product_status_id', ProductStatus::ACTIVE))
             ->find($id);
 
         if (! $listing) {

@@ -12,6 +12,7 @@ use App\Jobs\ProcessAiChatMessageJob;
 use App\Models\AiChatMessage;
 use App\Models\AiChatSession;
 use App\Services\Ai\AiService;
+use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
@@ -42,8 +43,8 @@ class AiChatController extends Controller
         return static::successResponse([
             'session_id' => $session->session_id,
             'title' => $session->title,
-            'created_at' => $session->created_at->toIso8601String(),
-            'updated_at' => $session->updated_at->toIso8601String(),
+            'created_at' => $session->created_at?->toIso8601String(),
+            'updated_at' => $session->updated_at?->toIso8601String(),
         ], __('api.ai_chat.chat_started'));
     }
 
@@ -52,10 +53,6 @@ class AiChatController extends Controller
      */
     public function storeMessage(StoreChatMessageRequest $request): JsonResponse
     {
-        if (! $this->aiService->healthCheck()) {
-            return static::errorResponse(__('api.ai_chat.service_unavailable'), 503);
-        }
-
         $validatedData = $request->validated();
         $user = $this->authenticatedUser($request);
 
@@ -65,6 +62,15 @@ class AiChatController extends Controller
 
         if (! $session) {
             return static::notFoundResponse(__('api.ai_chat.session_not_found'));
+        }
+
+        try {
+            $this->aiService->assertAvailable();
+        } catch (Exception $exception) {
+            return static::errorResponse(
+                $this->aiService->normalizeFailureMessage($exception),
+                503
+            );
         }
 
         /** @var array{0: AiChatMessage, 1: AiChatMessage} */

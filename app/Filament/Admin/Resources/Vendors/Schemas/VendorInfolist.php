@@ -5,6 +5,9 @@ declare(strict_types=1);
 namespace App\Filament\Admin\Resources\Vendors\Schemas;
 
 use App\Models\Currency;
+use App\Models\User;
+use App\Models\UserStatus;
+use App\Models\UserType;
 use App\Models\Wallet;
 use Filament\Infolists\Components\IconEntry;
 use Filament\Infolists\Components\ImageEntry;
@@ -13,6 +16,7 @@ use Filament\Infolists\Components\TextEntry;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\HtmlString;
 
 class VendorInfolist
 {
@@ -27,33 +31,35 @@ class VendorInfolist
                     ->columns(2)
                     ->schema([
                         TextEntry::make('first_name')
-                            ->label(__('admin.profile.first_name'))
+                            ->label(new HtmlString('<strong>'.__('admin.profile.first_name').'</strong>'))
                             ->placeholder($notProvided),
                         TextEntry::make('last_name')
-                            ->label(__('admin.profile.last_name'))
+                            ->label(new HtmlString('<strong>'.__('admin.profile.last_name').'</strong>'))
                             ->placeholder($notProvided),
                         TextEntry::make('email')
-                            ->label(__('admin.profile.email'))
+                            ->label(new HtmlString('<strong>'.__('admin.profile.email').'</strong>'))
                             ->placeholder($notProvided),
                         TextEntry::make('phone_number')
-                            ->label(__('admin.profile.phone'))
+                            ->label(new HtmlString('<strong>'.__('admin.profile.phone').'</strong>'))
                             ->placeholder($notProvided),
-                        TextEntry::make('type.name')
-                            ->label(__('admin.resources.user.type'))
+                        TextEntry::make('type.translated_name')
+                            ->label(new HtmlString('<strong>'.__('admin.resources.user.type').'</strong>'))
+                            ->placeholder($notProvided)
                             ->badge()
-                            ->color(static fn (string $state): string => match ($state) {
-                                'Admin' => 'danger',
-                                'Vendor' => 'warning',
-                                'Consumer' => 'info',
+                            ->color(fn (User $record): string => match ($record->user_type_id) {
+                                UserType::ADMIN_ID => 'danger',
+                                UserType::VENDOR_ID => 'warning',
+                                UserType::CONSUMER_ID => 'info',
                                 default => 'gray',
                             }),
-                        TextEntry::make('status.name')
-                            ->label(__('admin.resources.user.status'))
+                        TextEntry::make('status.translated_name')
+                            ->label(new HtmlString('<strong>'.__('admin.resources.user.status').'</strong>'))
+                            ->placeholder($notProvided)
                             ->badge()
-                            ->color(static fn (string $state): string => match ($state) {
-                                'Active' => 'success',
-                                'Pending' => 'warning',
-                                'Inactive', 'Deleted' => 'danger',
+                            ->color(fn (User $record): string => match ($record->user_status_id) {
+                                UserStatus::ACTIVE_ID => 'success',
+                                UserStatus::PENDING_ID => 'warning',
+                                UserStatus::INACTIVE_ID, UserStatus::DELETED_ID => 'danger',
                                 default => 'gray',
                             }),
                     ]),
@@ -63,33 +69,33 @@ class VendorInfolist
                     ->columns(2)
                     ->schema([
                         ImageEntry::make('image')
-                            ->label(__('admin.profile.avatar'))
+                            ->label(new HtmlString('<strong>'.__('admin.profile.avatar').'</strong>'))
                             ->disk('public')
                             ->circular()
                             ->imageSize(200)
                             ->defaultImageUrl(Storage::disk('public')->url('users/user.png')),
 
                         TextEntry::make('business_name')
-                            ->label(__('admin.resources.vendor.business_name'))
+                            ->label(new HtmlString('<strong>'.__('admin.resources.vendor.business_name').'</strong>'))
                             ->placeholder($notProvided),
                         TextEntry::make('contact_phone')
-                            ->label(__('admin.resources.vendor.contact_phone'))
+                            ->label(new HtmlString('<strong>'.__('admin.resources.vendor.contact_phone').'</strong>'))
                             ->placeholder($notProvided),
                         TextEntry::make('city')
-                            ->label(__('admin.resources.vendor.city'))
+                            ->label(new HtmlString('<strong>'.__('admin.resources.vendor.city').'</strong>'))
                             ->placeholder($notProvided),
                         TextEntry::make('province')
-                            ->label(__('admin.resources.vendor.province'))
+                            ->label(new HtmlString('<strong>'.__('admin.resources.vendor.province').'</strong>'))
                             ->placeholder($notProvided),
                         TextEntry::make('address')
-                            ->label(__('admin.resources.vendor.address'))
+                            ->label(new HtmlString('<strong>'.__('admin.resources.vendor.address').'</strong>'))
                             ->columnSpanFull()
                             ->color('info')
                             ->placeholder($notProvided)
-                            ->url(static fn (string $state): string => 'https://maps.google.com/?q='.urlencode($state))
+                            ->url(fn (string $state): string => 'https://maps.google.com/?q='.urlencode($state))
                             ->openUrlInNewTab(),
                         IconEntry::make('is_verified')
-                            ->label(__('admin.resources.vendor.verification_status'))
+                            ->label(new HtmlString('<strong>'.__('admin.resources.vendor.verification_status').'</strong>'))
                             ->boolean(),
                     ]),
 
@@ -98,33 +104,33 @@ class VendorInfolist
                     ->columns(2)
                     ->schema([
                         ImageEntry::make('id_card_front')
-                            ->label(__('admin.resources.vendor.id_card_front'))
+                            ->label(new HtmlString('<strong>'.__('admin.resources.vendor.id_card_front').'</strong>'))
                             ->placeholder($notProvided)
-                            ->getStateUsing(static fn ($record) => $record->id_card_front
+                            ->getStateUsing(fn ($record) => $record->id_card_front
                                 ? route('admin.documents.show', ['path' => $record->id_card_front]) : null
                             )
                             ->disk(null)
                             ->imageSize(200),
                         ImageEntry::make('id_card_back')
-                            ->label(__('admin.resources.vendor.id_card_back'))
+                            ->label(new HtmlString('<strong>'.__('admin.resources.vendor.id_card_back').'</strong>'))
                             ->placeholder($notProvided)
-                            ->getStateUsing(static fn ($record) => $record->id_card_back
+                            ->getStateUsing(fn ($record) => $record->id_card_back
                             ? route('admin.documents.show', ['path' => $record->id_card_back]) : null
                             )
                             ->disk(null)
                             ->imageSize(200),
                         ImageEntry::make('store_front_image')
-                            ->label(__('admin.resources.vendor.store_photo'))
+                            ->label(new HtmlString('<strong>'.__('admin.resources.vendor.store_photo').'</strong>'))
                             ->placeholder($notProvided)
-                            ->getStateUsing(static fn ($record) => $record->store_front_image
+                            ->getStateUsing(fn ($record) => $record->store_front_image
                             ? route('admin.documents.show', ['path' => $record->store_front_image]) : null
                             )
                             ->disk(null)
                             ->imageSize(200),
                         TextEntry::make('organic_certificate_url')
-                            ->label(__('admin.resources.vendor.organic_cert'))
+                            ->label(new HtmlString('<strong>'.__('admin.resources.vendor.organic_cert').'</strong>'))
                             ->placeholder($notProvided)
-                            ->url(static fn (mixed $state) => $state
+                            ->url(fn (mixed $state) => $state
                             ? route('admin.documents.show', ['path' => $state]) : null
                             )
                             ->openUrlInNewTab()
@@ -137,17 +143,17 @@ class VendorInfolist
                     ->schema([
                         TextEntry::make('bank_name')
                             ->placeholder($notProvided)
-                            ->label(__('admin.resources.vendor.bank_name')),
+                            ->label(new HtmlString('<strong>'.__('admin.resources.vendor.bank_name').'</strong>')),
                         TextEntry::make('bank_account_name')
                             ->placeholder($notProvided)
-                            ->label(__('admin.resources.vendor.account_holder')),
+                            ->label(new HtmlString('<strong>'.__('admin.resources.vendor.account_holder').'</strong>')),
                         TextEntry::make('bank_account_number')
                             ->placeholder($notProvided)
-                            ->label(__('admin.resources.vendor.account_number')),
+                            ->label(new HtmlString('<strong>'.__('admin.resources.vendor.account_number').'</strong>')),
                         ImageEntry::make('bank_qr_code')
                             ->placeholder($notProvided)
-                            ->label(__('admin.resources.vendor.qr_code'))
-                            ->getStateUsing(static fn ($record) => $record->bank_qr_code
+                            ->label(new HtmlString('<strong>'.__('admin.resources.vendor.qr_code').'</strong>'))
+                            ->getStateUsing(fn ($record) => $record->bank_qr_code
                             ? route('admin.documents.show', ['path' => $record->bank_qr_code]) : null
                             )
                             ->disk(null)
@@ -157,15 +163,15 @@ class VendorInfolist
                 Section::make(__('admin.resources.vendor.wallets_info'))
                     ->schema([
                         RepeatableEntry::make('wallets')
-                            ->label(__('admin.resources.vendor.wallets_info'))
+                            ->label(new HtmlString('<strong>'.__('admin.resources.vendor.wallets_info').'</strong>'))
                             ->schema([
-                                TextEntry::make('currency.name')
+                                TextEntry::make('currency.translated_currency')
                                     ->placeholder($notProvided)
-                                    ->label(__('admin.resources.wallet.currency')),
+                                    ->label(new HtmlString('<strong>'.__('admin.resources.wallet.currency').'</strong>')),
                                 TextEntry::make('balance')
                                     ->placeholder($notProvided)
-                                    ->label(__('admin.resources.wallet.balance'))
-                                    ->getStateUsing(static function (Wallet $record): string {
+                                    ->label(new HtmlString('<strong>'.__('admin.resources.wallet.balance').'</strong>'))
+                                    ->getStateUsing(function (Wallet $record): string {
                                         $id = $record->currency->id;
                                         $symbol = $record->currency->symbol ?? '';
                                         $balance = number_format((float) $record->balance, 2);
@@ -182,11 +188,11 @@ class VendorInfolist
                     ->columns(2)
                     ->schema([
                         TextEntry::make('created_at')
-                            ->label(__('admin.resources.created_at'))
+                            ->label(new HtmlString('<strong>'.__('admin.resources.created_at').'</strong>'))
                             ->placeholder($notProvided)
                             ->dateTime('d M Y, h:i A'),
                         TextEntry::make('updated_at')
-                            ->label(__('admin.resources.updated_at'))
+                            ->label(new HtmlString('<strong>'.__('admin.resources.updated_at').'</strong>'))
                             ->placeholder($notProvided)
                             ->dateTime('d M Y, h:i A'),
                     ]),

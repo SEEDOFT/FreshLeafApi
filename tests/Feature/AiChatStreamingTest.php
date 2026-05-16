@@ -31,6 +31,7 @@ class AiChatStreamingTest extends TestCase
 
         $mockAiService = Mockery::mock(AiService::class);
         $this->app->instance(AiService::class, $mockAiService);
+        $mockAiService->shouldReceive('assertAvailable')->once();
 
         $mockSearchService = Mockery::mock(WebSearchService::class);
         $this->app->instance(WebSearchService::class, $mockSearchService);
@@ -76,6 +77,7 @@ class AiChatStreamingTest extends TestCase
 
         $mockAiService = Mockery::mock(AiService::class);
         $this->app->instance(AiService::class, $mockAiService);
+        $mockAiService->shouldReceive('assertAvailable')->once();
 
         $mockSearchService = Mockery::mock(WebSearchService::class);
         $this->app->instance(WebSearchService::class, $mockSearchService);
@@ -116,6 +118,7 @@ class AiChatStreamingTest extends TestCase
 
         $mockAiService = Mockery::mock(AiService::class);
         $this->app->instance(AiService::class, $mockAiService);
+        $mockAiService->shouldReceive('assertAvailable')->once();
 
         $mockSearchService = Mockery::mock(WebSearchService::class);
         $this->app->instance(WebSearchService::class, $mockSearchService);
@@ -154,6 +157,7 @@ class AiChatStreamingTest extends TestCase
 
         $mockAiService = Mockery::mock(AiService::class);
         $this->app->instance(AiService::class, $mockAiService);
+        $mockAiService->shouldReceive('assertAvailable')->once();
 
         $mockSearchService = Mockery::mock(WebSearchService::class);
         $this->app->instance(WebSearchService::class, $mockSearchService);
@@ -194,6 +198,7 @@ class AiChatStreamingTest extends TestCase
 
         $mockAiService = Mockery::mock(AiService::class);
         $this->app->instance(AiService::class, $mockAiService);
+        $mockAiService->shouldReceive('assertAvailable')->once();
 
         $mockSearchService = Mockery::mock(WebSearchService::class);
         $this->app->instance(WebSearchService::class, $mockSearchService);
@@ -220,7 +225,7 @@ class AiChatStreamingTest extends TestCase
             userId: $user->id,
             sessionId: $session->session_id,
             messageId: (string) $assistantMessage->message_id,
-            prompt: 'How much are carrots right now?',
+            prompt: 'Tell me something that needs outside info',
             language: 'en',
         )), 'handle']);
 
@@ -235,6 +240,7 @@ class AiChatStreamingTest extends TestCase
 
         $mockAiService = Mockery::mock(AiService::class);
         $this->app->instance(AiService::class, $mockAiService);
+        $mockAiService->shouldReceive('assertAvailable')->once();
 
         $mockSearchService = Mockery::mock(WebSearchService::class);
         $this->app->instance(WebSearchService::class, $mockSearchService);
@@ -242,6 +248,9 @@ class AiChatStreamingTest extends TestCase
         $mockAiService->shouldReceive('streamContentWithSystemPromptAndHistory')
             ->once()
             ->andThrow(new Exception('Configured AI provider [zen] is not supported.'));
+        $mockAiService->shouldReceive('normalizeFailureMessage')
+            ->once()
+            ->andReturn('Configured AI provider [zen] is not supported.');
 
         $mockSearchService->shouldReceive('search')->never();
 
@@ -261,6 +270,44 @@ class AiChatStreamingTest extends TestCase
         $this->assertSame('Configured AI provider [zen] is not supported.', $assistantMessage->error);
     }
 
+    public function test_empty_ai_response_marks_message_failed(): void
+    {
+        Event::fake();
+        [$user, $session, $assistantMessage] = $this->createChatFixture();
+
+        $mockAiService = Mockery::mock(AiService::class);
+        $this->app->instance(AiService::class, $mockAiService);
+        $mockAiService->shouldReceive('assertAvailable')->once();
+
+        $mockSearchService = Mockery::mock(WebSearchService::class);
+        $this->app->instance(WebSearchService::class, $mockSearchService);
+
+        $mockAiService->shouldReceive('streamContentWithSystemPromptAndHistory')
+            ->once()
+            ->andReturn('');
+        $mockAiService->shouldReceive('normalizeFailureMessage')
+            ->once()
+            ->andReturn('AI provider returned an empty response.');
+
+        $mockSearchService->shouldReceive('search')->never();
+
+        app()->call([(new ProcessAiChatMessageJob(
+            userId: $user->id,
+            sessionId: $session->session_id,
+            messageId: (string) $assistantMessage->message_id,
+            prompt: 'Hello',
+            language: 'en',
+        )), 'handle']);
+
+        Event::assertDispatched(AiMessageFailed::class, static fn ($event): bool => $event->error === 'AI provider returned an empty response.');
+        Event::assertNotDispatched(AiMessageCompleted::class);
+
+        $assistantMessage->refresh();
+        $this->assertSame('', $assistantMessage->content);
+        $this->assertSame('failed', $assistantMessage->status);
+        $this->assertSame('AI provider returned an empty response.', $assistantMessage->error);
+    }
+
     public function test_ai_chat_job_honors_explicit_generation_options(): void
     {
         Event::fake();
@@ -268,6 +315,7 @@ class AiChatStreamingTest extends TestCase
 
         $mockAiService = Mockery::mock(AiService::class);
         $this->app->instance(AiService::class, $mockAiService);
+        $mockAiService->shouldReceive('assertAvailable')->once();
 
         $mockSearchService = Mockery::mock(WebSearchService::class);
         $this->app->instance(WebSearchService::class, $mockSearchService);

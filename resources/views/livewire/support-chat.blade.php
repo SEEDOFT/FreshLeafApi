@@ -1,55 +1,15 @@
-<div class="fl-support-container" x-data="{
-        isUserTyping: false,
-        typingTimeout: null,
-        currentTicketId: null,
-        pollInterval: null,
-        scrollToBottom() {
-            const container = document.getElementById('support-thread');
-            if (container) container.scrollTop = container.scrollHeight;
-        },
-        initEcho() {
-            if (typeof window.Echo === 'undefined') {
-                setTimeout(() => this.initEcho(), 2000);
-                return;
-            }
-            const adminChannel = window.Echo.private('support.admin');
-            adminChannel.listen('.NewSupportTicket', (e) => { $wire.$refresh(); });
-            adminChannel.listen('.SupportMessageSent', (e) => { $wire.$refresh(); });
-            adminChannel.listen('.SupportTyping', (e) => {
-                if (e.sender_type === 'user') {
-                    this.isUserTyping = true;
-                    clearTimeout(this.typingTimeout);
-                    this.typingTimeout = setTimeout(() => { this.isUserTyping = false; }, 3000);
-                    setTimeout(() => this.scrollToBottom(), 50);
-                }
-            });
-            this.listenToTicket($wire.activeTicketId);
-        },
-        listenToTicket(ticketId) {
-            if (!ticketId) return;
-            if (this.currentTicketId) window.Echo.leave('support.ticket.' + this.currentTicketId);
-            this.currentTicketId = ticketId;
-            const ticketChannel = window.Echo.private('support.ticket.' + ticketId);
-            ticketChannel.listen('.SupportMessageSent', (e) => { $wire.handleIncomingMessage(e); });
-        },
-        startPolling() {
-            if (this.pollInterval) return;
-            this.pollInterval = setInterval(async () => {
-                await $wire.$refresh();
-            }, 5000);
-        },
-        stopPolling() {
-            if (this.pollInterval) {
-                clearInterval(this.pollInterval);
-                this.pollInterval = null;
-            }
-        }
-    }" x-init="scrollToBottom(); initEcho(); startPolling();"
-    x-on:message-sent.window="setTimeout(() => scrollToBottom(), 50)"
+<div class="fl-support-container" x-data="supportChat" x-on:keydown.window="handleEscape($event)"
+    x-on:message-sent.window="setTimeout(() => scrollToBottom(), 50); if (isPhone) { closeDrawer(); }"
     x-on:message-received.window="isUserTyping = false; setTimeout(() => scrollToBottom(), 50)"
     x-on:user-typing.window="isUserTyping = true; clearTimeout(this.typingTimeout); this.typingTimeout = setTimeout(() => { isUserTyping = false; }, 3000); setTimeout(() => scrollToBottom(), 50)"
     x-on:ticket-selected.window="isUserTyping = false; setTimeout(() => scrollToBottom(), 50); listenToTicket($wire.activeTicketId)"
+    x-bind:class="{ 'is-history-hidden': !showHistory }"
+    x-bind:data-drawer-open="drawerOpen"
 >
+    {{-- Mobile Overlay --}}
+    <div x-show="drawerOpen" x-transition.opacity class="fixed inset-0 z-40 bg-black/40 backdrop-blur-sm md:hidden"
+        x-on:click="closeDrawer()"></div>
+
     <aside class="fl-support-sidebar">
         <div class="fl-support-sidebar-header">
             <h3 class="fl-support-sidebar-title">{{ __('admin.support.active_tickets') }}</h3>
@@ -59,7 +19,8 @@
             @forelse($this->getTickets() as $ticket)
                 @php $latestMessage = $ticket->latestMessage; @endphp
                 <button wire:click="selectTicket({{ $ticket->id }})"
-                    class="fl-support-ticket-item {{ $activeTicketId === $ticket->id ? 'fl-support-ticket-item--active' : '' }}">
+                    class="fl-support-ticket-item {{ $activeTicketId === $ticket->id ? 'fl-support-ticket-item--active' : '' }}"
+                    x-on:click="if (isPhone) { closeDrawer(); }">
                     <div class="flex justify-between items-start mb-1">
                         <span class="fl-support-ticket-user">{{ $ticket->user->fullName }}</span>
                         <span class="fl-support-ticket-date">{{ $ticket->updated_at->diffForHumans(short: true) }}</span>
@@ -79,6 +40,12 @@
             @php $activeTicket = \App\Models\SupportTicket::find($activeTicketId); @endphp
             <header class="fl-support-header">
                 <div class="fl-support-header-user">
+                    <button type="button" class="md:hidden" x-on:click="toggleDrawer()">
+                        <x-filament::icon icon="heroicon-o-bars-3" class="h-5 w-5" />
+                    </button>
+                    <button type="button" class="hidden md:block" x-on:click="toggleDrawer()">
+                        <x-filament::icon icon="heroicon-o-bars-3-bottom-left" class="h-5 w-5" />
+                    </button>
                     <div class="fl-support-header-avatar">
                         {{ substr($activeTicket->user->first_name, 0, 1) }}{{ substr($activeTicket->user->last_name, 0, 1) }}
                     </div>
@@ -165,17 +132,28 @@
                             </span>
                         </div>
                     </div>
-                    <div class="fl-support-composer-input">
-                        <x-filament::input wire:model="message" wire:keyup.debounce.500ms="sendTyping"
-                            placeholder="{{ __('admin.support.type_reply') }}" autocomplete="off" autofocus />
+                    <div class="fl-support-composer-input-wrap">
+                        <textarea wire:model="message" wire:keyup.debounce.500ms="sendTyping"
+                            placeholder="{{ __('admin.support.type_reply') }}"
+                            class="fl-support-composer-textarea" rows="1"
+                            x-on:keydown.enter.prevent="if(!$event.shiftKey) $wire.sendMessage()"
+                            autofocus></textarea>
                     </div>
-                    <x-filament::button type="submit" icon="heroicon-o-paper-airplane" class="fl-support-composer-btn">
-                        {{ __('admin.support.send') }}
-                    </x-filament::button>
+                    <button type="submit" class="fl-support-send-btn" wire:loading.attr="disabled">
+                        <x-filament::icon icon="heroicon-o-paper-airplane" class="h-5 w-5" />
+                    </button>
                 </form>
             </footer>
         @else
             <div class="fl-support-empty-state">
+                <header class="fl-support-header absolute top-0 left-0 right-0 border-b-0 bg-transparent">
+                    <button type="button" class="md:hidden" x-on:click="toggleDrawer()">
+                        <x-filament::icon icon="heroicon-o-bars-3" class="h-5 w-5" />
+                    </button>
+                    <button type="button" class="hidden md:block" x-on:click="toggleDrawer()">
+                        <x-filament::icon icon="heroicon-o-bars-3-bottom-left" class="h-5 w-5" />
+                    </button>
+                </header>
                 <div class="fl-support-empty-icon-wrapper">
                     <x-filament::icon icon="heroicon-o-chat-bubble-left-right" class="w-12 h-12" />
                 </div>

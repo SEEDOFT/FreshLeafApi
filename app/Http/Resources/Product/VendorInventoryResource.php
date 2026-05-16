@@ -8,6 +8,9 @@ use App\Models\User;
 use App\Models\VendorInventory;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
+use Override;
+
+use function translate;
 
 /**
  * @mixin VendorInventory
@@ -16,10 +19,11 @@ use Illuminate\Http\Resources\Json\JsonResource;
 class VendorInventoryResource extends JsonResource
 {
     /**
-     * Transform the resource into an array.
+     * {@inheritDoc}
      *
      * @return array<string, mixed>
      */
+    #[Override]
     public function toArray(Request $request): array
     {
         return [
@@ -37,7 +41,7 @@ class VendorInventoryResource extends JsonResource
                 'status',
                 fn () => [
                     'id' => $this->inventory_status_id,
-                    'name' => $this->status->name,
+                    'name' => translate($this->status->name_en, $this->status->name_km),
                 ]
             ),
             'unit' => $this->whenLoaded(
@@ -60,8 +64,8 @@ class VendorInventoryResource extends JsonResource
                 'product',
                 fn () => new ProductResource($this->product)
             ),
-            'created_at' => $this->created_at->toIso8601String(),
-            'updated_at' => $this->updated_at->toIso8601String(),
+            'created_at' => $this->created_at?->toIso8601String(),
+            'updated_at' => $this->updated_at?->toIso8601String(),
         ];
     }
 }

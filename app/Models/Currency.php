@@ -13,6 +13,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\App;
 
 /**
  * @property int $id
@@ -20,6 +21,7 @@ use Illuminate\Support\Carbon;
  * @property string $name_km
  * @property string $code
  * @property string $symbol
+ * @property string|null $translated_currency
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  * @property Collection|Wallet[] $wallets
@@ -53,5 +55,10 @@ class Currency extends Model
     public function wallets(): HasMany
     {
         return $this->hasMany(Wallet::class, 'currency_id', 'id');
+    }
+
+    public function getTranslatedCurrencyAttribute(): ?string
+    {
+        return $this->{'name_'.App::currentLocale()};
     }
 }

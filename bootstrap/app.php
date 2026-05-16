@@ -12,6 +12,7 @@ use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\ValidationException;
 use Symfony\Component\HttpFoundation\Response as SymfonyResponse;
 use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
@@ -131,16 +132,24 @@ return Application::configure(basePath: dirname(__DIR__))
                     return null;
                 }
 
-                $code = $exception->hasStatus()
-                    ? (int) $exception->status()
-                    : 403;
+                $code = 500;
+                $message = config('app.debug') && $exception->getMessage() !== ''
+                    ? $exception->getMessage()
+                    : 'Something went wrong.';
+
+                $data = config('app.debug') ? [
+                    'exception' => get_class($exception),
+                    'file' => $exception->getFile(),
+                    'line' => $exception->getLine(),
+                    'trace' => $exception->getTrace(),
+                ] : [];
 
                 return response()->json(
                     $buildExceptionResponse(
                         code: $code,
                         success: false,
                         message: $exception->getMessage() ?: 'Forbidden.',
-                        data: [],
+                        data: $data,
                     ),
                     $code
                 );

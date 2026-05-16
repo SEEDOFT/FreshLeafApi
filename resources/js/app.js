@@ -1,4 +1,11 @@
 import './bootstrap';
+import aiAssistantChat from './livewire/ai-assistant-chat';
+import supportChat from './livewire/support-chat';
+
+document.addEventListener('alpine:init', () => {
+    Alpine.data('aiAssistantChat', aiAssistantChat);
+    Alpine.data('supportChat', supportChat);
+});
 
 const supportPanelPath = '/admin/support-chat';
 

@@ -18,6 +18,7 @@ use Illuminate\Support\Carbon;
  * @property float $balance
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
+ * @property-read Currency $currency
  * @property-read Wallet $wallet
  */
 #[Table('wallet_histories', key: 'id', keyType: 'int')]
@@ -44,5 +45,15 @@ class WalletHistory extends Model
     public function wallet(): BelongsTo
     {
         return $this->belongsTo(Wallet::class, 'wallet_id', 'id');
+    }
+
+    /**
+     * Get the currency associated with the wallet.
+     *
+     * @return BelongsTo<Currency, $this>
+     */
+    public function currency(): BelongsTo
+    {
+        return $this->belongsTo(Currency::class, 'currency_id', 'id');
     }
 }

@@ -18,6 +18,7 @@ use Illuminate\Support\Carbon;
  * @property int $sender_id
  * @property string $message
  * @property string|null $file_path
+ * @property string|null $filePath
  * @property bool $is_read
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at

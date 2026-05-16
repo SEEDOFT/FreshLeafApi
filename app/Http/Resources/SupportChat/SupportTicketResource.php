@@ -23,7 +23,7 @@ class SupportTicketResource extends JsonResource
         return [
             'id' => $this->id,
             'status' => $this->status,
-            'created_at' => $this->created_at->toIso8601String(),
+            'created_at' => $this->created_at?->toIso8601String(),
         ];
     }
 }

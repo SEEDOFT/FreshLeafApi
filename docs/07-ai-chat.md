@@ -30,7 +30,16 @@ AI-powered shopping assistant with real-time streaming responses. Supports multi
 
 | Component | Path | Description |
 |-----------|------|-------------|
-| AiAssistantChat | `app/Livewire/AiAssistantChat.php` | Admin AI chat UI |
+| AiAssistantChat | `app/Livewire/AiAssistantChat.php` | Centralized AI chat logic |
+| Blade View | `resources/views/livewire/ai-assistant-chat.blade.php` | Chat interface |
+| Alpine Component | `resources/js/livewire/ai-assistant-chat.js` | UI logic & JavaScript polling |
+
+### Intelligent Polling
+
+To prevent UI flickering and unnecessary server load, the component uses a JavaScript-driven polling mechanism:
+1.  **Conditional Start**: Polling only begins when `$wire.pendingAssistantMessageId` is set.
+2.  **Efficient Check**: Uses an Alpine.js `$watch` to trigger `setInterval` with `async/await` calling `$wire.syncPendingResponse()`.
+3.  **Automatic Stop**: The interval is immediately cleared once the AI response is finalized or failed.
 
 ## API Endpoints
 

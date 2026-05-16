@@ -6,7 +6,6 @@ namespace App\Filament\Admin\Resources\Users\Tables;
 
 use App\Models\User;
 use App\Models\UserStatus;
-use App\Models\UserType;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
@@ -39,36 +38,31 @@ class UsersTable
                 TextColumn::make('type.id')
                     ->label(__('admin.resources.user.type'))
                     ->badge()
-                    ->state(fn (User $record): string => $record->type->name_en)
-                    ->color(fn (User $record): string => match ($record->type->id) {
-                        UserType::ADMIN_ID => 'danger',
-                        UserType::VENDOR_ID => 'warning',
-                        UserType::CONSUMER_ID => 'info',
-                        default => 'gray',
-                    }),
+                    ->state(fn (User $record): string => $record->type->translated_name ?? 'N/A')
+                    ->color('info'),
                 TextColumn::make('status.id')
                     ->label(__('admin.resources.user.status'))
                     ->badge()
-                    ->state(fn (User $record): string => $record->status->name_en)
+                    ->state(fn (User $record): string => $record->status->translated_name ?? 'N/A')
                     ->color(fn (User $record): string => match ($record->status->id) {
                         UserStatus::ACTIVE_ID => 'success',
                         UserStatus::PENDING_ID => 'warning',
                         UserStatus::INACTIVE_ID, UserStatus::DELETED_ID => 'danger',
-                        default => 'gray',
+                        default => 'secondary',
                     }),
                 TextColumn::make('created_at')
                     ->label(__('admin.resources.created_at'))
-                    ->dateTime()
+                    ->dateTime('d M Y, h:i A')
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
-                SelectFilter::make('user_type_id')
-                    ->relationship('type', 'name_en')
-                    ->label(__('admin.resources.user.account_type')),
                 SelectFilter::make('user_status_id')
-                    ->relationship('status', 'name_en')
-                    ->label(__('admin.resources.user.account_status')),
+                    ->label(__('admin.resources.user.account_status'))
+                    ->options(
+                        UserStatus::all()
+                            ->pluck('translated_name', 'id')
+                    ),
                 TrashedFilter::make(),
             ])
             ->actions([

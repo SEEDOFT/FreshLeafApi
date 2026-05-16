@@ -1,3 +1,3 @@
 <x-filament-panels::page>
-    @livewire(\App\Livewire\SupportChat::class)
+    @livewire('support-chat')
 </x-filament-panels::page>

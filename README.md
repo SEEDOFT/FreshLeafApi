@@ -15,17 +15,13 @@ A Laravel 13 REST API powering a multi-vendor organic vegetable marketplace. Thi
 - **Vendor Web App**: A dedicated platform where vendors register their real identity, manage their store profile, and sell products.
 - **Admin Management**: System administrators manage the platform, verify vendors, and earn a commission fee from vendors upon each successfully completed sale.
 
-## Features
+## Frontend Asset Architecture
 
-- **Multi-Vendor Marketplace**: Support for individual vendor stores, product management, and dedicated vendor order tracking.
-- **Admin Commission System**: Automated tracking of commission fees on completed orders.
-- **Payment Processing**: Multi-method support (Wallet, Credit/Debit, ABA, ACLEDA, COD)
-- **Wallet System**: Internal wallet tracking with full transaction history and CRUD support
-- **User Wishlist**: API support for users to save and toggle favorite products.
-- **AI Chat**: Session-based AI chat with real-time SSE streaming over Laravel Reverb (private WebSocket channels)
-- **Offline AI**: Native integration with `llama.cpp` for local testing without external dependencies
-- **Authentication**: Laravel Sanctum for API token auth
-- **API Versioning**: `/api/v1/` prefix with RESTful endpoints
+The project uses a structured approach for CSS and JavaScript to ensure scalability and maintainability:
+
+- **CSS Centralization**: Core design tokens and base application styles are centralized in `resources/css/filament/shared/core/`. Shared UI components (like chat layouts) reside in `resources/css/filament/shared/`.
+- **Livewire JS Components**: Complex Alpine.js logic is extracted from Blade views into dedicated files in `resources/js/livewire/`. These are registered as Alpine components in `app.js` to provide better IDE support and prevent UI flickering.
+- **Intelligent Polling**: All background polling for chat states has been migrated from `wire:poll` to a controlled JavaScript-based mechanism using `async/await` and `setInterval`.
 
 ## Quick Start
 

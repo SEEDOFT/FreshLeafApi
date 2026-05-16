@@ -4,10 +4,9 @@ declare(strict_types=1);
 
 namespace App\Livewire;
 
-use App\Models\User;
 use App\Models\UserStatus;
 use App\Models\UserType;
-use Illuminate\Support\Facades\Auth;
+use App\Services\Auth\UserSessionSecurity;
 use Livewire\Attributes\On;
 use Livewire\Component;
 
@@ -16,10 +15,9 @@ class ThemeManager extends Component
     #[On('updateTheme')]
     public function updateTheme(string $theme): void
     {
-        /** @var User|null $user */
-        $user = Auth::user();
+        $user = UserSessionSecurity::getAuthorizedUser();
 
-        if (! $user) {
+        if (! $user || ! $user->isActive()) {
             return;
         }
 
@@ -30,7 +28,6 @@ class ThemeManager extends Component
             return;
         }
 
-        // Update Admin Profile if it exists
         if ($user->where('user_type_id', UserType::ADMIN_ID)->exists()) {
             $user->adminProfile->update(['theme' => $theme]);
         }
@@ -40,6 +37,9 @@ class ThemeManager extends Component
         }
     }
 
+    /**
+     * Render
+     */
     public function render(): string
     {
         return '<div></div>';

@@ -6,12 +6,14 @@ namespace App\Http\Resources\Product;
 
 use App\Models\Product;
 use App\Models\ProductCategory;
+use App\Models\ProductStatus;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 /**
  * @mixin Product
  * @mixin ProductCategory
+ * @mixin ProductStatus
  */
 class ProductResource extends JsonResource
 {
@@ -37,7 +39,8 @@ class ProductResource extends JsonResource
             'product_type_id' => $this->product_type_id,
             'default_unit_id' => $this->default_unit_id,
             'product_status_id' => $this->product_status_id,
-            'product_category' => $this->whenLoaded('productCategory', fn () => $this->productCategory ? [
+            'product_category' => $this->whenLoaded('productCategory', fn () => $this->productCategory
+            ? [
                 'id' => $this->productCategory->id,
                 'name_en' => $this->productCategory->name_en,
                 'name_km' => $this->productCategory->name_km,
@@ -54,10 +57,10 @@ class ProductResource extends JsonResource
             ]),
             'status' => $this->whenLoaded('status', fn () => [
                 'id' => $this->product_status_id,
-                'name' => $this->status->name,
+                'name' => translate($this->status->name_en, $this->status->name_km),
             ]),
-            'created_at' => \optional($this->created_at)->toIso8601String(),
-            'updated_at' => \optional($this->updated_at)->toIso8601String(),
+            'created_at' => $this->created_at?->toIso8601String(),
+            'updated_at' => $this->updated_at?->toIso8601String(),
         ];
     }
 }

@@ -60,6 +60,8 @@ class AiMessageFailed implements ShouldBroadcastNow
             'message_id' => $this->messageId,
             'role' => $this->role,
             'error' => $this->error,
+            'full_text' => $this->error,
+            'text_chunk' => $this->error,
             'timestamp' => $this->timestamp,
             'sequence' => $this->sequence,
         ];

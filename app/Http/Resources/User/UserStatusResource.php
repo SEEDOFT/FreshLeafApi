@@ -22,8 +22,7 @@ class UserStatusResource extends JsonResource
     {
         return [
             'id' => $this->id,
-            'code' => $this->code,
-            'name' => $this->name,
+            'name' => translate($this->name_en, $this->name_km),
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
         ];

@@ -6,14 +6,16 @@ namespace {{ namespace }};
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
+use Override;
 
 class {{ class }} extends JsonResource
 {
     /**
-     * Transform the resource into an array.
+     * {@inheritDoc}
      *
      * @return array<string, mixed>
      */
+    #[Override]
     public function toArray(Request $request): array
     {
         return parent::toArray($request);

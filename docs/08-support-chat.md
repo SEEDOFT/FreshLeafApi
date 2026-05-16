@@ -9,10 +9,20 @@ Real-time customer support chat system connecting users with admins. Supports te
 | Component | Path | Description |
 |-----------|------|-------------|
 | **Support Chat Controller** | `app/Http/Controllers/Api/User/SupportChatController.php` | Ticket/message handling |
-| **Support Chat Page** | `app/Filament/Pages/SupportChat.php` | Admin chat interface |
+| **Support Chat Wrapper** | `app/Filament/Admin/Pages/SupportChat.php` | Filament page entry point |
+| **Livewire Component** | `app/Livewire/SupportChat.php` | Centralized chat logic |
+| **Blade View** | `resources/views/livewire/support-chat.blade.php` | Reusable chat interface |
+| **Alpine Component** | `resources/js/livewire/support-chat.js` | UI logic & JavaScript polling |
 | **Support Ticket Model** | `app/Models/SupportTicket.php` | Ticket entity |
 | **Support Message Model** | `app/Models/SupportMessage.php` | Message entity |
 | **PushNotification** | `app/Notifications/PushNotification.php` | Base FCM notification class |
+
+### Centralized Architecture
+
+The Support Chat system has been refactored for maximum reusability:
+1.  **Filament Page**: Acts as a thin wrapper and sidebar entry point.
+2.  **Standalone Livewire Component**: Encapsulates all chat state, message processing, and Echo listeners. This allows the chat to be easily embedded in other parts of the system in the future.
+3.  **JavaScript Polling**: Replaces `wire:poll` with a smooth Alpine.js `setInterval` mechanism (`startPolling`/`stopPolling`) to eliminate UI flickering during ticket list refreshes.
 
 ### Events (Real-time)
 
@@ -33,11 +43,11 @@ Real-time customer support chat system connecting users with admins. Supports te
 
 | Method | Endpoint | Description |
 |--------|----------|--------------|
-| GET | `/api/v1/user/support/ticket` | Get user's active ticket |
-| GET | `/api/v1/user/support/unread-count` | Get unread message count |
-| POST | `/api/v1/user/support/messages` | Send message (with optional file) |
-| GET | `/api/v1/user/support/messages` | Get message history |
-| POST | `/api/v1/user/support/typing` | Send typing indicator |
+| GET | `/api/v1/support/ticket` | Get user's active ticket |
+| GET | `/api/v1/support/unread-count` | Get unread message count |
+| POST | `/api/v1/support/messages` | Send message (with optional file) |
+| GET | `/api/v1/support/messages` | Get message history |
+| POST | `/api/v1/support/typing` | Send typing indicator |
 
 ## File Attachments
 

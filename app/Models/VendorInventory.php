@@ -166,10 +166,11 @@ class VendorInventory extends Model
      * Scope a query to only include active inventory items.
      *
      * @param  Builder<VendorInventory>  $query
+     * @return Builder<VendorInventory>
      */
     #[Scope]
-    protected function active($query): void
+    public function scopeActive(Builder $query): Builder
     {
-        $query->where('inventory_status_id', VendorInventoryStatus::ACTIVE);
+        return $query->where('inventory_status_id', VendorInventoryStatus::AVAILABLE_ID);
     }
 }

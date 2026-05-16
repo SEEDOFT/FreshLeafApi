@@ -24,7 +24,7 @@ Broadcast::channel(
             ->exists();
 
     },
-    options: ['guards' => ['web']]
+    options: ['guards' => ['web', 'api', 'sanctum']]
 );
 
 Broadcast::channel(
@@ -41,7 +41,7 @@ Broadcast::channel(
             $user->isType(UserType::ADMIN_ID);
     },
 
-    options: ['guards' => ['web']]
+    options: ['guards' => ['web', 'api', 'sanctum']]
 );
 
 Broadcast::channel(
@@ -49,5 +49,5 @@ Broadcast::channel(
     callback: static function (User $user): bool {
         return $user->isType(UserType::ADMIN_ID);
     },
-    options: ['guards' => ['web']]
+    options: ['guards' => ['web', 'api', 'sanctum']]
 );

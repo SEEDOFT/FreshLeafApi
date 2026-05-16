@@ -15,7 +15,6 @@ use Filament\Facades\Filament;
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\HtmlString;
 use Illuminate\Support\Str;
 use Livewire\Component;
@@ -45,6 +44,16 @@ class AiAssistantChat extends Component
     private const int HISTORY_MESSAGE_LIMIT = 8;
 
     private const int HISTORY_CONTENT_LIMIT = 1200;
+
+    // Listeners Methods
+
+    private const string FUNC_HANDLE_STARTED = 'handleStarted';
+
+    private const string FUNC_HANDLE_CHUNK = 'handleChunk';
+
+    private const string FUNC_HANDLE_COMPLETED = 'handleCompleted';
+
+    private const string FUNC_HANDLE_FAILED = 'handleFailed';
 
     public string $message = '';
 
@@ -87,6 +96,9 @@ class AiAssistantChat extends Component
 
     public bool $showHistory = true;
 
+    /**
+     * Mount the component
+     */
     public function mount(): void
     {
         $user = UserSessionSecurity::getAuthorizedUser();
@@ -104,6 +116,8 @@ class AiAssistantChat extends Component
         };
 
         if (! $isAuthorized) {
+            $this->dispatch('notify-error', __('Unauthorized to access AI Assistant'));
+
             return;
         }
 
@@ -112,11 +126,17 @@ class AiAssistantChat extends Component
         $this->initializeChat((int) $user->id);
     }
 
+    /**
+     * Check AI Service Status
+     */
     public function checkAiServiceStatus(): void
     {
         $this->isAiServiceAvailable = app(AiService::class)->healthCheck();
     }
 
+    /**
+     * Initialize Chat
+     */
     private function initializeChat(int $userId): void
     {
         $this->loadSessions($userId);
@@ -124,25 +144,38 @@ class AiAssistantChat extends Component
         $this->loadActiveSessionMessages();
     }
 
+    /**
+     * Updated Show History
+     */
+    /**
+     * Updated Show History
+     */
     public function updatedShowHistory(bool $value): void
     {
         session(['ai_assistant_show_history' => $value]);
     }
 
+    /**
+     * Toggle History
+     */
     public function toggleHistory(): void
     {
         $this->showHistory = ! $this->showHistory;
         session(['ai_assistant_show_history' => $this->showHistory]);
     }
 
+    /**
+     * Delete Session
+     */
     public function deleteSession(int $sessionId): void
     {
         $user = UserSessionSecurity::getAuthorizedUser();
+
         if (! $user) {
             return;
         }
 
-        $userId = (int) $user->id;
+        $userId = $user->id;
 
         AiChatSession::where('id', $sessionId)
             ->where('user_id', $userId)
@@ -157,7 +190,11 @@ class AiAssistantChat extends Component
         $this->dispatch('message-sent');
     }
 
-    /** @return array<string, string> */
+    /**
+     * Get Listeners
+     *
+     * @return array<string, string>
+     */
     public function getListeners(): array
     {
         /** @var User|null $user */
@@ -174,14 +211,18 @@ class AiAssistantChat extends Component
         }
 
         return [
-            "echo-private:ai-chat.{$userId}.{$this->activeSessionUlid},AiMessageStarted" => 'handleStarted',
-            "echo-private:ai-chat.{$userId}.{$this->activeSessionUlid},AiMessageChunk" => 'handleChunk',
-            "echo-private:ai-chat.{$userId}.{$this->activeSessionUlid},AiMessageCompleted" => 'handleCompleted',
-            "echo-private:ai-chat.{$userId}.{$this->activeSessionUlid},AiMessageFailed" => 'handleFailed',
+            "echo-private:ai-chat.{$userId}.{$this->activeSessionUlid},AiMessageStarted" => self::FUNC_HANDLE_STARTED,
+            "echo-private:ai-chat.{$userId}.{$this->activeSessionUlid},AiMessageChunk" => self::FUNC_HANDLE_CHUNK,
+            "echo-private:ai-chat.{$userId}.{$this->activeSessionUlid},AiMessageCompleted" => self::FUNC_HANDLE_COMPLETED,
+            "echo-private:ai-chat.{$userId}.{$this->activeSessionUlid},AiMessageFailed" => self::FUNC_HANDLE_FAILED,
         ];
     }
 
-    /** @param array{message_id: string} $event */
+    /**
+     * Handle Started
+     *
+     * @param  array{message_id: string}  $event
+     */
     public function handleStarted(array $event): void
     {
         if ($this->isMessageFailed($event['message_id'])) {
@@ -197,7 +238,11 @@ class AiAssistantChat extends Component
         );
     }
 
-    /** @param array{message_id: string, text_chunk: string} $event */
+    /**
+     * Handle Chunk
+     *
+     * @param  array{message_id: string, text_chunk: string}  $event
+     */
     public function handleChunk(array $event): void
     {
         if ($this->isMessageFailed($event['message_id'])) {
@@ -225,7 +270,11 @@ class AiAssistantChat extends Component
         $this->dispatch('message-sent');
     }
 
-    /** @param array{message_id: string, full_text: string} $event */
+    /**
+     * Handle Completed
+     *
+     * @param  array{message_id: string, full_text: string}  $event
+     */
     public function handleCompleted(array $event): void
     {
         if ($this->isMessageFailed($event['message_id'])) {
@@ -242,7 +291,11 @@ class AiAssistantChat extends Component
         $this->finalizePendingMessage();
     }
 
-    /** @param array{message_id: string, error: string} $event */
+    /**
+     * Handle Failed
+     *
+     * @param  array{message_id: string, error: string}  $event
+     */
     public function handleFailed(array $event): void
     {
         $this->isRealtimeConnected = false;
@@ -255,6 +308,9 @@ class AiAssistantChat extends Component
         $this->finalizePendingMessage();
     }
 
+    /**
+     * Handle Realtime Status
+     */
     public function handleRealtimeStatus(?string $state = null, ?string $reason = null): void
     {
         if ($state === 'connected') {
@@ -276,9 +332,13 @@ class AiAssistantChat extends Component
             : 'Realtime connection is unstable. Waiting with fallback sync mode.';
     }
 
+    /**
+     * Start New Chat
+     */
     public function startNewChat(): void
     {
         $user = UserSessionSecurity::getAuthorizedUser();
+
         if (! $user) {
             return;
         }
@@ -291,14 +351,18 @@ class AiAssistantChat extends Component
         $this->dispatch('message-sent');
     }
 
+    /**
+     * Switch Session
+     */
     public function switchSession(int $sessionId): void
     {
         $user = UserSessionSecurity::getAuthorizedUser();
+
         if (! $user) {
             return;
         }
 
-        $userId = (int) $user->id;
+        $userId = $user->id;
 
         $session = AiChatSession::where('id', $sessionId)
             ->where('user_id', $userId)
@@ -313,6 +377,9 @@ class AiAssistantChat extends Component
         $this->dispatch('message-sent');
     }
 
+    /**
+     * Sync Pending Response
+     */
     public function syncPendingResponse(): void
     {
         if (! $this->pendingAssistantMessageId || ! $this->activeDbSessionId) {
@@ -333,9 +400,7 @@ class AiAssistantChat extends Component
                 content: (string) $assistantMessage->content,
                 status: self::STATUS_DONE,
             );
-            Log::info('AI chat polling finalized completed response', [
-                'message_id' => $assistantMessage->id,
-            ]);
+
             $this->finalizePendingMessage();
 
             return;
@@ -347,9 +412,6 @@ class AiAssistantChat extends Component
                 content: 'Error: '.($assistantMessage->error ?: 'Unable to generate response. Please try again.'),
                 status: self::STATUS_FAILED,
             );
-            Log::info('AI chat polling finalized failed response', [
-                'message_id' => $assistantMessage->id,
-            ]);
             $this->finalizePendingMessage();
 
             return;
@@ -357,25 +419,22 @@ class AiAssistantChat extends Component
 
         if ($assistantMessage->content !== '') {
             $messageIndex = $this->findMessageIndexById((string) $assistantMessage->message_id);
-            $currentContent = $messageIndex === null ? '' : (string) ($this->messages[$messageIndex]['content'] ?? '');
 
             $this->updateOrAppendAssistantMessage(
                 messageId: (string) $assistantMessage->message_id,
                 content: (string) $assistantMessage->content,
                 status: (string) ($assistantMessage->status ?: self::STATUS_PROCESSING),
             );
-            if ($currentContent !== (string) $assistantMessage->content) {
-                Log::info('AI chat polling recovered partial response', [
-                    'message_id' => $assistantMessage->id,
-                    'characters' => \strlen((string) $assistantMessage->content),
-                ]);
-            }
+
             $this->dispatch('message-sent');
         }
 
         $this->checkResponseTimeout();
     }
 
+    /**
+     * Check Response Timeout
+     */
     private function checkResponseTimeout(): void
     {
         if (! $this->pendingSinceUnix) {
@@ -394,8 +453,7 @@ class AiAssistantChat extends Component
                 content: 'Request timed out while waiting for AI response. Please try sending again.',
                 status: self::STATUS_FAILED,
             );
-            AiChatMessage::query()
-                ->where('message_id', $this->pendingAssistantMessageId)
+            AiChatMessage::where('message_id', $this->pendingAssistantMessageId)
                 ->update([
                     'status' => self::STATUS_FAILED,
                     'error' => 'Request timed out while waiting for AI response.',
@@ -404,23 +462,23 @@ class AiAssistantChat extends Component
         }
     }
 
+    /**
+     * Stop Generating
+     */
     public function stopGenerating(): void
     {
         if (! $this->pendingAssistantMessageId) {
             return;
         }
 
-        // Set cancellation flag in cache for 1 minute
         Cache::put("ai_stop_{$this->pendingAssistantMessageId}", true, 60);
 
-        // Update database status
         AiChatMessage::where('message_id', $this->pendingAssistantMessageId)
             ->update([
                 'status' => self::STATUS_FAILED,
                 'error' => 'Generation stopped by user.',
             ]);
 
-        // Update local state
         $messageIndex = $this->findMessageIndexById($this->pendingAssistantMessageId);
         if ($messageIndex !== null) {
             $this->messages[$messageIndex]['status'] = self::STATUS_FAILED;
@@ -429,6 +487,9 @@ class AiAssistantChat extends Component
         $this->finalizePendingMessage();
     }
 
+    /**
+     * Send Message
+     */
     public function sendMessage(): void
     {
         if (trim($this->message) === '' || $this->isTyping) {
@@ -446,7 +507,6 @@ class AiAssistantChat extends Component
         $this->resetRealtimeState();
         $this->isTyping = true;
 
-        // Create user message
         $userMsg = $this->createUserMessage($userMessage);
         $this->messages[] = [
             'role' => 'user',
@@ -455,7 +515,6 @@ class AiAssistantChat extends Component
             'status' => self::STATUS_DONE,
         ];
 
-        // Create assistant message placeholder
         $assistantMsgId = (string) Str::ulid();
         $this->createAssistantPlaceholder($assistantMsgId);
         $this->messages[] = [
@@ -468,7 +527,6 @@ class AiAssistantChat extends Component
         $this->pendingAssistantMessageId = $assistantMsgId;
         $this->pendingSinceUnix = time();
 
-        // Update session title and dispatch job
         $this->updateSessionMetadata($userId, $userMessage);
         ProcessAiChatMessageJob::dispatch(
             userId: $userId,
@@ -482,6 +540,9 @@ class AiAssistantChat extends Component
         $this->dispatch('message-sent');
     }
 
+    /**
+     * Create User Message
+     */
     private function createUserMessage(string $content): AiChatMessage
     {
         return AiChatMessage::create([
@@ -495,6 +556,9 @@ class AiAssistantChat extends Component
         ]);
     }
 
+    /**
+     * Create Assistant Placeholder
+     */
     private function createAssistantPlaceholder(string $messageId): AiChatMessage
     {
         return AiChatMessage::create([
@@ -508,6 +572,9 @@ class AiAssistantChat extends Component
         ]);
     }
 
+    /**
+     * Update Session Metadata
+     */
     private function updateSessionMetadata(int $userId, string $userMessage): void
     {
         $session = AiChatSession::where('id', $this->activeDbSessionId)
@@ -522,6 +589,9 @@ class AiAssistantChat extends Component
         }
     }
 
+    /**
+     * Render Assistant Message
+     */
     public function renderAssistantMessage(string $content): HtmlString
     {
         if (trim($content) === '') {
@@ -534,11 +604,17 @@ class AiAssistantChat extends Component
         ]));
     }
 
+    /**
+     * Check if session is active
+     */
     public function isActiveSession(int $sessionId): bool
     {
         return $this->activeDbSessionId === $sessionId;
     }
 
+    /**
+     * Check if message is failed
+     */
     private function isMessageFailed(string $messageId): bool
     {
         $index = $this->findMessageIndexById($messageId);
@@ -547,17 +623,26 @@ class AiAssistantChat extends Component
             ($this->messages[$index]['status'] ?? null) === self::STATUS_FAILED;
     }
 
+    /**
+     * Render the component
+     */
     public function render(): View
     {
         return view('livewire.ai-assistant-chat');
     }
 
+    /**
+     * Reset Realtime State
+     */
     private function resetRealtimeState(): void
     {
         $this->isRealtimeConnected = true;
         $this->realtimeStatusMessage = null;
     }
 
+    /**
+     * Reset Pending State
+     */
     private function resetPendingState(): void
     {
         $this->pendingAssistantMessageId = null;
@@ -565,7 +650,11 @@ class AiAssistantChat extends Component
         $this->isTyping = false;
     }
 
-    /** @return array<array{role: string, content: string}> */
+    /**
+     * Get Chat History
+     *
+     * @return array<array{role: string, content: string}>
+     */
     private function getChatHistory(int $userId): array
     {
         if (! $this->activeDbSessionId) {
@@ -586,6 +675,9 @@ class AiAssistantChat extends Component
             ->toArray();
     }
 
+    /**
+     * Initialize Active Session
+     */
     private function initializeActiveSession(int $userId): void
     {
         $latestSession = AiChatSession::where('user_id', $userId)
@@ -600,6 +692,9 @@ class AiAssistantChat extends Component
         $this->setActiveSession($latestSession);
     }
 
+    /**
+     * Create Session
+     */
     private function createSession(int $userId): AiChatSession
     {
         return AiChatSession::create([
@@ -610,6 +705,9 @@ class AiAssistantChat extends Component
         ]);
     }
 
+    /**
+     * Set Active Session
+     */
     private function setActiveSession(AiChatSession $session): void
     {
         $this->activeDbSessionId = (int) $session->id;
@@ -618,6 +716,9 @@ class AiAssistantChat extends Component
         $this->resetRealtimeState();
     }
 
+    /**
+     * Load Sessions
+     */
     private function loadSessions(int $userId): void
     {
         $this->sessions = AiChatSession::where('user_id', $userId)
@@ -638,6 +739,9 @@ class AiAssistantChat extends Component
             ->toArray();
     }
 
+    /**
+     * Load Active Session Messages
+     */
     private function loadActiveSessionMessages(): void
     {
         if (! $this->activeDbSessionId) {
@@ -667,12 +771,14 @@ class AiAssistantChat extends Component
         }
     }
 
+    /**
+     * Update or Append Assistant Message
+     */
     private function updateOrAppendAssistantMessage(
         string $messageId,
         string $content,
         string $status
-    ): void
-    {
+    ): void {
         $messageIndex = $this->findMessageIndexById($messageId);
 
         if ($messageIndex !== null) {
@@ -690,6 +796,9 @@ class AiAssistantChat extends Component
         ];
     }
 
+    /**
+     * Find Message Index by ID
+     */
     private function findMessageIndexById(string $messageId): ?int
     {
         foreach ($this->messages as $index => $message) {
@@ -701,6 +810,9 @@ class AiAssistantChat extends Component
         return null;
     }
 
+    /**
+     * Finalize Pending Message
+     */
     private function finalizePendingMessage(): void
     {
         $this->resetPendingState();
@@ -711,12 +823,15 @@ class AiAssistantChat extends Component
 
         $user = UserSessionSecurity::getAuthorizedUser();
         if ($user) {
-            $this->loadSessions((int) $user->id);
+            $this->loadSessions($user->id);
         }
 
         $this->dispatch('message-sent');
     }
 
+    /**
+     * Generate Session Title
+     */
     private function generateSessionTitle(?string $currentTitle, string $prompt): string
     {
         if ($currentTitle && $currentTitle !== __('admin.ai.new_chat')) {

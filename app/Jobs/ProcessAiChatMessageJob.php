@@ -163,26 +163,28 @@ class ProcessAiChatMessageJob implements ShouldQueue
 
         $sequence = max(1, (int) $assistantMessage->sequence);
 
-        $context = '';
-        if ($this->needsProductContext($this->prompt)) {
-            $context = $this->fetchProductContext($this->prompt);
-            if ($context !== '') {
-                $this->broadcastChunk($assistantMessage, $userId, $sessionId, " [Looking up product details] \n\n", ++$sequence);
-            }
-        }
-
-        // 1. Initial Start Event
-        event(new AiMessageStarted(
-            userId: $userId,
-            sessionId: $sessionId,
-            messageId: (string) $assistantMessage->message_id,
-            role: 'assistant',
-            sequence: $sequence,
-            timestamp: now()->toIso8601String(),
-        ));
-
         $fullResponse = '';
         try {
+            $aiService->assertAvailable();
+
+            $context = '';
+            if ($this->needsProductContext($this->prompt)) {
+                $context = $this->fetchProductContext($this->prompt);
+                if ($context !== '') {
+                    $this->broadcastChunk($assistantMessage, $userId, $sessionId, " [Looking up product details] \n\n", ++$sequence);
+                }
+            }
+
+            // 1. Initial Start Event
+            event(new AiMessageStarted(
+                userId: $userId,
+                sessionId: $sessionId,
+                messageId: (string) $assistantMessage->message_id,
+                role: 'assistant',
+                sequence: $sequence,
+                timestamp: now()->toIso8601String(),
+            ));
+
             // 2. Determine if initial search is needed
             $searchQuery = $this->extractSearchQuery($this->prompt);
             $context = '';
@@ -258,8 +260,13 @@ class ProcessAiChatMessageJob implements ShouldQueue
 
             // 4. Finalize Message
             $cleanResponse = $this->cleanResponse($fullResponse);
+            if ($cleanResponse === '') {
+                throw new Exception('AI provider returned an empty response.');
+            }
+
             $assistantMessage->update([
                 'content' => $cleanResponse,
+                'error' => null,
                 'status' => 'done',
             ]);
 
@@ -298,9 +305,10 @@ class ProcessAiChatMessageJob implements ShouldQueue
                 'error' => $e->getMessage(),
             ]);
 
-            $error = $this->formatErrorMessage($e->getMessage());
+            $error = $aiService->normalizeFailureMessage($e);
 
             $assistantMessage->update([
+                'content' => '',
                 'status' => 'failed',
                 'error' => $error,
             ]);
@@ -439,18 +447,6 @@ class ProcessAiChatMessageJob implements ShouldQueue
         $content = (string) preg_replace('/\[No search tag required[^\]]*\]\.?/i', '', $content);
 
         return trim($content);
-    }
-
-    /**
-     * Format the error message for the user.
-     */
-    private function formatErrorMessage(string $message): string
-    {
-        if (str_contains($message, 'rate limit')) {
-            return 'AI rate limit reached. Please try again in a few minutes.';
-        }
-
-        return $message;
     }
 
     /**

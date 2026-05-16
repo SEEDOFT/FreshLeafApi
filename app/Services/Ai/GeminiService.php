@@ -33,8 +33,8 @@ class GeminiService implements AiProviderContract
      */
     public function __construct()
     {
-        $apiKey = (string) config('services.gemini.api_key');
-        $model = (string) config('services.gemini.model', 'gemini-2.0-flash');
+        $apiKey = (string) config('ai.providers.gemini.api_key');
+        $model = (string) config('ai.providers.gemini.model', 'gemini-2.0-flash');
 
         $this->apiKey = $apiKey;
         $this->model = $model;
@@ -48,11 +48,7 @@ class GeminiService implements AiProviderContract
     {
         try {
             $response = Http::timeout(5)
-                ->get($this->baseUrl.'/models/'.$this->model,
-                    [
-                        'key' => $this->apiKey,
-                    ],
-                );
+                ->get($this->baseUrl.'/models/'.$this->model, ['key' => $this->apiKey]);
 
             return $response->successful();
         } catch (Exception) {

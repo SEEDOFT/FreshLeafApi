@@ -23,7 +23,7 @@ class WalletTransactionStatusResource extends JsonResource
         return [
             'id' => $this->id,
             'code' => $this->code,
-            'name' => $this->name,
+            'name' => translate($this->name_en, $this->name_km),
         ];
     }
 }

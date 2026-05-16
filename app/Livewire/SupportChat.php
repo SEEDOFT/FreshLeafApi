@@ -17,11 +17,11 @@ use Livewire\Attributes\Url;
 use Livewire\Component;
 use Livewire\WithFileUploads;
 
+use function broadcast;
 use function is_array;
 use function is_object;
 use function method_exists;
 use function trim;
-use function broadcast;
 
 class SupportChat extends Component
 {
@@ -32,12 +32,41 @@ class SupportChat extends Component
 
     public string $message = '';
 
-    /** @var mixed $file */
+    /** @var mixed */
     public $file;
+
+    public bool $showHistory = true;
+
+    // Listeners Methods
 
     protected const string FUNC_HANDLE_INCOMING_MESSAGE = 'handleIncomingMessage';
 
     protected const string FUNC_HANDLE_TYPING_EVENT = 'handleTypingEvent';
+
+    /**
+     * Mount the component
+     */
+    public function mount(): void
+    {
+        $this->showHistory = (bool) session('support_chat_show_history', true);
+    }
+
+    /**
+     * Updated Show History
+     */
+    public function updatedShowHistory(bool $value): void
+    {
+        session(['support_chat_show_history' => $value]);
+    }
+
+    /**
+     * Toggle History
+     */
+    public function toggleHistory(): void
+    {
+        $this->showHistory = ! $this->showHistory;
+        session(['support_chat_show_history' => $this->showHistory]);
+    }
 
     /**
      * Get all active ticket.
@@ -110,6 +139,9 @@ class SupportChat extends Component
         $this->dispatch('message-sent');
     }
 
+    /**
+     * Send typing
+     */
     public function sendTyping(): void
     {
         if ($this->activeTicketId) {
@@ -123,6 +155,8 @@ class SupportChat extends Component
     }
 
     /**
+     * Get Listeners
+     *
      * @return array<string, string>
      */
     public function getListeners(): array
@@ -139,16 +173,16 @@ class SupportChat extends Component
      */
     public function handleIncomingMessage(mixed $event): void
     {
-        $data = is_array($event)
-            ? $event : throw new InvalidArgumentException(
-                'Invalid $event data in handleIncomingMessage'
-            );
-
-        if (is_object($event) && method_exists($event, 'getData')) {
+        $data = [];
+        if (is_array($event)) {
+            $data = $event;
+        } elseif (is_object($event) && method_exists($event, 'getData')) {
             $data = $event->getData();
+        } else {
+            throw new InvalidArgumentException('Invalid $event data in handleIncomingMessage');
         }
 
-        $ticketId = (int) $data['support_ticket_id'];
+        $ticketId = (int) ($data['support_ticket_id'] ?? 0);
         $isActiveTicket = $this->activeTicketId !== null
             && $ticketId === $this->activeTicketId;
 
@@ -171,8 +205,8 @@ class SupportChat extends Component
      */
     public function handleTypingEvent(array $event): void
     {
-        $ticketId = (int) $event['ticket_id'];
-        $senderType = $event['sender_type'];
+        $ticketId = (int) ($event['ticket_id'] ?? 0);
+        $senderType = $event['sender_type'] ?? '';
 
         if (
             $senderType === SupportMessage::USER &&
@@ -211,7 +245,7 @@ class SupportChat extends Component
             ->get();
     }
 
-    public function render()
+    public function render(): \Illuminate\Contracts\View\View
     {
         return view('livewire.support-chat');
     }

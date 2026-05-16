@@ -5,6 +5,9 @@ declare(strict_types=1);
 namespace App\Filament\Admin\Resources\Users\Schemas;
 
 use App\Models\Currency;
+use App\Models\User;
+use App\Models\UserStatus;
+use App\Models\UserType;
 use App\Models\Wallet;
 use Filament\Infolists\Components\ImageEntry;
 use Filament\Infolists\Components\RepeatableEntry;
@@ -18,39 +21,43 @@ class UserInfolist
 {
     public static function configure(Schema $schema): Schema
     {
+        $notProvided = __('admin.resources.general.not_provided');
+
         return $schema
             ->components([
                 Section::make(__('admin.resources.user.account_info'))
                     ->columns(2)
                     ->schema([
                         TextEntry::make('first_name')
-                            ->label(new HtmlString('<strong>'.__('admin.resources.user.first_name').'</strong>')),
+                            ->label(new HtmlString('<strong>'.__('admin.resources.user.first_name').'</strong>'))
+                            ->placeholder($notProvided),
                         TextEntry::make('last_name')
-                            ->label(new HtmlString('<strong>'.__('admin.resources.user.last_name').'</strong>')),
+                            ->label(new HtmlString('<strong>'.__('admin.resources.user.last_name').'</strong>'))
+                            ->placeholder($notProvided),
                         TextEntry::make('email')
                             ->label(new HtmlString('<strong>'.__('admin.resources.user.email').'</strong>'))
-                            ->placeholder('-'),
+                            ->placeholder($notProvided),
                         TextEntry::make('phone_number')
                             ->label(new HtmlString('<strong>'.__('admin.resources.user.phone').'</strong>'))
-                            ->placeholder('-'),
-                        TextEntry::make('type.name')
+                            ->placeholder($notProvided),
+                        TextEntry::make('type.translated_name')
                             ->label(new HtmlString('<strong>'.__('admin.resources.user.type').'</strong>'))
                             ->badge()
-                            ->placeholder('-')
-                            ->color(static fn (string $state): string => match ($state) {
-                                'Admin' => 'danger',
-                                'Vendor' => 'warning',
-                                'Consumer' => 'info',
+                            ->placeholder($notProvided)
+                            ->color(fn (User $record): string => match ($record->user_type_id) {
+                                UserType::ADMIN_ID => 'danger',
+                                UserType::VENDOR_ID => 'warning',
+                                UserType::CONSUMER_ID => 'info',
                                 default => 'gray',
                             }),
-                        TextEntry::make('status.name')
+                        TextEntry::make('status.translated_name')
                             ->label(new HtmlString('<strong>'.__('admin.resources.user.status').'</strong>'))
-                            ->placeholder('-')
+                            ->placeholder($notProvided)
                             ->badge()
-                            ->color(static fn (string $state): string => match ($state) {
-                                'Active' => 'success',
-                                'Pending' => 'warning',
-                                'Inactive', 'Deleted' => 'danger',
+                            ->color(fn (User $record): string => match ($record->user_status_id) {
+                                UserStatus::ACTIVE_ID => 'success',
+                                UserStatus::PENDING_ID => 'warning',
+                                UserStatus::INACTIVE_ID, UserStatus::DELETED_ID => 'danger',
                                 default => 'gray',
                             }),
                     ]),
@@ -62,7 +69,7 @@ class UserInfolist
                             ->disk('public')
                             ->circular()
                             ->imageSize(200)
-                            ->defaultImageUrl(Storage::disk('public')->url('users/user.png')),
+                            ->defaultImageUrl(fn (User $record): string => Storage::url('users/'.$record->image)),
                     ]),
 
                 Section::make(__('admin.resources.user.wallets_info'))
@@ -70,20 +77,19 @@ class UserInfolist
                         RepeatableEntry::make('wallets')
                             ->label(new HtmlString('<strong>'.__('admin.resources.user.wallets_info').'</strong>'))
                             ->schema([
-                                TextEntry::make('currency.name')
+                                TextEntry::make('currency.translate_currency')
                                     ->label(new HtmlString('<strong>'.__('admin.resources.wallet.currency').'</strong>'))
-                                    ->placeholder('-'),
+                                    ->placeholder($notProvided),
                                 TextEntry::make('balance')
                                     ->label(new HtmlString('<strong>'.__('admin.resources.wallet.balance').'</strong>'))
                                     ->placeholder('0.00')
-                                    ->getStateUsing(static function (Wallet $record): string {
-                                        $id = $record->currency->id;
-                                        $symbol = $record->currency->symbol ?? '';
+                                    ->getStateUsing(function (Wallet $record): string {
                                         $balance = number_format((float) $record->balance, 2);
+                                        $symbol = $record->currency->symbol;
 
-                                        return $id === Currency::USD_ID
-                                            ? "{$symbol} {$balance}"
-                                            : "{$balance} {$symbol}";
+                                        return $record->currency->id === Currency::USD_ID
+                                            ? "$symbol $balance"
+                                            : "$balance $symbol";
                                     }),
                             ])
                             ->columns(2),

@@ -6,8 +6,8 @@ declare(strict_types=1);
 // Platform detection
 // ---------------------------------------------------------------------------
 const IS_WINDOWS = PHP_OS_FAMILY === 'Windows';
-const IS_MACOS   = PHP_OS_FAMILY === 'Darwin';
-const IS_LINUX   = PHP_OS_FAMILY === 'Linux';
+const IS_MACOS = PHP_OS_FAMILY === 'Darwin';
+const IS_LINUX = PHP_OS_FAMILY === 'Linux';
 
 // ---------------------------------------------------------------------------
 // CLI arguments
@@ -35,29 +35,30 @@ function ansiSupported(): bool
 {
     if (IS_WINDOWS) {
         // Common terminals that support ANSI on Windows
-        return getenv('WT_SESSION') !== false       // Windows Terminal
-            || getenv('TERM_PROGRAM') !== false     // VS Code, Hyper …
-            || getenv('ANSICON') !== false          // ANSICON shim
-            || getenv('ConEmuANSI') === 'ON';       // ConEmu / cmder
+        return \getenv('WT_SESSION') !== false       // Windows Terminal
+            || \getenv('TERM_PROGRAM') !== false     // VS Code, Hyper …
+            || \getenv('ANSICON') !== false          // ANSICON shim
+            || \getenv('ConEmuANSI') === 'ON';       // ConEmu / cmder
     }
 
     // macOS / Linux: check $TERM and isatty
-    if (\function_exists('posix_isatty') && !\posix_isatty(STDOUT)) {
+    if (\function_exists('posix_isatty') && ! \posix_isatty(STDOUT)) {
         return false; // piped / redirected output
     }
 
-    $term = (string) getenv('TERM');
+    $term = (string) \getenv('TERM');
+
     return $term !== '' && $term !== 'dumb';
 }
 
 $useAnsi = ansiSupported();
 
-$reset  = $useAnsi ? "\033[0m"              : '';
-$bold   = $useAnsi ? "\033[1m"              : '';
-$blue   = $useAnsi ? "\033[38;2;147;197;253m" : '';
+$reset = $useAnsi ? "\033[0m" : '';
+$bold = $useAnsi ? "\033[1m" : '';
+$blue = $useAnsi ? "\033[38;2;147;197;253m" : '';
 $purple = $useAnsi ? "\033[38;2;196;181;253m" : '';
 $orange = $useAnsi ? "\033[38;2;253;186;116m" : '';
-$green  = $useAnsi ? "\033[38;2;74;222;128m"  : '';
+$green = $useAnsi ? "\033[38;2;74;222;128m" : '';
 
 echo "\n";
 echo "{$bold}Starting development services...{$reset}\n";
@@ -74,7 +75,7 @@ echo "\n";
 function colorLine(string $color, string $name, string $line, bool $useAnsi): void
 {
     $reset = $useAnsi ? "\033[0m" : '';
-    echo "{$color}[{$name}] {$line}{$reset}" . PHP_EOL;
+    echo "{$color}[{$name}] {$line}{$reset}".PHP_EOL;
 }
 
 /**
@@ -83,13 +84,13 @@ function colorLine(string $color, string $name, string $line, bool $useAnsi): vo
  */
 function npmBin(): string
 {
-    if (!IS_WINDOWS) {
+    if (! IS_WINDOWS) {
         return 'npm';
     }
 
     // Search PATH explicitly so proc_open can find it when given an array.
-    foreach (\explode(PATH_SEPARATOR, (string) getenv('PATH')) as $dir) {
-        $candidate = \rtrim($dir, '/\\') . DIRECTORY_SEPARATOR . 'npm.cmd';
+    foreach (\explode(PATH_SEPARATOR, (string) \getenv('PATH')) as $dir) {
+        $candidate = \rtrim($dir, '/\\').DIRECTORY_SEPARATOR.'npm.cmd';
         if (\is_file($candidate)) {
             return $candidate;
         }
@@ -128,8 +129,8 @@ function startProcess(array $command, string $cwd): array
         $commandStr = windowsCommandString($command);
         $process = \proc_open($commandStr, $descriptors, $pipes, $cwd);
 
-        if (!\is_resource($process)) {
-            throw new \RuntimeException("Failed to start process: {$commandStr}");
+        if (! \is_resource($process)) {
+            throw new RuntimeException("Failed to start process: {$commandStr}");
         }
 
         \fclose($pipes[0]);
@@ -138,18 +139,22 @@ function startProcess(array $command, string $cwd): array
         $stdoutHandle = \fopen($stdoutFile, 'rb');
         $stderrHandle = \fopen($stderrFile, 'rb');
 
-        if ($stdoutHandle) \stream_set_blocking($stdoutHandle, false);
-        if ($stderrHandle) \stream_set_blocking($stderrHandle, false);
+        if ($stdoutHandle) {
+            \stream_set_blocking($stdoutHandle, false);
+        }
+        if ($stderrHandle) {
+            \stream_set_blocking($stderrHandle, false);
+        }
 
         return [
-            'process'      => $process,
-            'pipes'        => $pipes,
-            'stdout'       => '',
-            'stderr'       => '',
-            'running'      => true,
-            'win_stdout'   => $stdoutHandle,
-            'win_stderr'   => $stderrHandle,
-            'win_files'    => [$stdoutFile, $stderrFile],
+            'process' => $process,
+            'pipes' => $pipes,
+            'stdout' => '',
+            'stderr' => '',
+            'running' => true,
+            'win_stdout' => $stdoutHandle,
+            'win_stderr' => $stderrHandle,
+            'win_files' => [$stdoutFile, $stderrFile],
         ];
     }
 
@@ -162,8 +167,8 @@ function startProcess(array $command, string $cwd): array
 
     $process = \proc_open($command, $descriptors, $pipes, $cwd);
 
-    if (!\is_resource($process)) {
-        throw new \RuntimeException('Failed to start process: ' . \implode(' ', $command));
+    if (! \is_resource($process)) {
+        throw new RuntimeException('Failed to start process: '.\implode(' ', $command));
     }
 
     \fclose($pipes[0]);
@@ -172,9 +177,9 @@ function startProcess(array $command, string $cwd): array
 
     return [
         'process' => $process,
-        'pipes'   => $pipes,
-        'stdout'  => '',
-        'stderr'  => '',
+        'pipes' => $pipes,
+        'stdout' => '',
+        'stderr' => '',
         'running' => true,
     ];
 }
@@ -190,7 +195,7 @@ function windowsCommandString(array $command): string
     foreach ($command as $token) {
         // Escape existing double-quotes inside the token.
         $token = \str_replace('"', '\\"', $token);
-        $parts[] = '"' . $token . '"';
+        $parts[] = '"'.$token.'"';
     }
 
     return \implode(' ', $parts);
@@ -205,7 +210,7 @@ function drainWindowsStreams(array &$job): array
     $lines = [];
 
     foreach (['win_stdout' => 'stdout', 'win_stderr' => 'stderr'] as $handle => $bufKey) {
-        if (!\is_resource($job[$handle] ?? null)) {
+        if (! \is_resource($job[$handle] ?? null)) {
             continue;
         }
 
@@ -251,8 +256,12 @@ if (\function_exists('pcntl_async_signals')) {
 $shutdownRequested = false;
 
 if (\function_exists('pcntl_signal')) {
-    \pcntl_signal(SIGINT,  function () use (&$shutdownRequested) { $shutdownRequested = true; });
-    \pcntl_signal(SIGTERM, function () use (&$shutdownRequested) { $shutdownRequested = true; });
+    \pcntl_signal(SIGINT, function () use (&$shutdownRequested) {
+        $shutdownRequested = true;
+    });
+    \pcntl_signal(SIGTERM, function () use (&$shutdownRequested) {
+        $shutdownRequested = true;
+    });
 }
 
 // ---------------------------------------------------------------------------
@@ -262,23 +271,23 @@ $cwd = \getcwd() ?: __DIR__;
 
 $jobs = [
     [
-        'name'    => 'server',
-        'color'   => $blue,
+        'name' => 'server',
+        'color' => $blue,
         'command' => [PHP_BINARY, 'artisan', 'serve', "--host={$host}", "--port={$port}"],
     ],
     [
-        'name'    => 'queue',
-        'color'   => $purple,
+        'name' => 'queue',
+        'color' => $purple,
         'command' => [PHP_BINARY, 'artisan', 'queue:work', '--queue=ai-stream,default', '--tries=3', '--timeout=120'],
     ],
     [
-        'name'    => 'vite',
-        'color'   => $orange,
+        'name' => 'vite',
+        'color' => $orange,
         'command' => [npmBin(), 'run', 'dev'],
     ],
     [
-        'name'    => 'reverb',
-        'color'   => $green,
+        'name' => 'reverb',
+        'color' => $green,
         'command' => [PHP_BINARY, 'artisan', 'reverb:start', "--host={$host}", '--port=8080'],
     ],
 ];
@@ -294,7 +303,7 @@ foreach ($jobs as $job) {
 // ---------------------------------------------------------------------------
 // Main event loop
 // ---------------------------------------------------------------------------
-while (!empty($running)) {
+while (! empty($running)) {
 
     // ---- Graceful shutdown --------------------------------------------------
     if ($shutdownRequested) {
@@ -312,10 +321,14 @@ while (!empty($running)) {
 
         foreach ($running as $job) {
             foreach ($job['pipes'] ?? [] as $pipe) {
-                if (\is_resource($pipe)) { \fclose($pipe); }
+                if (\is_resource($pipe)) {
+                    \fclose($pipe);
+                }
             }
 
-            if (IS_WINDOWS) { cleanupWindows($job); }
+            if (IS_WINDOWS) {
+                cleanupWindows($job);
+            }
 
             if (\is_resource($job['process'])) {
                 \proc_close($job['process']);
@@ -341,7 +354,7 @@ while (!empty($running)) {
     } else {
         // POSIX: use stream_select() for efficient multiplexing.
         $read = [];
-        $map  = [];
+        $map = [];
 
         foreach ($running as $index => $job) {
             if (\is_resource($job['pipes'][1])) {
@@ -354,13 +367,13 @@ while (!empty($running)) {
             }
         }
 
-        $write  = null;
+        $write = null;
         $except = null;
 
         if ($read && \stream_select($read, $write, $except, 0, 200_000) !== false) {
             foreach ($read as $stream) {
                 $key = (int) $stream;
-                if (!isset($map[$key])) {
+                if (! isset($map[$key])) {
                     continue;
                 }
 

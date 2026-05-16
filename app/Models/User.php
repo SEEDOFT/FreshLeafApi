@@ -37,7 +37,7 @@ use function is_string;
  * @property string $first_name
  * @property string $last_name
  * @property string|null $email
- * @property string|null $image
+ * @property string $image
  * @property string $phone_number
  * @property string $password
  * @property int $user_type_id
@@ -80,9 +80,9 @@ class User extends Authenticatable implements FilamentUser, HasAvatar, HasName
     use HasApiTokens, HasFactory, Notifiable, SoftDeletes;
 
     #[Override]
-    public function getFilamentAvatarUrl(): ?string
+    public function getFilamentAvatarUrl(): string
     {
-        return $this->avatarUrl;
+        return Storage::url('users/'.$this->image);
     }
 
     /**
@@ -110,14 +110,22 @@ class User extends Authenticatable implements FilamentUser, HasAvatar, HasName
      * Get the user's current locale from their profile.
      */
     public string $currentLocale {
-        get => $this->userProfile->locale;
+        get => match (true) {
+            $this->isType(UserType::ADMIN_ID) => $this->adminProfile->locale ?? config('app.locale'),
+            $this->isType(UserType::VENDOR_ID) => $this->vendorProfile->locale ?? config('app.locale'),
+            default => $this->userProfile->locale ?? config('app.locale'),
+        };
     }
 
     /**
      * Get the user's current theme from their profile.
      */
     public string $currentTheme {
-        get => $this->userProfile->theme;
+        get => match (true) {
+            $this->isType(UserType::ADMIN_ID) => $this->adminProfile->theme ?? config('app.theme'),
+            $this->isType(UserType::VENDOR_ID) => $this->vendorProfile->theme ?? config('app.theme'),
+            default => $this->userProfile->theme ?? config('app.theme'),
+        };
     }
 
     /**
@@ -125,13 +133,6 @@ class User extends Authenticatable implements FilamentUser, HasAvatar, HasName
      */
     public string $fullName {
         get => "{$this->last_name} {$this->first_name}";
-    }
-
-    /**
-     * Get the user's avatar URL.
-     */
-    public string $avatarUrl {
-        get => $this->image ? Storage::url('users/'.$this->image) : null;
     }
 
     /**

@@ -54,47 +54,48 @@ Route::prefix('v1')->name('v1.')->group(static function () {
         });
     });
 
-    Route::middleware(['auth:sanctum', 'active.user'])->group(static function () {
-        // Shared Profile
-        Route::prefix('profile')
-            ->name('profile.')
-            ->controller(ProfileController::class)
-            ->group(static function () {
-                Route::get('/', 'show')->name('show');
-                Route::put('/', 'replace')->name('replace');
-                Route::patch('/', 'update')->name('update');
-                Route::delete('/', 'destroy')->name('delete');
-            });
+    Route::middleware(['auth:sanctum', 'active.user'])
+        ->group(static function () {
+            // Shared Profile
+            Route::prefix('profile')
+                ->name('profile.')
+                ->controller(ProfileController::class)
+                ->group(static function () {
+                    Route::get('/', 'show')->name('show');
+                    Route::put('/', 'replace')->name('replace');
+                    Route::patch('/', 'update')->name('update');
+                    Route::delete('/', 'destroy')->name('delete');
+                });
 
-        // Shared Wallets
-        Route::prefix('wallets')
-            ->name('wallets.')
-            ->controller(WalletController::class)
-            ->group(static function () {
-                Route::get('/', 'index')->name('index');
-                Route::get('{id}', 'show')->name('show');
-                Route::get('{id}/histories', 'history')
-                    ->name('histories');
-            });
+            // Shared Wallets
+            Route::prefix('wallets')
+                ->name('wallets.')
+                ->controller(WalletController::class)
+                ->group(static function () {
+                    Route::get('/', 'index')->name('index');
+                    Route::get('{id}', 'show')->name('show');
+                    Route::get('{id}/histories', 'history')
+                        ->name('histories');
+                });
 
-        // Shared Addresses (User & Vendor)
-        Route::prefix('addresses')
-            ->name('addresses.')
-            ->controller(AddressController::class)
-            ->group(static function () {
-                Route::get('/', 'index')->name('index');
-                Route::get('{id}', 'show')->name('show');
-                Route::post('/', 'store')->name('store');
-                Route::put('{id}', 'replace')->name('replace');
-                Route::patch('{id}', 'update')->name('update');
-                Route::delete('{id}', 'destroy')->name('delete');
-            });
+            // Shared Addresses (User & Vendor)
+            Route::prefix('addresses')
+                ->name('addresses.')
+                ->controller(AddressController::class)
+                ->group(static function () {
+                    Route::get('/', 'index')->name('index');
+                    Route::get('{id}', 'show')->name('show');
+                    Route::post('/', 'store')->name('store');
+                    Route::put('{id}', 'replace')->name('replace');
+                    Route::patch('{id}', 'update')->name('update');
+                    Route::delete('{id}', 'destroy')->name('delete');
+                });
 
-        // Broadcasting Auth
-        Route::match(['GET', 'POST'], 'broadcasting/auth',
-            [BroadcastController::class, 'authenticate'])
-            ->name('broadcasting.auth');
-    });
+            // Broadcasting Auth
+            Route::match(['GET', 'POST'], 'broadcasting/auth',
+                [BroadcastController::class, 'authenticate'])
+                ->name('broadcasting.auth');
+        });
 
     // User-Specific Routes
     Route::middleware(['auth:sanctum', 'active.user'])

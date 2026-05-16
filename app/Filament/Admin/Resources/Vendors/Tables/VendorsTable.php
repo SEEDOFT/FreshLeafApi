@@ -26,6 +26,8 @@ class VendorsTable
 {
     public static function configure(Table $table): Table
     {
+        $notProvided = __('admin.resources.general.not_provided');
+
         return $table
             ->stackedOnMobile()
             ->recordAction('view')
@@ -33,22 +35,31 @@ class VendorsTable
                 TextColumn::make('vendorProfile.business_name')
                     ->label(__('admin.resources.vendor.business_name'))
                     ->searchable()
+                    ->placeholder($notProvided)
                     ->sortable(),
                 TextColumn::make('name')
                     ->label(__('admin.resources.vendor.owner'))
                     ->getStateUsing(fn (User $record) => $record->fullName)
-                    ->searchable(['first_name', 'last_name']),
+                    ->searchable(['first_name', 'last_name'])
+                    ->placeholder($notProvided),
                 TextColumn::make('phone_number')
                     ->label(__('admin.resources.vendor.phone'))
-                    ->searchable(),
-                TextColumn::make('status.name')
-                    ->label(__('admin.resources.vendor.status'))
+                    ->searchable()
+                    ->placeholder($notProvided),
+                TextColumn::make('type.id')
+                    ->label(__('admin.resources.user.type'))
                     ->badge()
-                    ->color(fn (string $state): string => match ($state) {
-                        'Active' => 'success',
-                        'Pending' => 'warning',
-                        'Inactive', 'Deleted' => 'danger',
-                        default => 'gray',
+                    ->state(fn (User $record): string => (string) ($record->type->translated_name ?? 'N/A'))
+                    ->color('warning'),
+                TextColumn::make('status.id')
+                    ->label(__('admin.resources.user.status'))
+                    ->badge()
+                    ->state(fn (User $record): string => (string) ($record->status->translated_name ?? 'N/A'))
+                    ->color(fn (User $record): string => match ($record->status->id) {
+                        UserStatus::ACTIVE_ID => 'success',
+                        UserStatus::PENDING_ID => 'warning',
+                        UserStatus::INACTIVE_ID, UserStatus::DELETED_ID => 'danger',
+                        default => 'secondary',
                     }),
                 IconColumn::make('vendorProfile.is_verified')
                     ->label(__('admin.resources.vendor.verified'))
@@ -62,8 +73,17 @@ class VendorsTable
             ])
             ->filters([
                 SelectFilter::make('user_status_id')
-                    ->relationship('status', 'name')
-                    ->label(__('admin.resources.vendor.status')),
+                    ->label(__('admin.resources.vendor.status'))
+                    ->options(
+                        UserStatus::all()
+                            ->pluck('translated_name', 'id')
+                    ),
+                SelectFilter::make('user_type_id')
+                    ->label(__('admin.resources.user.account_type'))
+                    ->options(
+                        UserType::all()
+                            ->pluck('translated_name', 'id')
+                    ),
                 TrashedFilter::make(),
             ])
             ->actions([

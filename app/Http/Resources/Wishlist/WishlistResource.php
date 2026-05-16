@@ -8,6 +8,7 @@ use App\Models\Wishlist;
 use App\Models\WishlistStatus;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
+use Override;
 
 /**
  * @mixin Wishlist
@@ -15,6 +16,12 @@ use Illuminate\Http\Resources\Json\JsonResource;
  */
 class WishlistResource extends JsonResource
 {
+    /**
+     * {@inheritDoc}
+     *
+     * @return array<string, mixed>
+     */
+    #[Override]
     public function toArray(Request $request): array
     {
         return [
@@ -28,10 +35,10 @@ class WishlistResource extends JsonResource
             ),
             'product' => $this->whenLoaded(
                 'vendorInventory',
-                fn () => $this->vendorInventory->product
+                fn () => $this->vendorInventory?->product
             ),
-            'created_at' => $this->created_at->toIso8601String(),
-            'updated_at' => $this->updated_at->toIso8601String(),
+            'created_at' => $this->created_at?->toIso8601String(),
+            'updated_at' => $this->updated_at?->toIso8601String(),
         ];
     }
 }

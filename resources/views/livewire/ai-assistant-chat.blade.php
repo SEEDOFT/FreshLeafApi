@@ -1,48 +1,4 @@
-<div class="ai-chat-shell" x-data="{
-        drawerOpen: false,
-        showHistory: @entangle('showHistory'),
-        isPhone: false,
-        mediaQuery: null,
-        pollInterval: null,
-        syncViewportState(event) {
-            this.isPhone = event.matches;
-            if (! this.isPhone) this.drawerOpen = false;
-        },
-        initDrawer() {
-            this.mediaQuery = window.matchMedia('(max-width: 767px)');
-            this.syncViewportState(this.mediaQuery);
-            if (this.mediaQuery.addEventListener) {
-                this.mediaQuery.addEventListener('change', (event) => this.syncViewportState(event));
-            } else {
-                this.mediaQuery.addListener((event) => this.syncViewportState(event));
-            }
-        },
-        toggleDrawer() {
-            if (! this.isPhone) {
-                this.showHistory = ! this.showHistory;
-                return;
-            }
-            this.drawerOpen = ! this.drawerOpen;
-        },
-        closeDrawer() { this.drawerOpen = false; },
-        handleEscape(event) { if (event.key === 'Escape' && this.drawerOpen) this.closeDrawer(); },
-        scrollToBottom() {
-            const container = document.getElementById('ai-thread-scroll');
-            if (container) container.scrollTop = container.scrollHeight;
-        },
-        startPolling() {
-            if (this.pollInterval) return;
-            this.pollInterval = setInterval(async () => {
-                await $wire.syncPendingResponse();
-            }, 2000);
-        },
-        stopPolling() {
-            if (this.pollInterval) {
-                clearInterval(this.pollInterval);
-                this.pollInterval = null;
-            }
-        }
-    }" x-init="initDrawer(); scrollToBottom(); $watch('$wire.pendingAssistantMessageId', value => value ? startPolling() : stopPolling())" x-on:keydown.window="handleEscape($event)"
+<div class="ai-chat-shell" x-data="aiAssistantChat" x-on:keydown.window="handleEscape($event)"
     x-on:message-sent.window="setTimeout(() => scrollToBottom(), 50); if (isPhone) { closeDrawer(); }"
     x-on:freshleaf-realtime-status.window="$wire.handleRealtimeStatus(($event.detail && $event.detail.state) ? $event.detail.state : null, ($event.detail && $event.detail.reason) ? $event.detail.reason : null)"
     x-bind:class="{ 'ai-chat-shell': true, 'is-history-hidden': !showHistory }">
@@ -91,12 +47,21 @@
             </div>
 
             @php
-                $statusClass = $isAiServiceAvailable 
-                    ? ($isRealtimeConnected ? 'ai-chat-status-pill--connected' : 'ai-chat-status-pill--fallback') 
+                $statusClass = $isAiServiceAvailable
+                    ? ($isRealtimeConnected
+                        ? 'ai-chat-status-pill--connected'
+                        : 'ai-chat-status-pill--fallback'
+                      )
                     : 'ai-chat-status-pill--error';
             @endphp
             <span class="ai-chat-status-pill {{ $statusClass }}">
-                {{ $isAiServiceAvailable ? ($isRealtimeConnected ? __('admin.ai.realtime_connected') : __('admin.ai.fallback_sync_mode')) : __('admin.ai.service_unavailable') }}
+                {{ $isAiServiceAvailable
+                    ? ($isRealtimeConnected
+                        ? __('admin.ai.realtime_connected')
+                        : __('admin.ai.fallback_sync_mode')
+                      )
+                    : __('admin.ai.service_unavailable')
+                }}
             </span>
         </header>
 
@@ -109,7 +74,10 @@
                         </article>
                     </div>
                 @elseif($messageItem['role'] === 'assistant')
-                    @if(($messageItem['content'] ?? '') !== '' || ($messageItem['status'] ?? 'done') === 'failed')
+                    @if(
+                        ($messageItem['content'] ?? '') !== '' ||
+                        ($messageItem['status'] ?? 'done') === 'failed'
+                      )
                         <div class="ai-message-row">
                             <article class="ai-message-bubble ai-message-bubble--assistant {{ ($messageItem['status'] ?? 'done') === 'failed' ? 'is-error' : '' }}">
                                 <div class="ai-message-author">{{ __('admin.ai.freshleaf_assistant') }}</div>
@@ -146,7 +114,9 @@
                     }
                 }" x-on:submit.prevent="submit()" class="flex gap-3">
                 <textarea x-model="localMessage"
-                    placeholder="{{ $isAiServiceAvailable ? __('admin.ai.composer_placeholder') : __('admin.ai.service_unavailable') }}"
+                    placeholder="{{ $isAiServiceAvailable
+                        ? __('admin.ai.composer_placeholder')
+                        : __('admin.ai.service_unavailable') }}"
                     class="ai-composer-input" rows="1"></textarea>
                 <button type="submit" class="ai-send-button">
                     <x-filament::icon icon="heroicon-o-arrow-up" class="h-5 w-5" />

@@ -32,6 +32,10 @@ use Illuminate\Support\Carbon;
  * @property string $billing_city
  * @property string $billing_state
  * @property string $billing_zip_code
+ * @property string|null $bank_name
+ * @property string|null $account_name
+ * @property string|null $account_number
+ * @property string|null $qr_code
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  * @property Carbon|null $deleted_at
@@ -58,6 +62,10 @@ use Illuminate\Support\Carbon;
     'billing_city',
     'billing_state',
     'billing_zip_code',
+    'bank_name',
+    'account_name',
+    'account_number',
+    'qr_code',
 ])]
 #[UseFactory(PaymentMethodFactory::class)]
 class PaymentMethod extends Model

@@ -29,6 +29,10 @@ return new class extends Migration
             $table->string('billing_city')->nullable();
             $table->string('billing_state')->nullable();
             $table->string('billing_zip_code')->nullable();
+            $table->string('bank_name')->nullable();
+            $table->string('account_name')->nullable();
+            $table->string('account_number')->nullable();
+            $table->string('qr_code')->nullable();
             $table->timestamps();
             $table->softDeletes();
         });

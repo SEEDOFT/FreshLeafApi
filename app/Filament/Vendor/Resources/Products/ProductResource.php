@@ -58,7 +58,7 @@ class ProductResource extends Resource
         return $user instanceof User &&
             $user->user_type_id === UserType::VENDOR_ID &&
             $user->user_status_id === UserStatus::ACTIVE_ID &&
-            (bool) $user->vendorProfile?->is_verified;
+            (bool) $user->vendorProfile->is_verified;
     }
 
     #[Override]

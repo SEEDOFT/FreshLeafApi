@@ -18,22 +18,22 @@ class UserStatusSeeder extends Seeder
             [
                 'id' => UserStatus::PENDING_ID,
                 'name_en' => 'PENDING',
-                'name_km' => 'រង់ចាំ',
+                'name_km' => 'រង់ចាំការផ្ទៀងផ្ទាត់',
             ],
             [
                 'id' => UserStatus::ACTIVE_ID,
                 'name_en' => 'ACTIVE',
-                'name_km' => 'សកម្ម',
+                'name_km' => 'កំពុងប្រើប្រាស់',
             ],
             [
                 'id' => UserStatus::INACTIVE_ID,
                 'name_en' => 'INACTIVE',
-                'name_km' => 'អសកម្ម',
+                'name_km' => 'បានផ្អាកសកម្មភាព',
             ],
             [
                 'id' => UserStatus::DELETED_ID,
                 'name_en' => 'DELETED',
-                'name_km' => 'លុបចោល',
+                'name_km' => 'បានលុបចោល',
             ],
         ];
 

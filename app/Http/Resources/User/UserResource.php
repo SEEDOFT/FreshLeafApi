@@ -36,8 +36,8 @@ class UserResource extends JsonResource
             'set_pin' => (bool) ($this->userProfile->pin ?? false),
             'locale' => $this->userProfile->locale,
             'theme' => $this->userProfile->theme,
-            'created_at' => $this->created_at->toIso8601String(),
-            'updated_at' => $this->updated_at->toIso8601String(),
+            'created_at' => $this->created_at?->toIso8601String(),
+            'updated_at' => $this->updated_at?->toIso8601String(),
         ];
     }
 }

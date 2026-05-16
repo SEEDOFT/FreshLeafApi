@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Filament\Forms\Components;
 
 use Filament\Forms\Components\Field;
@@ -61,13 +63,13 @@ class PhoneNumberInput extends Field
     {
         $country = country(strtolower($this->defaultIso));
 
-        if (! $country) {
+        if (! ($country instanceof \Rinvex\Country\Country)) {
             throw new InvalidArgumentException('Invalid country');
         }
 
         $countryName = $country->getName();
 
-        if (! $countryName) {
+        if (empty($countryName)) {
             throw new InvalidArgumentException('Invalid country name');
         }
 

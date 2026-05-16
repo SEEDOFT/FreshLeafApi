@@ -163,7 +163,7 @@ class ProductCatalog extends Page implements HasTable
                             'harvest_date' => $data['harvest_date'] ?? null,
                             'shelf_life_days' => $data['shelf_life_days'] ?? null,
                             'packaging_type' => $data['packaging_type'] ?? null,
-                            'inventory_status_id' => VendorInventoryStatus::ACTIVE,
+                            'inventory_status_id' => VendorInventoryStatus::AVAILABLE_ID,
                         ]);
 
                         Notification::make()

@@ -1,5 +1,9 @@
 .fl-support-container {
-    @apply flex h-[calc(100vh-14rem)] overflow-hidden bg-white dark:bg-gray-900 rounded-3xl shadow-[0_20px_50px_rgba(0\,0\,0\,0.05)] dark:shadow-[0_20px_50px_rgba(0\,0\,0\,0.3)] border border-gray-200 dark:border-white/5;
+    @apply flex h-[calc(100vh-14rem)] overflow-hidden bg-white dark:bg-gray-900 rounded-3xl shadow-[0_20px_50px_rgba(0\,0\,0\,0.05)] dark:shadow-[0_20px_50px_rgba(0\,0\,0\,0.3)] border border-gray-200 dark:border-white/5 transition-[grid-template-columns] duration-300;
+}
+
+.fl-support-container.is-history-hidden .fl-support-sidebar {
+    @apply hidden md:hidden;
 }
 
 /* Sidebar */
@@ -41,11 +45,11 @@
 
 /* Main Chat */
 .fl-support-main {
-    @apply flex-1 flex flex-col min-w-0 bg-white dark:bg-gray-950;
+    @apply flex-1 flex flex-col min-w-0 bg-white dark:bg-gray-950 relative;
 }
 
 .fl-support-header {
-    @apply p-5 border-b border-gray-200 dark:border-white/5 flex justify-between items-center bg-white dark:bg-gray-900/50 backdrop-blur-md;
+    @apply p-5 border-b border-gray-200 dark:border-white/5 flex justify-between items-center bg-white dark:bg-gray-900/50 backdrop-blur-md z-10;
 }
 
 .fl-support-header-user {
@@ -132,50 +136,54 @@
     @apply text-danger-500 hover:text-danger-600 ml-2 shrink-0;
 }
 
+/* Footer / Composer */
+.fl-support-footer {
+    @apply shrink-0 p-5 border-t border-gray-200 dark:border-white/5;
+}
+
 .fl-support-composer {
-    @apply flex gap-4 items-end;
+    @apply max-w-4xl mx-auto flex items-end gap-3 bg-gray-50 dark:bg-white/5 p-2 rounded-2xl border border-gray-200/50 dark:border-white/5;
 }
 
-.fl-support-composer-file-label {
-    @apply pb-1 shrink-0 relative;
-}
-
-.fl-support-composer-input {
+.fl-support-composer-input-wrap {
     @apply flex-1;
 }
 
-.fl-support-composer-btn {
-    @apply mb-0.5;
+.fl-support-composer-textarea {
+    @apply w-full bg-transparent border-none focus:ring-0 p-3 text-sm resize-none max-h-48 leading-relaxed dark:text-white placeholder-gray-400;
+}
+
+.fl-support-send-btn {
+    @apply w-11 h-11 flex items-center justify-center bg-primary-600 hover:bg-primary-700 text-white rounded-xl transition-all duration-200 flex-shrink-0 disabled:opacity-50 disabled:grayscale;
 }
 
 .fl-support-empty-state {
-    @apply flex-1 flex flex-col items-center justify-center text-gray-500 dark:text-gray-400 p-12;
+    @apply flex-1 flex flex-col items-center justify-center text-gray-500 dark:text-gray-400 p-12 relative;
 }
 
 .fl-support-empty-icon-wrapper {
     @apply p-6 bg-gray-100 dark:bg-white/5 rounded-full mb-4;
 }
 
-.fl-chat-typing-container {
-    @apply flex justify-start;
+.fl-support-empty-title {
+    @apply font-bold text-lg mb-1 dark:text-white;
 }
 
 .fl-support-empty-desc {
-    @apply text-sm text-center max-w-xs;
+    @apply text-sm text-center max-w-xs opacity-70;
 }
 
-.fl-support-composer-file-icon {
-    @apply w-6 h-6;
-}
+/* Mobile Responsive */
+@media (max-width: 767px) {
+    .fl-support-container {
+        @apply block h-[calc(100vh-10rem)];
+    }
 
-.fl-chat-attachment-icon {
-    @apply w-4 h-4 text-gray-500;
-}
+    .fl-support-sidebar {
+        @apply fixed left-0 top-0 bottom-0 w-72 z-50 transform -translate-x-full transition-transform duration-300 border-none bg-white dark:bg-zinc-900 shadow-2xl;
+    }
 
-.fl-chat-remove-icon {
-    @apply w-4 h-4;
-}
-
-.fl-support-message-bubble-wrapper {
-    @apply max-w-[70%];
+    .fl-support-container[data-drawer-open="true"] .fl-support-sidebar {
+        @apply translate-x-0;
+    }
 }

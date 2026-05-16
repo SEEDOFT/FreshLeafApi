@@ -81,8 +81,7 @@ class AdminProfile extends Page
                                 FileUpload::make('image')
                                     ->label(__('admin.profile.avatar'))
                                     ->avatar()
-                                    ->directory('users')
-                                    ->disk('public') // ← add this
+                                    ->directory('users/')
                                     ->alignCenter(),
                                 Grid::make(2)
                                     ->schema([

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Filament\Vendor\Resources\Orders;
 
 use App\Filament\Vendor\Resources\Orders\Pages\ListOrders;
@@ -23,8 +25,10 @@ use Override;
 
 class OrderResource extends Resource
 {
+    #[Override]
     protected static ?string $model = Order::class;
 
+    #[Override]
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedShoppingBag;
 
     #[Override]
@@ -47,7 +51,7 @@ class OrderResource extends Resource
         return $user instanceof User &&
             $user->user_type_id === UserType::VENDOR_ID &&
             $user->user_status_id === UserStatus::ACTIVE_ID &&
-            (bool) $user->vendorProfile?->is_verified;
+            (bool) $user->vendorProfile->is_verified;
     }
 
     #[Override]

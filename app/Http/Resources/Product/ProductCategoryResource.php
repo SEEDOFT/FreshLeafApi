@@ -27,8 +27,8 @@ class ProductCategoryResource extends JsonResource
             'description_en' => $this->description_en,
             'description_km' => $this->description_km,
             'image_url' => $this->image_url,
-            'created_at' => $this->created_at->toIso8601String(),
-            'updated_at' => $this->updated_at->toIso8601String(),
+            'created_at' => $this->created_at?->toIso8601String(),
+            'updated_at' => $this->updated_at?->toIso8601String(),
         ];
     }
 }

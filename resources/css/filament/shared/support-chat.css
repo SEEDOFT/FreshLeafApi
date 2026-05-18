@@ -142,19 +142,23 @@
 }
 
 .fl-support-composer {
-    @apply max-w-4xl mx-auto flex items-end gap-3 bg-gray-50 dark:bg-white/5 p-2 rounded-2xl border border-gray-200/50 dark:border-white/5;
+    @apply min-h-[3.75rem] max-w-4xl mx-auto flex items-center gap-3 bg-gray-50 dark:bg-white/5 p-2 rounded-2xl border border-gray-200/50 dark:border-white/5;
+}
+
+.fl-support-composer-file-label {
+    @apply relative self-center;
 }
 
 .fl-support-composer-input-wrap {
-    @apply flex-1;
+    @apply flex items-center flex-1;
 }
 
 .fl-support-composer-textarea {
-    @apply w-full bg-transparent border-none focus:ring-0 p-3 text-sm resize-none max-h-48 leading-relaxed dark:text-white placeholder-gray-400;
+    @apply w-full bg-transparent border-none focus:ring-0 py-2.5 px-3 text-sm resize-none max-h-48 leading-normal dark:text-white placeholder-gray-400;
 }
 
 .fl-support-send-btn {
-    @apply w-11 h-11 flex items-center justify-center bg-primary-600 hover:bg-primary-700 text-white rounded-xl transition-all duration-200 flex-shrink-0 disabled:opacity-50 disabled:grayscale;
+    @apply w-11 h-11 self-center flex items-center justify-center bg-primary-600 hover:bg-primary-700 text-white rounded-xl transition-all duration-200 flex-shrink-0 disabled:opacity-50 disabled:grayscale;
 }
 
 .fl-support-empty-state {

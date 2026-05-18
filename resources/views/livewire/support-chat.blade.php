@@ -1,5 +1,5 @@
 <div class="fl-support-container" x-data="supportChat" x-on:keydown.window="handleEscape($event)"
-    x-on:message-sent.window="setTimeout(() => scrollToBottom(), 50); if (isPhone) { closeDrawer(); }"
+    x-on:message-sent.window="resetComposer($refs.supportComposerTextarea); setTimeout(() => scrollToBottom(), 50); if (isPhone) { closeDrawer(); }"
     x-on:message-received.window="isUserTyping = false; setTimeout(() => scrollToBottom(), 50)"
     x-on:user-typing.window="isUserTyping = true; clearTimeout(this.typingTimeout); this.typingTimeout = setTimeout(() => { isUserTyping = false; }, 3000); setTimeout(() => scrollToBottom(), 50)"
     x-on:ticket-selected.window="isUserTyping = false; setTimeout(() => scrollToBottom(), 50); listenToTicket($wire.activeTicketId)"
@@ -120,7 +120,10 @@
                         </button>
                     </div>
                 @endif
-                <form wire:submit.prevent="sendMessage" class="fl-support-composer">
+                <form
+                    x-on:submit.prevent="submitComposer($refs.supportComposerTextarea, @js((bool) $file))"
+                    class="fl-support-composer"
+                >
                     <div class="fl-support-composer-file-label">
                         <label class="cursor-pointer text-gray-400 hover:text-primary-500 transition-colors p-2 block">
                             <x-filament::icon icon="heroicon-o-paper-clip" class="w-6 h-6" />
@@ -133,13 +136,18 @@
                         </div>
                     </div>
                     <div class="fl-support-composer-input-wrap">
-                        <textarea wire:model="message" wire:keyup.debounce.500ms="sendTyping"
+                        <textarea
+                            x-ref="supportComposerTextarea"
+                            x-model="composerMessage"
+                            x-init="resizeTextarea($el)"
+                            x-on:input="resizeTextarea($el); queueTyping()"
+                            x-on:keydown.enter="if (!$event.shiftKey) { $event.preventDefault(); submitComposer($el, @js((bool) $file)); }"
+                            x-bind:style="{ height: composerTextareaHeight, overflowY: composerTextareaOverflowY }"
                             placeholder="{{ __('admin.support.type_reply') }}"
                             class="fl-support-composer-textarea" rows="1"
-                            x-on:keydown.enter.prevent="if(!$event.shiftKey) $wire.sendMessage()"
                             autofocus></textarea>
                     </div>
-                    <button type="submit" class="fl-support-send-btn" wire:loading.attr="disabled">
+                    <button type="submit" class="fl-support-send-btn" wire:loading.attr="disabled" wire:target="sendMessage, file">
                         <x-filament::icon icon="heroicon-o-paper-airplane" class="h-5 w-5" />
                     </button>
                 </form>

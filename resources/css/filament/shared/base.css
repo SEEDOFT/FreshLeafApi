@@ -110,7 +110,6 @@
     background: white !important;
     box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.05), 0 4px 6px -4px rgb(0 0 0 / 0.05) !important;
     border-radius: 1.25rem !important;
-    overflow: hidden;
 }
 
 .dark .fi-section,
@@ -213,10 +212,13 @@
     display: flex !important;
     flex-direction: column !important;
     min-height: 200px !important;
+    overflow: visible !important;
 }
 
 .fi-ta-content {
     flex-grow: 1 !important;
+    overflow-x: auto !important;
+    overflow-y: visible !important;
 }
 
 /* ============================================

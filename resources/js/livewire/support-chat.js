@@ -7,6 +7,10 @@ export default () => ({
     drawerOpen: false,
     isPhone: false,
     mediaQuery: null,
+    composerMessage: '',
+    composerTextareaHeight: '40px',
+    composerTextareaOverflowY: 'hidden',
+    typingSendTimeout: null,
 
     init() {
         this.showHistory = this.$wire.entangle('showHistory');
@@ -14,6 +18,57 @@ export default () => ({
         this.scrollToBottom();
         this.initEcho();
         this.startPolling();
+    },
+
+    queueTyping() {
+        clearTimeout(this.typingSendTimeout);
+        this.typingSendTimeout = setTimeout(() => {
+            this.$wire.sendTyping();
+        }, 500);
+    },
+
+    resizeTextarea(textarea) {
+        const minHeight = 40;
+        const maxHeight = 150;
+
+        if (this.composerMessage === '') {
+            this.resetTextarea(textarea);
+            return;
+        }
+
+        textarea.style.height = 'auto';
+        this.composerTextareaHeight = Math.max(minHeight, Math.min(textarea.scrollHeight, maxHeight)) + 'px';
+        this.composerTextareaOverflowY = textarea.scrollHeight > maxHeight ? 'auto' : 'hidden';
+        textarea.style.height = this.composerTextareaHeight;
+        textarea.style.overflowY = this.composerTextareaOverflowY;
+    },
+
+    resetTextarea(textarea) {
+        this.composerTextareaHeight = '40px';
+        this.composerTextareaOverflowY = 'hidden';
+
+        if (textarea) {
+            textarea.style.height = this.composerTextareaHeight;
+            textarea.style.overflowY = this.composerTextareaOverflowY;
+        }
+    },
+
+    resetComposer(textarea) {
+        this.composerMessage = '';
+        this.resetTextarea(textarea);
+    },
+
+    async submitComposer(textarea, hasFile) {
+        const message = this.composerMessage.trim();
+
+        if (message === '' && !hasFile) {
+            this.resetComposer(textarea);
+            return;
+        }
+
+        await this.$wire.set('message', message);
+        await this.$wire.sendMessage();
+        this.resetComposer(textarea);
     },
 
     syncViewportState(event) {
@@ -109,5 +164,6 @@ export default () => ({
             clearInterval(this.pollInterval);
             this.pollInterval = null;
         }
+        clearTimeout(this.typingSendTimeout);
     }
 });

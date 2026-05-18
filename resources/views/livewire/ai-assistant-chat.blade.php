@@ -1,5 +1,5 @@
 <div class="ai-chat-shell" x-data="aiAssistantChat" x-on:keydown.window="handleEscape($event)"
-    x-on:message-sent.window="setTimeout(() => scrollToBottom(), 50); if (isPhone) { closeDrawer(); }"
+    x-on:message-sent.window="resetComposer($refs.aiComposerTextarea); setTimeout(() => scrollToBottom(), 50); if (isPhone) { closeDrawer(); }"
     x-on:freshleaf-realtime-status.window="$wire.handleRealtimeStatus(($event.detail && $event.detail.state) ? $event.detail.state : null, ($event.detail && $event.detail.reason) ? $event.detail.reason : null)"
     x-bind:class="{ 'ai-chat-shell': true, 'is-history-hidden': !showHistory }">
 
@@ -103,21 +103,22 @@
         </div>
 
         <footer class="ai-chat-composer" wire:ignore>
-            <form x-data="{
-                    localMessage: '',
-                    submit() {
-                        const message = this.localMessage.trim();
-                        if (message === '') return;
-                        $wire.set('message', message);
-                        $wire.sendMessage();
-                        this.localMessage = '';
-                    }
-                }" x-on:submit.prevent="submit()" class="flex gap-3">
-                <textarea x-model="localMessage"
-                    placeholder="{{ $isAiServiceAvailable
-                        ? __('admin.ai.composer_placeholder')
-                        : __('admin.ai.service_unavailable') }}"
-                    class="ai-composer-input" rows="1"></textarea>
+            <form
+                x-on:submit.prevent="submitComposer($refs.aiComposerTextarea)"
+                class="flex items-center gap-3"
+            >
+                <textarea
+                    x-ref="aiComposerTextarea"
+                    x-model="composerMessage"
+                    x-on:keydown.enter="if (!$event.shiftKey) { $event.preventDefault(); submitComposer($el); }"
+                    x-init="resizeTextarea($el)"
+                    x-on:input="resizeTextarea($el)"
+                    x-bind:style="{ height: composerTextareaHeight, overflowY: composerTextareaOverflowY }"
+                    placeholder="{{ $isAiServiceAvailable ? __('admin.ai.composer_placeholder') : __('admin.ai.service_unavailable') }}"
+                    class="ai-composer-input"
+                    rows="1"
+                ></textarea>
+
                 <button type="submit" class="ai-send-button">
                     <x-filament::icon icon="heroicon-o-arrow-up" class="h-5 w-5" />
                 </button>

@@ -51,3 +51,11 @@ Broadcast::channel(
     },
     options: ['guards' => ['web', 'api', 'sanctum']]
 );
+
+Broadcast::channel(
+    channel: 'App.Models.User.{id}',
+    callback: static function (User $user, string $id): bool {
+        return $user->id === (int) $id;
+    },
+    options: ['guards' => ['web', 'api', 'sanctum']]
+);

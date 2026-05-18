@@ -9,6 +9,7 @@ use App\Events\SupportTyping;
 use App\Models\SupportMessage;
 use App\Models\SupportTicket;
 use App\Notifications\NewSupportMessageNotification;
+use Illuminate\Contracts\View\View;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Notification;
@@ -245,7 +246,7 @@ class SupportChat extends Component
             ->get();
     }
 
-    public function render(): \Illuminate\Contracts\View\View
+    public function render(): View
     {
         return view('livewire.support-chat');
     }

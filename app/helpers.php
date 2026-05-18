@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 use App\Models\Setting;
 use Filament\Forms\Components\Select;
+use Rinvex\Country\Country;
 
 if (! function_exists('app_setting')) {
     /**
@@ -27,7 +28,7 @@ if (! function_exists('get_dial_code')) {
 
         $country = country(strtolower($countryIso));
 
-        if (! ($country instanceof \Rinvex\Country\Country)) {
+        if (! ($country instanceof Country)) {
             throw new InvalidArgumentException('Invalid country iso');
         }
 
@@ -50,7 +51,7 @@ if (! function_exists('get_country_options')) {
         foreach (countries() as $country) {
             $iso = $country['iso_3166_1_alpha2'];
             $c = country(strtolower($iso));
-            $name = ($c instanceof \Rinvex\Country\Country) ? $c->getName() : 'Unknown';
+            $name = ($c instanceof Country) ? $c->getName() : 'Unknown';
             $dialCode = get_dial_code($iso);
             $flagUrl = 'https://flagcdn.com/24x18/'.strtolower($iso).'.png';
 
@@ -126,7 +127,7 @@ if (! function_exists('get_country_options_by_dial_code')) {
             }
 
             $c = country(strtolower($iso));
-            $name = ($c instanceof \Rinvex\Country\Country) ? $c->getName() : 'Unknown';
+            $name = ($c instanceof Country) ? $c->getName() : 'Unknown';
             $flagUrl = 'https://flagcdn.com/24x18/'.strtolower($iso).'.png';
 
             $options[$iso] = "

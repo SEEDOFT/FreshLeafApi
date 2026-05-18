@@ -6,7 +6,6 @@ namespace App\Services;
 
 use App\Models\User;
 use Illuminate\Http\UploadedFile;
-use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
@@ -21,10 +20,6 @@ class ProfileService
      */
     public function updateProfile(User $user, array $data, ?UploadedFile $image = null): ?User
     {
-        if (isset($data['password'])) {
-            $data['password'] = Hash::make($data['password']);
-        }
-
         if ($image) {
             if ($user->image) {
                 Storage::disk(config('filesystems.default'))
@@ -33,11 +28,21 @@ class ProfileService
             $data['image'] = $this->storeUserImage($image);
         }
 
-        $user->update(array_intersect_key($data, array_flip([
-            'first_name', 'last_name', 'email', 'phone_number', 'password', 'image',
-        ])));
+        $user->update(array_intersect_key(
+            $data, array_flip([
+                'first_name',
+                'last_name',
+                'email',
+                'phone_number',
+                'password',
+                'image',
+            ]))
+        );
 
-        $user->userProfile()->firstOrCreate(['user_id' => $user->id])->update($data);
+        $user->userProfile()->update([
+            'locale' => $data['locale'] ?? $user->userProfile->locale,
+            'theme' => $data['theme'] ?? $user->userProfile->theme,
+        ]);
 
         $freshUser = $user->fresh();
 
@@ -48,6 +53,9 @@ class ProfileService
         return $freshUser;
     }
 
+    /**
+     * Store uploaded user's profile image in public disk.
+     */
     private function storeUserImage(UploadedFile $file): string
     {
         $fileName = Str::ulid().'.'.$file->getClientOriginalExtension();

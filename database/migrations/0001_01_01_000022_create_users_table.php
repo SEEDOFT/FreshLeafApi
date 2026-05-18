@@ -28,6 +28,9 @@ return new class extends Migration
             $table->rememberToken();
             $table->timestamps();
             $table->softDeletes();
+
+            $table->unique(['email', 'user_type_id']);
+            $table->unique(['phone_number', 'user_type_id']);
         });
     }
 

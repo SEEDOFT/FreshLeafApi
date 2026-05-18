@@ -7,6 +7,7 @@ namespace App\Filament\Forms\Components;
 use Filament\Forms\Components\Field;
 use InvalidArgumentException;
 use Override;
+use Rinvex\Country\Country;
 
 class PhoneNumberInput extends Field
 {
@@ -63,7 +64,7 @@ class PhoneNumberInput extends Field
     {
         $country = country(strtolower($this->defaultIso));
 
-        if (! ($country instanceof \Rinvex\Country\Country)) {
+        if (! ($country instanceof Country)) {
             throw new InvalidArgumentException('Invalid country');
         }
 

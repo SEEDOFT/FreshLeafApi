@@ -352,6 +352,7 @@
     padding: 0.5rem;
     border-radius: 1rem;
     border: 1px solid rgba(0, 0, 0, 0.05);
+    min-height: 56px;
 }
 
 .dark .ai-composer-form {
@@ -367,6 +368,7 @@
     padding: 0.75rem !important;
     font-size: 0.95rem;
     resize: none;
+    min-height: 40px;
     max-height: 250px;
     line-height: 1.5;
     overflow-y: auto;

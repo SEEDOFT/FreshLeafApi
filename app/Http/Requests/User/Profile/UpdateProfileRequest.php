@@ -5,7 +5,11 @@ declare(strict_types=1);
 namespace App\Http\Requests\User\Profile;
 
 use Illuminate\Contracts\Validation\ValidationRule;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
+
+use function auth;
 
 class UpdateProfileRequest extends FormRequest
 {
@@ -14,7 +18,7 @@ class UpdateProfileRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return \auth()->check();
+        return auth()->check();
     }
 
     /**
@@ -32,13 +36,25 @@ class UpdateProfileRequest extends FormRequest
                 'nullable',
                 'email',
                 'max:255',
+                Rule::unique('users', 'email')
+                    ->where(function (Builder $query): void {
+                        $query->where('user_type_id', $this->user()?->user_type_id);
+                    })
+                    ->ignore($this->user()),
             ],
             'phone_number' => [
                 'sometimes',
                 'string',
                 'max:20',
+                Rule::unique('users', 'phone_number')
+                    ->where(function (Builder $query): void {
+                        $query->where('user_type_id', $this->user()?->user_type_id);
+                    })
+                    ->ignore($this->user()),
             ],
-            'password' => ['sometimes', 'string', 'min:8', 'confirmed'],
+            'image' => ['sometimes', 'image', 'mimes:jpeg,png,jpg', 'max:6144'],
+            'locale' => ['sometimes', 'string', 'in:km,en'],
+            'theme' => ['sometimes', 'string', 'in:system,light,dark'],
         ];
     }
 }

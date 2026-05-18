@@ -21,25 +21,30 @@ class UsersTable
 {
     public static function configure(Table $table): Table
     {
+        $notProvided = __('admin.resources.general.not_provided');
+
         return $table
             ->stackedOnMobile()
             ->recordAction('view')
             ->columns([
-                TextColumn::make('name')
-                    ->label(__('admin.resources.user.full_name'))
-                    ->getStateUsing(fn (User $record): string => $record->fullName),
+                TextColumn::make('first_name')
+                    ->label(__('admin.resources.user.first_name'))
+                    ->getStateUsing(fn (User $record): string => $record->first_name),
+                TextColumn::make('last_name')
+                    ->label(__('admin.resources.user.last_name'))
+                    ->getStateUsing(fn (User $record): string => $record->last_name),
                 TextColumn::make('email')
                     ->label(__('admin.resources.user.email'))
-                    ->placeholder('N/A')
+                    ->placeholder($notProvided)
                     ->searchable(),
                 TextColumn::make('phone_number')
                     ->label(__('admin.resources.user.phone'))
                     ->searchable(),
-                TextColumn::make('type.id')
-                    ->label(__('admin.resources.user.type'))
-                    ->badge()
-                    ->state(fn (User $record): string => $record->type->translated_name ?? 'N/A')
-                    ->color('info'),
+                // TextColumn::make('type.id')
+                //     ->label(__('admin.resources.user.type'))
+                //     ->badge()
+                //     ->state(fn (User $record): string => $record->type->translated_name ?? 'N/A')
+                //     ->color('info'),
                 TextColumn::make('status.id')
                     ->label(__('admin.resources.user.status'))
                     ->badge()

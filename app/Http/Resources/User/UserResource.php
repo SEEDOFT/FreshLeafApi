@@ -9,6 +9,7 @@ use App\Models\UserProfile;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Facades\Storage;
+use Override;
 
 /**
  * @mixin User
@@ -17,10 +18,11 @@ use Illuminate\Support\Facades\Storage;
 class UserResource extends JsonResource
 {
     /**
-     * Transform the resource into an array.
+     * {@inheritDoc}
      *
      * @return array<string, mixed>
      */
+    #[Override]
     public function toArray(Request $request): array
     {
         return [
@@ -31,7 +33,8 @@ class UserResource extends JsonResource
             'phone_number' => $this->phone_number,
             'image' => $this->when(
                 $this->image !== null,
-                fn () => Storage::url('users/'.$this->image)
+                fn () => Storage::url('users/'.$this->image),
+                null
             ),
             'set_pin' => (bool) ($this->userProfile->pin ?? false),
             'locale' => $this->userProfile->locale,

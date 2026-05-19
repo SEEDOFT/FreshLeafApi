@@ -88,7 +88,7 @@ export default () => ({
 
     toggleDrawer() {
         if (!this.isPhone) {
-            this.$wire.toggleHistory();
+            this.showHistory = !this.showHistory;
             return;
         }
         this.drawerOpen = !this.drawerOpen;

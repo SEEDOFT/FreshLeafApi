@@ -100,12 +100,4 @@ class Login extends BaseLogin
 
         return array_filter($credentials);
     }
-
-    #[Override]
-    protected function throwFailureValidationException(): never
-    {
-        throw ValidationException::withMessages([
-            'data.phone_number_input' => __('admin.auth.login.failed'),
-        ]);
-    }
 }

@@ -20,9 +20,12 @@ use Illuminate\Support\Facades\Auth;
 use Override;
 
 use function __;
+use function basename;
 use function is_array;
 use function is_string;
+use function ltrim;
 use function reset;
+use function str_starts_with;
 
 class AdminProfile extends Page
 {
@@ -59,9 +62,8 @@ class AdminProfile extends Page
 
         $this->data = $user->toArray();
 
-        // Wrap image in array for FileUpload component if it's a string
         if (isset($this->data['image']) && is_string($this->data['image'])) {
-            $this->data['image'] = [$this->data['image']];
+            $this->data['image'] = $this->getImageUploadState($this->data['image']);
         }
 
         if ($user->adminProfile) {
@@ -81,7 +83,10 @@ class AdminProfile extends Page
                                 FileUpload::make('image')
                                     ->label(__('admin.profile.avatar'))
                                     ->avatar()
-                                    ->directory('users/')
+                                    ->image()
+                                    ->maxSize(6144)
+                                    ->disk('public')
+                                    ->directory('users')
                                     ->alignCenter(),
                                 Grid::make(2)
                                     ->schema([
@@ -158,9 +163,10 @@ class AdminProfile extends Page
 
         $state = $form->getState();
 
-        // Unwrap image from array before saving to DB
         if (isset($state['image']) && is_array($state['image'])) {
-            $state['image'] = reset($state['image']) ?: null;
+            $state['image'] = $this->getImageDatabaseState($state['image']);
+        } elseif (isset($state['image']) && is_string($state['image'])) {
+            $state['image'] = $this->getImageDatabaseState($state['image']);
         }
 
         $adminProfileData = $state['adminProfile'] ?? [];
@@ -209,5 +215,33 @@ class AdminProfile extends Page
                     ->dehydrated(fn (mixed $state): bool => filled($state))
                     ->maxLength(255),
             ]);
+    }
+
+    /**
+     * @return array<string>
+     */
+    private function getImageUploadState(string $image): array
+    {
+        $path = ltrim($image, '/');
+
+        return [
+            str_starts_with($path, 'users/')
+                ? $path
+                : 'users/'.$path,
+        ];
+    }
+
+    /**
+     * @param  array<mixed>|string  $image
+     */
+    private function getImageDatabaseState(array|string $image): ?string
+    {
+        $path = is_array($image) ? reset($image) : $image;
+
+        if (! is_string($path) || $path === '') {
+            return null;
+        }
+
+        return basename($path);
     }
 }

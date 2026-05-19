@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Services;
 
+use App\Constants\StorageDirectory;
 use App\Models\User;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
@@ -22,8 +23,8 @@ class ProfileService
     {
         if ($image) {
             if ($user->image) {
-                Storage::disk(config('filesystems.default'))
-                    ->delete('users/'.$user->image);
+                Storage::disk('public')
+                    ->delete(StorageDirectory::USERS.'/'.$user->image);
             }
             $data['image'] = $this->storeUserImage($image);
         }
@@ -59,7 +60,7 @@ class ProfileService
     private function storeUserImage(UploadedFile $file): string
     {
         $fileName = Str::ulid().'.'.$file->getClientOriginalExtension();
-        $file->storeAs('users', $fileName, 'public');
+        $file->storeAs(StorageDirectory::USERS, $fileName, 'public');
 
         return $fileName;
     }

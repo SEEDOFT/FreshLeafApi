@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use App\Constants\StorageDirectory;
 use Database\Factories\ProductCategoryFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Scope;
@@ -77,6 +78,13 @@ class ProductCategory extends Model
         get => App::getLocale() === 'km'
             ? ($this->description_km ?? $this->description_en)
             : $this->description_en;
+    }
+
+    /**
+     * Get the full URL for the category image.
+     */
+    public ?string $imageUrl {
+        get => $this->image_url ? url('storage/'.StorageDirectory::PRODUCT_CATEGORIES.'/'.$this->image_url) : null;
     }
 
     /**

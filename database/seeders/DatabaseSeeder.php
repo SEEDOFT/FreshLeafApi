@@ -34,7 +34,8 @@ class DatabaseSeeder extends Seeder
             // Product & Inventory
             UnitSeeder::class,
             ProductStatusSeeder::class,
-            ProductCategoryStatusSeeder::class,
+            ProductCategorySeeder::class,
+            ProductSeeder::class,
             VendorInventoryStatusSeeder::class,
 
             // Order & Cart

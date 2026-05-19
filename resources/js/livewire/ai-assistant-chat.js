@@ -1,6 +1,5 @@
 export default () => ({
     drawerOpen: false,
-    showHistory: false,
     isPhone: false,
     mediaQuery: null,
     pollInterval: null,
@@ -9,7 +8,6 @@ export default () => ({
     composerTextareaOverflowY: 'hidden',
 
     init() {
-        this.showHistory = this.$wire.entangle('showHistory');
         this.initDrawer();
         this.scrollToBottom();
 
@@ -35,7 +33,7 @@ export default () => ({
 
     toggleDrawer() {
         if (!this.isPhone) {
-            this.showHistory = !this.showHistory;
+            this.$wire.toggleHistory();
             return;
         }
         this.drawerOpen = !this.drawerOpen;

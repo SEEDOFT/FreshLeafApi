@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use App\Constants\StorageDirectory;
 use Database\Factories\UserFactory;
 use Filament\Models\Contracts\FilamentUser;
 use Filament\Models\Contracts\HasAvatar;
@@ -82,7 +83,7 @@ class User extends Authenticatable implements FilamentUser, HasAvatar, HasName
     #[Override]
     public function getFilamentAvatarUrl(): string
     {
-        return Storage::url('users/'.$this->image);
+        return Storage::url(StorageDirectory::USERS.'/'.$this->image);
     }
 
     /**

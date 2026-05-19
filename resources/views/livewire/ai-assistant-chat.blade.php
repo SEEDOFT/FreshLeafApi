@@ -1,7 +1,7 @@
 <div class="ai-chat-shell" x-data="aiAssistantChat" x-on:keydown.window="handleEscape($event)"
     x-on:message-sent.window="resetComposer($refs.aiComposerTextarea); setTimeout(() => scrollToBottom(), 50); if (isPhone) { closeDrawer(); }"
     x-on:freshleaf-realtime-status.window="$wire.handleRealtimeStatus(($event.detail && $event.detail.state) ? $event.detail.state : null, ($event.detail && $event.detail.reason) ? $event.detail.reason : null)"
-    x-bind:class="{ 'ai-chat-shell': true, 'is-history-hidden': !showHistory }">
+    x-bind:class="{ 'ai-chat-shell': true, 'is-history-hidden': !$wire.showHistory }">
 
     <aside class="ai-chat-sidebar">
         <div class="ai-chat-sidebar-head">

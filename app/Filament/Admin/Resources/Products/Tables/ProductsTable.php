@@ -27,7 +27,7 @@ class ProductsTable
                 TextColumn::make('name')
                     ->label(__('admin.resources.product.name'))
                     ->getStateUsing(fn (Product $record): string => $record->localizedName)
-                    ->sortable(query: function (Builder $query, string $direction) {
+                    ->sortable(query: function (Builder $query, $direction) {
                         $column = app()->getLocale() === 'km' ? 'name_km' : 'name_en';
                         $query->orderBy($column, $direction);
                     })

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Filament\Admin\Clusters\Settings\Pages;
 
+use App\Constants\StorageDirectory;
 use App\Filament\Admin\Clusters\Settings;
 use BackedEnum;
 use Filament\Actions\Action;
@@ -86,7 +87,7 @@ class AdminProfile extends Page
                                     ->image()
                                     ->maxSize(6144)
                                     ->disk('public')
-                                    ->directory('users')
+                                    ->directory(StorageDirectory::USERS)
                                     ->alignCenter(),
                                 Grid::make(2)
                                     ->schema([
@@ -225,9 +226,8 @@ class AdminProfile extends Page
         $path = ltrim($image, '/');
 
         return [
-            str_starts_with($path, 'users/')
-                ? $path
-                : 'users/'.$path,
+            str_starts_with($path, StorageDirectory::USERS)
+                ? $path : StorageDirectory::USERS.'/'.$path,
         ];
     }
 

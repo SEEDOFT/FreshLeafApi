@@ -3,7 +3,6 @@ export default () => ({
     typingTimeout: null,
     currentTicketId: null,
     pollInterval: null,
-    showHistory: true,
     drawerOpen: false,
     isPhone: false,
     mediaQuery: null,
@@ -13,7 +12,6 @@ export default () => ({
     typingSendTimeout: null,
 
     init() {
-        this.showHistory = this.$wire.entangle('showHistory');
         this.initDrawer();
         this.scrollToBottom();
         this.initEcho();
@@ -88,7 +86,7 @@ export default () => ({
 
     toggleDrawer() {
         if (!this.isPhone) {
-            this.showHistory = !this.showHistory;
+            this.$wire.toggleHistory();
             return;
         }
         this.drawerOpen = !this.drawerOpen;

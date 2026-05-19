@@ -54,11 +54,11 @@ class AdminPanelProvider extends PanelProvider
             ->sidebarCollapsibleOnDesktop()
             ->userMenuItems([
                 'my-account' => Action::make('my-account')
-                    ->label(fn (): string =>__('admin.navigation.my_profile'))
+                    ->label(fn (): string => __('admin.navigation.my_profile'))
                     ->icon('heroicon-o-user-circle')
                     ->url(fn (): string => AdminProfile::getUrl(panel: 'admin')),
                 'app-settings' => Action::make('app-settings')
-                    ->label(fn (): string =>__('admin.navigation.settings'))
+                    ->label(fn (): string => __('admin.navigation.settings'))
                     ->icon('heroicon-o-cog-6-tooth')
                     ->url(fn (): string => ApplicationSettings::getUrl(panel: 'admin')),
             ])

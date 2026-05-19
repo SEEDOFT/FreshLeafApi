@@ -3,7 +3,7 @@
     x-on:message-received.window="isUserTyping = false; setTimeout(() => scrollToBottom(), 50)"
     x-on:user-typing.window="isUserTyping = true; clearTimeout(this.typingTimeout); this.typingTimeout = setTimeout(() => { isUserTyping = false; }, 3000); setTimeout(() => scrollToBottom(), 50)"
     x-on:ticket-selected.window="isUserTyping = false; setTimeout(() => scrollToBottom(), 50); listenToTicket($wire.activeTicketId)"
-    x-bind:class="{ 'is-history-hidden': !showHistory }"
+    x-bind:class="{ 'is-history-hidden': !$wire.showHistory }"
     x-bind:data-drawer-open="drawerOpen"
 >
     {{-- Mobile Overlay --}}

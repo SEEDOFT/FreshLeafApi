@@ -17,6 +17,7 @@ use Exception;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
@@ -103,8 +104,7 @@ class ProcessAiChatMessageJob implements ShouldQueue
 
     private function fetchProductContext(string $prompt): string
     {
-        $inventoryItems = VendorInventory::query()
-            ->active()
+        $inventoryItems = VendorInventory::active()
             ->join('products', 'vendor_inventories.product_id', '=', 'products.id')
             ->join('units', 'vendor_inventories.unit_id', '=', 'units.id')
             ->where(static fn (Builder $query) => $query
@@ -125,7 +125,7 @@ class ProcessAiChatMessageJob implements ShouldQueue
             return '';
         }
 
-        return $inventoryItems->map(static fn ($item) => sprintf(
+        return $inventoryItems->map(static fn (Model $item) => sprintf(
             'Product: %s (%s) - Price: $%s, Stock: %s %s, Location: %s',
             $item->getAttribute('name_en'),
             $item->getAttribute('name_km'),

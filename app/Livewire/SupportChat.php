@@ -57,7 +57,8 @@ class SupportChat extends Component
      */
     public function updatedShowHistory(bool $value): void
     {
-        session(['support_chat_show_history' => $value]);
+        session()->put('support_chat_show_history', $value);
+        session()->save();
     }
 
     /**
@@ -66,7 +67,8 @@ class SupportChat extends Component
     public function toggleHistory(): void
     {
         $this->showHistory = ! $this->showHistory;
-        session(['support_chat_show_history' => $this->showHistory]);
+        session()->put('support_chat_show_history', $this->showHistory);
+        session()->save();
     }
 
     /**

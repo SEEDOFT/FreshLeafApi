@@ -1,0 +1,65 @@
+<?php
+
+declare(strict_types=1);
+
+namespace App\Constants;
+
+/**
+ * Defines the storage directory constants for the application.
+ *
+ * These constants are used across the application to reference the different
+ * directories within the storage system.
+ *
+ * @internal
+ */
+final class StorageDirectory
+{
+    /**
+     * The directory for storing user-related files.
+     *
+     * @var string
+     */
+    public const string USERS = 'users';
+
+    /**
+     * The directory for storing product-related files.
+     *
+     * @var string
+     */
+    public const string PRODUCTS = 'products';
+
+    /**
+     * The directory for storing vendor profile files.
+     *
+     * @var string
+     */
+    public const string VENDOR_PROFILES = 'vendor_profiles';
+
+    /**
+     * The directory for storing support message files.
+     *
+     * @var string
+     */
+    public const string SUPPORT_MESSAGES = 'support_messages';
+
+    /**
+     * The directory for storing inventory adjustment files.
+     *
+     * @var string
+     */
+    public const string INVENTORY_ADJUSTMENTS = 'inventory_adjustments';
+
+    /**
+     * The directory for storing payment method files.
+     *
+     * @var string
+     */
+    public const string PAYMENT_METHODS = 'payment_methods';
+
+    /**
+     * The directory for storing product category files.
+     *
+     * @var string
+     */
+    public const string PRODUCT_CATEGORIES = 'product_categories';
+}

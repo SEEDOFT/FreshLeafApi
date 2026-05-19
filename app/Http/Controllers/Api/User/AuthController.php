@@ -12,10 +12,12 @@ use App\Http\Requests\User\Auth\VerifyPasswordRequest;
 use App\Models\User;
 use App\Models\UserStatus;
 use App\Models\UserType;
+use Illuminate\Database\Query\Builder;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Validation\Rule;
 
 use function is_string;
 
@@ -93,9 +95,35 @@ class AuthController extends Controller
     /**
      * Admin registration (for testing)
      */
-    public function registerForAdmin(RegisterRequest $request): JsonResponse
+    public function registerForAdmin(Request $request): JsonResponse
     {
-        $validatedData = $request->validated();
+        $validatedData = $request->validate([
+            'first_name' => ['required', 'string', 'max:255'],
+            'last_name' => ['required', 'string', 'max:255'],
+            'email' => [
+                'sometimes',
+                'required',
+                'string',
+                'max:255',
+                Rule::unique('users', 'email')
+                    ->where(static function (Builder $query): void {
+                        $query->where('user_type_id', UserType::ADMIN_ID)
+                            ->whereNull('deleted_at');
+                    }),
+            ],
+            'phone_number' => [
+                'required',
+                'string',
+                'max:20',
+                'starts_with:+855',
+                Rule::unique('users', 'phone_number')
+                    ->where(static function (Builder $query): void {
+                        $query->where('user_type_id', UserType::ADMIN_ID)
+                            ->whereNull('deleted_at');
+                    }),
+            ],
+            'password' => ['required', 'string', 'min:8', 'confirmed'],
+        ]);
 
         DB::transaction(static function () use ($validatedData): void {
             $user = User::create([

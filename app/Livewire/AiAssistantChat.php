@@ -152,7 +152,8 @@ class AiAssistantChat extends Component
      */
     public function updatedShowHistory(bool $value): void
     {
-        session(['ai_assistant_show_history' => $value]);
+        session()->put('ai_assistant_show_history', $value);
+        session()->save();
     }
 
     /**
@@ -161,7 +162,8 @@ class AiAssistantChat extends Component
     public function toggleHistory(): void
     {
         $this->showHistory = ! $this->showHistory;
-        session(['ai_assistant_show_history' => $this->showHistory]);
+        session()->put('ai_assistant_show_history', $this->showHistory);
+        session()->save();
     }
 
     /**

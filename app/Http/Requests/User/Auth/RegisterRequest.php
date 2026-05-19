@@ -6,6 +6,7 @@ namespace App\Http\Requests\User\Auth;
 
 use App\Models\UserType;
 use Illuminate\Contracts\Validation\ValidationRule;
+use Illuminate\Database\Query\Builder;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
@@ -29,14 +30,25 @@ class RegisterRequest extends FormRequest
         return [
             'first_name' => ['required', 'string', 'max:255'],
             'last_name' => ['required', 'string', 'max:255'],
+            'email' => [
+                'sometimes',
+                'required',
+                'string',
+                'max:255',
+                Rule::unique('users', 'email')
+                    ->where(static function (Builder $query): void {
+                        $query->where('user_type_id', UserType::CONSUMER_ID)
+                            ->whereNull('deleted_at');
+                    }),
+            ],
             'phone_number' => [
                 'required',
                 'string',
                 'max:20',
                 'starts_with:+855',
                 Rule::unique('users', 'phone_number')
-                    ->where(static function ($query): void {
-                        $query->where('user_type_id', UserType::ADMIN_ID)
+                    ->where(static function (Builder $query): void {
+                        $query->where('user_type_id', UserType::CONSUMER_ID)
                             ->whereNull('deleted_at');
                     }),
             ],

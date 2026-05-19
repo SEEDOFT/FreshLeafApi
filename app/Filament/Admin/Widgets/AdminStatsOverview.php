@@ -21,7 +21,7 @@ class AdminStatsOverview extends BaseWidget
     protected ?string $pollingInterval = null;
 
     #[Override]
-    protected string $view = 'filament.widgets.admin-stats-overview';
+    protected string $view = 'filament.widgets.stats-overview';
 
     #[Override]
     protected function getStats(): array

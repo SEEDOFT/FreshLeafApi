@@ -22,6 +22,7 @@ use Filament\Navigation\NavigationGroup;
 use Filament\Pages\Dashboard;
 use Filament\Panel;
 use Filament\PanelProvider;
+use Filament\Support\Enums\Width;
 use Filament\View\PanelsRenderHook;
 use Filament\Widgets\AccountWidget;
 use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
@@ -49,7 +50,7 @@ class VendorPanelProvider extends PanelProvider
             ->font('Noto Sans Khmer')
             ->spa()
             ->viteTheme('resources/css/filament/shared/theme.css')
-            ->maxContentWidth('full')
+            ->maxContentWidth(Width::Full)
             ->defaultThemeMode(ThemeMode::System)
             ->sidebarCollapsibleOnDesktop()
             ->userMenuItems([

@@ -5,7 +5,10 @@ declare(strict_types=1);
 namespace App\Filament\Admin\Widgets;
 
 use App\Models\Order;
+use App\Models\PaymentStatus;
 use Filament\Widgets\ChartWidget;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use Override;
 
@@ -24,8 +27,12 @@ class AdminRevenueChart extends ChartWidget
 
     protected function getData(): array
     {
-        $data = Order::whereHas('paymentStatus', static fn ($query) => $query->where('code', 'paid'))
-            ->where('created_at', '>=', now()->subDays(30))
+        $data = Order::query()
+            ->whereHas(
+                'paymentStatus',
+                static fn (Builder $query) => $query->where('id', PaymentStatus::COMPLETED_ID)
+            )
+            ->where('created_at', '>=', Carbon::now()->subDays(30))
             ->select(
                 DB::raw('DATE(created_at) as date'),
                 DB::raw('SUM(total_amount) as total')

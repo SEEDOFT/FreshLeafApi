@@ -12,7 +12,7 @@ use Override;
 class AdminCommissionWidget extends BaseWidget
 {
     #[Override]
-    protected string $view = 'filament.widgets.admin-commission-widget';
+    protected string $view = 'filament.widgets.commission-widget';
 
     #[Override]
     protected function getStats(): array

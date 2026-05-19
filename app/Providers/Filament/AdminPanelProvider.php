@@ -69,21 +69,21 @@ class AdminPanelProvider extends PanelProvider
             ->colors(ThemeColors::getPalette())
             ->navigationGroups([
                 NavigationGroup::make()
-                    ->label(__('admin.navigation.accounts')),
+                    ->label(fn (): string => __('admin.navigation.accounts')),
                 NavigationGroup::make()
-                    ->label(__('admin.navigation.catalog')),
+                    ->label(fn (): string => __('admin.navigation.catalog')),
                 NavigationGroup::make()
-                    ->label(__('admin.navigation.shop')),
+                    ->label(fn (): string => __('admin.navigation.shop')),
                 NavigationGroup::make()
-                    ->label(__('admin.navigation.sales')),
+                    ->label(fn (): string => __('admin.navigation.sales')),
                 NavigationGroup::make()
-                    ->label(__('admin.navigation.logistics')),
+                    ->label(fn (): string => __('admin.navigation.logistics')),
                 NavigationGroup::make()
-                    ->label(__('admin.navigation.financial')),
+                    ->label(fn (): string => __('admin.navigation.financial')),
                 NavigationGroup::make()
-                    ->label(__('admin.navigation.settings')),
+                    ->label(fn (): string => __('admin.navigation.settings')),
                 NavigationGroup::make()
-                    ->label(__('admin.navigation.app_control')),
+                    ->label(fn (): string => __('admin.navigation.app_control')),
             ])
             ->discoverResources(in: app_path('Filament/Admin/Resources'), for: 'App\Filament\Admin\Resources')
             ->discoverPages(in: app_path('Filament/Admin/Pages'), for: 'App\Filament\Admin\Pages')

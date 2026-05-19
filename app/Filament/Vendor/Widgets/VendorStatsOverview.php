@@ -4,12 +4,15 @@ declare(strict_types=1);
 
 namespace App\Filament\Vendor\Widgets;
 
+use App\Models\Currency;
 use App\Models\Order;
 use App\Models\User;
 use App\Models\VendorInventory;
 use App\Models\Wallet;
 use Filament\Widgets\StatsOverviewWidget as BaseWidget;
 use Filament\Widgets\StatsOverviewWidget\Stat;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Number;
 use Override;
@@ -17,7 +20,7 @@ use Override;
 class VendorStatsOverview extends BaseWidget
 {
     #[Override]
-    protected string $view = 'filament.widgets.admin-stats-overview';
+    protected string $view = 'filament.widgets.stats-overview';
 
     #[Override]
     public function getViewData(): array
@@ -40,18 +43,23 @@ class VendorStatsOverview extends BaseWidget
     protected function getStats(): array
     {
         $user = Auth::user();
+
         if (! $user instanceof User) {
             return [];
         }
 
         $productCount = VendorInventory::where('vendor_id', $user->id)->count();
 
-        $todayOrders = Order::whereHas('items.vendorInventory', fn ($q) => $q->where('vendor_id', $user->id))
-            ->whereDate('created_at', now())
+        $todayOrders = Order::query()
+            ->whereHas(
+                'items.vendorInventory',
+                static fn (Builder $q) => $q->where('vendor_id', $user->id)
+            )
+            ->whereDate('created_at', Carbon::now())
             ->count();
 
         $walletBalance = (float) (Wallet::where('user_id', $user->id)
-            ->whereHas('currency', fn ($q) => $q->where('code', 'USD'))
+            ->whereHas('currency', static fn (Builder $q) => $q->where('id', Currency::USD_ID))
             ->value('balance') ?? 0);
 
         return [

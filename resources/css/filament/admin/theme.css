@@ -6,7 +6,7 @@
 @import '../shared/ai-assistant.css';
 @import './_tokens.css';
 @import './_animations.css';
-@import './_auth.css';
+@import '../shared/_auth.css';
 @import './_overrides.css';
 
 @source '../../../../app/Filament/**/*';

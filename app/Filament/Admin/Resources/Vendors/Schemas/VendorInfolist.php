@@ -6,10 +6,8 @@ namespace App\Filament\Admin\Resources\Vendors\Schemas;
 
 use App\Constants\StorageDirectory;
 use App\Models\Currency;
-use App\Models\PaymentMethod;
 use App\Models\User;
 use App\Models\UserStatus;
-use App\Models\UserType;
 use App\Models\VendorProfile;
 use App\Models\Wallet;
 use Filament\Infolists\Components\IconEntry;
@@ -18,8 +16,6 @@ use Filament\Infolists\Components\RepeatableEntry;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\HtmlString;
 
 class VendorInfolist
@@ -70,7 +66,7 @@ class VendorInfolist
                         ImageEntry::make('image')
                             ->label(new HtmlString('<strong>'.__('admin.profile.avatar').'</strong>'))
                             ->disk('public')
-                            ->getStateUsing(fn (VendorProfile $record) => $record->user->image ? StorageDirectory::USERS. '/' . $record->user->image : null)
+                            ->getStateUsing(fn (VendorProfile $record) => $record->user->image ? StorageDirectory::USERS.'/'.$record->user->image : null)
                             ->circular()
                             ->imageSize(200),
                         TextEntry::make('business_name')

@@ -67,7 +67,7 @@ class UserInfolist
                         ImageEntry::make('image')
                             ->label(new HtmlString('<strong>'.__('admin.profile.avatar').'</strong>'))
                             ->disk('public')
-                            ->getStateUsing(fn (User $record) => $record->image ? StorageDirectory::USERS. '/' . $record->image : null)
+                            ->getStateUsing(fn (User $record) => $record->image ? StorageDirectory::USERS.'/'.$record->image : null)
                             ->circular()
                             ->imageSize(200),
                     ]),

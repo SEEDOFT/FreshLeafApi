@@ -48,7 +48,7 @@ class VendorPanelProvider extends PanelProvider
             ->registration(Register::class)
             ->font('Noto Sans Khmer')
             ->spa()
-            ->viteTheme('resources/css/filament/panels/theme.css')
+            ->viteTheme('resources/css/filament/shared/theme.css')
             ->maxContentWidth('full')
             ->defaultThemeMode(ThemeMode::System)
             ->sidebarCollapsibleOnDesktop()

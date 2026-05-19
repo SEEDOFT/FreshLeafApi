@@ -56,7 +56,7 @@ class UsersTable
                     })
                     ->placeholder($notProvided),
                 TextColumn::make('created_at')
-                ->label(__('admin.resources.created_at'))
+                    ->label(__('admin.resources.created_at'))
                     ->dateTime('d M Y, h:i A')
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),

@@ -75,9 +75,6 @@
             <!-- Form Card with Glassmorphism -->
             <div class="fl-auth-card group" style="animation-delay: 100ms;">
 
-                <!-- Interaction Line -->
-                <div class="fl-auth-card-interaction"></div>
-
                 <form wire:submit="authenticate" class="fl-auth-form-body">
                     <div class="modern-form-wrapper">
                         {{ $this->form }}

@@ -23,13 +23,15 @@ use Illuminate\Support\Facades\App;
  * @property int $id
  * @property int $product_category_status_id
  * @property string $name_en
- * @property string|null $name_km
+ * @property string $name_km
  * @property string|null $description_en
  * @property string|null $description_km
  * @property string|null $image_url
  * @property string $slug
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
+ * @property string|null $translated_name
+ * @property string|null $translated_desc
  * @property-read Collection<int, Product> $products
  * @property-read int|null $products_count
  * @property-read ProductCategoryStatus $status
@@ -81,6 +83,22 @@ class ProductCategory extends Model
     }
 
     /**
+     * Get the translated name of the category.
+     */
+    public function getTranslatedNameAttribute(): ?string
+    {
+        return $this->{'name_'.App::currentLocale()};
+    }
+
+    /**
+     * Get the translated Desc of the category.
+     */
+    public function getTranslatedDescAttribute(): ?string
+    {
+        return $this->{'description_'.App::currentLocale()};
+    }
+
+    /**
      * Get the full URL for the category image.
      */
     public ?string $imageUrl {
@@ -125,7 +143,7 @@ class ProductCategory extends Model
     {
         $query->where(
             'product_category_status_id',
-            ProductCategoryStatus::ACTIVE,
+            ProductCategoryStatus::ACTIVE_ID,
         );
     }
 }

@@ -18,25 +18,31 @@ class WalletsTable
 {
     public static function configure(Table $table): Table
     {
+        $notProvided = __('admin.resources.general.not_provided');
+
         return $table
             ->recordAction('view')
             ->stackedOnMobile()
             ->columns([
                 TextColumn::make('name')
                     ->label(__('admin.resources.user.full_name'))
-                    ->getStateUsing(static fn (Wallet $record) => $record->user ? $record->user->fullName : '-')
-                    ->searchable(['first_name', 'last_name'])
-                    ->sortable(),
+                    ->getStateUsing(static fn (Wallet $record) => $record->user->fullName)
+                    ->placeholder($notProvided)
+                    ->sortable()
+                    ->searchable(),
                 TextColumn::make('user.email')
                     ->label(__('admin.resources.user.email'))
-                    ->placeholder('-')
-                    ->sortable(),
-                TextColumn::make('currency.code')
+                    ->placeholder($notProvided)
+                    ->sortable()
+                    ->searchable(),
+                TextColumn::make('currency.translated_currency')
                     ->label(__('admin.resources.wallet.currency'))
-                    ->placeholder('-')
-                    ->sortable(),
+                    ->placeholder($notProvided)
+                    ->sortable()
+                    ->searchable(),
                 TextColumn::make('balance')
                     ->label(__('admin.resources.wallet.balance'))
+                    ->placeholder($notProvided)
                     ->getStateUsing(static function (Wallet $record): string {
                         $id = $record->currency->id;
                         $symbol = $record->currency->symbol ?? '';
@@ -49,13 +55,18 @@ class WalletsTable
                     ->sortable(),
                 TextColumn::make('updated_at')
                     ->label(__('admin.resources.updated_at'))
+                    ->placeholder($notProvided)
                     ->dateTime()
-                    ->sortable(),
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
                 SelectFilter::make('currency_id')
                     ->label(__('admin.resources.wallet.currency'))
-                    ->relationship('currency', 'name'),
+                    ->options(
+                        Currency::all()
+                            ->pluck('translated_currency', 'id'),
+                    ),
             ])
             ->recordActions([
                 ViewAction::make(),

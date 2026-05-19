@@ -53,13 +53,12 @@ class VendorPanelProvider extends PanelProvider
             ->defaultThemeMode(ThemeMode::System)
             ->sidebarCollapsibleOnDesktop()
             ->userMenuItems([
-                'profile' => Action::make()->visible(false),
-                'my-account' => Action::make()
-                    ->label('My Profile')
+                'my-account' => Action::make('my-account')
+                    ->label(fn (): string => __('admin.navigation.my_profile'))
                     ->icon('heroicon-o-user-circle')
                     ->url(fn (): string => VendorProfile::getUrl(panel: 'vendor')),
-                'app-settings' => Action::make()
-                    ->label('Store Settings')
+                'app-settings' => Action::make('app-settings')
+                    ->label(fn (): string => __('admin.navigation.settings'))
                     ->icon('heroicon-o-cog-6-tooth')
                     ->url(fn (): string => BusinessProfile::getUrl(panel: 'vendor')),
             ])

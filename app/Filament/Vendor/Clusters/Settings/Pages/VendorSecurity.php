@@ -48,23 +48,23 @@ class VendorSecurity extends Page
     {
         return $schema
             ->components([
-                Section::make(__('panels.security.change_password'))
-                    ->description(__('panels.security.change_password_desc'))
+                Section::make(__('shared.security.change_password'))
+                    ->description(__('shared.security.change_password_desc'))
                     ->schema([
                         TextInput::make('current_password')
-                            ->label(__('panels.security.current_password'))
+                            ->label(__('shared.security.current_password'))
                             ->password()
                             ->required(fn (string $operation): bool => $operation === 'create')
                             ->dehydrated(fn (mixed $state): bool => filled($state))
                             ->currentPassword(),
                         TextInput::make('password')
-                            ->label(__('panels.security.password'))
+                            ->label(__('shared.security.password'))
                             ->password()
                             ->required(fn (string $operation): bool => $operation === 'create')
                             ->dehydrated(fn (mixed $state): bool => filled($state))
                             ->confirmed(),
                         TextInput::make('password_confirmation')
-                            ->label(__('panels.security.password_confirmation'))
+                            ->label(__('shared.security.password_confirmation'))
                             ->password()
                             ->required(fn (string $operation): bool => $operation === 'create')
                             ->dehydrated(fn (mixed $state): bool => filled($state)),
@@ -90,7 +90,7 @@ class VendorSecurity extends Page
         $this->data = [];
 
         Notification::make()
-            ->title(__('panels.security.success_notification'))
+            ->title(__('shared.security.success_notification'))
             ->success()
             ->send();
     }
@@ -102,7 +102,7 @@ class VendorSecurity extends Page
     {
         return [
             Action::make('save')
-                ->label(__('panels.security.update_password'))
+                ->label(__('shared.security.update_password'))
                 ->submit('save')
                 ->keyBindings(['mod+s']),
         ];

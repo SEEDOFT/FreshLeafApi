@@ -51,43 +51,43 @@ class BusinessProfile extends Page
     {
         return $schema
             ->components([
-                Section::make(__('admin.vendor_settings.business_profile.store_info'))
-                    ->description(__('admin.vendor_settings.business_profile.store_info_desc'))
+                Section::make(__('vendor.settings.business_profile.store_info'))
+                    ->description(__('vendor.settings.business_profile.store_info_desc'))
                     ->schema([
                         Grid::make(2)
                             ->schema([
                                 TextInput::make('business_name')
-                                    ->label(__('panels.vendor.business_name'))
+                                    ->label(__('shared.vendor.business_name'))
                                     ->required(fn (string $operation): bool => $operation === 'create')
                                     ->dehydrated(fn (mixed $state): bool => filled($state))
                                     ->maxLength(255),
                                 TextInput::make('contact_phone')
-                                    ->label(__('panels.form.fields.contact_phone'))
+                                    ->label(__('shared.form.fields.contact_phone'))
                                     ->tel()
                                     ->maxLength(255),
                                 TextInput::make('city')
-                                    ->label(__('panels.form.fields.city'))
+                                    ->label(__('shared.form.fields.city'))
                                     ->maxLength(255),
                                 TextInput::make('province')
-                                    ->label(__('panels.form.fields.province'))
+                                    ->label(__('shared.form.fields.province'))
                                     ->maxLength(255),
                             ]),
                         TextInput::make('address')
-                            ->label(__('panels.form.fields.address'))
+                            ->label(__('shared.form.fields.address'))
                             ->columnSpanFull()
                             ->maxLength(255),
                         Textarea::make('shop_description')
-                            ->label(__('admin.vendor_settings.business_profile.description'))
+                            ->label(__('vendor.settings.business_profile.description'))
                             ->placeholder('Describe your farm or organic vegetables...')
                             ->columnSpanFull(),
                         Grid::make(3)
                             ->schema([
                                 TimePicker::make('opening_time')
-                                    ->label(__('admin.vendor_settings.business_profile.opening_time')),
+                                    ->label(__('vendor.settings.business_profile.opening_time')),
                                 TimePicker::make('closing_time')
-                                    ->label(__('admin.vendor_settings.business_profile.closing_time')),
+                                    ->label(__('vendor.settings.business_profile.closing_time')),
                                 Toggle::make('is_open')
-                                    ->label(__('admin.vendor_settings.business_profile.is_open')),
+                                    ->label(__('vendor.settings.business_profile.is_open')),
                             ]),
                     ]),
             ])
@@ -106,7 +106,7 @@ class BusinessProfile extends Page
         $user->vendorProfile()->update($state);
 
         Notification::make()
-            ->title(__('admin.vendor_settings.business_profile.success_notification'))
+            ->title(__('vendor.settings.business_profile.success_notification'))
             ->success()
             ->send();
     }
@@ -118,7 +118,7 @@ class BusinessProfile extends Page
     {
         return [
             Action::make('save')
-                ->label(__('panels.form.save_changes'))
+                ->label(__('shared.form.save_changes'))
                 ->submit('save')
                 ->keyBindings(['mod+s']),
         ];

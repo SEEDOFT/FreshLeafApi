@@ -4,20 +4,19 @@
 
 <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1.5rem;">
     @foreach ($this->getStats() as $stat)
-        <div 
-            class="bg-white dark:bg-gray-900 border border-gray-200 dark:border-white/5 shadow-sm"
-            style="
+        <div style="
+                background: #18181b;
+                border: 1px solid #27272a;
                 border-radius: 1rem;
                 padding: 1.5rem;
                 transition: all 0.3s ease;
-            "
-        >
+            ">
             <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 0.5rem;">
                 <div>
-                    <p class="text-gray-500 dark:text-gray-400" style="margin: 0; font-size: 0.875rem; font-weight: 500;">
+                    <p style="margin: 0; font-size: 0.875rem; color: #a1a1aa; font-weight: 500;">
                         {{ $stat->getLabel() }}
                     </p>
-                    <p class="text-gray-900 dark:text-white" style="margin: 0.5rem 0 0 0; font-size: 2rem; font-weight: 700;">
+                    <p style="margin: 0.5rem 0 0 0; font-size: 2rem; font-weight: 700; color: #ffffff;">       
                         {{ $stat->getValue() }}
                     </p>
                 </div>
@@ -34,7 +33,7 @@
                 @endif
             </div>
             @if ($description = $stat->getDescription())
-                <p style="margin: 0.5rem 0 0 0; font-size: 0.875rem; color: {{ match ($stat->getColor()) {
+                <p style="margin: 0.5rem 0 0 0; font-size: 0.875rem; color: {{ match ($stat->getColor()) {     
                     'success' => '#10b981',
                     'info' => '#3b82f6',
                     'warning' => '#f59e0b',

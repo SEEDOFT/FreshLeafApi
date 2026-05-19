@@ -54,29 +54,29 @@ class VerificationDocs extends Page
     {
         return $schema
             ->components([
-                Section::make(__('admin.vendor_settings.verification_docs.section_title'))
-                    ->description(__('admin.vendor_settings.verification_docs.section_desc'))
+                Section::make(__('vendor.settings.verification_docs.section_title'))
+                    ->description(__('vendor.settings.verification_docs.section_desc'))
                     ->schema([
                         FileUpload::make('id_card_front')
-                            ->label(__('admin.vendor_settings.verification_docs.id_front'))
+                            ->label(__('vendor.settings.verification_docs.id_front'))
                             ->image()
                             ->disk('local')
                             ->directory('vendor-verification')
                             ->disabled(static fn (User $record): bool => (bool) $record->vendorProfile->is_verified),
                         FileUpload::make('id_card_back')
-                            ->label(__('admin.vendor_settings.verification_docs.id_back'))
+                            ->label(__('vendor.settings.verification_docs.id_back'))
                             ->image()
                             ->disk('local')
                             ->directory('vendor-verification')
                             ->disabled(static fn (User $record): bool => (bool) $record->vendorProfile->is_verified),
                         FileUpload::make('store_front_image')
-                            ->label(__('admin.vendor_settings.verification_docs.store_photo'))
+                            ->label(__('vendor.settings.verification_docs.store_photo'))
                             ->image()
                             ->disk('local')
                             ->directory('vendor-verification')
                             ->disabled(static fn (User $record): bool => (bool) $record->vendorProfile->is_verified),
                         FileUpload::make('organic_certificate_url')
-                            ->label(__('admin.vendor_settings.verification_docs.organic_cert'))
+                            ->label(__('vendor.settings.verification_docs.organic_cert'))
                             ->disk('local')
                             ->directory('vendor-verification')
                             ->disabled(static fn (User $record): bool => (bool) $record->vendorProfile->is_verified),
@@ -95,8 +95,8 @@ class VerificationDocs extends Page
 
         if ($user->vendorProfile->is_verified) {
             Notification::make()
-                ->title(__('admin.vendor_settings.verification_docs.lock_title'))
-                ->body(__('admin.vendor_settings.verification_docs.lock_body'))
+                ->title(__('vendor.settings.verification_docs.lock_title'))
+                ->body(__('vendor.settings.verification_docs.lock_body'))
                 ->danger()
                 ->send();
 
@@ -113,7 +113,7 @@ class VerificationDocs extends Page
         $user->vendorProfile()->update($state);
 
         Notification::make()
-            ->title(__('admin.vendor_settings.verification_docs.success_notification'))
+            ->title(__('vendor.settings.verification_docs.success_notification'))
             ->success()
             ->send();
     }
@@ -125,7 +125,7 @@ class VerificationDocs extends Page
     {
         return [
             Action::make('save')
-                ->label(__('admin.profile.save_changes'))
+                ->label(__('shared.profile.save_changes'))
                 ->submit('save')
                 ->keyBindings(['mod+s']),
         ];

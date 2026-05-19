@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Filament\Admin\Resources\Users\Schemas;
 
+use App\Constants\StorageDirectory;
 use App\Models\Currency;
 use App\Models\User;
 use App\Models\UserStatus;
@@ -14,7 +15,6 @@ use Filament\Infolists\Components\RepeatableEntry;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
-use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\HtmlString;
 
 class UserInfolist
@@ -67,9 +67,9 @@ class UserInfolist
                         ImageEntry::make('image')
                             ->label(new HtmlString('<strong>'.__('admin.profile.avatar').'</strong>'))
                             ->disk('public')
+                            ->getStateUsing(fn (User $record) => $record->image ? StorageDirectory::USERS. '/' . $record->image : null)
                             ->circular()
-                            ->imageSize(200)
-                            ->defaultImageUrl(fn (User $record): string => Storage::url('users/'.$record->image)),
+                            ->imageSize(200),
                     ]),
 
                 Section::make(__('admin.resources.user.wallets_info'))
@@ -77,7 +77,7 @@ class UserInfolist
                         RepeatableEntry::make('wallets')
                             ->label(new HtmlString('<strong>'.__('admin.resources.user.wallets_info').'</strong>'))
                             ->schema([
-                                TextEntry::make('currency.translate_currency')
+                                TextEntry::make('currency.translated_currency')
                                     ->label(new HtmlString('<strong>'.__('admin.resources.wallet.currency').'</strong>'))
                                     ->placeholder($notProvided),
                                 TextEntry::make('balance')

@@ -4,15 +4,19 @@ declare(strict_types=1);
 
 namespace App\Filament\Vendor\Pages\Auth;
 
+use App\Constants\StorageDirectory;
 use App\Filament\Forms\Components\PasswordInput;
 use App\Filament\Forms\Components\PhoneNumberInput;
 use App\Models\User;
 use App\Models\UserStatus;
 use App\Models\UserType;
 use Closure;
+use DanHarrin\LivewireRateLimiting\Exceptions\TooManyRequestsException;
+use Filament\Auth\Http\Responses\Contracts\RegistrationResponse;
 use Filament\Auth\Pages\Register as BaseRegister;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\TextInput;
+use Filament\Notifications\Notification;
 use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Components\Wizard;
@@ -21,13 +25,18 @@ use Filament\Schemas\Schema;
 use Illuminate\Contracts\Support\Htmlable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Arr;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Blade;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\HtmlString;
+use Livewire\Attributes\Session;
 use Override;
 
 class Register extends BaseRegister
 {
+    #[Session(key: 'vendor-register-data')]
+    public ?array $data = [];
+
     #[Override]
     public function getLayout(): string
     {
@@ -39,17 +48,18 @@ class Register extends BaseRegister
     #[Override]
     public function getHeading(): string|Htmlable
     {
-        return __('admin.auth.register.title');
+        return __('shared.auth.register.title');
     }
 
     #[Override]
     public function getSubHeading(): string|Htmlable|null
     {
         return new HtmlString(
-            __('admin.auth.register.subheading').' '.
-            __('admin.auth.register.already_have_account').' '.
-            '<a class="text-primary-600 font-medium hover:text-primary-500" href="'.route('filament.vendor.auth.login').'">'.
-            __('admin.auth.register.login_here').
+            __('shared.auth.register.subheading').' '.
+            __('shared.auth.register.already_have_account').' '.
+            '<a class="text-primary-600 font-medium hover:text-primary-500"'.
+            ' href="'.route('filament.vendor.auth.login').'">'.
+            __('shared.auth.register.login_here').
             '</a>'
         );
     }
@@ -72,126 +82,158 @@ class Register extends BaseRegister
         return $schema
             ->components([
                 Wizard::make([
-                    Step::make(__('admin.auth.register.steps.account'))
-                        ->icon('heroicon-o-user')
-                        ->description(__('admin.auth.register.steps.account_desc'))
-                        ->schema([
-                            Grid::make(1)->schema([
-                                $this->getNameFormComponent(),
-                                $this->getPhoneNumberFormComponent(),
-                                PasswordInput::make('password')
-                                    ->label(__('admin.auth.login.password'))
-                                    ->required()
-                                    ->revealable(),
-                                PasswordInput::make('password_confirmation')
-                                    ->label(__('admin.auth.register.password_confirm'))
-                                    ->required()
-                                    ->revealable(),
-                            ]),
-                        ]),
-
-                    Step::make(__('admin.auth.register.steps.business'))
-                        ->icon('heroicon-o-building-storefront')
-                        ->description(__('admin.auth.register.steps.business_desc'))
-                        ->schema([
-                            Grid::make(2)->schema([
-                                TextInput::make('business_name')
-                                    ->label(__('admin.auth.register.business_name'))
-                                    ->required(fn (string $operation): bool => $operation === 'create')
-                                    ->dehydrated(fn (mixed $state): bool => filled($state))
-                                    ->maxLength(255),
-                                TextInput::make('contact_phone')
-                                    ->label(__('panels.form.fields.contact_phone'))
-                                    ->tel()
-                                    ->maxLength(255),
-                                TextInput::make('city')
-                                    ->label(__('panels.form.fields.city'))
-                                    ->maxLength(255),
-                                TextInput::make('province')
-                                    ->label(__('panels.form.fields.province'))
-                                    ->maxLength(255),
-                            ]),
-                            TextInput::make('address')
-                                ->label(__('panels.form.fields.address'))
-                                ->columnSpanFull()
-                                ->maxLength(255),
-                        ]),
-
-                    Step::make(__('admin.auth.register.steps.verification'))
-                        ->icon('heroicon-o-shield-check')
-                        ->description(__('admin.auth.register.steps.verification_desc'))
-                        ->schema([
-                            Grid::make(2)->schema([
-                                FileUpload::make('id_card_front')
-                                    ->label(__('admin.auth.register.id_front'))
-                                    ->image()
-                                    ->disk('local')
-                                    ->directory('vendor-verification')
-                                    ->required(fn (string $operation): bool => $operation === 'create')
-                                    ->dehydrated(fn (mixed $state): bool => filled($state)),
-                                FileUpload::make('id_card_back')
-                                    ->label(__('admin.auth.register.id_back'))
-                                    ->image()
-                                    ->disk('local')
-                                    ->directory('vendor-verification')
-                                    ->required(fn (string $operation): bool => $operation === 'create')
-                                    ->dehydrated(fn (mixed $state): bool => filled($state)),
-                                FileUpload::make('store_front_image')
-                                    ->label(__('admin.auth.register.store_photo'))
-                                    ->image()
-                                    ->disk('local')
-                                    ->directory('vendor-verification')
-                                    ->required(fn (string $operation): bool => $operation === 'create')
-                                    ->dehydrated(fn (mixed $state): bool => filled($state)),
-                                FileUpload::make('organic_certificate_url')
-                                    ->label(__('admin.auth.register.organic_cert'))
-                                    ->disk('local')
-                                    ->directory('vendor-verification'),
-                            ]),
-                        ]),
-
-                    Step::make(__('admin.auth.register.steps.financials'))
-                        ->icon('heroicon-o-banknotes')
-                        ->description(__('admin.auth.register.steps.financials_desc'))
-                        ->schema([
-                            Grid::make(3)->schema([
-                                TextInput::make('bank_name')
-                                    ->label(__('admin.auth.register.bank_name'))
-                                    ->placeholder('e.g. ABA Bank')
-                                    ->required(fn (string $operation): bool => $operation === 'create')
-                                    ->dehydrated(fn (mixed $state): bool => filled($state))
-                                    ->maxLength(255),
-                                TextInput::make('bank_account_name')
-                                    ->label(__('admin.auth.register.account_holder'))
-                                    ->required(fn (string $operation): bool => $operation === 'create')
-                                    ->dehydrated(fn (mixed $state): bool => filled($state))
-                                    ->maxLength(255),
-                                TextInput::make('bank_account_number')
-                                    ->label(__('admin.auth.register.account_number'))
-                                    ->required(fn (string $operation): bool => $operation === 'create')
-                                    ->dehydrated(fn (mixed $state): bool => filled($state))
-                                    ->maxLength(255),
-                            ]),
-                            FileUpload::make('bank_qr_code')
-                                ->label(__('admin.auth.register.qr_code'))
-                                ->image()
-                                ->disk('local')
-                                ->directory('vendor-verification')
-                                ->required(fn (string $operation): bool => $operation === 'create')
-                                ->dehydrated(fn (mixed $state): bool => filled($state)),
-                        ]),
+                    $this->getAccountStep(),
+                    $this->getBusinessStep(),
+                    $this->getVerificationStep(),
+                    $this->getFinancialStep(),
                 ])
-                    ->submitAction(
-                        new HtmlString(
-                            Blade::render(
-                                '<x-filament::button type="submit" size="sm" wire:click="register">'
-                                .__('admin.auth.register.complete')
-                                .'</x-filament::button>'
-                            )
-                        ),
-                    ),
+                    ->persistStepInQueryString('step')
+                    ->submitAction($this->getSubmitAction()),
             ])
             ->statePath('data');
+    }
+
+    protected function getAccountStep(): Step
+    {
+        return Step::make(__('shared.auth.register.steps.account'))
+            ->icon('heroicon-o-user')
+            ->description(__('shared.auth.register.steps.account_desc'))
+            ->schema([
+                Grid::make(1)
+                    ->schema([
+                        Grid::make(2)
+                            ->schema([
+                                TextInput::make('first_name')
+                                    ->label(__('shared.auth.register.first_name'))
+                                    ->required()
+                                    ->maxLength(255),
+                                TextInput::make('last_name')
+                                    ->label(__('shared.auth.register.last_name'))
+                                    ->required()
+                                    ->maxLength(255),
+                            ]),
+                        TextInput::make('email')
+                            ->label(__('shared.auth.register.email'))
+                            ->maxLength(255),
+                        $this->getPhoneNumberFormComponent(),
+                        PasswordInput::make('password')
+                            ->label(__('shared.auth.login.password'))
+                            ->required()
+                            ->revealable(),
+                        PasswordInput::make('password_confirmation')
+                            ->label(__('shared.auth.register.password_confirm'))
+                            ->required()
+                            ->revealable(),
+                    ]),
+            ]);
+    }
+
+    protected function getBusinessStep(): Step
+    {
+        return Step::make(__('shared.auth.register.steps.business'))
+            ->icon('heroicon-o-building-storefront')
+            ->description(__('shared.auth.register.steps.business_desc'))
+            ->schema([
+                Grid::make(2)->schema([
+                    TextInput::make('business_name')
+                        ->label(__('shared.auth.register.business_name'))
+                        ->required()
+                        ->maxLength(255),
+                    PhoneNumberInput::make('contact_phone')
+                        ->label(__('shared.form.fields.contact_phone'))
+                        ->required(),
+                    TextInput::make('village')
+                        ->label(__('shared.form.fields.village'))
+                        ->required()
+                        ->maxLength(255),
+                    TextInput::make('commune')
+                        ->label(__('shared.form.fields.commune'))
+                        ->required()
+                        ->maxLength(255),
+                    TextInput::make('district')
+                        ->label(__('shared.form.fields.district'))
+                        ->required()
+                        ->maxLength(255),
+                    TextInput::make('province')
+                        ->label(__('shared.form.fields.province'))
+                        ->required()
+                        ->maxLength(255),
+                ]),
+            ]);
+    }
+
+    protected function getVerificationStep(): Step
+    {
+        return Step::make(__('shared.auth.register.steps.verification'))
+            ->icon('heroicon-o-shield-check')
+            ->description(__('shared.auth.register.steps.verification_desc'))
+            ->schema([
+                Grid::make(2)->schema([
+                    FileUpload::make('id_card_front')
+                        ->label(__('shared.auth.register.id_front'))
+                        ->image()
+                        ->disk('local')
+                        ->directory(StorageDirectory::VENDOR_VERIFICATION)
+                        ->required(),
+                    FileUpload::make('id_card_back')
+                        ->label(__('shared.auth.register.id_back'))
+                        ->image()
+                        ->disk('local')
+                        ->directory(StorageDirectory::VENDOR_VERIFICATION)
+                        ->required(),
+                    FileUpload::make('store_front_image')
+                        ->label(__('shared.auth.register.store_photo'))
+                        ->image()
+                        ->disk('local')
+                        ->directory(StorageDirectory::VENDOR_VERIFICATION)
+                        ->required(),
+                    FileUpload::make('organic_certificate_url')
+                        ->label(__('shared.auth.register.organic_cert'))
+                        ->disk('local')
+                        ->directory(StorageDirectory::VENDOR_VERIFICATION),
+                ]),
+            ]);
+    }
+
+    protected function getFinancialStep(): Step
+    {
+        return Step::make(__('shared.auth.register.steps.financials'))
+            ->icon('heroicon-o-banknotes')
+            ->description(__('shared.auth.register.steps.financials_desc'))
+            ->schema([
+                Grid::make(3)->schema([
+                    TextInput::make('bank_name')
+                        ->label(__('shared.auth.register.bank_name'))
+                        ->placeholder('e.g. ABA Bank')
+                        ->required()
+                        ->maxLength(255),
+                    TextInput::make('account_name')
+                        ->label(__('shared.auth.register.account_holder'))
+                        ->required()
+                        ->maxLength(255),
+                    TextInput::make('account_number')
+                        ->label(__('shared.auth.register.account_number'))
+                        ->required()
+                        ->maxLength(255),
+                ]),
+                FileUpload::make('qr_code')
+                    ->label(__('shared.auth.register.qr_code'))
+                    ->image()
+                    ->disk('local')
+                    ->directory(StorageDirectory::VENDOR_VERIFICATION)
+                    ->required(),
+            ]);
+    }
+
+    protected function getSubmitAction(): HtmlString
+    {
+        return new HtmlString(
+            Blade::render(
+                '<x-filament::button type="submit" size="sm" wire:click="register">'
+                .__('shared.auth.register.complete')
+                .'</x-filament::button>'
+            )
+        );
     }
 
     protected function getPhoneNumberFormComponent(): Grid
@@ -199,14 +241,12 @@ class Register extends BaseRegister
         return Grid::make(5)
             ->schema([
                 PhoneNumberInput::make('phone_number')
-                    ->label(__('admin.auth.login.phone'))
+                    ->label(__('shared.auth.login.phone'))
                     ->required()
                     ->columnSpanFull()
                     ->rule(static function (Get $get) {
-                        return static function (string $attribute, $value, Closure $fail) use ($get) {
-                            $dialCode = get_dial_code($get('country_iso'));
-                            $fullPhone = $dialCode.ltrim($value, '0');
-                            $exists = User::where('phone_number', $fullPhone)
+                        return static function (string $attribute, $value, Closure $fail) {
+                            $exists = User::where('phone_number', $value)
                                 ->where('user_type_id', UserType::VENDOR)
                                 ->whereIn('user_status_id', [
                                     UserStatus::ACTIVE_ID,
@@ -217,7 +257,7 @@ class Register extends BaseRegister
                                 ->exists();
 
                             if ($exists) {
-                                $fail('This phone number is already registered.');
+                                $fail(__('shared.auth.register.phone_registered'));
                             }
                         };
                     }),
@@ -227,18 +267,6 @@ class Register extends BaseRegister
     #[Override]
     protected function mutateFormDataBeforeRegister(array $data): array
     {
-        $nameParts = explode(' ', $data['name'], 2);
-        $data['first_name'] = $nameParts[0];
-        $data['last_name'] = $nameParts[1] ?? '';
-
-        unset($data['name']);
-
-        $dialCode = get_dial_code($data['country_iso']);
-        $phoneInput = preg_replace('/[^0-9]/', '', $data['phone_number_input'] ?? '');
-        $data['phone_number'] = $dialCode.ltrim($phoneInput, '0');
-
-        unset($data['country_iso'], $data['phone_number_input']);
-
         $data['user_type_id'] = UserType::VENDOR_ID;
         $data['user_status_id'] = UserStatus::PENDING_ID;
 
@@ -248,34 +276,103 @@ class Register extends BaseRegister
     #[Override]
     protected function handleRegistration(array $data): Model
     {
-        // 1. Separate vendor profile data
-        $vendorData = Arr::only($data, [
-            'business_name', 'contact_phone', 'city', 'province', 'address',
-            'id_card_front', 'id_card_back', 'store_front_image', 'organic_certificate_url',
-            'bank_name', 'bank_account_name', 'bank_account_number', 'bank_qr_code',
-        ]);
+        return DB::transaction(function () use ($data) {
+            $vendorData = Arr::only($data, [
+                'business_name',
+                'contact_phone',
+                'village',
+                'commune',
+                'district',
+                'province',
+                'id_card_front',
+                'id_card_back',
+                'store_front_image',
+                'organic_certificate_url',
+                'bank_name',
+                'account_name',
+                'account_number',
+                'qr_code',
+            ]);
 
-        // 2. Separate user data
-        $userData = Arr::except($data, array_keys($vendorData));
+            $userData = Arr::except($data, array_keys($vendorData));
 
-        // 3. Create User
-        /** @var User $user */
-        $user = $this->getUserModel()::create($userData);
+            /** @var User $user */
+            $user = $this->getUserModel()::create([
+                'first_name' => $userData['first_name'],
+                'last_name' => $userData['last_name'],
+                'email' => $userData['email'] ?? null,
+                'phone_number' => $userData['phone_number'],
+                'image' => 'user.png',
+                'password' => Hash::make($userData['password']),
+                'user_type_id' => $userData['user_type_id'],
+                'user_status_id' => $userData['user_status_id'],
+            ]);
 
-        // 4. Create Vendor Profile
-        $user->vendorProfile()->create($vendorData);
+            $user->vendorProfile()->create([
+                'business_name' => $vendorData['business_name'],
+                'contact_phone' => $vendorData['contact_phone'],
+                'village' => $vendorData['village'],
+                'commune' => $vendorData['commune'],
+                'district' => $vendorData['district'],
+                'province' => $vendorData['province'],
+                'id_card_front' => $vendorData['id_card_front'],
+                'id_card_back' => $vendorData['id_card_back'],
+                'store_front_image' => $vendorData['store_front_image'],
+                'organic_certificate_url' => $vendorData['organic_certificate_url'],
+                'bank_name' => $vendorData['bank_name'],
+                'account_name' => $vendorData['account_name'],
+                'account_number' => $vendorData['account_number'],
+                'qr_code' => $vendorData['qr_code'],
+            ]);
 
-        // 5. Create Default Wallets (0.00 Balance)
-        $user->ensureDefaultWallets();
+            $user->ensureDefaultWallets();
 
-        return $user;
+            return $user;
+        });
     }
 
-    protected function afterRegister(): void
+    #[Override]
+    public function register(): ?RegistrationResponse
     {
-        Auth::logout();
-        session()->invalidate();
+        try {
+            $this->rateLimit(2);
+        } catch (TooManyRequestsException $exception) {
+            $this->getRateLimitedNotification($exception)?->send();
+
+            return null;
+        }
+
+        if ($this->isRegisterRateLimited($this->data['email'] ?? '')) {
+            return null;
+        }
+
+        $this->wrapInDatabaseTransaction(function (): void {
+            $this->callHook('beforeValidate');
+
+            $data = $this->form->getState();
+
+            $this->callHook('afterValidate');
+
+            $data = $this->mutateFormDataBeforeRegister($data);
+
+            $this->callHook('beforeRegister');
+
+            $this->handleRegistration($data);
+
+            $this->callHook('afterRegister');
+        });
+
+        session()->forget('vendor-register-data');
+
+        Notification::make()
+            ->title(__('shared.auth.register.pending_title'))
+            ->body(__('shared.auth.register.pending_message'))
+            ->success()
+            ->send();
+
         $this->redirect(route('filament.vendor.auth.login'));
+
+        return null;
     }
 
     #[Override]
@@ -284,5 +381,12 @@ class Register extends BaseRegister
         $phone = $this->data['phone_number'] ?? '';
 
         return parent::isRegisterRateLimited($phone);
+    }
+
+    public function switchLanguage(string $locale): void
+    {
+        session()->put('locale', $locale);
+        session()->save();
+        $this->redirect(request()->header('Referer') ?? url()->current());
     }
 }

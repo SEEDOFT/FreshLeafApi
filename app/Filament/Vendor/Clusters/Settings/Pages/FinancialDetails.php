@@ -48,22 +48,22 @@ class FinancialDetails extends Page
     {
         return $schema
             ->components([
-                Section::make(__('admin.vendor_settings.financial_details.label'))
+                Section::make(__('vendor.settings.financial_details.label'))
                     ->description('Used for weekly earnings payouts.')
                     ->schema([
                         TextInput::make('bank_name')
-                            ->label(__('admin.vendor_settings.financial_details.bank_name'))
+                            ->label(__('vendor.settings.financial_details.bank_name'))
                             ->placeholder('e.g. ABA Bank')
                             ->maxLength(255),
                         TextInput::make('bank_account_name')
-                            ->label(__('admin.vendor_settings.financial_details.account_holder'))
+                            ->label(__('vendor.settings.financial_details.account_holder'))
                             ->placeholder('e.g. KOY YOTRABOTH')
                             ->maxLength(255),
                         TextInput::make('bank_account_number')
-                            ->label(__('admin.vendor_settings.financial_details.account_number'))
+                            ->label(__('vendor.settings.financial_details.account_number'))
                             ->maxLength(255),
                         FileUpload::make('bank_qr_code')
-                            ->label(__('admin.vendor_settings.financial_details.qr_code'))
+                            ->label(__('vendor.settings.financial_details.qr_code'))
                             ->image()
                             ->disk('local')
                             ->directory('vendor-verification')
@@ -85,7 +85,7 @@ class FinancialDetails extends Page
         $user->vendorProfile()->update($state);
 
         Notification::make()
-            ->title(__('admin.vendor_settings.financial_details.success_notification'))
+            ->title(__('vendor.settings.financial_details.success_notification'))
             ->success()
             ->send();
     }
@@ -97,7 +97,7 @@ class FinancialDetails extends Page
     {
         return [
             Action::make('save')
-                ->label(__('admin.profile.save_changes'))
+                ->label(__('shared.profile.save_changes'))
                 ->submit('save')
                 ->keyBindings(['mod+s']),
         ];

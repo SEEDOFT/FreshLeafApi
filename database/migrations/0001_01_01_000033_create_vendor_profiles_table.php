@@ -19,9 +19,10 @@ return new class extends Migration
             $table->string('business_name');
             $table->string('shop_description')->nullable();
             $table->string('contact_phone');
-            $table->string('city')->nullable();
+            $table->string('village')->nullable();
+            $table->string('commune')->nullable();
+            $table->string('district')->nullable();
             $table->string('province')->nullable();
-            $table->string('address')->nullable();
             $table->string('id_card_front')->nullable();
             $table->string('id_card_back')->nullable();
             $table->string('store_front_image')->nullable();

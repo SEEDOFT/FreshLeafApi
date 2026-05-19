@@ -283,7 +283,7 @@ $jobs = [
     [
         'name' => 'vite',
         'color' => $orange,
-        'command' => [npmBin(), 'run', 'dev'],
+        'command' => [npmBin(), 'run', 'dev', '--', "--host={$host}"],
     ],
     [
         'name' => 'reverb',

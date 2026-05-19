@@ -23,26 +23,26 @@ class ItemsRelationManager extends RelationManager
         return $schema
             ->components([
                 TextInput::make('product_name_snapshot')
-                    ->label(new HtmlString('<strong>'.__('admin.resources.order.product').'</strong>'))
+                    ->label(new HtmlString('<strong>'.__('shared.order.product').'</strong>'))
                     ->disabled()
                     ->dehydrated(false),
                 TextInput::make('unit_snapshot')
-                    ->label(new HtmlString('<strong>'.__('admin.resources.product.unit').'</strong>'))
+                    ->label(new HtmlString('<strong>'.__('shared.product.unit').'</strong>'))
                     ->disabled()
                     ->dehydrated(false),
                 TextInput::make('unit_price_snapshot')
-                    ->label(new HtmlString('<strong>'.__('admin.resources.product.unit_price').'</strong>'))
+                    ->label(new HtmlString('<strong>'.__('shared.product.unit_price').'</strong>'))
                     ->disabled()
                     ->dehydrated(false)
                     ->numeric()
                     ->prefix('$'),
                 TextInput::make('quantity')
-                    ->label(new HtmlString('<strong>'.__('admin.resources.product.quantity').'</strong>'))
+                    ->label(new HtmlString('<strong>'.__('shared.product.quantity').'</strong>'))
                     ->disabled()
                     ->dehydrated(false)
                     ->numeric(),
                 TextInput::make('subtotal')
-                    ->label(new HtmlString('<strong>'.__('admin.resources.order.subtotal').'</strong>'))
+                    ->label(new HtmlString('<strong>'.__('shared.order.subtotal').'</strong>'))
                     ->disabled()
                     ->dehydrated(false)
                     ->numeric()
@@ -58,24 +58,24 @@ class ItemsRelationManager extends RelationManager
             ->recordTitleAttribute('product_name_snapshot')
             ->columns([
                 TextColumn::make('product_name_snapshot')
-                    ->label(new HtmlString('<strong>'.__('admin.resources.order.product').'</strong>'))
+                    ->label(new HtmlString('<strong>'.__('shared.order.product').'</strong>'))
                     ->sortable(),
                 TextColumn::make('unit_snapshot')
-                    ->label(new HtmlString('<strong>'.__('admin.resources.product.unit').'</strong>')),
+                    ->label(new HtmlString('<strong>'.__('shared.product.unit').'</strong>')),
                 TextColumn::make('unit_price_snapshot')
                     ->money('USD')
-                    ->label(new HtmlString('<strong>'.__('admin.resources.product.unit_price').'</strong>')),
+                    ->label(new HtmlString('<strong>'.__('shared.product.unit_price').'</strong>')),
                 TextColumn::make('quantity')
-                    ->label(new HtmlString('<strong>'.__('admin.resources.product.quantity').'</strong>'))
+                    ->label(new HtmlString('<strong>'.__('shared.product.quantity').'</strong>'))
                     ->numeric(),
                 TextColumn::make('subtotal')
-                    ->label(new HtmlString('<strong>'.__('admin.resources.order.subtotal').'</strong>'))
+                    ->label(new HtmlString('<strong>'.__('shared.order.subtotal').'</strong>'))
                     ->money('USD'),
                 TextColumn::make('commission_amount')
-                    ->label(new HtmlString('<strong>'.__('admin.resources.order.commission').'</strong>'))
+                    ->label(new HtmlString('<strong>'.__('shared.order.commission').'</strong>'))
                     ->money('USD'),
                 TextColumn::make('vendor_net_amount')
-                    ->label(new HtmlString('<strong>'.__('admin.resources.order.total').'</strong>'))
+                    ->label(new HtmlString('<strong>'.__('shared.order.total').'</strong>'))
                     ->money('USD'),
             ])
             ->filters([

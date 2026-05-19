@@ -19,13 +19,13 @@ class AiAssistant extends Page
     #[Override]
     public static function getNavigationLabel(): string
     {
-        return __('admin.ai.assistant');
+        return __('shared.ai.assistant');
     }
 
     #[Override]
     public function getHeading(): string
     {
-        return __('admin.ai.assistant');
+        return __('shared.ai.assistant');
     }
 
     #[Override]

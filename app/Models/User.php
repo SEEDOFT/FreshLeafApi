@@ -57,6 +57,7 @@ use function is_string;
  * @property-read string $currentTheme
  * @property-read Collection<int, Address> $addresses
  * @property-read Collection<int, PaymentMethod> $paymentMethods
+ * @property-read PaymentMethod $vendorFinancialDetails
  * @property-read Collection<int, Wallet> $wallets
  * @property-read Collection<int, UserDevice> $devices
  */
@@ -228,6 +229,17 @@ class User extends Authenticatable implements FilamentUser, HasAvatar, HasName
     public function paymentMethods(): HasMany
     {
         return $this->hasMany(PaymentMethod::class, 'user_id', 'id');
+    }
+
+    /**
+     * Get vendor financial details.
+     *
+     * @return HasOne<PaymentMethod, $this>
+     */
+    public function vendorFinancialDetails(): HasOne
+    {
+        return $this->hasOne(PaymentMethod::class, 'user_id', 'id')
+            ->where('user_type_id', UserType::VENDOR_ID);
     }
 
     /**

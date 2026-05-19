@@ -13,15 +13,17 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\App;
 
 /**
  * @property int $id
- * @property string $code
- * @property string $name
+ * @property string $name_en
+ * @property string $name_km
  * @property int $sort_order
  * @property string|null $color
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
+ * @property-read string|null $translated_name
  * @property-read Collection<int, Order> $orders
  * @property-read int|null $orders_count
  */
@@ -52,6 +54,14 @@ class OrderStatus extends Model
     public const string DELIVERED = 'DELIVERED';
 
     public const string CANCELLED = 'CANCELLED';
+
+    /**
+     * Get the translated name of the status.
+     */
+    public function getTranslatedNameAttribute(): ?string
+    {
+        return $this->{'name_'.App::getLocale()};
+    }
 
     /**
      * Get the orders for the status.

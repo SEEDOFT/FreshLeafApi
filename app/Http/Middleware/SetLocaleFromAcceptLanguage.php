@@ -46,17 +46,24 @@ class SetLocaleFromAcceptLanguage
         /** @var User|null $user */
         $user = $request->user();
 
-        if (! $user) {
-            return $this->detectFromHeader($request);
+        if ($user) {
+            $locale = $user->currentLocale;
+            if (
+                $locale !== null &&
+                \in_array($locale, self::SUPPORTED_LOCALES, true)
+            ) {
+                return $locale;
+            }
         }
 
-        $locale = $user->currentLocale;
+        /** @var string|null $sessionLocale */
+        $sessionLocale = session()->get('locale');
 
         if (
-            $locale !== null &&
-            \in_array($locale, self::SUPPORTED_LOCALES, true)
+            $sessionLocale !== null &&
+            \in_array($sessionLocale, self::SUPPORTED_LOCALES, true)
         ) {
-            return $locale;
+            return $sessionLocale;
         }
 
         return $this->detectFromHeader($request);

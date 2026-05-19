@@ -17,13 +17,13 @@ class ProductCategoryStatusSeeder extends Seeder
         $statuses = [
             [
                 'id' => 1,
-                'name_en' => 'Active',
-                'name_km' => 'សកម្ម',
+                'name_en' => 'Enabled',
+                'name_km' => 'បានបើក',
             ],
             [
                 'id' => 2,
-                'name_en' => 'Inactive',
-                'name_km' => 'អសកម្ម',
+                'name_en' => 'Disabled',
+                'name_km' => 'បានបិទ',
             ],
         ];
 

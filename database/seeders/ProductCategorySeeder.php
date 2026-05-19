@@ -75,7 +75,7 @@ class ProductCategorySeeder extends Seeder
                 'description_km' => $category['description_km'],
                 'slug' => Str::slug($category['name_en']),
                 'image_url' => $category['image_url'],
-                'product_category_status_id' => ProductCategoryStatus::ACTIVE,
+                'product_category_status_id' => ProductCategoryStatus::ACTIVE_ID,
             ]);
         }
     }

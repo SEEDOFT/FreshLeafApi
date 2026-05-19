@@ -51,6 +51,9 @@ class UserStatus extends Model
         return $this->hasMany(User::class, 'user_status_id', 'id');
     }
 
+    /**
+     * Get the translated name of the status.
+     */
     public function getTranslatedNameAttribute(): ?string
     {
         return $this->{'name_'.App::currentLocale()};

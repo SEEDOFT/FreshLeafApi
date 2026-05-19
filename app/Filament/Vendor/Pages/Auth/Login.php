@@ -32,13 +32,13 @@ class Login extends BaseLogin
     #[Override]
     public function getHeading(): string|Htmlable
     {
-        return __('admin.auth.login.title');
+        return __('shared.auth.login.title');
     }
 
     #[Override]
     public function getSubHeading(): string|Htmlable|null
     {
-        return __('admin.auth.login.subheading');
+        return __('shared.auth.login.subheading');
     }
 
     #[Override]
@@ -48,17 +48,17 @@ class Login extends BaseLogin
             ->components([
                 $this->getPhoneNumberFormComponent(),
                 PasswordInput::make('password')
-                    ->label(__('admin.auth.login.password'))
+                    ->label(__('shared.auth.login.password'))
                     ->required()
                     ->revealable(),
                 TextEntry::make('registration_link')
                     ->hiddenLabel()
                     ->state(new HtmlString(
                         '<div class="text-sm text-center py-2">'.
-                        __('admin.auth.login.not_having_account').' '.
+                        __('shared.auth.login.not_having_account').' '.
                         '<a class="text-emerald-600 font-bold hover:text-emerald-500" href="'.
                         route('filament.vendor.auth.register').'">'.
-                        __('admin.auth.login.register_here').
+                        __('shared.auth.login.register_here').
                         '</a>'.'</div>'
                     ))
                     ->html(),
@@ -72,7 +72,7 @@ class Login extends BaseLogin
         return Grid::make(5)
             ->schema([
                 PhoneNumberInput::make('phone_number')
-                    ->label(__('admin.auth.login.phone'))
+                    ->label(__('shared.auth.login.phone'))
                     ->required()
                     ->columnSpanFull(),
             ]);
@@ -81,23 +81,36 @@ class Login extends BaseLogin
     #[Override]
     protected function getCredentialsFromFormData(array $data): array
     {
-        $userTypeId = UserType::VENDOR;
-        $credentials = [
-            'phone_number' => $data['phone_number'],
-            'password' => $data['password'],
-            'user_type_id' => $userTypeId,
-        ];
-
-        $user = User::where('phone_number', $data['phone_number'])
-            ->where('user_type_id', $userTypeId)
+        $vendor = User::where('phone_number', $data['phone_number'])
+            ->where('user_type_id', UserType::VENDOR)
             ->first();
 
-        if ($user && $user->user_status_id === UserStatus::PENDING_ID) {
+        if ($vendor && $vendor->user_status_id === UserStatus::PENDING_ID) {
             throw ValidationException::withMessages([
-                'data.phone_number_input' => __('admin.auth.login.pending'),
+                'data.phone_number_input' => __('shared.auth.login.pending'),
             ]);
         }
 
-        return array_filter($credentials);
+        return array_filter([
+            'phone_number' => $data['phone_number'],
+            'password' => $data['password'],
+            'user_status_id' => UserStatus::ACTIVE_ID,
+            'user_type_id' => UserType::VENDOR_ID,
+        ]);
+    }
+
+    #[Override]
+    protected function throwFailureValidationException(): never
+    {
+        throw ValidationException::withMessages([
+            'data.phone_number' => __('shared.auth.login.failed'),
+        ]);
+    }
+
+    public function switchLanguage(string $locale): void
+    {
+        session()->put('locale', $locale);
+        session()->save();
+        $this->redirect(request()->header('Referer') ?? url()->current());
     }
 }

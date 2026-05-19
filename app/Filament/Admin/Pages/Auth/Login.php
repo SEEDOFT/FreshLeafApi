@@ -93,4 +93,11 @@ class Login extends BaseLogin
             'data.phone_number' => __('admin.auth.login.failed'),
         ]);
     }
+
+    public function switchLanguage(string $locale): void
+    {
+        session()->put('locale', $locale);
+        session()->save();
+        $this->redirect(request()->header('Referer') ?? url()->current());
+    }
 }

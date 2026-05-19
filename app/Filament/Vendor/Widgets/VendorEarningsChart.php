@@ -4,8 +4,10 @@ declare(strict_types=1);
 
 namespace App\Filament\Vendor\Widgets;
 
+use App\Models\PaymentStatus;
 use App\Models\User;
 use Filament\Widgets\ChartWidget;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Override;
@@ -19,6 +21,7 @@ class VendorEarningsChart extends ChartWidget
     protected function getData(): array
     {
         $user = Auth::user();
+
         if (! $user instanceof User) {
             return [
                 'datasets' => [],
@@ -26,14 +29,13 @@ class VendorEarningsChart extends ChartWidget
             ];
         }
 
-        // Calculate daily earnings based on items belonging to this vendor in paid orders
         $data = DB::table('order_items')
             ->join('orders', 'order_items.order_id', '=', 'orders.id')
             ->join('vendor_inventories', 'order_items.vendor_inventory_id', '=', 'vendor_inventories.id')
             ->join('payment_statuses', 'orders.payment_status_id', '=', 'payment_statuses.id')
             ->where('vendor_inventories.vendor_id', $user->id)
-            ->where('payment_statuses.code', 'paid')
-            ->where('orders.created_at', '>=', now()->subDays(30))
+            ->where('payment_statuses.id', PaymentStatus::COMPLETED_ID)
+            ->where('orders.created_at', '>=', Carbon::now()->subDays(30))
             ->select(
                 DB::raw('DATE(orders.created_at) as date'),
                 DB::raw('SUM(order_items.vendor_net_amount) as total')
@@ -47,8 +49,8 @@ class VendorEarningsChart extends ChartWidget
         $values = [];
 
         for ($i = 29; $i >= 0; $i--) {
-            $date = now()->subDays($i)->format('Y-m-d');
-            $labels[] = now()->subDays($i)->format('M d');
+            $date = Carbon::now()->subDays($i)->format('Y-m-d');
+            $labels[] = Carbon::now()->subDays($i)->format('M d');
             $values[] = $data[$date] ?? 0;
         }
 

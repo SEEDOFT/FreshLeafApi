@@ -11,6 +11,7 @@ use Illuminate\Database\Eloquent\Attributes\UseFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Support\Carbon;
 
 /**
@@ -21,9 +22,10 @@ use Illuminate\Support\Carbon;
  * @property string $business_name
  * @property string $shop_description
  * @property string $contact_phone
- * @property string $city
+ * @property string $village
+ * @property string $commune
+ * @property string $district
  * @property string $province
- * @property string $address
  * @property string $opening_time
  * @property string $closing_time
  * @property bool $is_open
@@ -49,9 +51,10 @@ use Illuminate\Support\Carbon;
     'business_name',
     'shop_description',
     'contact_phone',
-    'city',
+    'village',
+    'commune',
+    'district',
     'province',
-    'address',
     'opening_time',
     'closing_time',
     'is_open',

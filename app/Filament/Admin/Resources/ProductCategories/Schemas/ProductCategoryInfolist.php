@@ -4,15 +4,20 @@ declare(strict_types=1);
 
 namespace App\Filament\Admin\Resources\ProductCategories\Schemas;
 
+use App\Models\ProductCategory;
+use App\Models\ProductCategoryStatus;
 use Filament\Infolists\Components\ImageEntry;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
+use Illuminate\Support\HtmlString;
 
 class ProductCategoryInfolist
 {
     public static function configure(Schema $schema): Schema
     {
+        $notProvided = __('admin.resources.general.not_provided');
+
         return $schema
             ->components([
                 Section::make(__('admin.resources.product_category.basic_info'))
@@ -24,12 +29,13 @@ class ProductCategoryInfolist
                             ->label(__('admin.resources.product_category.name_km')),
                         TextEntry::make('slug')
                             ->label(__('admin.resources.product_category.slug')),
-                        TextEntry::make('status.name')
-                            ->label(__('admin.resources.product_category.status'))
+                        TextEntry::make('status.translated_name')
+                            ->label(new HtmlString('<strong>'.__('admin.resources.product_category.status').'</strong>'))
                             ->badge()
-                            ->color(fn (string $state): string => match ($state) {
-                                'Active' => 'success',
-                                'Inactive' => 'danger',
+                            ->placeholder($notProvided)
+                            ->color(fn (ProductCategory $record): string => match ($record->product_category_status_id) {
+                                ProductCategoryStatus::ACTIVE_ID => 'success',
+                                ProductCategoryStatus::INACTIVE_ID => 'danger',
                                 default => 'gray',
                             }),
                         TextEntry::make('description_en')

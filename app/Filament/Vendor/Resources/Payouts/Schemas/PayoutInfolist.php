@@ -14,38 +14,38 @@ class PayoutInfolist
     {
         return $schema
             ->components([
-                Section::make(__('admin.resources.payout.details'))
+                Section::make(__('shared.payout.details'))
                     ->columns(2)
                     ->schema([
                         TextEntry::make('amount')
-                            ->label(__('admin.resources.payout.amount'))
+                            ->label(__('shared.payout.amount'))
                             ->money('USD'),
                         TextEntry::make('status.name')
-                            ->label(__('admin.resources.payout.status'))
+                            ->label(__('shared.payout.status'))
                             ->badge(),
                         TextEntry::make('method.name')
-                            ->label(__('admin.resources.payout.method')),
+                            ->label(__('shared.payout.method')),
                         TextEntry::make('transaction_reference')
-                            ->label(__('admin.resources.payout.transaction_ref'))
+                            ->label(__('shared.payout.transaction_ref'))
                             ->placeholder('-'),
                         TextEntry::make('processed_at')
-                            ->label(__('admin.resources.payout.processed_at'))
+                            ->label(__('shared.payout.processed_at'))
                             ->dateTime()
                             ->placeholder('-'),
                         TextEntry::make('admin_notes')
-                            ->label(__('admin.resources.payout.admin_notes'))
+                            ->label(__('shared.payout.admin_notes'))
                             ->placeholder('-')
                             ->columnSpanFull(),
                     ]),
 
-                Section::make(__('admin.resources.timestamps'))
+                Section::make(__('shared.timestamps'))
                     ->columns(2)
                     ->schema([
                         TextEntry::make('created_at')
-                            ->label(__('admin.resources.created_at'))
+                            ->label(__('shared.created_at'))
                             ->dateTime(),
                         TextEntry::make('updated_at')
-                            ->label(__('admin.resources.updated_at'))
+                            ->label(__('shared.updated_at'))
                             ->dateTime(),
                     ]),
             ]);

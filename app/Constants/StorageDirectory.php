@@ -29,11 +29,11 @@ final class StorageDirectory
     public const string PRODUCTS = 'products';
 
     /**
-     * The directory for storing vendor profile files.
+     * The directory for storing vendor verification files.
      *
      * @var string
      */
-    public const string VENDOR_PROFILES = 'vendor_profiles';
+    public const string VENDOR_VERIFICATION = 'vendor_verifications';
 
     /**
      * The directory for storing support message files.

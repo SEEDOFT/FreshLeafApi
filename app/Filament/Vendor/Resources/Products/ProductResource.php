@@ -35,19 +35,19 @@ class ProductResource extends Resource
     #[Override]
     public static function getNavigationLabel(): string
     {
-        return __('admin.resources.product.product_inventory');
+        return __('shared.product.product_inventory');
     }
 
     #[Override]
     public static function getModelLabel(): string
     {
-        return __('admin.resources.product.product_inventory');
+        return __('shared.product.product_inventory');
     }
 
     #[Override]
     public static function getPluralModelLabel(): string
     {
-        return __('admin.resources.product.product_inventory');
+        return __('shared.product.product_inventory');
     }
 
     #[Override]

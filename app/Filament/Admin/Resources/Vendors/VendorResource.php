@@ -48,7 +48,7 @@ class VendorResource extends Resource
     public static function getEloquentQuery(): Builder
     {
         return parent::getEloquentQuery()
-            ->where('user_type_id', UserType::VENDOR);
+            ->where('user_type_id', UserType::VENDOR_ID);
     }
 
     #[Override]

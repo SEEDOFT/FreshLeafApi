@@ -29,7 +29,7 @@ class ProductCategoryFactory extends Factory
             'description_en' => $this->faker->sentence(),
             'description_km' => $this->faker->sentence().' (Khmer)',
             'slug' => Str::slug($name),
-            'product_category_status_id' => ProductCategoryStatus::ACTIVE,
+            'product_category_status_id' => ProductCategoryStatus::ACTIVE_ID,
         ];
     }
 }

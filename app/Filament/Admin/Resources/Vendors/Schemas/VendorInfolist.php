@@ -4,10 +4,13 @@ declare(strict_types=1);
 
 namespace App\Filament\Admin\Resources\Vendors\Schemas;
 
+use App\Constants\StorageDirectory;
 use App\Models\Currency;
+use App\Models\PaymentMethod;
 use App\Models\User;
 use App\Models\UserStatus;
 use App\Models\UserType;
+use App\Models\VendorProfile;
 use App\Models\Wallet;
 use Filament\Infolists\Components\IconEntry;
 use Filament\Infolists\Components\ImageEntry;
@@ -15,6 +18,7 @@ use Filament\Infolists\Components\RepeatableEntry;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\HtmlString;
 
@@ -46,12 +50,7 @@ class VendorInfolist
                             ->label(new HtmlString('<strong>'.__('admin.resources.user.type').'</strong>'))
                             ->placeholder($notProvided)
                             ->badge()
-                            ->color(fn (User $record): string => match ($record->user_type_id) {
-                                UserType::ADMIN_ID => 'danger',
-                                UserType::VENDOR_ID => 'warning',
-                                UserType::CONSUMER_ID => 'info',
-                                default => 'gray',
-                            }),
+                            ->color('warning'),
                         TextEntry::make('status.translated_name')
                             ->label(new HtmlString('<strong>'.__('admin.resources.user.status').'</strong>'))
                             ->placeholder($notProvided)
@@ -71,10 +70,9 @@ class VendorInfolist
                         ImageEntry::make('image')
                             ->label(new HtmlString('<strong>'.__('admin.profile.avatar').'</strong>'))
                             ->disk('public')
+                            ->getStateUsing(fn (VendorProfile $record) => $record->user->image ? StorageDirectory::USERS. '/' . $record->user->image : null)
                             ->circular()
-                            ->imageSize(200)
-                            ->defaultImageUrl(Storage::disk('public')->url('users/user.png')),
-
+                            ->imageSize(200),
                         TextEntry::make('business_name')
                             ->label(new HtmlString('<strong>'.__('admin.resources.vendor.business_name').'</strong>'))
                             ->placeholder($notProvided),
@@ -115,7 +113,7 @@ class VendorInfolist
                             ->label(new HtmlString('<strong>'.__('admin.resources.vendor.id_card_back').'</strong>'))
                             ->placeholder($notProvided)
                             ->getStateUsing(fn ($record) => $record->id_card_back
-                            ? route('admin.documents.show', ['path' => $record->id_card_back]) : null
+                                ? route('admin.documents.show', ['path' => $record->id_card_back]) : null
                             )
                             ->disk(null)
                             ->imageSize(200),
@@ -123,7 +121,7 @@ class VendorInfolist
                             ->label(new HtmlString('<strong>'.__('admin.resources.vendor.store_photo').'</strong>'))
                             ->placeholder($notProvided)
                             ->getStateUsing(fn ($record) => $record->store_front_image
-                            ? route('admin.documents.show', ['path' => $record->store_front_image]) : null
+                                ? route('admin.documents.show', ['path' => $record->store_front_image]) : null
                             )
                             ->disk(null)
                             ->imageSize(200),
@@ -131,33 +129,33 @@ class VendorInfolist
                             ->label(new HtmlString('<strong>'.__('admin.resources.vendor.organic_cert').'</strong>'))
                             ->placeholder($notProvided)
                             ->url(fn (mixed $state) => $state
-                            ? route('admin.documents.show', ['path' => $state]) : null
+                                ? route('admin.documents.show', ['path' => $state]) : null
                             )
                             ->openUrlInNewTab()
                             ->color('primary'),
                     ]),
 
                 Section::make(__('admin.resources.vendor.financial_details'))
-                    ->relationship('vendorProfile')
+                    ->relationship('vendorFinancialDetails')
                     ->columns(2)
                     ->schema([
                         TextEntry::make('bank_name')
                             ->placeholder($notProvided)
                             ->label(new HtmlString('<strong>'.__('admin.resources.vendor.bank_name').'</strong>')),
-                        TextEntry::make('bank_account_name')
+                        TextEntry::make('account_name')
                             ->placeholder($notProvided)
                             ->label(new HtmlString('<strong>'.__('admin.resources.vendor.account_holder').'</strong>')),
-                        TextEntry::make('bank_account_number')
+                        TextEntry::make('account_number')
                             ->placeholder($notProvided)
                             ->label(new HtmlString('<strong>'.__('admin.resources.vendor.account_number').'</strong>')),
-                        ImageEntry::make('bank_qr_code')
-                            ->placeholder($notProvided)
-                            ->label(new HtmlString('<strong>'.__('admin.resources.vendor.qr_code').'</strong>'))
-                            ->getStateUsing(fn ($record) => $record->bank_qr_code
-                            ? route('admin.documents.show', ['path' => $record->bank_qr_code]) : null
-                            )
-                            ->disk(null)
-                            ->imageSize(200),
+                        // ImageEntry::make('qr_code')
+                        //     ->placeholder($notProvided)
+                        //     ->label(new HtmlString('<strong>'.__('admin.resources.vendor.qr_code').'</strong>'))
+                        //     ->getStateUsing(fn ( $record) => $record->qr_code
+                        //         ? route('admin.documents.show', ['path' => $record->qr_code]) : null
+                        //     )
+                        //     ->disk(null)
+                        //     ->imageSize(200),
                     ]),
 
                 Section::make(__('admin.resources.vendor.wallets_info'))

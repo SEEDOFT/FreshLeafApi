@@ -1,9 +1,16 @@
 .fl-support-container {
-    @apply flex h-[calc(100vh-14rem)] overflow-hidden bg-white dark:bg-gray-900 rounded-3xl shadow-[0_20px_50px_rgba(0\,0\,0\,0.05)] dark:shadow-[0_20px_50px_rgba(0\,0\,0\,0.3)] border border-gray-200 dark:border-white/5 transition-[grid-template-columns] duration-300;
+    @apply flex h-[calc(100vh-14rem)] overflow-hidden bg-white dark:bg-gray-900 rounded-3xl border border-gray-200 dark:border-white/5 transition-[grid-template-columns] duration-300;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.05);
 }
 
-.fl-support-container.is-history-hidden .fl-support-sidebar {
-    @apply hidden md:hidden;
+.dark .fl-support-container {
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
+}
+
+@media (min-width: 768px) {
+    .fl-support-container.is-history-hidden .fl-support-sidebar {
+        @apply hidden;
+    }
 }
 
 /* Sidebar */

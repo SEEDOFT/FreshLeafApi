@@ -34,13 +34,13 @@ class OrderResource extends Resource
     #[Override]
     public static function getModelLabel(): string
     {
-        return __('admin.resources.order.label');
+        return __('shared.order.label');
     }
 
     #[Override]
     public static function getPluralModelLabel(): string
     {
-        return __('admin.resources.order.plural_label');
+        return __('shared.order.plural_label');
     }
 
     #[Override]
@@ -59,7 +59,7 @@ class OrderResource extends Resource
     {
         $user = Auth::user();
 
-        if (! $user) {
+        if (! $user instanceof User) {
             throw new AuthenticationException;
         }
 

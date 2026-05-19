@@ -13,11 +13,13 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\App;
 
 /**
  * @property int $id
- * @property string $code
- * @property string $name
+ * @property string $name_en
+ * @property string $name_km
+ * @property string|null $translated_name
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  * @property-read Collection<int, Order> $orders
@@ -48,6 +50,14 @@ class PaymentStatus extends Model
     public const string FAILED = 'FAILED';
 
     public const string REFUNDED = 'REFUNDED';
+
+    /**
+     * Get the translated name of the payment status.
+     */
+    public function getTranslatedNameAttribute(): ?string
+    {
+        return $this->{'name_'.App::currentLocale()};
+    }
 
     /**
      * Get the orders for the payment status.

@@ -50,7 +50,13 @@
     </div>
 
     <!-- Right Side: Login Form -->
-    <div class="fl-auth-content-right">
+    <div class="fl-auth-content-right relative">
+        <!-- Language Switcher -->
+        <div class="absolute top-4 right-4 flex gap-2 z-50">
+            <button type="button" wire:click="switchLanguage('en')" class="px-3 py-1 rounded-full text-xs font-bold transition-all {{ app()->getLocale() === 'en' ? 'bg-primary-500 text-white shadow-md' : 'bg-gray-200 dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-700' }}">EN</button>
+            <button type="button" wire:click="switchLanguage('km')" class="px-3 py-1 rounded-full text-xs font-bold transition-all {{ app()->getLocale() === 'km' ? 'bg-primary-500 text-white shadow-md' : 'bg-gray-200 dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-700' }}">KM</button>
+        </div>
+
         <div class="fl-auth-form-wrapper">
             
             <!-- Branding for Mobile -->

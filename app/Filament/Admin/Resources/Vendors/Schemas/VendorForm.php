@@ -115,7 +115,7 @@ class VendorForm
                                 Map::make('location')
                                     ->label(__('admin.resources.vendor.location'))
                                     ->columnSpanFull()
-                                    ->live(onBlur: true)
+                                    ->live()
                                     ->afterStateUpdated(function (Get $get, Set $set, ?array $state): void {
                                         if (! $state) {
                                             return;

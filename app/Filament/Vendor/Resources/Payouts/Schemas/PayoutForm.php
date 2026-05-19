@@ -16,18 +16,18 @@ class PayoutForm
         return $schema
             ->components([
                 TextInput::make('amount')
-                    ->label(__('admin.resources.payout.amount'))
+                    ->label(__('shared.payout.amount'))
                     ->required(fn (string $operation): bool => $operation === 'create')
                     ->dehydrated(fn (mixed $state): bool => filled($state))
                     ->numeric()
                     ->prefix('$'),
                 TextInput::make('transaction_reference')
-                    ->label(__('admin.resources.payout.transaction_ref'))
+                    ->label(__('shared.payout.transaction_ref'))
                     ->placeholder('-'),
                 DateTimePicker::make('processed_at')
-                    ->label(__('admin.resources.payout.processed_at')),
+                    ->label(__('shared.payout.processed_at')),
                 Textarea::make('admin_notes')
-                    ->label(__('admin.resources.payout.admin_notes'))
+                    ->label(__('shared.payout.admin_notes'))
                     ->disabled()
                     ->columnSpanFull(),
             ]);

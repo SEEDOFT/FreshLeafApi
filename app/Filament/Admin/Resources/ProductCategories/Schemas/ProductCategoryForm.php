@@ -49,7 +49,7 @@ class ProductCategoryForm
                                             ->label(__('admin.resources.product_category.status'))
                                             ->relationship('status', 'name')
                                             ->required()
-                                            ->default(ProductCategoryStatus::ACTIVE),
+                                            ->default(ProductCategoryStatus::ACTIVE_ID),
                                         Textarea::make('description_en')
                                             ->label(__('admin.resources.product_category.description_en'))
                                             ->columnSpanFull(),

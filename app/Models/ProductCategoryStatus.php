@@ -11,24 +11,33 @@ use Illuminate\Database\Eloquent\Attributes\UseFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Facades\App;
 
 /**
  * @property int $id
- * @property string $code
  * @property string $name_en
  * @property string $name_km
+ * @property string|null $translated_name
  */
 #[Table('product_category_statuses', key: 'id', keyType: 'int', incrementing: false)]
-#[Fillable(['code', 'name_en', 'name_km'])]
+#[Fillable(['id', 'name_en', 'name_km'])]
 #[UseFactory(ProductCategoryStatusFactory::class)]
 class ProductCategoryStatus extends Model
 {
     /** @use HasFactory<ProductCategoryStatusFactory> */
     use HasFactory;
 
-    public const int ACTIVE = 1;
+    public const int ACTIVE_ID = 1;
 
-    public const int INACTIVE = 2;
+    public const int INACTIVE_ID = 2;
+
+    /**
+     * Get the translated name of the status.
+     */
+    public function getTranslatedNameAttribute(): ?string
+    {
+        return $this->{'name_'.App::getLocale()};
+    }
 
     /**
      * Get the categories for the status.

@@ -46,7 +46,7 @@ class ProductCatalog extends Page implements HasTable
     #[Override]
     public function getTitle(): string
     {
-        return __('admin.resources.product.add_product');
+        return __('shared.product.add_product');
     }
 
     public function table(Table $table): Table
@@ -76,79 +76,79 @@ class ProductCatalog extends Page implements HasTable
             ])
             ->filters([
                 SelectFilter::make('product_category_id')
-                    ->label(__('admin.resources.product.system_category'))
+                    ->label(__('shared.product.system_category'))
                     ->relationship('productCategory', 'name_en'),
             ])
             ->actions([
                 Action::make('view')
-                    ->label(__('admin.resources.product.view_detail'))
+                    ->label(__('shared.product.view_detail'))
                     ->icon('heroicon-o-eye')
                     ->color('gray')
                     ->infolist(fn (Schema $infolist): Schema => $infolist
                         ->schema([
-                            Section::make(__('admin.resources.product.general_info'))
+                            Section::make(__('shared.product.general_info'))
                                 ->columns(2)
                                 ->schema([
                                     ImageEntry::make('image_url')
-                                        ->label(__('admin.resources.product.image'))
+                                        ->label(__('shared.product.image'))
                                         ->columnSpanFull()
                                         ->circular(),
                                     TextEntry::make('name_en')
-                                        ->label(__('admin.resources.product.name_en'))
+                                        ->label(__('shared.product.name_en'))
                                         ->weight('bold'),
                                     TextEntry::make('name_km')
-                                        ->label(__('admin.resources.product.name_km')),
+                                        ->label(__('shared.product.name_km')),
                                     TextEntry::make('productCategory.name_en')
-                                        ->label(__('admin.resources.product.system_category'))
+                                        ->label(__('shared.product.system_category'))
                                         ->badge()
                                         ->color('info'),
                                     TextEntry::make('defaultUnit.name')
-                                        ->label(__('admin.resources.product.default_unit')),
+                                        ->label(__('shared.product.default_unit')),
                                     TextEntry::make('description_en')
-                                        ->label(__('admin.resources.product.description_en'))
+                                        ->label(__('shared.product.description_en'))
                                         ->columnSpanFull()
                                         ->placeholder('-'),
                                     TextEntry::make('description_km')
-                                        ->label(__('admin.resources.product.description_km'))
+                                        ->label(__('shared.product.description_km'))
                                         ->columnSpanFull()
                                         ->placeholder('-'),
                                     KeyValueEntry::make('nutrition_data')
-                                        ->label(__('admin.resources.product.nutrition_data'))
+                                        ->label(__('shared.product.nutrition_data'))
                                         ->columnSpanFull()
                                         ->visible(fn ($record) => ! empty($record->nutrition_data)),
                                 ]),
                         ])),
                 Action::make('addToStore')
-                    ->label(__('admin.resources.product.add_to_store'))
+                    ->label(__('shared.product.add_to_store'))
                     ->icon('heroicon-o-plus')
                     ->form([
                         TextInput::make('price')
-                            ->label(__('admin.resources.product.unit_price'))
+                            ->label(__('shared.product.unit_price'))
                             ->numeric()
                             ->prefix('$')
                             ->required(),
                         TextInput::make('stock_quantity')
-                            ->label(__('admin.resources.product.quantity'))
+                            ->label(__('shared.product.quantity'))
                             ->numeric()
                             ->required(),
                         Select::make('unit_id')
-                            ->label(__('admin.resources.product.unit'))
+                            ->label(__('shared.product.unit'))
                             ->relationship('defaultUnit', 'name')
                             ->required(),
                         TextInput::make('province_of_origin')
-                            ->label(__('admin.resources.product.province_of_origin')),
+                            ->label(__('shared.product.province_of_origin')),
                         TextInput::make('certification_type')
-                            ->label(__('admin.resources.product.certification_type')),
+                            ->label(__('shared.product.certification_type')),
                         TextInput::make('farm_location')
-                            ->label(__('admin.resources.product.farm_location')),
+                            ->label(__('shared.product.farm_location')),
                         DatePicker::make('harvest_date')
-                            ->label(__('admin.resources.product.harvest_date')),
+                            ->label(__('shared.product.harvest_date')),
                         TextInput::make('shelf_life_days')
-                            ->label(__('admin.resources.product.shelf_life'))
+                            ->label(__('shared.product.shelf_life'))
                             ->numeric()
-                            ->suffix(' '.__('admin.resources.product.days')),
+                            ->suffix(' '.__('shared.product.days')),
                         TextInput::make('packaging_type')
-                            ->label(__('admin.resources.product.packaging_type')),
+                            ->label(__('shared.product.packaging_type')),
                     ])
                     ->action(function (Product $record, array $data): void {
                         VendorInventory::create([
@@ -168,7 +168,7 @@ class ProductCatalog extends Page implements HasTable
 
                         Notification::make()
                             ->success()
-                            ->title(__('admin.resources.product.notifications.added_to_store'))
+                            ->title(__('shared.product.notifications.added_to_store'))
                             ->send();
 
                         $this->redirect(ProductResource::getUrl(panel: 'vendor'));

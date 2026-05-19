@@ -21,8 +21,10 @@ use Override;
 
 class ProductCategoryResource extends Resource
 {
+    #[Override]
     protected static ?string $model = ProductCategory::class;
 
+    #[Override]
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
 
     #[Override]

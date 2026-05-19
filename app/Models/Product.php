@@ -26,9 +26,11 @@ use Illuminate\Support\Str;
  * @property int $product_status_id
  * @property string $name_en
  * @property string $name_km
+ * @property string|null $translated_name
  * @property string $slug
  * @property string|null $description_en
  * @property string|null $description_km
+ * @property string|null $translated_description
  * @property array<array-key, mixed>|null $nutrition_data
  * @property string|null $image_url
  * @property Carbon|null $deleted_at
@@ -86,6 +88,22 @@ class Product extends Model
      */
     public ?string $localizedDescription {
         get => App::getLocale() === 'km' ? ($this->description_km ?? $this->description_en) : $this->description_en;
+    }
+
+    /**
+     * Get the translated name of the product.
+     */
+    public function getTranslatedNameAttribute(): ?string
+    {
+        return 'name_'.App::getLocale();
+    }
+
+    /**
+     * Get the translated description of the product.
+     */
+    public function getTranslatedDescriptionAttribute(): ?string
+    {
+        return 'description_'.App::getLocale();
     }
 
     /**
@@ -158,7 +176,7 @@ class Product extends Model
     #[Scope]
     protected function active(Builder $query): void
     {
-        $query->where('product_status_id', ProductStatus::ACTIVE);
+        $query->where('product_status_id', ProductStatus::PUBLISHED_ID);
     }
 
     /**

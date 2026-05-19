@@ -15,12 +15,12 @@ class PayoutsTable
         return $table
             ->columns([
                 TextColumn::make('amount')
-                    ->label(__('admin.resources.payout.amount'))
+                    ->label(__('shared.payout.amount'))
                     ->money('USD')
                     ->sortable(),
 
                 TextColumn::make('status.name')
-                    ->label(__('admin.resources.payout.status'))
+                    ->label(__('shared.payout.status'))
                     ->badge()
                     ->color(fn (string $state): string => match ($state) {
                         'Pending' => 'warning',
@@ -31,14 +31,14 @@ class PayoutsTable
                     }),
 
                 TextColumn::make('method.name')
-                    ->label(__('admin.resources.payout.method')),
+                    ->label(__('shared.payout.method')),
 
                 TextColumn::make('transaction_reference')
-                    ->label(__('admin.resources.payout.reference'))
+                    ->label(__('shared.payout.reference'))
                     ->searchable(),
 
                 TextColumn::make('processed_at')
-                    ->label(__('admin.resources.payout.paid_on'))
+                    ->label(__('shared.payout.paid_on'))
                     ->dateTime()
                     ->sortable(),
             ])

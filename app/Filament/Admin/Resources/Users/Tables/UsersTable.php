@@ -40,23 +40,23 @@ class UsersTable
                 TextColumn::make('phone_number')
                     ->label(__('admin.resources.user.phone'))
                     ->searchable(),
-                // TextColumn::make('type.id')
-                //     ->label(__('admin.resources.user.type'))
-                //     ->badge()
-                //     ->state(fn (User $record): string => $record->type->translated_name ?? 'N/A')
-                //     ->color('info'),
-                TextColumn::make('status.id')
+                TextColumn::make('type.translated_name')
+                    ->label(__('admin.resources.user.type'))
+                    ->badge()
+                    ->placeholder($notProvided)
+                    ->color('info'),
+                TextColumn::make('status.translated_name')
                     ->label(__('admin.resources.user.status'))
                     ->badge()
-                    ->state(fn (User $record): string => $record->status->translated_name ?? 'N/A')
                     ->color(fn (User $record): string => match ($record->status->id) {
                         UserStatus::ACTIVE_ID => 'success',
                         UserStatus::PENDING_ID => 'warning',
                         UserStatus::INACTIVE_ID, UserStatus::DELETED_ID => 'danger',
                         default => 'secondary',
-                    }),
+                    })
+                    ->placeholder($notProvided),
                 TextColumn::make('created_at')
-                    ->label(__('admin.resources.created_at'))
+                ->label(__('admin.resources.created_at'))
                     ->dateTime('d M Y, h:i A')
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),

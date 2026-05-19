@@ -28,7 +28,7 @@ class ProductStatusSeeder extends Seeder
             [
                 'id' => 3,
                 'name_en' => 'Archived',
-                'name_km' => 'បានរក្សាទុក',
+                'name_km' => 'បានរក្សាទុកក្នុងប័ណ្ណសារ',
             ],
         ];
 

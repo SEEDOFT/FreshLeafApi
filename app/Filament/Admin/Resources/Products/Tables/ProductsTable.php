@@ -4,18 +4,20 @@ declare(strict_types=1);
 
 namespace App\Filament\Admin\Resources\Products\Tables;
 
-use App\Models\Product;
+use App\Models\ProductCategory;
+use App\Models\ProductStatus;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Actions\ForceDeleteBulkAction;
 use Filament\Actions\RestoreBulkAction;
 use Filament\Actions\ViewAction;
+use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Filters\TrashedFilter;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\HtmlString;
 
 class ProductsTable
 {
@@ -24,21 +26,22 @@ class ProductsTable
         return $table
             ->stackedOnMobile()
             ->columns([
-                TextColumn::make('name')
-                    ->label(__('admin.resources.product.name'))
-                    ->getStateUsing(fn (Product $record): string => $record->localizedName)
-                    ->sortable(query: function (Builder $query, $direction) {
-                        $column = app()->getLocale() === 'km' ? 'name_km' : 'name_en';
-                        $query->orderBy($column, $direction);
-                    })
-                    ->searchable(['name_en', 'name_km']),
-                TextColumn::make('productCategory.name_en')
+                ImageColumn::make('image_url')
+                    ->label(new HtmlString('<strong>'.__('admin.resources.product.image').'</strong>'))
+                    ->disk('public')
+                    ->circular(),
+                TextColumn::make('name_km')
+                    ->label(__('admin.resources.product.name_km'))
+                    ->sortable()
+                    ->searchable(),
+                TextColumn::make('name_en')
+                    ->label(__('admin.resources.product.name_en'))
+                    ->sortable()
+                    ->searchable(),
+                TextColumn::make('productCategory.translated_name')
                     ->label(__('admin.resources.product.system_category'))
                     ->sortable(),
-                TextColumn::make('type.name')
-                    ->label(__('admin.resources.product.type'))
-                    ->sortable(),
-                TextColumn::make('status.name')
+                TextColumn::make('status.translated_name')
                     ->label(__('admin.resources.product.status'))
                     ->badge()
                     ->sortable(),
@@ -50,11 +53,17 @@ class ProductsTable
             ])
             ->filters([
                 SelectFilter::make('product_category_id')
-                    ->relationship('productCategory', 'name_en')
-                    ->label(__('admin.resources.product.system_category')),
+                    ->label(__('admin.resources.product.system_category'))
+                    ->options(
+                        ProductCategory::all()
+                            ->pluck('translated_name', 'id')
+                    ),
                 SelectFilter::make('product_status_id')
-                    ->relationship('status', 'name')
-                    ->label(__('admin.resources.product.status')),
+                    ->label(__('admin.resources.product.status'))
+                    ->options(
+                        ProductStatus::all()
+                            ->pluck('translated_name', 'id')
+                    ),
                 TrashedFilter::make(),
             ])
             ->recordActions([

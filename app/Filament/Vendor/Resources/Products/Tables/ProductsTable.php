@@ -18,6 +18,7 @@ use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
+use Illuminate\Support\HtmlString;
 
 class ProductsTable
 {
@@ -28,57 +29,57 @@ class ProductsTable
             ->stackedOnMobile()
             ->columns([
                 ImageColumn::make('product.image_url')
-                    ->label(__('shared.product.image')),
+                    ->label(new HtmlString('<strong>'.__('shared.product.image').'</strong>')),
 
-                TextColumn::make('product.name_en')
-                    ->label(__('shared.product.name_en'))
+                TextColumn::make('product.name_en')->placeholder(__('admin.resources.general.not_provided'))
+                    ->label(new HtmlString('<strong>'.__('shared.product.name_en').'</strong>'))
                     ->searchable()
                     ->sortable(),
 
-                TextColumn::make('product.name_km')
-                    ->label(__('shared.product.name_km'))
+                TextColumn::make('product.name_km')->placeholder(__('admin.resources.general.not_provided'))
+                    ->label(new HtmlString('<strong>'.__('shared.product.name_km').'</strong>'))
                     ->searchable()
                     ->sortable(),
 
-                TextColumn::make('price')
-                    ->label(__('shared.product.unit_price'))
+                TextColumn::make('price')->placeholder(__('admin.resources.general.not_provided'))
+                    ->label(new HtmlString('<strong>'.__('shared.product.unit_price').'</strong>'))
                     ->money('USD')
                     ->sortable(),
 
-                TextColumn::make('stock_quantity')
-                    ->label(__('shared.product.stock'))
+                TextColumn::make('stock_quantity')->placeholder(__('admin.resources.general.not_provided'))
+                    ->label(new HtmlString('<strong>'.__('shared.product.stock').'</strong>'))
                     ->numeric()
                     ->sortable(),
 
-                TextColumn::make('unit.name')
-                    ->label(__('shared.product.unit')),
+                TextColumn::make('unit.name')->placeholder(__('admin.resources.general.not_provided'))
+                    ->label(new HtmlString('<strong>'.__('shared.product.unit').'</strong>')),
 
-                TextColumn::make('status.name')
-                    ->label(__('shared.product.status'))
+                TextColumn::make('status.name')->placeholder(__('admin.resources.general.not_provided'))
+                    ->label(new HtmlString('<strong>'.__('shared.product.status').'</strong>'))
                     ->badge()
                     ->sortable(),
 
-                TextColumn::make('updated_at')
-                    ->label(__('shared.updated_at'))
+                TextColumn::make('updated_at')->placeholder(__('admin.resources.general.not_provided'))
+                    ->label(new HtmlString('<strong>'.__('shared.updated_at').'</strong>'))
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
                 SelectFilter::make('product_category_id')
-                    ->label(__('shared.product.system_category'))
+                    ->label(new HtmlString('<strong>'.__('shared.product.system_category').'</strong>'))
                     ->relationship('product.productCategory', 'name_en'),
             ])
             ->actions([
                 ViewAction::make(),
                 EditAction::make(),
                 Action::make('adjustStock')
-                    ->label(__('shared.product.adjust_stock'))
+                    ->label(new HtmlString('<strong>'.__('shared.product.adjust_stock').'</strong>'))
                     ->icon('heroicon-o-adjustments-vertical')
                     ->color('warning')
                     ->form([
                         FormSelect::make('type')
-                            ->label(__('shared.product.adjustment_type'))
+                            ->label(new HtmlString('<strong>'.__('shared.product.adjustment_type').'</strong>'))
                             ->options([
                                 'IN' => 'Restock (In)',
                                 'OUT' => 'Sold / Removed (Out)',
@@ -88,18 +89,18 @@ class ProductsTable
                             ->required()
                             ->reactive(),
                         FormTextInput::make('quantity_change')
-                            ->label(__('shared.product.quantity_change'))
+                            ->label(new HtmlString('<strong>'.__('shared.product.quantity_change').'</strong>'))
                             ->helperText('Use negative numbers for stock reduction.')
                             ->numeric()
                             ->required(),
                         FileUpload::make('proof_image_path')
-                            ->label(__('shared.product.proof_photo'))
+                            ->label(new HtmlString('<strong>'.__('shared.product.proof_photo').'</strong>'))
                             ->image()
                             ->directory('inventory-proofs')
                             ->visibility('public')
                             ->required(fn ($get) => in_array($get('type'), ['IN', 'LOSS'])),
                         Textarea::make('notes')
-                            ->label(__('shared.product.reason'))
+                            ->label(new HtmlString('<strong>'.__('shared.product.reason').'</strong>'))
                             ->placeholder('Explain why you are adjusting the stock...')
                             ->required(),
                     ])

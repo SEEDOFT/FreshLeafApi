@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace App\Filament\Admin\Resources\Wallets\Tables;
 
 use App\Models\Currency;
+use App\Models\UserStatus;
+use App\Models\UserType;
 use App\Models\Wallet;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
@@ -13,6 +15,7 @@ use Filament\Actions\ViewAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
+use Illuminate\Support\HtmlString;
 
 class WalletsTable
 {
@@ -24,24 +27,20 @@ class WalletsTable
             ->recordAction('view')
             ->stackedOnMobile()
             ->columns([
-                TextColumn::make('name')
-                    ->label(__('admin.resources.user.full_name'))
+                TextColumn::make('name')->placeholder(__('admin.resources.general.not_provided'))
+                    ->label(new HtmlString('<strong>'.__('admin.resources.user.full_name').'</strong>'))
                     ->getStateUsing(static fn (Wallet $record) => $record->user->fullName)
                     ->placeholder($notProvided)
                     ->sortable()
                     ->searchable(),
-                TextColumn::make('user.email')
-                    ->label(__('admin.resources.user.email'))
-                    ->placeholder($notProvided)
-                    ->sortable()
-                    ->searchable(),
                 TextColumn::make('currency.translated_currency')
-                    ->label(__('admin.resources.wallet.currency'))
+                    ->placeholder(__('admin.resources.general.not_provided'))
+                    ->label(new HtmlString('<strong>'.__('admin.resources.wallet.currency').'</strong>'))
                     ->placeholder($notProvided)
                     ->sortable()
                     ->searchable(),
-                TextColumn::make('balance')
-                    ->label(__('admin.resources.wallet.balance'))
+                TextColumn::make('balance')->placeholder(__('admin.resources.general.not_provided'))
+                    ->label(new HtmlString('<strong>'.__('admin.resources.wallet.balance').'</strong>'))
                     ->placeholder($notProvided)
                     ->getStateUsing(static function (Wallet $record): string {
                         $id = $record->currency->id;
@@ -53,8 +52,30 @@ class WalletsTable
                             : "{$balance} {$symbol}";
                     })
                     ->sortable(),
+                TextColumn::make('user.type.translated_name')
+                    ->placeholder(__('admin.resources.general.not_provided'))
+                    ->label(new HtmlString('<strong>'.__('admin.resources.user.type').'</strong>'))
+                    ->badge()
+                    ->placeholder($notProvided)
+                    ->color(fn (Wallet $record): string => match ($record->user->type->id) {
+                        UserType::ADMIN_ID => 'success',
+                        UserType::VENDOR_ID => 'info',
+                        UserType::CONSUMER_ID => 'warning',
+                        default => 'secondary',
+                    }),
+                TextColumn::make('user.status.translated_name')
+                    ->placeholder(__('admin.resources.general.not_provided'))
+                    ->label(new HtmlString('<strong>'.__('admin.resources.user.status').'</strong>'))
+                    ->badge()
+                    ->color(fn (Wallet $record): string => match ($record->user->status->id) {
+                        UserStatus::ACTIVE_ID => 'success',
+                        UserStatus::PENDING_ID => 'warning',
+                        UserStatus::INACTIVE_ID, UserStatus::DELETED_ID => 'danger',
+                        default => 'secondary',
+                    }),
                 TextColumn::make('updated_at')
-                    ->label(__('admin.resources.updated_at'))
+                    ->placeholder(__('admin.resources.general.not_provided'))
+                    ->label(new HtmlString('<strong>'.__('admin.resources.updated_at').'</strong>'))
                     ->placeholder($notProvided)
                     ->dateTime()
                     ->sortable()
@@ -62,7 +83,7 @@ class WalletsTable
             ])
             ->filters([
                 SelectFilter::make('currency_id')
-                    ->label(__('admin.resources.wallet.currency'))
+                    ->label(new HtmlString('<strong>'.__('admin.resources.wallet.currency').'</strong>'))
                     ->options(
                         Currency::all()
                             ->pluck('translated_currency', 'id'),

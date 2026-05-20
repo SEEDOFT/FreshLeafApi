@@ -7,6 +7,7 @@ namespace App\Filament\Vendor\Pages;
 use App\Filament\Vendor\Resources\Products\ProductResource;
 use App\Models\Product;
 use App\Models\ProductStatus;
+use App\Models\Unit;
 use App\Models\VendorInventory;
 use App\Models\VendorInventoryStatus;
 use BackedEnum;
@@ -28,6 +29,7 @@ use Filament\Tables\Concerns\InteractsWithTable;
 use Filament\Tables\Contracts\HasTable;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
+use Illuminate\Support\HtmlString;
 use Override;
 
 class ProductCatalog extends Page implements HasTable
@@ -52,7 +54,7 @@ class ProductCatalog extends Page implements HasTable
     public function table(Table $table): Table
     {
         return $table
-            ->query(Product::query()->where('product_status_id', ProductStatus::ACTIVE))
+            ->query(Product::query()->where('product_status_id', ProductStatus::PUBLISHED_ID))
             ->contentGrid([
                 'md' => 2,
                 'xl' => 3,
@@ -62,26 +64,26 @@ class ProductCatalog extends Page implements HasTable
                     ImageColumn::make('image_url')
                         ->imageSize('200')
                         ->width('100%'),
-                    TextColumn::make('name_en')
+                    TextColumn::make('name_en')->placeholder(__('admin.resources.general.not_provided'))
                         ->weight('bold')
                         ->size('lg')
                         ->searchable(),
-                    TextColumn::make('name_km')
+                    TextColumn::make('name_km')->placeholder(__('admin.resources.general.not_provided'))
                         ->size('md')
                         ->color('gray'),
-                    TextColumn::make('productCategory.name_en')
+                    TextColumn::make('productCategory.name_en')->placeholder(__('admin.resources.general.not_provided'))
                         ->badge()
                         ->color('info'),
                 ]),
             ])
             ->filters([
                 SelectFilter::make('product_category_id')
-                    ->label(__('shared.product.system_category'))
+                    ->label(new HtmlString('<strong>'.__('shared.product.system_category').'</strong>'))
                     ->relationship('productCategory', 'name_en'),
             ])
             ->actions([
                 Action::make('view')
-                    ->label(__('shared.product.view_detail'))
+                    ->label(new HtmlString('<strong>'.__('shared.product.view_detail').'</strong>'))
                     ->icon('heroicon-o-eye')
                     ->color('gray')
                     ->infolist(fn (Schema $infolist): Schema => $infolist
@@ -90,65 +92,65 @@ class ProductCatalog extends Page implements HasTable
                                 ->columns(2)
                                 ->schema([
                                     ImageEntry::make('image_url')
-                                        ->label(__('shared.product.image'))
+                                        ->label(new HtmlString('<strong>'.__('shared.product.image').'</strong>'))
                                         ->columnSpanFull()
                                         ->circular(),
-                                    TextEntry::make('name_en')
-                                        ->label(__('shared.product.name_en'))
+                                    TextEntry::make('name_en')->placeholder(__('admin.resources.general.not_provided'))
+                                        ->label(new HtmlString('<strong>'.__('shared.product.name_en').'</strong>'))
                                         ->weight('bold'),
-                                    TextEntry::make('name_km')
-                                        ->label(__('shared.product.name_km')),
-                                    TextEntry::make('productCategory.name_en')
-                                        ->label(__('shared.product.system_category'))
+                                    TextEntry::make('name_km')->placeholder(__('admin.resources.general.not_provided'))
+                                        ->label(new HtmlString('<strong>'.__('shared.product.name_km').'</strong>')),
+                                    TextEntry::make('productCategory.name_en')->placeholder(__('admin.resources.general.not_provided'))
+                                        ->label(new HtmlString('<strong>'.__('shared.product.system_category').'</strong>'))
                                         ->badge()
                                         ->color('info'),
-                                    TextEntry::make('defaultUnit.name')
-                                        ->label(__('shared.product.default_unit')),
-                                    TextEntry::make('description_en')
-                                        ->label(__('shared.product.description_en'))
+                                    TextEntry::make('defaultUnit.name')->placeholder(__('admin.resources.general.not_provided'))
+                                        ->label(new HtmlString('<strong>'.__('shared.product.default_unit').'</strong>')),
+                                    TextEntry::make('description_en')->placeholder(__('admin.resources.general.not_provided'))
+                                        ->label(new HtmlString('<strong>'.__('shared.product.description_en').'</strong>'))
                                         ->columnSpanFull()
                                         ->placeholder('-'),
-                                    TextEntry::make('description_km')
-                                        ->label(__('shared.product.description_km'))
+                                    TextEntry::make('description_km')->placeholder(__('admin.resources.general.not_provided'))
+                                        ->label(new HtmlString('<strong>'.__('shared.product.description_km').'</strong>'))
                                         ->columnSpanFull()
                                         ->placeholder('-'),
                                     KeyValueEntry::make('nutrition_data')
-                                        ->label(__('shared.product.nutrition_data'))
+                                        ->label(new HtmlString('<strong>'.__('shared.product.nutrition_data').'</strong>'))
                                         ->columnSpanFull()
                                         ->visible(fn ($record) => ! empty($record->nutrition_data)),
                                 ]),
                         ])),
                 Action::make('addToStore')
-                    ->label(__('shared.product.add_to_store'))
+                    ->label(new HtmlString('<strong>'.__('shared.product.add_to_store').'</strong>'))
                     ->icon('heroicon-o-plus')
                     ->form([
                         TextInput::make('price')
-                            ->label(__('shared.product.unit_price'))
+                            ->label(new HtmlString('<strong>'.__('shared.product.unit_price').'</strong>'))
                             ->numeric()
                             ->prefix('$')
                             ->required(),
                         TextInput::make('stock_quantity')
-                            ->label(__('shared.product.quantity'))
+                            ->label(new HtmlString('<strong>'.__('shared.product.quantity').'</strong>'))
                             ->numeric()
                             ->required(),
                         Select::make('unit_id')
-                            ->label(__('shared.product.unit'))
-                            ->relationship('defaultUnit', 'name')
+                            ->label(new HtmlString('<strong>'.__('shared.product.unit').'</strong>'))
+                            ->options(Unit::all()->pluck('translated_name', 'id'))
                             ->required(),
                         TextInput::make('province_of_origin')
-                            ->label(__('shared.product.province_of_origin')),
+                            ->label(new HtmlString('<strong>'.__('shared.product.province_of_origin').'</strong>')),
                         TextInput::make('certification_type')
-                            ->label(__('shared.product.certification_type')),
+                            ->label(new HtmlString('<strong>'.__('shared.product.certification_type').'</strong>')),
                         TextInput::make('farm_location')
-                            ->label(__('shared.product.farm_location')),
+                            ->label(new HtmlString('<strong>'.__('shared.product.farm_location').'</strong>')),
                         DatePicker::make('harvest_date')
-                            ->label(__('shared.product.harvest_date')),
+                            ->label(new HtmlString('<strong>'.__('shared.product.harvest_date').'</strong>')),
                         TextInput::make('shelf_life_days')
-                            ->label(__('shared.product.shelf_life'))
+                            ->label(new HtmlString('<strong>'.__('shared.product.shelf_life').'</strong>'))
                             ->numeric()
                             ->suffix(' '.__('shared.product.days')),
                         TextInput::make('packaging_type')
-                            ->label(__('shared.product.packaging_type')),
+                            ->label(new HtmlString('<strong>'.__('shared.product.packaging_type').'</strong>')),
                     ])
                     ->action(function (Product $record, array $data): void {
                         VendorInventory::create([

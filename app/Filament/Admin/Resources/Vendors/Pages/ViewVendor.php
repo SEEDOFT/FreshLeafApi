@@ -13,6 +13,7 @@ use Filament\Forms\Components\Textarea;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\ViewRecord;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\HtmlString;
 use Override;
 
 class ViewVendor extends ViewRecord
@@ -25,7 +26,7 @@ class ViewVendor extends ViewRecord
     {
         return [
             Action::make('approveVendor')
-                ->label(__('admin.resources.vendor.approve'))
+                ->label(new HtmlString('<strong>'.__('admin.resources.vendor.approve').'</strong>'))
                 ->icon('heroicon-o-check-circle')
                 ->color('success')
                 ->visible(
@@ -48,12 +49,12 @@ class ViewVendor extends ViewRecord
                 })
                 ->form([
                     Textarea::make('note')
-                        ->label(__('admin.resources.vendor.approval_note')),
+                        ->label(new HtmlString('<strong>'.__('admin.resources.vendor.approval_note').'</strong>')),
                 ])
                 ->requiresConfirmation(),
 
             Action::make('rejectVendor')
-                ->label(__('admin.resources.vendor.reject'))
+                ->label(new HtmlString('<strong>'.__('admin.resources.vendor.reject').'</strong>'))
                 ->icon('heroicon-o-x-circle')
                 ->color('danger')
                 ->visible(
@@ -76,7 +77,7 @@ class ViewVendor extends ViewRecord
                 })
                 ->form([
                     Textarea::make('reason')
-                        ->label(__('admin.resources.vendor.rejection_reason'))
+                        ->label(new HtmlString('<strong>'.__('admin.resources.vendor.rejection_reason').'</strong>'))
                         ->required(fn (string $operation): bool => $operation === 'create')
                         ->dehydrated(fn (mixed $state): bool => filled($state)),
                 ])

@@ -13,12 +13,8 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('vendor_inventory_statuses', static function (Blueprint $table) {
-            $table->unsignedBigInteger('id')->primary();
-            $table->string('name_en');
-            $table->string('name_km');
-            $table->timestamps();
-            $table->softDeletes();
+        Schema::table('products', static function (Blueprint $table) {
+            $table->unsignedBigInteger('default_unit_id')->nullable()->change();
         });
     }
 
@@ -27,6 +23,8 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('vendor_inventory_statuses');
+        Schema::table('products', static function (Blueprint $table) {
+            $table->unsignedBigInteger('default_unit_id')->nullable(false)->change();
+        });
     }
 };

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Filament\Admin\Resources\Wallets\Schemas;
 
+use App\Models\Currency;
 use App\Models\User;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
@@ -30,7 +31,10 @@ class WalletForm
                             ->dehydrated(fn (mixed $state): bool => filled($state)),
                         Select::make('currency_id')
                             ->label(new HtmlString('<strong>'.__('admin.resources.wallet.currency').'</strong>'))
-                            ->relationship('currency', 'name')
+                            ->options(
+                                Currency::all()
+                                    ->pluck('translated_currency', 'id')
+                            )
                             ->required(fn (string $operation): bool => $operation === 'create')
                             ->dehydrated(fn (mixed $state): bool => filled($state)),
                         TextInput::make('balance')

@@ -9,6 +9,7 @@ use Filament\Infolists\Components\ImageEntry;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
+use Illuminate\Support\HtmlString;
 
 class ProductInfolist
 {
@@ -19,33 +20,33 @@ class ProductInfolist
                 Section::make(__('admin.resources.product.general_info'))
                     ->columns(2)
                     ->schema([
-                        TextEntry::make('name_en')
-                            ->label(__('admin.resources.product.name_en')),
-                        TextEntry::make('name_km')
-                            ->label(__('admin.resources.product.name_km')),
-                        TextEntry::make('slug')
-                            ->label(__('admin.resources.product.slug')),
-                        TextEntry::make('productCategory.name_en')
-                            ->label(__('admin.resources.product.system_category')),
-                        TextEntry::make('type.name')
-                            ->label(__('admin.resources.product.type')),
-                        TextEntry::make('status.name')
-                            ->label(__('admin.resources.product.status'))
+                        TextEntry::make('name_en')->placeholder(__('admin.resources.general.not_provided'))
+                            ->label(new HtmlString('<strong>'.__('admin.resources.product.name_en').'</strong>')),
+                        TextEntry::make('name_km')->placeholder(__('admin.resources.general.not_provided'))
+                            ->label(new HtmlString('<strong>'.__('admin.resources.product.name_km').'</strong>')),
+                        TextEntry::make('slug')->placeholder(__('admin.resources.general.not_provided'))
+                            ->label(new HtmlString('<strong>'.__('admin.resources.product.slug').'</strong>')),
+                        TextEntry::make('productCategory.translated_name')->placeholder(__('admin.resources.general.not_provided'))
+                            ->label(new HtmlString('<strong>'.__('admin.resources.product.system_category').'</strong>')),
+                        TextEntry::make('type.translated_name')->placeholder(__('admin.resources.general.not_provided'))
+                            ->label(new HtmlString('<strong>'.__('admin.resources.product.type').'</strong>')),
+                        TextEntry::make('status.translated_name')->placeholder(__('admin.resources.general.not_provided'))
+                            ->label(new HtmlString('<strong>'.__('admin.resources.product.status').'</strong>'))
                             ->badge(),
-                        TextEntry::make('defaultUnit.name')
-                            ->label(__('admin.resources.product.unit')),
-                        TextEntry::make('description_en')
-                            ->label(__('admin.resources.product.description_en'))
+                        TextEntry::make('defaultUnit.translated_name')->placeholder(__('admin.resources.general.not_provided'))
+                            ->label(new HtmlString('<strong>'.__('admin.resources.product.unit').'</strong>')),
+                        TextEntry::make('description_en')->placeholder(__('admin.resources.general.not_provided'))
+                            ->label(new HtmlString('<strong>'.__('admin.resources.product.description_en').'</strong>'))
                             ->columnSpanFull(),
-                        TextEntry::make('description_km')
-                            ->label(__('admin.resources.product.description_km'))
+                        TextEntry::make('description_km')->placeholder(__('admin.resources.general.not_provided'))
+                            ->label(new HtmlString('<strong>'.__('admin.resources.product.description_km').'</strong>'))
                             ->columnSpanFull(),
                     ]),
 
                 Section::make(__('admin.resources.product.nutrition_data'))
                     ->schema([
                         KeyValue::make('nutrition_data')
-                            ->label(__('admin.resources.product.nutrition_data'))
+                            ->label(new HtmlString('<strong>'.__('admin.resources.product.nutrition_data').'</strong>'))
                             ->keyLabel(__('admin.resources.product.nutrition_key'))
                             ->valueLabel(__('admin.resources.product.nutrition_value')),
                     ]),
@@ -53,7 +54,7 @@ class ProductInfolist
                 Section::make(__('admin.resources.product.visuals'))
                     ->schema([
                         ImageEntry::make('image_url')
-                            ->label(__('admin.resources.product.image'))
+                            ->label(new HtmlString('<strong>'.__('admin.resources.product.image').'</strong>'))
                             ->imageSize('200'),
                     ]),
             ]);

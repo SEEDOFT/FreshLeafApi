@@ -17,6 +17,7 @@ use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\HtmlString;
 use Override;
 
 use function __;
@@ -70,7 +71,7 @@ class VendorProfile extends Page
                         Grid::make(4)
                             ->schema([
                                 FileUpload::make('image')
-                                    ->label(__('vendor.settings.vendor_profile.avatar'))
+                                    ->label(new HtmlString('<strong>'.__('vendor.settings.vendor_profile.avatar').'</strong>'))
                                     ->avatar()
                                     ->imageEditor()
                                     ->directory('avatars')
@@ -80,23 +81,23 @@ class VendorProfile extends Page
                                 Grid::make(2)
                                     ->schema([
                                         TextInput::make('first_name')
-                                            ->label(__('vendor.settings.vendor_profile.first_name'))
+                                            ->label(new HtmlString('<strong>'.__('vendor.settings.vendor_profile.first_name').'</strong>'))
                                             ->required(fn (string $operation): bool => $operation === 'create')
                                             ->dehydrated(fn (mixed $state): bool => filled($state))
                                             ->maxLength(255),
                                         TextInput::make('last_name')
-                                            ->label(__('vendor.settings.vendor_profile.last_name'))
+                                            ->label(new HtmlString('<strong>'.__('vendor.settings.vendor_profile.last_name').'</strong>'))
                                             ->required(fn (string $operation): bool => $operation === 'create')
                                             ->dehydrated(fn (mixed $state): bool => filled($state))
                                             ->maxLength(255),
                                         TextInput::make('email')
-                                            ->label(__('vendor.settings.vendor_profile.email'))
+                                            ->label(new HtmlString('<strong>'.__('vendor.settings.vendor_profile.email').'</strong>'))
                                             ->email()
                                             ->required(fn (string $operation): bool => $operation === 'create')
                                             ->dehydrated(fn (mixed $state): bool => filled($state))
                                             ->maxLength(255),
                                         TextInput::make('phone_number')
-                                            ->label(__('vendor.settings.vendor_profile.phone'))
+                                            ->label(new HtmlString('<strong>'.__('vendor.settings.vendor_profile.phone').'</strong>'))
                                             ->tel()
                                             ->required(fn (string $operation): bool => $operation === 'create')
                                             ->dehydrated(fn (mixed $state): bool => filled($state)),
@@ -109,7 +110,7 @@ class VendorProfile extends Page
                     ->description(__('vendor.settings.vendor_profile.preferences_desc'))
                     ->schema([
                         Select::make('locale')
-                            ->label(__('vendor.settings.vendor_profile.language'))
+                            ->label(new HtmlString('<strong>'.__('vendor.settings.vendor_profile.language').'</strong>'))
                             ->options([
                                 'km' => 'Khmer (ភាសាខ្មែរ)',
                                 'en' => 'English (ភាសាអង់គ្លេស)',
@@ -161,7 +162,7 @@ class VendorProfile extends Page
     {
         return [
             Action::make('save')
-                ->label(__('shared.profile.save_changes'))
+                ->label(new HtmlString('<strong>'.__('shared.profile.save_changes').'</strong>'))
                 ->submit('save')
                 ->keyBindings(['mod+s']),
         ];
@@ -172,12 +173,12 @@ class VendorProfile extends Page
         return Grid::make(2)
             ->schema([
                 TextInput::make('first_name')
-                    ->label(__('vendor.settings.vendor_profile.first_name'))
+                    ->label(new HtmlString('<strong>'.__('vendor.settings.vendor_profile.first_name').'</strong>'))
                     ->required(fn (string $operation): bool => $operation === 'create')
                     ->dehydrated(fn (mixed $state): bool => filled($state))
                     ->maxLength(255),
                 TextInput::make('last_name')
-                    ->label(__('vendor.settings.vendor_profile.last_name'))
+                    ->label(new HtmlString('<strong>'.__('vendor.settings.vendor_profile.last_name').'</strong>'))
                     ->required(fn (string $operation): bool => $operation === 'create')
                     ->dehydrated(fn (mixed $state): bool => filled($state))
                     ->maxLength(255),

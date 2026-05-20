@@ -34,7 +34,7 @@ class ProductController extends Controller
     public function index(Request $request): JsonResponse
     {
         $listings = VendorInventory::active()
-            ->whereHas('product', static fn (Builder $query) => $query->where('product_status_id', ProductStatus::ACTIVE))
+            ->whereHas('product', static fn (Builder $query) => $query->where('product_status_id', ProductStatus::PUBLISHED_ID))
             ->with(self::RELATIONSHIPS)
             ->when($request->filled('category_id'),
                 static function (Builder $query) use ($request) {
@@ -65,7 +65,7 @@ class ProductController extends Controller
     public function show(int $id, Request $request): JsonResponse
     {
         $listing = VendorInventory::active()
-            ->whereHas('product', static fn (Builder $query) => $query->where('product_status_id', ProductStatus::ACTIVE))
+            ->whereHas('product', static fn (Builder $query) => $query->where('product_status_id', ProductStatus::PUBLISHED_ID))
             ->find($id);
 
         if (! $listing) {

@@ -14,6 +14,7 @@ use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\HtmlString;
 use Override;
 
 class AdminSecurity extends Page
@@ -56,26 +57,26 @@ class AdminSecurity extends Page
                     ->description(__('admin.resources.security.change_password_desc'))
                     ->schema([
                         TextInput::make('current_password')
-                            ->label(__('admin.resources.security.current_password'))
+                            ->label(new HtmlString('<strong>'.__('admin.resources.security.current_password').'</strong>'))
                             ->password()
                             ->required(fn (): bool => ! $this->passwordVerified)
                             ->dehydrated(fn (mixed $state): bool => filled($state))
                             ->currentPassword()
                             ->columnSpan(1),
                         Action::make('check_password')
-                            ->label(__('admin.resources.security.check_password'))
+                            ->label(new HtmlString('<strong>'.__('admin.resources.security.check_password').'</strong>'))
                             ->action('checkPassword')
                             ->color('primary')
                             ->extraAttributes(['class' => 'flex items-end mt-7']),
                         TextInput::make('password')
-                            ->label(__('admin.resources.security.password'))
+                            ->label(new HtmlString('<strong>'.__('admin.resources.security.password').'</strong>'))
                             ->password()
                             ->required(fn (): bool => $this->passwordVerified)
                             ->dehydrated(fn (mixed $state): bool => filled($state))
                             ->confirmed()
                             ->columnSpan(1),
                         TextInput::make('password_confirmation')
-                            ->label(__('admin.resources.security.password_confirmation'))
+                            ->label(new HtmlString('<strong>'.__('admin.resources.security.password_confirmation').'</strong>'))
                             ->password()
                             ->required(fn (): bool => $this->passwordVerified)
                             ->dehydrated(fn (mixed $state): bool => filled($state))
@@ -125,7 +126,7 @@ class AdminSecurity extends Page
     {
         return [
             Action::make('save')
-                ->label(__('admin.resources.security.update_password'))
+                ->label(new HtmlString('<strong>'.__('admin.resources.security.update_password').'</strong>'))
                 ->submit('save')
                 ->keyBindings([]),
         ];

@@ -104,24 +104,24 @@ class Register extends BaseRegister
                         Grid::make(2)
                             ->schema([
                                 TextInput::make('first_name')
-                                    ->label(__('shared.auth.register.first_name'))
+                                    ->label(new HtmlString('<strong>'.__('shared.auth.register.first_name').'</strong>'))
                                     ->required()
                                     ->maxLength(255),
                                 TextInput::make('last_name')
-                                    ->label(__('shared.auth.register.last_name'))
+                                    ->label(new HtmlString('<strong>'.__('shared.auth.register.last_name').'</strong>'))
                                     ->required()
                                     ->maxLength(255),
                             ]),
                         TextInput::make('email')
-                            ->label(__('shared.auth.register.email'))
+                            ->label(new HtmlString('<strong>'.__('shared.auth.register.email').'</strong>'))
                             ->maxLength(255),
                         $this->getPhoneNumberFormComponent(),
                         PasswordInput::make('password')
-                            ->label(__('shared.auth.login.password'))
+                            ->label(new HtmlString('<strong>'.__('shared.auth.login.password').'</strong>'))
                             ->required()
                             ->revealable(),
                         PasswordInput::make('password_confirmation')
-                            ->label(__('shared.auth.register.password_confirm'))
+                            ->label(new HtmlString('<strong>'.__('shared.auth.register.password_confirm').'</strong>'))
                             ->required()
                             ->revealable(),
                     ]),
@@ -136,26 +136,26 @@ class Register extends BaseRegister
             ->schema([
                 Grid::make(2)->schema([
                     TextInput::make('business_name')
-                        ->label(__('shared.auth.register.business_name'))
+                        ->label(new HtmlString('<strong>'.__('shared.auth.register.business_name').'</strong>'))
                         ->required()
                         ->maxLength(255),
                     PhoneNumberInput::make('contact_phone')
-                        ->label(__('shared.form.fields.contact_phone'))
+                        ->label(new HtmlString('<strong>'.__('shared.form.fields.contact_phone').'</strong>'))
                         ->required(),
                     TextInput::make('village')
-                        ->label(__('shared.form.fields.village'))
+                        ->label(new HtmlString('<strong>'.__('shared.form.fields.village').'</strong>'))
                         ->required()
                         ->maxLength(255),
                     TextInput::make('commune')
-                        ->label(__('shared.form.fields.commune'))
+                        ->label(new HtmlString('<strong>'.__('shared.form.fields.commune').'</strong>'))
                         ->required()
                         ->maxLength(255),
                     TextInput::make('district')
-                        ->label(__('shared.form.fields.district'))
+                        ->label(new HtmlString('<strong>'.__('shared.form.fields.district').'</strong>'))
                         ->required()
                         ->maxLength(255),
                     TextInput::make('province')
-                        ->label(__('shared.form.fields.province'))
+                        ->label(new HtmlString('<strong>'.__('shared.form.fields.province').'</strong>'))
                         ->required()
                         ->maxLength(255),
                 ]),
@@ -170,25 +170,25 @@ class Register extends BaseRegister
             ->schema([
                 Grid::make(2)->schema([
                     FileUpload::make('id_card_front')
-                        ->label(__('shared.auth.register.id_front'))
+                        ->label(new HtmlString('<strong>'.__('shared.auth.register.id_front').'</strong>'))
                         ->image()
                         ->disk('local')
                         ->directory(StorageDirectory::VENDOR_VERIFICATION)
                         ->required(),
                     FileUpload::make('id_card_back')
-                        ->label(__('shared.auth.register.id_back'))
+                        ->label(new HtmlString('<strong>'.__('shared.auth.register.id_back').'</strong>'))
                         ->image()
                         ->disk('local')
                         ->directory(StorageDirectory::VENDOR_VERIFICATION)
                         ->required(),
                     FileUpload::make('store_front_image')
-                        ->label(__('shared.auth.register.store_photo'))
+                        ->label(new HtmlString('<strong>'.__('shared.auth.register.store_photo').'</strong>'))
                         ->image()
                         ->disk('local')
                         ->directory(StorageDirectory::VENDOR_VERIFICATION)
                         ->required(),
                     FileUpload::make('organic_certificate_url')
-                        ->label(__('shared.auth.register.organic_cert'))
+                        ->label(new HtmlString('<strong>'.__('shared.auth.register.organic_cert').'</strong>'))
                         ->disk('local')
                         ->directory(StorageDirectory::VENDOR_VERIFICATION),
                 ]),
@@ -203,21 +203,21 @@ class Register extends BaseRegister
             ->schema([
                 Grid::make(3)->schema([
                     TextInput::make('bank_name')
-                        ->label(__('shared.auth.register.bank_name'))
+                        ->label(new HtmlString('<strong>'.__('shared.auth.register.bank_name').'</strong>'))
                         ->placeholder('e.g. ABA Bank')
                         ->required()
                         ->maxLength(255),
                     TextInput::make('account_name')
-                        ->label(__('shared.auth.register.account_holder'))
+                        ->label(new HtmlString('<strong>'.__('shared.auth.register.account_holder').'</strong>'))
                         ->required()
                         ->maxLength(255),
                     TextInput::make('account_number')
-                        ->label(__('shared.auth.register.account_number'))
+                        ->label(new HtmlString('<strong>'.__('shared.auth.register.account_number').'</strong>'))
                         ->required()
                         ->maxLength(255),
                 ]),
                 FileUpload::make('qr_code')
-                    ->label(__('shared.auth.register.qr_code'))
+                    ->label(new HtmlString('<strong>'.__('shared.auth.register.qr_code').'</strong>'))
                     ->image()
                     ->disk('local')
                     ->directory(StorageDirectory::VENDOR_VERIFICATION)
@@ -241,7 +241,7 @@ class Register extends BaseRegister
         return Grid::make(5)
             ->schema([
                 PhoneNumberInput::make('phone_number')
-                    ->label(__('shared.auth.login.phone'))
+                    ->label(new HtmlString('<strong>'.__('shared.auth.login.phone').'</strong>'))
                     ->required()
                     ->columnSpanFull()
                     ->rule(static function (Get $get) {

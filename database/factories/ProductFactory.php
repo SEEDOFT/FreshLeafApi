@@ -30,7 +30,7 @@ class ProductFactory extends Factory
             'product_category_id' => ProductCategory::factory(),
             'product_type_id' => ProductType::factory(),
             'default_unit_id' => Unit::factory(),
-            'product_status_id' => ProductStatus::ACTIVE,
+            'product_status_id' => ProductStatus::PUBLISHED_ID,
             'name_en' => $name,
             'name_km' => $name.' (Khmer)',
             'slug' => Str::slug($name),
@@ -49,7 +49,7 @@ class ProductFactory extends Factory
     public function active(): static
     {
         return $this->state(fn (array $attributes) => [
-            'product_status_id' => ProductStatus::ACTIVE,
+            'product_status_id' => ProductStatus::PUBLISHED_ID,
         ]);
     }
 
@@ -59,7 +59,7 @@ class ProductFactory extends Factory
     public function inactive(): static
     {
         return $this->state(fn (array $attributes) => [
-            'product_status_id' => ProductStatus::INACTIVE,
+            'product_status_id' => ProductStatus::DRAFT_ID,
         ]);
     }
 }

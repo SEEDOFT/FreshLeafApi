@@ -10,6 +10,7 @@ use Filament\Actions\EditAction;
 use Filament\Actions\ViewAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
+use Illuminate\Support\HtmlString;
 
 class PayoutsTable
 {
@@ -18,18 +19,18 @@ class PayoutsTable
         return $table
             ->recordAction('view')
             ->columns([
-                TextColumn::make('vendor.vendorProfile.business_name')
-                    ->label(__('admin.resources.payout.business'))
+                TextColumn::make('vendor.vendorProfile.business_name')->placeholder(__('admin.resources.general.not_provided'))
+                    ->label(new HtmlString('<strong>'.__('admin.resources.payout.business').'</strong>'))
                     ->searchable()
                     ->sortable(),
 
-                TextColumn::make('amount')
-                    ->label(__('admin.resources.payout.amount'))
+                TextColumn::make('amount')->placeholder(__('admin.resources.general.not_provided'))
+                    ->label(new HtmlString('<strong>'.__('admin.resources.payout.amount').'</strong>'))
                     ->money('USD')
                     ->sortable(),
 
-                TextColumn::make('status.name')
-                    ->label(__('admin.resources.payout.status'))
+                TextColumn::make('status.name')->placeholder(__('admin.resources.general.not_provided'))
+                    ->label(new HtmlString('<strong>'.__('admin.resources.payout.status').'</strong>'))
                     ->badge()
                     ->color(fn (string $state): string => match ($state) {
                         'Pending' => 'warning',
@@ -39,16 +40,16 @@ class PayoutsTable
                         default => 'gray',
                     }),
 
-                TextColumn::make('method.name')
-                    ->label(__('admin.resources.payout.method')),
+                TextColumn::make('method.name')->placeholder(__('admin.resources.general.not_provided'))
+                    ->label(new HtmlString('<strong>'.__('admin.resources.payout.method').'</strong>')),
 
-                TextColumn::make('processed_at')
-                    ->label(__('admin.resources.payout.processed_at'))
+                TextColumn::make('processed_at')->placeholder(__('admin.resources.general.not_provided'))
+                    ->label(new HtmlString('<strong>'.__('admin.resources.payout.processed_at').'</strong>'))
                     ->dateTime()
                     ->sortable(),
 
-                TextColumn::make('created_at')
-                    ->label(__('admin.resources.created_at'))
+                TextColumn::make('created_at')->placeholder(__('admin.resources.general.not_provided'))
+                    ->label(new HtmlString('<strong>'.__('admin.resources.created_at').'</strong>'))
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),

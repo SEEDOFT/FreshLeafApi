@@ -21,6 +21,7 @@ use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Components\Utilities\Set;
 use Filament\Schemas\Schema;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\HtmlString;
 
 class VendorForm
 {
@@ -32,30 +33,30 @@ class VendorForm
                     ->columns(2)
                     ->schema([
                         TextInput::make('first_name')
-                            ->label(__('admin.resources.user.first_name'))
+                            ->label(new HtmlString('<strong>'.__('admin.resources.user.first_name').'</strong>'))
                             ->required(fn (string $operation): bool => $operation === 'create')
                             ->dehydrated(fn (mixed $state): bool => filled($state)),
                         TextInput::make('last_name')
-                            ->label(__('admin.resources.user.last_name'))
+                            ->label(new HtmlString('<strong>'.__('admin.resources.user.last_name').'</strong>'))
                             ->required(fn (string $operation): bool => $operation === 'create')
                             ->dehydrated(fn (mixed $state): bool => filled($state)),
                         TextInput::make('email')
-                            ->label(__('admin.resources.user.email'))
+                            ->label(new HtmlString('<strong>'.__('admin.resources.user.email').'</strong>'))
                             ->email(),
                         TextInput::make('phone_number')
-                            ->label(__('admin.resources.user.phone'))
+                            ->label(new HtmlString('<strong>'.__('admin.resources.user.phone').'</strong>'))
                             ->tel()
                             ->required(fn (string $operation): bool => $operation === 'create')
                             ->dehydrated(fn (mixed $state): bool => filled($state)),
                         Select::make('user_type_id')
-                            ->label(__('admin.resources.user.account_type'))
+                            ->label(new HtmlString('<strong>'.__('admin.resources.user.account_type').'</strong>'))
                             ->relationship('type')
                             ->getOptionLabelFromRecordUsing(fn (UserType $record) => $record->translated_name)
                             ->default(UserType::VENDOR_ID)
                             ->disabled(fn (string $operation): bool => $operation === 'create')
                             ->dehydrated(),
                         Select::make('user_status_id')
-                            ->label(__('admin.resources.user.account_status'))
+                            ->label(new HtmlString('<strong>'.__('admin.resources.user.account_status').'</strong>'))
                             ->relationship('status')
                             ->getOptionLabelFromRecordUsing(fn (UserStatus $record) => $record->translated_name)
                             ->default(UserStatus::ACTIVE_ID)
@@ -69,14 +70,14 @@ class VendorForm
                         Grid::make(2)
                             ->schema([
                                 TextInput::make('business_name')
-                                    ->label(__('admin.resources.vendor.business_name'))
+                                    ->label(new HtmlString('<strong>'.__('admin.resources.vendor.business_name').'</strong>'))
                                     ->required(fn (string $operation): bool => $operation === 'create'),
                                 TextInput::make('contact_phone')
-                                    ->label(__('admin.resources.vendor.contact_phone'))
+                                    ->label(new HtmlString('<strong>'.__('admin.resources.vendor.contact_phone').'</strong>'))
                                     ->required(fn (string $operation): bool => $operation === 'create'),
                             ]),
                         Toggle::make('is_verified')
-                            ->label(__('admin.resources.vendor.verified'))
+                            ->label(new HtmlString('<strong>'.__('admin.resources.vendor.verified').'</strong>'))
                             ->disabled()
                             ->default(true),
                     ]),
@@ -87,33 +88,33 @@ class VendorForm
                             ->relationship('addresses')
                             ->schema([
                                 TextInput::make('label')
-                                    ->label(__('admin.resources.vendor.address_label'))
+                                    ->label(new HtmlString('<strong>'.__('admin.resources.vendor.address_label').'</strong>'))
                                     ->required(),
                                 TextInput::make('recipient_name')
-                                    ->label(__('admin.resources.vendor.recipient_name'))
+                                    ->label(new HtmlString('<strong>'.__('admin.resources.vendor.recipient_name').'</strong>'))
                                     ->required(),
                                 TextInput::make('phone')
-                                    ->label(__('admin.resources.vendor.contact_phone'))
+                                    ->label(new HtmlString('<strong>'.__('admin.resources.vendor.contact_phone').'</strong>'))
                                     ->tel()
                                     ->required(),
                                 TextInput::make('address_line_1')
-                                    ->label(__('admin.resources.vendor.address_line_1'))
+                                    ->label(new HtmlString('<strong>'.__('admin.resources.vendor.address_line_1').'</strong>'))
                                     ->required(),
                                 TextInput::make('address_line_2')
-                                    ->label(__('admin.resources.vendor.address_line_2')),
+                                    ->label(new HtmlString('<strong>'.__('admin.resources.vendor.address_line_2').'</strong>')),
                                 TextInput::make('city')
-                                    ->label(__('admin.resources.vendor.city'))
+                                    ->label(new HtmlString('<strong>'.__('admin.resources.vendor.city').'</strong>'))
                                     ->required(),
                                 TextInput::make('province')
-                                    ->label(__('admin.resources.vendor.province'))
+                                    ->label(new HtmlString('<strong>'.__('admin.resources.vendor.province').'</strong>'))
                                     ->required(),
                                 TextInput::make('postal_code')
-                                    ->label(__('admin.resources.vendor.postal_code'))
+                                    ->label(new HtmlString('<strong>'.__('admin.resources.vendor.postal_code').'</strong>'))
                                     ->required(),
                                 Hidden::make('lat'),
                                 Hidden::make('long'),
                                 Map::make('location')
-                                    ->label(__('admin.resources.vendor.location'))
+                                    ->label(new HtmlString('<strong>'.__('admin.resources.vendor.location').'</strong>'))
                                     ->columnSpanFull()
                                     ->live()
                                     ->afterStateUpdated(function (Get $get, Set $set, ?array $state): void {
@@ -164,25 +165,25 @@ class VendorForm
                     ->relationship('vendorProfile')
                     ->schema([
                         FileUpload::make('id_card_front')
-                            ->label(__('admin.resources.vendor.id_card_front'))
+                            ->label(new HtmlString('<strong>'.__('admin.resources.vendor.id_card_front').'</strong>'))
                             ->image()
                             ->disk('local')
                             ->directory('vendor-verification')
                             ->required(fn (string $operation): bool => $operation === 'create'),
                         FileUpload::make('id_card_back')
-                            ->label(__('admin.resources.vendor.id_card_back'))
+                            ->label(new HtmlString('<strong>'.__('admin.resources.vendor.id_card_back').'</strong>'))
                             ->image()
                             ->disk('local')
                             ->directory('vendor-verification')
                             ->required(fn (string $operation): bool => $operation === 'create'),
                         FileUpload::make('store_front_image')
-                            ->label(__('admin.resources.vendor.store_photo'))
+                            ->label(new HtmlString('<strong>'.__('admin.resources.vendor.store_photo').'</strong>'))
                             ->image()
                             ->disk('local')
                             ->directory('vendor-verification')
                             ->required(fn (string $operation): bool => $operation === 'create'),
                         FileUpload::make('organic_certificate_url')
-                            ->label(__('admin.resources.vendor.organic_cert'))
+                            ->label(new HtmlString('<strong>'.__('admin.resources.vendor.organic_cert').'</strong>'))
                             ->disk('local')
                             ->required(fn (string $operation): bool => $operation === 'create')
                             ->directory('vendor-verification'),
@@ -194,7 +195,7 @@ class VendorForm
                             ->relationship('paymentMethods')
                             ->schema([
                                 Select::make('payment_method_type_id')
-                                    ->label(__('admin.resources.vendor.payment_method_type'))
+                                    ->label(new HtmlString('<strong>'.__('admin.resources.vendor.payment_method_type').'</strong>'))
                                     ->relationship('type', 'name_en')
                                     ->required()
                                     ->live()
@@ -207,17 +208,17 @@ class VendorForm
                                     })
                                     ->columnSpanFull(),
                                 TextInput::make('bank_name')
-                                    ->label(__('admin.resources.vendor.bank_name'))
+                                    ->label(new HtmlString('<strong>'.__('admin.resources.vendor.bank_name').'</strong>'))
                                     ->visible(fn (Get $get) => ! in_array((int) $get('payment_method_type_id'), [PaymentMethod::ABA_ID, PaymentMethod::ACLEDA_ID]))
                                     ->required(),
                                 TextInput::make('account_name')
-                                    ->label(__('admin.resources.vendor.account_holder'))
+                                    ->label(new HtmlString('<strong>'.__('admin.resources.vendor.account_holder').'</strong>'))
                                     ->required(),
                                 TextInput::make('account_number')
-                                    ->label(__('admin.resources.vendor.account_number'))
+                                    ->label(new HtmlString('<strong>'.__('admin.resources.vendor.account_number').'</strong>'))
                                     ->required(),
                                 FileUpload::make('qr_code')
-                                    ->label(__('admin.resources.vendor.qr_code'))
+                                    ->label(new HtmlString('<strong>'.__('admin.resources.vendor.qr_code').'</strong>'))
                                     ->image()
                                     ->disk('local')
                                     ->directory('vendor-verification')

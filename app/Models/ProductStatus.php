@@ -21,7 +21,7 @@ use Illuminate\Support\Facades\App;
  * @property string $name_km
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
- * @property-read string|null $translated_name
+ * @property string|null $translated_name
  * @property-read Collection<int, Product> $products
  * @property-read int|null $products_count
  */
@@ -39,12 +39,18 @@ class ProductStatus extends Model
 
     public const int ARCHIVED_ID = 3;
 
+    public const int ACTIVE = self::PUBLISHED_ID;
+
+    public const int INACTIVE = self::ARCHIVED_ID;
+
+    public const int DRAFT = self::DRAFT_ID;
+
     /**
      * Get the translated name attribute.
      */
     public function getTranslatedNameAttribute(): ?string
     {
-        return 'name_'.App::getLocale();
+        return $this->{'name_'.App::getLocale()};
     }
 
     /**

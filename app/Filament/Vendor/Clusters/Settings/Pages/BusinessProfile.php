@@ -17,6 +17,7 @@ use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\HtmlString;
 use Override;
 
 class BusinessProfile extends Page
@@ -57,37 +58,37 @@ class BusinessProfile extends Page
                         Grid::make(2)
                             ->schema([
                                 TextInput::make('business_name')
-                                    ->label(__('shared.vendor.business_name'))
+                                    ->label(new HtmlString('<strong>'.__('shared.vendor.business_name').'</strong>'))
                                     ->required(fn (string $operation): bool => $operation === 'create')
                                     ->dehydrated(fn (mixed $state): bool => filled($state))
                                     ->maxLength(255),
                                 TextInput::make('contact_phone')
-                                    ->label(__('shared.form.fields.contact_phone'))
+                                    ->label(new HtmlString('<strong>'.__('shared.form.fields.contact_phone').'</strong>'))
                                     ->tel()
                                     ->maxLength(255),
                                 TextInput::make('city')
-                                    ->label(__('shared.form.fields.city'))
+                                    ->label(new HtmlString('<strong>'.__('shared.form.fields.city').'</strong>'))
                                     ->maxLength(255),
                                 TextInput::make('province')
-                                    ->label(__('shared.form.fields.province'))
+                                    ->label(new HtmlString('<strong>'.__('shared.form.fields.province').'</strong>'))
                                     ->maxLength(255),
                             ]),
                         TextInput::make('address')
-                            ->label(__('shared.form.fields.address'))
+                            ->label(new HtmlString('<strong>'.__('shared.form.fields.address').'</strong>'))
                             ->columnSpanFull()
                             ->maxLength(255),
                         Textarea::make('shop_description')
-                            ->label(__('vendor.settings.business_profile.description'))
+                            ->label(new HtmlString('<strong>'.__('vendor.settings.business_profile.description').'</strong>'))
                             ->placeholder('Describe your farm or organic vegetables...')
                             ->columnSpanFull(),
                         Grid::make(3)
                             ->schema([
                                 TimePicker::make('opening_time')
-                                    ->label(__('vendor.settings.business_profile.opening_time')),
+                                    ->label(new HtmlString('<strong>'.__('vendor.settings.business_profile.opening_time').'</strong>')),
                                 TimePicker::make('closing_time')
-                                    ->label(__('vendor.settings.business_profile.closing_time')),
+                                    ->label(new HtmlString('<strong>'.__('vendor.settings.business_profile.closing_time').'</strong>')),
                                 Toggle::make('is_open')
-                                    ->label(__('vendor.settings.business_profile.is_open')),
+                                    ->label(new HtmlString('<strong>'.__('vendor.settings.business_profile.is_open').'</strong>')),
                             ]),
                     ]),
             ])
@@ -118,7 +119,7 @@ class BusinessProfile extends Page
     {
         return [
             Action::make('save')
-                ->label(__('shared.form.save_changes'))
+                ->label(new HtmlString('<strong>'.__('shared.form.save_changes').'</strong>'))
                 ->submit('save')
                 ->keyBindings(['mod+s']),
         ];

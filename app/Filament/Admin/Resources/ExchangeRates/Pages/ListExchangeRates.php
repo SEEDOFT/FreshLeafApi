@@ -11,6 +11,7 @@ use Override;
 
 class ListExchangeRates extends ListRecords
 {
+    #[Override]
     protected static string $resource = ExchangeRateResource::class;
 
     #[Override]

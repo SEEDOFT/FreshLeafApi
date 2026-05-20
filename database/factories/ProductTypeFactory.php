@@ -12,18 +12,12 @@ use Illuminate\Database\Eloquent\Factories\Factory;
  */
 class ProductTypeFactory extends Factory
 {
-    /**
-     * Define the model's default state.
-     *
-     * @return array<string, mixed>
-     */
     public function definition(): array
     {
-        $code = $this->faker->unique()->word();
-
         return [
-            'code' => $code,
-            'name' => ucfirst($code),
+            'id' => $this->faker->unique()->numberBetween(1, 1000),
+            'name_en' => $this->faker->word(),
+            'name_km' => $this->faker->word().' (KM)',
         ];
     }
 }

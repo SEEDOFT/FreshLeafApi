@@ -15,6 +15,7 @@ use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\HtmlString;
 
 use function filled;
 use function str_starts_with;
@@ -32,21 +33,21 @@ class UserForm
                     ->columnSpanFull()
                     ->schema([
                         TextInput::make('first_name')
-                            ->label(__('admin.resources.user.first_name'))
+                            ->label(new HtmlString('<strong>'.__('admin.resources.user.first_name').'</strong>'))
                             ->required(fn (string $operation): bool => $operation === 'create')
                             ->dehydrated(fn (mixed $state): bool => filled($state))
                             ->maxLength(255),
                         TextInput::make('last_name')
-                            ->label(__('admin.resources.user.last_name'))
+                            ->label(new HtmlString('<strong>'.__('admin.resources.user.last_name').'</strong>'))
                             ->required(fn (string $operation): bool => $operation === 'create')
                             ->dehydrated(fn (mixed $state): bool => filled($state))
                             ->maxLength(255),
                         TextInput::make('email')
-                            ->label(__('admin.resources.user.email'))
+                            ->label(new HtmlString('<strong>'.__('admin.resources.user.email').'</strong>'))
                             ->email()
                             ->unique(ignoreRecord: true),
                         PhoneNumberInput::make('phone_number')
-                            ->label(__('admin.resources.user.phone'))
+                            ->label(new HtmlString('<strong>'.__('admin.resources.user.phone').'</strong>'))
                             ->required(fn (string $operation): bool => $operation === 'create')
                             ->dehydrated(fn (mixed $state): bool => filled($state))
                             ->afterStateHydrated(function (PhoneNumberInput $component, ?string $state): void {
@@ -77,25 +78,25 @@ class UserForm
                                     }
                                 }),
                         TextInput::make('password')
-                            ->label(__('admin.resources.user.password'))
+                            ->label(new HtmlString('<strong>'.__('admin.resources.user.password').'</strong>'))
                             ->password()
                             ->required(fn (string $operation): bool => $operation === 'create')
                             ->confirmed()
                             ->dehydrated(fn (mixed $state): bool => filled($state)),
                         TextInput::make('password_confirmation')
                             ->password()
-                            ->label(__('admin.resources.user.password_confirmation'))
+                            ->label(new HtmlString('<strong>'.__('admin.resources.user.password_confirmation').'</strong>'))
                             ->required(fn (string $operation): bool => $operation === 'create')
                             ->dehydrated(fn (mixed $state): bool => filled($state)),
                         Select::make('user_type_id')
-                            ->label(__('admin.resources.user.account_type'))
+                            ->label(new HtmlString('<strong>'.__('admin.resources.user.account_type').'</strong>'))
                             ->relationship('type')
                             ->getOptionLabelFromRecordUsing(fn (UserType $record) => $record->translated_name)
                             ->default(UserType::CONSUMER_ID)
                             ->disabled(fn (string $operation): bool => $operation === 'create')
                             ->dehydrated(),
                         Select::make('user_status_id')
-                            ->label(__('admin.resources.user.account_status'))
+                            ->label(new HtmlString('<strong>'.__('admin.resources.user.account_status').'</strong>'))
                             ->relationship('status')
                             ->getOptionLabelFromRecordUsing(fn (UserStatus $record) => $record->translated_name)
                             ->default(UserStatus::ACTIVE_ID)

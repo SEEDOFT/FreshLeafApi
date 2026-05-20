@@ -30,8 +30,8 @@ use Illuminate\Support\Facades\App;
  * @property string $slug
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
- * @property string|null $translated_name
- * @property string|null $translated_desc
+ * @property-read string $translated_name
+ * @property-read string|null $translated_desc
  * @property-read Collection<int, Product> $products
  * @property-read int|null $products_count
  * @property-read ProductCategoryStatus $status

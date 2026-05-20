@@ -11,12 +11,15 @@ use Illuminate\Database\Eloquent\Attributes\UseFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\App;
 
 /**
  * @property int $id
- * @property string $name
+ * @property string $name_en
+ * @property string $name_km
  * @property string $symbol
  * @property numeric $conversion_to_base
+ * @property string|null $translated_name
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  */
@@ -42,5 +45,13 @@ class Unit extends Model
             'symbol' => 'string',
             'conversion_to_base' => 'float',
         ];
+    }
+
+    /**
+     * Get translated name
+     */
+    public function getTranslatedNameAttribute(): ?string
+    {
+        return $this->{'name_'.App::getLocale()};
     }
 }

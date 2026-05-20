@@ -16,6 +16,7 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Filters\TrashedFilter;
 use Filament\Tables\Table;
+use Illuminate\Support\HtmlString;
 
 class UsersTable
 {
@@ -27,26 +28,26 @@ class UsersTable
             ->stackedOnMobile()
             ->recordAction('view')
             ->columns([
-                TextColumn::make('first_name')
-                    ->label(__('admin.resources.user.first_name'))
+                TextColumn::make('first_name')->placeholder(__('admin.resources.general.not_provided'))
+                    ->label(new HtmlString('<strong>'.__('admin.resources.user.first_name').'</strong>'))
                     ->getStateUsing(fn (User $record): string => $record->first_name),
-                TextColumn::make('last_name')
-                    ->label(__('admin.resources.user.last_name'))
+                TextColumn::make('last_name')->placeholder(__('admin.resources.general.not_provided'))
+                    ->label(new HtmlString('<strong>'.__('admin.resources.user.last_name').'</strong>'))
                     ->getStateUsing(fn (User $record): string => $record->last_name),
-                TextColumn::make('email')
-                    ->label(__('admin.resources.user.email'))
+                TextColumn::make('email')->placeholder(__('admin.resources.general.not_provided'))
+                    ->label(new HtmlString('<strong>'.__('admin.resources.user.email').'</strong>'))
                     ->placeholder($notProvided)
                     ->searchable(),
-                TextColumn::make('phone_number')
-                    ->label(__('admin.resources.user.phone'))
+                TextColumn::make('phone_number')->placeholder(__('admin.resources.general.not_provided'))
+                    ->label(new HtmlString('<strong>'.__('admin.resources.user.phone').'</strong>'))
                     ->searchable(),
-                TextColumn::make('type.translated_name')
-                    ->label(__('admin.resources.user.type'))
+                TextColumn::make('type.translated_name')->placeholder(__('admin.resources.general.not_provided'))
+                    ->label(new HtmlString('<strong>'.__('admin.resources.user.type').'</strong>'))
                     ->badge()
                     ->placeholder($notProvided)
                     ->color('info'),
-                TextColumn::make('status.translated_name')
-                    ->label(__('admin.resources.user.status'))
+                TextColumn::make('status.translated_name')->placeholder(__('admin.resources.general.not_provided'))
+                    ->label(new HtmlString('<strong>'.__('admin.resources.user.status').'</strong>'))
                     ->badge()
                     ->color(fn (User $record): string => match ($record->status->id) {
                         UserStatus::ACTIVE_ID => 'success',
@@ -55,15 +56,15 @@ class UsersTable
                         default => 'secondary',
                     })
                     ->placeholder($notProvided),
-                TextColumn::make('created_at')
-                    ->label(__('admin.resources.created_at'))
+                TextColumn::make('created_at')->placeholder(__('admin.resources.general.not_provided'))
+                    ->label(new HtmlString('<strong>'.__('admin.resources.created_at').'</strong>'))
                     ->dateTime('d M Y, h:i A')
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
                 SelectFilter::make('user_status_id')
-                    ->label(__('admin.resources.user.account_status'))
+                    ->label(new HtmlString('<strong>'.__('admin.resources.user.account_status').'</strong>'))
                     ->options(
                         UserStatus::all()
                             ->pluck('translated_name', 'id')

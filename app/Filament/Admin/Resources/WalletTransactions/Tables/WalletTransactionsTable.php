@@ -5,12 +5,15 @@ declare(strict_types=1);
 namespace App\Filament\Admin\Resources\WalletTransactions\Tables;
 
 use App\Models\WalletTransaction;
+use App\Models\WalletTransactionStatus;
+use App\Models\WalletTransactionType;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
+use Illuminate\Support\HtmlString;
 
 class WalletTransactionsTable
 {
@@ -19,41 +22,47 @@ class WalletTransactionsTable
         return $table
             ->stackedOnMobile()
             ->columns([
-                TextColumn::make('wallet.user.name')
-                    ->label(__('admin.resources.wallet_transaction.user'))
-                    ->getStateUsing(static fn (WalletTransaction $record) => "{$record->wallet->user->first_name} {$record->wallet->user->last_name}")
-                    ->searchable(['first_name', 'last_name'])
+                TextColumn::make('wallet.user.name')->placeholder(__('admin.resources.general.not_provided'))
+                    ->label(new HtmlString('<strong>'.__('admin.resources.wallet_transaction.user').'</strong>'))
+                    ->getStateUsing(static fn (WalletTransaction $record) => $record->wallet->user->fullName)
+                    ->searchable()
                     ->sortable(),
-                TextColumn::make('type.name')
-                    ->label(__('admin.resources.wallet_transaction.type'))
+                TextColumn::make('type.translated_name')->placeholder(__('admin.resources.general.not_provided'))
+                    ->label(new HtmlString('<strong>'.__('admin.resources.wallet_transaction.type').'</strong>'))
                     ->badge()
                     ->sortable(),
-                TextColumn::make('status.name')
-                    ->label(__('admin.resources.wallet_transaction.status'))
+                TextColumn::make('status.translated_name')->placeholder(__('admin.resources.general.not_provided'))
+                    ->label(new HtmlString('<strong>'.__('admin.resources.wallet_transaction.status').'</strong>'))
                     ->badge()
-                    ->color(fn (string $state): string => match ($state) {
-                        'Completed' => 'success',
-                        'Pending' => 'warning',
-                        'Failed', 'Cancelled' => 'danger',
+                    ->color(fn (WalletTransaction $record): string => match ($record->status->id) {
+                        WalletTransactionStatus::COMPLETED_ID => 'success',
+                        WalletTransactionStatus::PENDING_ID => 'warning',
+                        WalletTransactionStatus::FAILED_ID, WalletTransactionStatus::CANCELLED_ID => 'danger',
                         default => 'gray',
                     })
                     ->sortable(),
-                TextColumn::make('amount')
-                    ->label(__('admin.resources.wallet_transaction.amount'))
+                TextColumn::make('amount')->placeholder(__('admin.resources.general.not_provided'))
+                    ->label(new HtmlString('<strong>'.__('admin.resources.wallet_transaction.amount').'</strong>'))
                     ->money(fn (WalletTransaction $record) => $record->wallet->currency->code ?? 'USD')
                     ->sortable(),
-                TextColumn::make('created_at')
-                    ->label(__('admin.resources.created_at'))
+                TextColumn::make('created_at')->placeholder(__('admin.resources.general.not_provided'))
+                    ->label(new HtmlString('<strong>'.__('admin.resources.created_at').'</strong>'))
                     ->dateTime()
                     ->sortable(),
             ])
             ->filters([
                 SelectFilter::make('wallet_transaction_type_id')
-                    ->label(__('admin.resources.wallet_transaction.type'))
-                    ->relationship('type', 'name'),
+                    ->label(new HtmlString('<strong>'.__('admin.resources.wallet_transaction.type').'</strong>'))
+                    ->options(
+                        WalletTransactionType::all()
+                            ->pluck('translated_name', 'id')
+                    ),
                 SelectFilter::make('wallet_transaction_status_id')
-                    ->label(__('admin.resources.wallet_transaction.status'))
-                    ->relationship('status', 'name'),
+                    ->label(new HtmlString('<strong>'.__('admin.resources.wallet_transaction.status').'</strong>'))
+                    ->options(
+                        WalletTransactionStatus::all()
+                            ->pluck('translated_name', 'id')
+                    ),
             ])
             ->recordActions([
                 EditAction::make(),

@@ -14,6 +14,7 @@ use Filament\Notifications\Notification;
 use Filament\Pages\Page;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
+use Illuminate\Support\HtmlString;
 use Override;
 
 class ApplicationSettings extends Page
@@ -61,7 +62,7 @@ class ApplicationSettings extends Page
                     ->description(__('admin.settings.app_settings.revenue_model_desc'))
                     ->schema([
                         TextInput::make('commission_percentage')
-                            ->label(__('admin.settings.app_settings.commission_fee'))
+                            ->label(new HtmlString('<strong>'.__('admin.settings.app_settings.commission_fee').'</strong>'))
                             ->numeric()
                             ->minValue(0)
                             ->suffix('%')
@@ -74,7 +75,7 @@ class ApplicationSettings extends Page
                     ->description(__('admin.settings.app_settings.localization_desc'))
                     ->schema([
                         TextInput::make('timezone')
-                            ->label(__('admin.settings.app_settings.timezone'))
+                            ->label(new HtmlString('<strong>'.__('admin.settings.app_settings.timezone').'</strong>'))
                             ->required(fn (string $operation): bool => $operation === 'create')
                             ->dehydrated(fn (mixed $state): bool => filled($state)),
                     ])->columns(2),
@@ -83,18 +84,18 @@ class ApplicationSettings extends Page
                     ->description(__('admin.settings.app_settings.notifications_desc'))
                     ->schema([
                         Toggle::make('email_notifications')
-                            ->label(__('admin.settings.app_settings.enable_email')),
+                            ->label(new HtmlString('<strong>'.__('admin.settings.app_settings.enable_email').'</strong>')),
                         Toggle::make('sms_alerts')
-                            ->label(__('admin.settings.app_settings.enable_sms')),
+                            ->label(new HtmlString('<strong>'.__('admin.settings.app_settings.enable_sms').'</strong>')),
                     ])->columns(2),
 
                 Section::make(__('admin.settings.app_settings.ai_control'))
                     ->description(__('admin.settings.app_settings.ai_control_desc'))
                     ->schema([
                         Toggle::make('enable_ai_assistant_admin')
-                            ->label(__('admin.settings.app_settings.ai_admin')),
+                            ->label(new HtmlString('<strong>'.__('admin.settings.app_settings.ai_admin').'</strong>')),
                         Toggle::make('enable_ai_assistant_vendor')
-                            ->label(__('admin.settings.app_settings.ai_vendor')),
+                            ->label(new HtmlString('<strong>'.__('admin.settings.app_settings.ai_vendor').'</strong>')),
                     ])->columns(2),
             ])
             ->statePath('data');
@@ -127,7 +128,7 @@ class ApplicationSettings extends Page
     {
         return [
             Action::make('save')
-                ->label(__('admin.profile.save_changes'))
+                ->label(new HtmlString('<strong>'.__('admin.profile.save_changes').'</strong>'))
                 ->submit('save')
                 ->keyBindings(['mod+s']),
         ];

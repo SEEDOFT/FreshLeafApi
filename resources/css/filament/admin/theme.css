@@ -7,6 +7,7 @@
 @import './_tokens.css';
 @import './_animations.css';
 @import '../shared/_auth.css';
+@import '../shared/_file-upload.css';
 @import './_overrides.css';
 
 @source '../../../../app/Filament/**/*';

@@ -21,7 +21,7 @@ class ProductSeeder extends Seeder
     {
         $categoryIdsBySlug = ProductCategory::query()->pluck('id', 'slug');
         $unitIdsBySymbol = Unit::query()->pluck('id', 'symbol');
-        $typeIdsByName = ProductType::query()->pluck('id', 'name');
+        $typeIdsByName = ProductType::query()->pluck('id', 'name_en');
 
         $catalog = [
             'leafy-vegetables' => [
@@ -56,7 +56,7 @@ class ProductSeeder extends Seeder
             ],
         ];
 
-        $defaultStatusId = ProductStatus::ACTIVE;
+        $defaultStatusId = ProductStatus::PUBLISHED_ID;
         $fallbackUnitId = $unitIdsBySymbol['KG'] ?? null;
         $fallbackTypeId = $typeIdsByName['Fresh Produce'] ?? null;
 

@@ -11,8 +11,10 @@ use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Components\Section;
+use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Components\Utilities\Set;
 use Filament\Schemas\Schema;
+use Illuminate\Support\HtmlString;
 use Illuminate\Support\Str;
 
 class ProductCategoryForm
@@ -31,30 +33,36 @@ class ProductCategoryForm
                                 Section::make(__('admin.resources.product_category.basic_info'))
                                     ->schema([
                                         TextInput::make('name_en')
-                                            ->label(__('admin.resources.product_category.name_en'))
+                                            ->label(new HtmlString('<strong>'.__('admin.resources.product_category.name_en').'</strong>'))
                                             ->required(fn (string $operation): bool => $operation === 'create')
                                             ->dehydrated(fn (mixed $state): bool => filled($state))
                                             ->live(onBlur: true)
-                                            ->afterStateUpdated(fn (Set $set, ?string $state) => $set('slug', Str::slug($state ?? ''))),
+                                            ->afterStateUpdated(static function (Get $get, Set $set, ?string $state): void {
+                                                if (! $get('slug')) {
+                                                    $set('slug', Str::slug($state ?? ''));
+                                                }
+                                            }),
                                         TextInput::make('name_km')
-                                            ->label(__('admin.resources.product_category.name_km'))
+                                            ->label(new HtmlString('<strong>'.__('admin.resources.product_category.name_km').'</strong>'))
                                             ->required(fn (string $operation): bool => $operation === 'create')
                                             ->dehydrated(fn (mixed $state): bool => filled($state)),
                                         TextInput::make('slug')
-                                            ->label(__('admin.resources.product_category.slug'))
-                                            ->required(fn (string $operation): bool => $operation === 'create')
+                                            ->label(new HtmlString('<strong>'.__('admin.resources.product_category.slug').'</strong>'))
                                             ->dehydrated(fn (mixed $state): bool => filled($state))
                                             ->unique(ignoreRecord: true),
                                         Select::make('product_category_status_id')
-                                            ->label(__('admin.resources.product_category.status'))
-                                            ->relationship('status', 'name')
+                                            ->label(new HtmlString('<strong>'.__('admin.resources.product_category.status').'</strong>'))
+                                            ->options(
+                                                ProductCategoryStatus::all()
+                                                    ->pluck('translated_name', 'id')
+                                            )
                                             ->required()
                                             ->default(ProductCategoryStatus::ACTIVE_ID),
                                         Textarea::make('description_en')
-                                            ->label(__('admin.resources.product_category.description_en'))
+                                            ->label(new HtmlString('<strong>'.__('admin.resources.product_category.description_en').'</strong>'))
                                             ->columnSpanFull(),
                                         Textarea::make('description_km')
-                                            ->label(__('admin.resources.product_category.description_km'))
+                                            ->label(new HtmlString('<strong>'.__('admin.resources.product_category.description_km').'</strong>'))
                                             ->columnSpanFull(),
                                     ]),
                             ]),
@@ -66,7 +74,7 @@ class ProductCategoryForm
                                 Section::make(__('admin.resources.product_category.visuals'))
                                     ->schema([
                                         FileUpload::make('image_url')
-                                            ->label(__('admin.resources.product_category.image'))
+                                            ->label(new HtmlString('<strong>'.__('admin.resources.product_category.image').'</strong>'))
                                             ->image()
                                             ->disk('public')
                                             ->directory('product-categories'),

@@ -23,13 +23,13 @@ class ProductCategoryInfolist
                 Section::make(__('admin.resources.product_category.basic_info'))
                     ->columns(2)
                     ->schema([
-                        TextEntry::make('name_en')
-                            ->label(__('admin.resources.product_category.name_en')),
-                        TextEntry::make('name_km')
-                            ->label(__('admin.resources.product_category.name_km')),
-                        TextEntry::make('slug')
-                            ->label(__('admin.resources.product_category.slug')),
-                        TextEntry::make('status.translated_name')
+                        TextEntry::make('name_en')->placeholder(__('admin.resources.general.not_provided'))
+                            ->label(new HtmlString('<strong>'.__('admin.resources.product_category.name_en').'</strong>')),
+                        TextEntry::make('name_km')->placeholder(__('admin.resources.general.not_provided'))
+                            ->label(new HtmlString('<strong>'.__('admin.resources.product_category.name_km').'</strong>')),
+                        TextEntry::make('slug')->placeholder(__('admin.resources.general.not_provided'))
+                            ->label(new HtmlString('<strong>'.__('admin.resources.product_category.slug').'</strong>')),
+                        TextEntry::make('status.translated_name')->placeholder(__('admin.resources.general.not_provided'))
                             ->label(new HtmlString('<strong>'.__('admin.resources.product_category.status').'</strong>'))
                             ->badge()
                             ->placeholder($notProvided)
@@ -38,17 +38,17 @@ class ProductCategoryInfolist
                                 ProductCategoryStatus::INACTIVE_ID => 'danger',
                                 default => 'gray',
                             }),
-                        TextEntry::make('description_en')
-                            ->label(__('admin.resources.product_category.description_en'))
+                        TextEntry::make('description_en')->placeholder(__('admin.resources.general.not_provided'))
+                            ->label(new HtmlString('<strong>'.__('admin.resources.product_category.description_en').'</strong>'))
                             ->columnSpanFull(),
-                        TextEntry::make('description_km')
-                            ->label(__('admin.resources.product_category.description_km'))
+                        TextEntry::make('description_km')->placeholder(__('admin.resources.general.not_provided'))
+                            ->label(new HtmlString('<strong>'.__('admin.resources.product_category.description_km').'</strong>'))
                             ->columnSpanFull(),
                     ]),
                 Section::make(__('admin.resources.product_category.visuals'))
                     ->schema([
                         ImageEntry::make('image_url')
-                            ->label(__('admin.resources.product_category.image'))
+                            ->label(new HtmlString('<strong>'.__('admin.resources.product_category.image').'</strong>'))
                             ->imageSize(200),
                     ]),
             ]);

@@ -12,15 +12,12 @@ use Illuminate\Database\Eloquent\Factories\Factory;
  */
 class UnitFactory extends Factory
 {
-    /**
-     * Define the model's default state.
-     *
-     * @return array<string, mixed>
-     */
     public function definition(): array
     {
         return [
-            'name' => $this->faker->unique()->word(),
+            'id' => $this->faker->unique()->numberBetween(1, 1000),
+            'name_en' => $this->faker->unique()->word(),
+            'name_km' => $this->faker->unique()->word().' (KM)',
             'symbol' => $this->faker->unique()->lexify('??'),
             'conversion_to_base' => 1.0,
         ];

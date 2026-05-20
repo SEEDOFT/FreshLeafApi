@@ -33,26 +33,26 @@ class VendorsTable
             ->stackedOnMobile()
             ->recordAction('view')
             ->columns([
-                TextColumn::make('vendorProfile.business_name')
+                TextColumn::make('vendorProfile.business_name')->placeholder(__('admin.resources.general.not_provided'))
                     ->label(new HtmlString('<strong>'.__('admin.resources.vendor.business_name').'</strong>'))
                     ->searchable()
                     ->placeholder($notProvided)
                     ->sortable(),
-                TextColumn::make('name')
+                TextColumn::make('name')->placeholder(__('admin.resources.general.not_provided'))
                     ->label(new HtmlString('<strong>'.__('admin.resources.vendor.owner').'</strong>'))
                     ->getStateUsing(fn (User $record) => $record->last_name.' '.$record->first_name)
                     ->searchable(['first_name', 'last_name'])
                     ->placeholder($notProvided),
-                TextColumn::make('phone_number')
+                TextColumn::make('phone_number')->placeholder(__('admin.resources.general.not_provided'))
                     ->label(new HtmlString('<strong>'.__('admin.resources.vendor.phone').'</strong>'))
                     ->searchable()
                     ->placeholder($notProvided),
-                TextColumn::make('type.translated_name')
+                TextColumn::make('type.translated_name')->placeholder(__('admin.resources.general.not_provided'))
                     ->label(new HtmlString('<strong>'.__('admin.resources.user.type').'</strong>'))
                     ->badge()
                     ->placeholder($notProvided)
                     ->color('warning'),
-                TextColumn::make('status.translated_name')
+                TextColumn::make('status.translated_name')->placeholder(__('admin.resources.general.not_provided'))
                     ->label(new HtmlString('<strong>'.__('admin.resources.user.status').'</strong>'))
                     ->badge()
                     ->placeholder($notProvided)
@@ -66,7 +66,7 @@ class VendorsTable
                     ->label(new HtmlString('<strong>'.__('admin.resources.vendor.verified').'</strong>'))
                     ->boolean()
                     ->sortable(),
-                TextColumn::make('created_at')
+                TextColumn::make('created_at')->placeholder(__('admin.resources.general.not_provided'))
                     ->label(new HtmlString('<strong>'.__('admin.resources.created_at').'</strong>'))
                     ->dateTime('d M Y, h:i A')
                     ->sortable()

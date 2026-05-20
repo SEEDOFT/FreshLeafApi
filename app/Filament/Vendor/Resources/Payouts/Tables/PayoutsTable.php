@@ -7,6 +7,7 @@ namespace App\Filament\Vendor\Resources\Payouts\Tables;
 use Filament\Actions\ViewAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
+use Illuminate\Support\HtmlString;
 
 class PayoutsTable
 {
@@ -14,13 +15,13 @@ class PayoutsTable
     {
         return $table
             ->columns([
-                TextColumn::make('amount')
-                    ->label(__('shared.payout.amount'))
+                TextColumn::make('amount')->placeholder(__('admin.resources.general.not_provided'))
+                    ->label(new HtmlString('<strong>'.__('shared.payout.amount').'</strong>'))
                     ->money('USD')
                     ->sortable(),
 
-                TextColumn::make('status.name')
-                    ->label(__('shared.payout.status'))
+                TextColumn::make('status.name')->placeholder(__('admin.resources.general.not_provided'))
+                    ->label(new HtmlString('<strong>'.__('shared.payout.status').'</strong>'))
                     ->badge()
                     ->color(fn (string $state): string => match ($state) {
                         'Pending' => 'warning',
@@ -30,15 +31,15 @@ class PayoutsTable
                         default => 'gray',
                     }),
 
-                TextColumn::make('method.name')
-                    ->label(__('shared.payout.method')),
+                TextColumn::make('method.name')->placeholder(__('admin.resources.general.not_provided'))
+                    ->label(new HtmlString('<strong>'.__('shared.payout.method').'</strong>')),
 
-                TextColumn::make('transaction_reference')
-                    ->label(__('shared.payout.reference'))
+                TextColumn::make('transaction_reference')->placeholder(__('admin.resources.general.not_provided'))
+                    ->label(new HtmlString('<strong>'.__('shared.payout.reference').'</strong>'))
                     ->searchable(),
 
-                TextColumn::make('processed_at')
-                    ->label(__('shared.payout.paid_on'))
+                TextColumn::make('processed_at')->placeholder(__('admin.resources.general.not_provided'))
+                    ->label(new HtmlString('<strong>'.__('shared.payout.paid_on').'</strong>'))
                     ->dateTime()
                     ->sortable(),
             ])

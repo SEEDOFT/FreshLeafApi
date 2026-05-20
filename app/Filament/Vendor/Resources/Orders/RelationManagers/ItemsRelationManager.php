@@ -57,24 +57,24 @@ class ItemsRelationManager extends RelationManager
             ->stackedOnMobile()
             ->recordTitleAttribute('product_name_snapshot')
             ->columns([
-                TextColumn::make('product_name_snapshot')
+                TextColumn::make('product_name_snapshot')->placeholder(__('admin.resources.general.not_provided'))
                     ->label(new HtmlString('<strong>'.__('shared.order.product').'</strong>'))
                     ->sortable(),
-                TextColumn::make('unit_snapshot')
+                TextColumn::make('unit_snapshot')->placeholder(__('admin.resources.general.not_provided'))
                     ->label(new HtmlString('<strong>'.__('shared.product.unit').'</strong>')),
-                TextColumn::make('unit_price_snapshot')
+                TextColumn::make('unit_price_snapshot')->placeholder(__('admin.resources.general.not_provided'))
                     ->money('USD')
                     ->label(new HtmlString('<strong>'.__('shared.product.unit_price').'</strong>')),
-                TextColumn::make('quantity')
+                TextColumn::make('quantity')->placeholder(__('admin.resources.general.not_provided'))
                     ->label(new HtmlString('<strong>'.__('shared.product.quantity').'</strong>'))
                     ->numeric(),
-                TextColumn::make('subtotal')
+                TextColumn::make('subtotal')->placeholder(__('admin.resources.general.not_provided'))
                     ->label(new HtmlString('<strong>'.__('shared.order.subtotal').'</strong>'))
                     ->money('USD'),
-                TextColumn::make('commission_amount')
+                TextColumn::make('commission_amount')->placeholder(__('admin.resources.general.not_provided'))
                     ->label(new HtmlString('<strong>'.__('shared.order.commission').'</strong>'))
                     ->money('USD'),
-                TextColumn::make('vendor_net_amount')
+                TextColumn::make('vendor_net_amount')->placeholder(__('admin.resources.general.not_provided'))
                     ->label(new HtmlString('<strong>'.__('shared.order.total').'</strong>'))
                     ->money('USD'),
             ])

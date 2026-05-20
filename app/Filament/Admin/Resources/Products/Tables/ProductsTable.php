@@ -30,36 +30,36 @@ class ProductsTable
                     ->label(new HtmlString('<strong>'.__('admin.resources.product.image').'</strong>'))
                     ->disk('public')
                     ->circular(),
-                TextColumn::make('name_km')
-                    ->label(__('admin.resources.product.name_km'))
+                TextColumn::make('name_km')->placeholder(__('admin.resources.general.not_provided'))
+                    ->label(new HtmlString('<strong>'.__('admin.resources.product.name_km').'</strong>'))
                     ->sortable()
                     ->searchable(),
-                TextColumn::make('name_en')
-                    ->label(__('admin.resources.product.name_en'))
+                TextColumn::make('name_en')->placeholder(__('admin.resources.general.not_provided'))
+                    ->label(new HtmlString('<strong>'.__('admin.resources.product.name_en').'</strong>'))
                     ->sortable()
                     ->searchable(),
-                TextColumn::make('productCategory.translated_name')
-                    ->label(__('admin.resources.product.system_category'))
+                TextColumn::make('productCategory.translated_name')->placeholder(__('admin.resources.general.not_provided'))
+                    ->label(new HtmlString('<strong>'.__('admin.resources.product.system_category').'</strong>'))
                     ->sortable(),
-                TextColumn::make('status.translated_name')
-                    ->label(__('admin.resources.product.status'))
+                TextColumn::make('status.translated_name')->placeholder(__('admin.resources.general.not_provided'))
+                    ->label(new HtmlString('<strong>'.__('admin.resources.product.status').'</strong>'))
                     ->badge()
                     ->sortable(),
-                TextColumn::make('created_at')
-                    ->label(__('admin.resources.created_at'))
+                TextColumn::make('created_at')->placeholder(__('admin.resources.general.not_provided'))
+                    ->label(new HtmlString('<strong>'.__('admin.resources.created_at').'</strong>'))
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
                 SelectFilter::make('product_category_id')
-                    ->label(__('admin.resources.product.system_category'))
+                    ->label(new HtmlString('<strong>'.__('admin.resources.product.system_category').'</strong>'))
                     ->options(
                         ProductCategory::all()
                             ->pluck('translated_name', 'id')
                     ),
                 SelectFilter::make('product_status_id')
-                    ->label(__('admin.resources.product.status'))
+                    ->label(new HtmlString('<strong>'.__('admin.resources.product.status').'</strong>'))
                     ->options(
                         ProductStatus::all()
                             ->pluck('translated_name', 'id')

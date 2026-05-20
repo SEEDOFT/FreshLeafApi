@@ -19,10 +19,10 @@ class ProductTest extends TestCase
     {
         parent::setUp();
 
-        ProductCategoryStatus::query()->create(['id' => 1, 'code' => 'active', 'name' => 'Active']);
-        ProductStatus::factory()->create(['id' => ProductStatus::ACTIVE, 'code' => 'active']);
-        ProductStatus::factory()->create(['id' => ProductStatus::INACTIVE, 'code' => 'inactive']);
-        ProductStatus::factory()->create(['id' => ProductStatus::DRAFT, 'code' => 'draft']);
+        ProductCategoryStatus::query()->create(['id' => 1, 'name_en' => 'Active', 'name_km' => 'សកម្ម']);
+        ProductStatus::factory()->create(['id' => ProductStatus::ACTIVE, 'name_en' => 'Active', 'name_km' => 'សកម្ម']);
+        ProductStatus::factory()->create(['id' => ProductStatus::INACTIVE, 'name_en' => 'Inactive', 'name_km' => 'អសកម្ម']);
+        ProductStatus::factory()->create(['id' => ProductStatus::DRAFT, 'name_en' => 'Draft', 'name_km' => 'ព្រាង']);
     }
 
     /**

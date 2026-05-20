@@ -14,9 +14,15 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('vendor_profiles', static function (Blueprint $table) {
-            $table->string('village')->nullable();
-            $table->string('commune')->nullable();
-            $table->string('district')->nullable();
+            if (! Schema::hasColumn('vendor_profiles', 'village')) {
+                $table->string('village')->nullable();
+            }
+            if (! Schema::hasColumn('vendor_profiles', 'commune')) {
+                $table->string('commune')->nullable();
+            }
+            if (! Schema::hasColumn('vendor_profiles', 'district')) {
+                $table->string('district')->nullable();
+            }
         });
     }
 

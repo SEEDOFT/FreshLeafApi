@@ -115,6 +115,9 @@ class Product extends Model
             if (empty($product->slug)) {
                 $product->slug = Str::slug($product->name_en);
             }
+            if (empty($product->product_type_id)) {
+                $product->product_type_id = 1;
+            }
         });
     }
 

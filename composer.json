@@ -87,7 +87,7 @@
             "./vendor/bin/phpstan analyse --memory-limit=2G --configuration=phpstan.neon"
         ],
         "pint": [
-            "./vendor/bin/pint --dirty --config=pint.json ."
+            "./vendor/bin/pint --config=pint.json ."
         ]
     },
     "extra": {

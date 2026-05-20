@@ -14,6 +14,7 @@ use Filament\Actions\ViewAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
+use Illuminate\Support\HtmlString;
 
 class OrdersTable
 {
@@ -23,17 +24,17 @@ class OrdersTable
             ->stackedOnMobile()
             ->recordAction('view')
             ->columns([
-                TextColumn::make('order_number')
-                    ->label(__('admin.resources.order.order_number'))
+                TextColumn::make('order_number')->placeholder(__('admin.resources.general.not_provided'))
+                    ->label(new HtmlString('<strong>'.__('admin.resources.order.order_number').'</strong>'))
                     ->searchable()
                     ->sortable(),
-                TextColumn::make('user.name')
-                    ->label(__('admin.resources.order.customer'))
+                TextColumn::make('user.name')->placeholder(__('admin.resources.general.not_provided'))
+                    ->label(new HtmlString('<strong>'.__('admin.resources.order.customer').'</strong>'))
                     ->getStateUsing(fn (Order $record) => $record->user->fullName)
                     ->searchable()
                     ->sortable(),
-                TextColumn::make('status.translated_name')
-                    ->label(__('admin.resources.order.status'))
+                TextColumn::make('status.translated_name')->placeholder(__('admin.resources.general.not_provided'))
+                    ->label(new HtmlString('<strong>'.__('admin.resources.order.status').'</strong>'))
                     ->badge()
                     ->color(fn (Order $record): string => match ($record->status->id) {
                         OrderStatus::PENDING_ID => 'info',
@@ -44,8 +45,8 @@ class OrdersTable
                         default => 'gray',
                     })
                     ->sortable(),
-                TextColumn::make('paymentStatus.translated_name')
-                    ->label(__('admin.resources.order.payment_status'))
+                TextColumn::make('paymentStatus.translated_name')->placeholder(__('admin.resources.general.not_provided'))
+                    ->label(new HtmlString('<strong>'.__('admin.resources.order.payment_status').'</strong>'))
                     ->badge()
                     ->color(fn (Order $record): string => match ($record->paymentStatus->id) {
                         PaymentStatus::PENDING_ID => 'info',
@@ -55,29 +56,29 @@ class OrdersTable
                         default => 'gray',
                     })
                     ->sortable(),
-                TextColumn::make('total_amount')
-                    ->label(__('admin.resources.order.total'))
+                TextColumn::make('total_amount')->placeholder(__('admin.resources.general.not_provided'))
+                    ->label(new HtmlString('<strong>'.__('admin.resources.order.total').'</strong>'))
                     ->money('USD')
                     ->sortable(),
-                TextColumn::make('delivery_date')
-                    ->label(__('admin.resources.order.delivery_date'))
+                TextColumn::make('delivery_date')->placeholder(__('admin.resources.general.not_provided'))
+                    ->label(new HtmlString('<strong>'.__('admin.resources.order.delivery_date').'</strong>'))
                     ->date()
                     ->sortable(),
-                TextColumn::make('created_at')
-                    ->label(__('admin.resources.created_at'))
+                TextColumn::make('created_at')->placeholder(__('admin.resources.general.not_provided'))
+                    ->label(new HtmlString('<strong>'.__('admin.resources.created_at').'</strong>'))
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
                 SelectFilter::make('order_status_id')
-                    ->label(__('shared.order.status'))
+                    ->label(new HtmlString('<strong>'.__('shared.order.status').'</strong>'))
                     ->options(
                         OrderStatus::all()
                             ->pluck('translated_name', 'id')
                     ),
                 SelectFilter::make('payment_status_id')
-                    ->label(__('shared.order.payment_status'))
+                    ->label(new HtmlString('<strong>'.__('shared.order.payment_status').'</strong>'))
                     ->options(
                         PaymentStatus::all()
                             ->pluck('translated_name', 'id')

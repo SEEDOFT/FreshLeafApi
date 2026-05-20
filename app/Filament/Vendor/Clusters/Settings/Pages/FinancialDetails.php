@@ -14,6 +14,7 @@ use Filament\Pages\Page;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\HtmlString;
 use Override;
 
 class FinancialDetails extends Page
@@ -52,18 +53,18 @@ class FinancialDetails extends Page
                     ->description('Used for weekly earnings payouts.')
                     ->schema([
                         TextInput::make('bank_name')
-                            ->label(__('vendor.settings.financial_details.bank_name'))
+                            ->label(new HtmlString('<strong>'.__('vendor.settings.financial_details.bank_name').'</strong>'))
                             ->placeholder('e.g. ABA Bank')
                             ->maxLength(255),
                         TextInput::make('bank_account_name')
-                            ->label(__('vendor.settings.financial_details.account_holder'))
+                            ->label(new HtmlString('<strong>'.__('vendor.settings.financial_details.account_holder').'</strong>'))
                             ->placeholder('e.g. KOY YOTRABOTH')
                             ->maxLength(255),
                         TextInput::make('bank_account_number')
-                            ->label(__('vendor.settings.financial_details.account_number'))
+                            ->label(new HtmlString('<strong>'.__('vendor.settings.financial_details.account_number').'</strong>'))
                             ->maxLength(255),
                         FileUpload::make('bank_qr_code')
-                            ->label(__('vendor.settings.financial_details.qr_code'))
+                            ->label(new HtmlString('<strong>'.__('vendor.settings.financial_details.qr_code').'</strong>'))
                             ->image()
                             ->disk('local')
                             ->directory('vendor-verification')
@@ -97,7 +98,7 @@ class FinancialDetails extends Page
     {
         return [
             Action::make('save')
-                ->label(__('shared.profile.save_changes'))
+                ->label(new HtmlString('<strong>'.__('shared.profile.save_changes').'</strong>'))
                 ->submit('save')
                 ->keyBindings(['mod+s']),
         ];

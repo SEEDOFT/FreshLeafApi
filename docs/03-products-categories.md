@@ -57,6 +57,8 @@ Master product table defined by Admins. Contains no pricing or physical stock in
 - nutrition_data (JSON)
 - image_url
 - Status: `product_status_id`
+- **Nullable Default Unit:** `default_unit_id` is now nullable. Admins can optionally omit a default unit when configuring product dictionary items, allowing vendors complete flexibility to choose their own unit of measurement when adding the item to their physical `vendor_inventories`.
+- **Product Type Defaulting:** `product_type_id` is currently defaulted to `1` (Fresh Produce) at the Eloquent model lifecycle level (`creating` event hook) since the platform-wide product types feature is not yet fully implemented.
 
 ### vendor_inventories (Listings)
 Physical stock items offered by vendors.
@@ -64,12 +66,12 @@ Physical stock items offered by vendors.
 - product_id (Link to dictionary)
 - price
 - stock_quantity
-- unit_id
+- unit_id (chosen by vendor from dynamic unit options list)
 - Physical details: province_of_origin, certification_type, farm_location, packaging_type, shelf_life_days
 - Status: `inventory_status_id`
 
 ### units
-Units of measurement (kg, g, pcs) with conversion factors.
+Units of measurement (kg, g, pcs, bundle) with conversion factors.
 
 ## Organic Product Tracking
 

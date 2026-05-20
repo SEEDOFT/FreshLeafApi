@@ -70,18 +70,18 @@ class ItemsRelationManager extends RelationManager
             ->stackedOnMobile()
             ->recordTitleAttribute('product_name_snapshot')
             ->columns([
-                TextColumn::make('product_name_snapshot')
+                TextColumn::make('product_name_snapshot')->placeholder(__('admin.resources.general.not_provided'))
                     ->label(new HtmlString('<strong>'.__('admin.resources.order.product').'</strong>'))
                     ->sortable(),
-                TextColumn::make('unit_snapshot')
+                TextColumn::make('unit_snapshot')->placeholder(__('admin.resources.general.not_provided'))
                     ->label(new HtmlString('<strong>'.__('admin.resources.product.unit').'</strong>')),
-                TextColumn::make('unit_price_snapshot')
+                TextColumn::make('unit_price_snapshot')->placeholder(__('admin.resources.general.not_provided'))
                     ->money('USD')
                     ->label(new HtmlString('<strong>'.__('admin.resources.product.unit_price').'</strong>')),
-                TextColumn::make('quantity')
+                TextColumn::make('quantity')->placeholder(__('admin.resources.general.not_provided'))
                     ->label(new HtmlString('<strong>'.__('admin.resources.product.quantity').'</strong>'))
                     ->numeric(),
-                TextColumn::make('subtotal')
+                TextColumn::make('subtotal')->placeholder(__('admin.resources.general.not_provided'))
                     ->label(new HtmlString('<strong>'.__('admin.resources.order.subtotal').'</strong>'))
                     ->money('USD'),
             ])

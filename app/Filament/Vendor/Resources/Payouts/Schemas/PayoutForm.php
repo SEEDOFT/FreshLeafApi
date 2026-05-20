@@ -8,6 +8,7 @@ use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Schema;
+use Illuminate\Support\HtmlString;
 
 class PayoutForm
 {
@@ -16,18 +17,18 @@ class PayoutForm
         return $schema
             ->components([
                 TextInput::make('amount')
-                    ->label(__('shared.payout.amount'))
+                    ->label(new HtmlString('<strong>'.__('shared.payout.amount').'</strong>'))
                     ->required(fn (string $operation): bool => $operation === 'create')
                     ->dehydrated(fn (mixed $state): bool => filled($state))
                     ->numeric()
                     ->prefix('$'),
                 TextInput::make('transaction_reference')
-                    ->label(__('shared.payout.transaction_ref'))
+                    ->label(new HtmlString('<strong>'.__('shared.payout.transaction_ref').'</strong>'))
                     ->placeholder('-'),
                 DateTimePicker::make('processed_at')
-                    ->label(__('shared.payout.processed_at')),
+                    ->label(new HtmlString('<strong>'.__('shared.payout.processed_at').'</strong>')),
                 Textarea::make('admin_notes')
-                    ->label(__('shared.payout.admin_notes'))
+                    ->label(new HtmlString('<strong>'.__('shared.payout.admin_notes').'</strong>'))
                     ->disabled()
                     ->columnSpanFull(),
             ]);

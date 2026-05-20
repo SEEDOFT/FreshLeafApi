@@ -15,6 +15,7 @@ use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Schemas\Schema;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
+use Illuminate\Support\HtmlString;
 use Override;
 
 class VariantsRelationManager extends RelationManager
@@ -28,22 +29,22 @@ class VariantsRelationManager extends RelationManager
         return $schema
             ->components([
                 Select::make('unit_id')
-                    ->label(__('admin.resources.product.unit'))
+                    ->label(new HtmlString('<strong>'.__('admin.resources.product.unit').'</strong>'))
                     ->relationship('unit', 'name')
                     ->required(fn (string $operation): bool => $operation === 'create')
                     ->dehydrated(fn (mixed $state): bool => filled($state)),
                 TextInput::make('name')
-                    ->label(__('admin.resources.unit.name'))
+                    ->label(new HtmlString('<strong>'.__('admin.resources.unit.name').'</strong>'))
                     ->placeholder('e.g. 500g Pack, Bulk 5kg')
                     ->required(fn (string $operation): bool => $operation === 'create')
                     ->dehydrated(fn (mixed $state): bool => filled($state)),
                 TextInput::make('quantity_in_unit')
-                    ->label(__('admin.resources.product.quantity_in_unit'))
+                    ->label(new HtmlString('<strong>'.__('admin.resources.product.quantity_in_unit').'</strong>'))
                     ->required(fn (string $operation): bool => $operation === 'create')
                     ->dehydrated(fn (mixed $state): bool => filled($state))
                     ->numeric(),
                 TextInput::make('price')
-                    ->label(__('admin.resources.product.price'))
+                    ->label(new HtmlString('<strong>'.__('admin.resources.product.price').'</strong>'))
                     ->required(fn (string $operation): bool => $operation === 'create')
                     ->dehydrated(fn (mixed $state): bool => filled($state))
                     ->numeric()
@@ -58,19 +59,19 @@ class VariantsRelationManager extends RelationManager
             ->stackedOnMobile()
             ->recordTitleAttribute('name')
             ->columns([
-                TextColumn::make('name')
-                    ->label(__('admin.resources.unit.name'))
+                TextColumn::make('name')->placeholder(__('admin.resources.general.not_provided'))
+                    ->label(new HtmlString('<strong>'.__('admin.resources.unit.name').'</strong>'))
                     ->searchable()
                     ->sortable(),
-                TextColumn::make('unit.symbol')
-                    ->label(__('admin.resources.product.unit'))
+                TextColumn::make('unit.symbol')->placeholder(__('admin.resources.general.not_provided'))
+                    ->label(new HtmlString('<strong>'.__('admin.resources.product.unit').'</strong>'))
                     ->sortable(),
-                TextColumn::make('quantity_in_unit')
-                    ->label(__('admin.resources.product.quantity_in_unit'))
+                TextColumn::make('quantity_in_unit')->placeholder(__('admin.resources.general.not_provided'))
+                    ->label(new HtmlString('<strong>'.__('admin.resources.product.quantity_in_unit').'</strong>'))
                     ->numeric()
                     ->sortable(),
-                TextColumn::make('price')
-                    ->label(__('admin.resources.product.price'))
+                TextColumn::make('price')->placeholder(__('admin.resources.general.not_provided'))
+                    ->label(new HtmlString('<strong>'.__('admin.resources.product.price').'</strong>'))
                     ->money('USD')
                     ->sortable(),
             ])

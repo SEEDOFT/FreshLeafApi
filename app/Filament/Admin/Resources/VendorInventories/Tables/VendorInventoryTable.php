@@ -5,11 +5,13 @@ declare(strict_types=1);
 namespace App\Filament\Admin\Resources\VendorInventories\Tables;
 
 use App\Models\VendorInventory;
+use App\Models\VendorInventoryStatus;
 use Filament\Actions\ViewAction;
 use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
+use Illuminate\Support\HtmlString;
 
 class VendorInventoryTable
 {
@@ -19,60 +21,55 @@ class VendorInventoryTable
             ->recordAction('view')
             ->stackedOnMobile()
             ->columns([
-                TextColumn::make('vendor.name')
-                    ->label(__('admin.resources.vendor_inventory.vendor'))
+                TextColumn::make('vendor.name')->placeholder(__('admin.resources.general.not_provided'))
+                    ->label(new HtmlString('<strong>'.__('admin.resources.vendor_inventory.vendor').'</strong>'))
                     ->getStateUsing(
-                        static fn (VendorInventory $record) => "{$record->vendor->last_name} {$record->vendor->first_name}"
+                        static fn (VendorInventory $record) => $record->vendor->fullName
                     )
                     ->searchable(['first_name', 'last_name'])
                     ->sortable(),
-
                 ImageColumn::make('product.image_url')
-                    ->label(__('admin.resources.product.image')),
-
-                TextColumn::make('product.name_en')
-                    ->label(__('admin.resources.product.name_en'))
+                    ->label(new HtmlString('<strong>'.__('admin.resources.product.image').'</strong>')),
+                TextColumn::make('product.name_en')->placeholder(__('admin.resources.general.not_provided'))
+                    ->label(new HtmlString('<strong>'.__('admin.resources.product.name_en').'</strong>'))
                     ->searchable()
                     ->sortable(),
-
-                TextColumn::make('price')
-                    ->label(__('admin.resources.product.unit_price'))
+                TextColumn::make('price')->placeholder(__('admin.resources.general.not_provided'))
+                    ->label(new HtmlString('<strong>'.__('admin.resources.product.unit_price').'</strong>'))
                     ->money('USD')
                     ->sortable(),
-
-                TextColumn::make('stock_quantity')
-                    ->label(__('admin.resources.product.stock'))
+                TextColumn::make('stock_quantity')->placeholder(__('admin.resources.general.not_provided'))
+                    ->label(new HtmlString('<strong>'.__('admin.resources.product.stock').'</strong>'))
                     ->numeric()
                     ->sortable(),
-
-                TextColumn::make('unit.name')
-                    ->label(__('admin.resources.product.unit')),
-
-                TextColumn::make('province_of_origin')
-                    ->label(__('admin.resources.product.province_of_origin'))
+                TextColumn::make('unit.name')->placeholder(__('admin.resources.general.not_provided'))
+                    ->label(new HtmlString('<strong>'.__('admin.resources.product.unit').'</strong>')),
+                TextColumn::make('province_of_origin')->placeholder(__('admin.resources.general.not_provided'))
+                    ->label(new HtmlString('<strong>'.__('admin.resources.product.province_of_origin').'</strong>'))
                     ->searchable(),
-
-                TextColumn::make('status.name')
-                    ->label(__('admin.resources.product.status'))
+                TextColumn::make('status.translated_name')->placeholder(__('admin.resources.general.not_provided'))
+                    ->label(new HtmlString('<strong>'.__('admin.resources.product.status').'</strong>'))
                     ->badge()
                     ->sortable(),
-
-                TextColumn::make('updated_at')
-                    ->label(__('admin.resources.updated_at'))
+                TextColumn::make('updated_at')->placeholder(__('admin.resources.general.not_provided'))
+                    ->label(new HtmlString('<strong>'.__('admin.resources.updated_at').'</strong>'))
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
                 SelectFilter::make('vendor_id')
-                    ->label(__('admin.resources.vendor_inventory.vendor'))
+                    ->label(new HtmlString('<strong>'.__('admin.resources.vendor_inventory.vendor').'</strong>'))
                     ->relationship('vendor', 'last_name'),
                 SelectFilter::make('product_category_id')
-                    ->label(__('admin.resources.product.system_category'))
+                    ->label(new HtmlString('<strong>'.__('admin.resources.product.system_category').'</strong>'))
                     ->relationship('product.productCategory', 'name_en'),
                 SelectFilter::make('inventory_status_id')
-                    ->label(__('admin.resources.product.status'))
-                    ->relationship('status', 'name'),
+                    ->label(new HtmlString('<strong>'.__('admin.resources.product.status').'</strong>'))
+                    ->options(
+                        VendorInventoryStatus::all()
+                            ->pluck('translated_name', 'id')
+                    ),
             ])
             ->actions([
                 ViewAction::make(),

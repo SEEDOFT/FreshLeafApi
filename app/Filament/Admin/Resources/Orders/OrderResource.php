@@ -22,8 +22,10 @@ use Override;
 
 class OrderResource extends Resource
 {
+    #[Override]
     protected static ?string $model = Order::class;
 
+    #[Override]
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedShoppingBag;
 
     #[Override]

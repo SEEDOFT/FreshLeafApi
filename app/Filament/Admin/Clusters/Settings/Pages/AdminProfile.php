@@ -18,6 +18,7 @@ use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\HtmlString;
 use Override;
 
 use function __;
@@ -82,7 +83,7 @@ class AdminProfile extends Page
                         Grid::make(4)
                             ->schema([
                                 FileUpload::make('image')
-                                    ->label(__('admin.profile.avatar'))
+                                    ->label(new HtmlString('<strong>'.__('admin.profile.avatar').'</strong>'))
                                     ->avatar()
                                     ->image()
                                     ->maxSize(6144)
@@ -92,23 +93,23 @@ class AdminProfile extends Page
                                 Grid::make(2)
                                     ->schema([
                                         TextInput::make('first_name')
-                                            ->label(__('admin.profile.first_name'))
+                                            ->label(new HtmlString('<strong>'.__('admin.profile.first_name').'</strong>'))
                                             ->required(fn (string $operation): bool => $operation === 'create')
                                             ->dehydrated(fn (mixed $state): bool => filled($state))
                                             ->maxLength(255),
                                         TextInput::make('last_name')
-                                            ->label(__('admin.profile.last_name'))
+                                            ->label(new HtmlString('<strong>'.__('admin.profile.last_name').'</strong>'))
                                             ->required(fn (string $operation): bool => $operation === 'create')
                                             ->dehydrated(fn (mixed $state): bool => filled($state))
                                             ->maxLength(255),
                                         TextInput::make('email')
-                                            ->label(__('admin.profile.email'))
+                                            ->label(new HtmlString('<strong>'.__('admin.profile.email').'</strong>'))
                                             ->email()
                                             ->required(fn (string $operation): bool => $operation === 'create')
                                             ->dehydrated(fn (mixed $state): bool => filled($state))
                                             ->maxLength(255),
                                         TextInput::make('phone_number')
-                                            ->label(__('admin.profile.phone'))
+                                            ->label(new HtmlString('<strong>'.__('admin.profile.phone').'</strong>'))
                                             ->tel(),
                                     ])
                                     ->columnSpan(3),
@@ -119,7 +120,7 @@ class AdminProfile extends Page
                     ->description(__('admin.profile.preferences_desc'))
                     ->schema([
                         Select::make('adminProfile.locale')
-                            ->label(__('admin.profile.display_language'))
+                            ->label(new HtmlString('<strong>'.__('admin.profile.display_language').'</strong>'))
                             ->options([
                                 'km' => 'Khmer (ភាសាខ្មែរ)',
                                 'en' => 'English (ភាសាអង់គ្លេស)',
@@ -132,15 +133,15 @@ class AdminProfile extends Page
                     ->description(__('admin.profile.professional_details_desc'))
                     ->schema([
                         TextInput::make('adminProfile.job_title')
-                            ->label(__('admin.profile.job_title'))
+                            ->label(new HtmlString('<strong>'.__('admin.profile.job_title').'</strong>'))
                             ->placeholder('e.g. Operations Manager')
                             ->maxLength(255),
                         TextInput::make('adminProfile.department')
-                            ->label(__('admin.profile.department'))
+                            ->label(new HtmlString('<strong>'.__('admin.profile.department').'</strong>'))
                             ->placeholder('e.g. Logistics')
                             ->maxLength(255),
                         TextInput::make('adminProfile.office_phone')
-                            ->label(__('admin.profile.office_phone'))
+                            ->label(new HtmlString('<strong>'.__('admin.profile.office_phone').'</strong>'))
                             ->tel()
                             ->maxLength(255),
                     ])->columns(3),
@@ -195,7 +196,7 @@ class AdminProfile extends Page
     {
         return [
             Action::make('save')
-                ->label(__('admin.profile.save_changes'))
+                ->label(new HtmlString('<strong>'.__('admin.profile.save_changes').'</strong>'))
                 ->submit('save')
                 ->keyBindings(['mod+s']),
         ];
@@ -206,12 +207,12 @@ class AdminProfile extends Page
         return Grid::make(2)
             ->schema([
                 TextInput::make('first_name')
-                    ->label(__('admin.profile.first_name'))
+                    ->label(new HtmlString('<strong>'.__('admin.profile.first_name').'</strong>'))
                     ->required(fn (string $operation): bool => $operation === 'create')
                     ->dehydrated(fn (mixed $state): bool => filled($state))
                     ->maxLength(255),
                 TextInput::make('last_name')
-                    ->label(__('admin.profile.last_name'))
+                    ->label(new HtmlString('<strong>'.__('admin.profile.last_name').'</strong>'))
                     ->required(fn (string $operation): bool => $operation === 'create')
                     ->dehydrated(fn (mixed $state): bool => filled($state))
                     ->maxLength(255),

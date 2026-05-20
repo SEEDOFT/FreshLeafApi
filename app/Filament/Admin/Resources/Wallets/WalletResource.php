@@ -70,8 +70,20 @@ class WalletResource extends Resource
     {
         return parent::getEloquentQuery()
             ->whereHas('user', static function (Builder $query): void {
-                $query->where('user_type_id', UserType::ADMIN);
-            });
+                $query->whereIn('user_type_id', [UserType::ADMIN_ID, UserType::VENDOR_ID, UserType::CONSUMER_ID]);
+            })
+            ->orderByRaw('
+                (
+                    SELECT CASE user_type_id
+                        WHEN '.UserType::ADMIN_ID.' THEN 1
+                        WHEN '.UserType::VENDOR_ID.' THEN 2
+                        WHEN '.UserType::CONSUMER_ID.' THEN 3
+                        ELSE 4
+                    END
+                    FROM users
+                    WHERE users.id = wallets.user_id
+                )
+            ');
     }
 
     #[Override]

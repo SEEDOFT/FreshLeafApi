@@ -19,17 +19,17 @@ class ExchangeRatesTable
         return $table
             ->recordAction('view')
             ->columns([
-                TextColumn::make('fromCurrency.name')
+                TextColumn::make('fromCurrency.translated_currency')->placeholder(__('admin.resources.general.not_provided'))
                     ->label(new HtmlString('<strong>'.__('admin.resources.exchange_rate.base_currency').'</strong>'))
                     ->searchable(),
-                TextColumn::make('toCurrency.name')
+                TextColumn::make('toCurrency.translated_currency')->placeholder(__('admin.resources.general.not_provided'))
                     ->label(new HtmlString('<strong>'.__('admin.resources.exchange_rate.target_currency').'</strong>'))
                     ->searchable(),
-                TextColumn::make('rate')
+                TextColumn::make('rate')->placeholder(__('admin.resources.general.not_provided'))
                     ->label(new HtmlString('<strong>'.__('admin.resources.exchange_rate.rate').'</strong>'))
                     ->numeric()
                     ->sortable(),
-                TextColumn::make('updated_at')
+                TextColumn::make('updated_at')->placeholder(__('admin.resources.general.not_provided'))
                     ->label(new HtmlString('<strong>'.__('admin.resources.updated_at').'</strong>'))
                     ->dateTime()
                     ->sortable(),

@@ -8,6 +8,7 @@ use App\Filament\Vendor\Pages\ProductCatalog;
 use App\Filament\Vendor\Resources\Products\ProductResource;
 use Filament\Actions\Action;
 use Filament\Resources\Pages\ListRecords;
+use Illuminate\Support\HtmlString;
 use Override;
 
 class ListProducts extends ListRecords
@@ -20,7 +21,7 @@ class ListProducts extends ListRecords
     {
         return [
             Action::make('create')
-                ->label(__('shared.form.add_product'))
+                ->label(new HtmlString('<strong>'.__('shared.form.add_product').'</strong>'))
                 ->url(static fn (): string => ProductCatalog::getUrl(panel: 'vendor')),
         ];
     }

@@ -11,12 +11,13 @@ use Illuminate\Database\Eloquent\Attributes\UseFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Facades\App;
 
 /**
  * @property int $id
- * @property string $code
  * @property string $name_en
  * @property string $name_km
+ * @property-read string|null $translated_name
  * @property-read WalletTransaction[] $transactions
  */
 #[Table('wallet_transaction_types', key: 'id', keyType: 'int', incrementing: false)]
@@ -42,6 +43,14 @@ class WalletTransactionType extends Model
     public const string PAYMENT = 'PAYMENT';
 
     public const string REFUND = 'REFUND';
+
+    /**
+     * Get translated name of wallet transaction type.
+     */
+    public function getTranslatedNameAttribute(): ?string
+    {
+        return $this->{'name_'.App::getLocale()};
+    }
 
     /**
      * Get the transactions for this type.

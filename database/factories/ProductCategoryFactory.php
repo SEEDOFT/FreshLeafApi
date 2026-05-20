@@ -24,6 +24,7 @@ class ProductCategoryFactory extends Factory
         $name = $this->faker->unique()->word();
 
         return [
+            'id' => $this->faker->unique()->numberBetween(1, 1000),
             'name_en' => $name,
             'name_km' => $name.' (Khmer)',
             'description_en' => $this->faker->sentence(),

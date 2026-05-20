@@ -24,14 +24,31 @@ class ProductPricingTest extends TestCase
     public function test_product_variant_calculates_active_price_with_discount(): void
     {
         // 1. Setup Data
-        $category = ProductCategory::create([
+        $category = ProductCategory::factory()->create([
             'name_en' => 'Vegetables',
             'name_km' => 'Vegetables (KM)',
             'slug' => 'vegetables',
         ]);
-        $type = ProductType::create(['name' => 'Organic', 'code' => 'organic']);
-        $unit = Unit::create(['name' => 'Kilogram', 'symbol' => 'KG']);
-        $status = ProductStatus::create(['name' => 'Active', 'code' => 'active']);
+        $type = ProductType::firstOrCreate(
+            ['id' => 1],
+            [
+                'name_en' => 'Organic',
+                'name_km' => 'Organic (KM)',
+            ]
+        );
+        $unit = Unit::create([
+            'name_en' => 'Kilogram',
+            'name_km' => 'គីឡូក្រាម',
+            'symbol' => 'KG',
+            'conversion_to_base' => 1.0,
+        ]);
+        $status = ProductStatus::firstOrCreate(
+            ['id' => ProductStatus::PUBLISHED_ID],
+            [
+                'name_en' => 'Published',
+                'name_km' => 'បានផ្សព្វផ្សាយ',
+            ]
+        );
 
         $product = Product::create([
             'product_category_id' => $category->id,

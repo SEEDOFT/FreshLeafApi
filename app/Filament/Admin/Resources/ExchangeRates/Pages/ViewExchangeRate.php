@@ -11,6 +11,7 @@ use Override;
 
 class ViewExchangeRate extends ViewRecord
 {
+    #[Override]
     protected static string $resource = ExchangeRateResource::class;
 
     #[Override]

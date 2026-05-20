@@ -15,6 +15,7 @@ use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\HtmlString;
 use Override;
 
 class VendorSecurity extends Page
@@ -52,19 +53,19 @@ class VendorSecurity extends Page
                     ->description(__('shared.security.change_password_desc'))
                     ->schema([
                         TextInput::make('current_password')
-                            ->label(__('shared.security.current_password'))
+                            ->label(new HtmlString('<strong>'.__('shared.security.current_password').'</strong>'))
                             ->password()
                             ->required(fn (string $operation): bool => $operation === 'create')
                             ->dehydrated(fn (mixed $state): bool => filled($state))
                             ->currentPassword(),
                         TextInput::make('password')
-                            ->label(__('shared.security.password'))
+                            ->label(new HtmlString('<strong>'.__('shared.security.password').'</strong>'))
                             ->password()
                             ->required(fn (string $operation): bool => $operation === 'create')
                             ->dehydrated(fn (mixed $state): bool => filled($state))
                             ->confirmed(),
                         TextInput::make('password_confirmation')
-                            ->label(__('shared.security.password_confirmation'))
+                            ->label(new HtmlString('<strong>'.__('shared.security.password_confirmation').'</strong>'))
                             ->password()
                             ->required(fn (string $operation): bool => $operation === 'create')
                             ->dehydrated(fn (mixed $state): bool => filled($state)),
@@ -102,7 +103,7 @@ class VendorSecurity extends Page
     {
         return [
             Action::make('save')
-                ->label(__('shared.security.update_password'))
+                ->label(new HtmlString('<strong>'.__('shared.security.update_password').'</strong>'))
                 ->submit('save')
                 ->keyBindings(['mod+s']),
         ];

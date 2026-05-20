@@ -13,6 +13,8 @@ use Filament\Actions\ViewAction;
 use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Facades\App;
 use Illuminate\Support\HtmlString;
 
 class ProductCategoriesTable
@@ -28,23 +30,23 @@ class ProductCategoriesTable
                     ->label(new HtmlString('<strong>'.__('admin.resources.product_category.image').'</strong>'))
                     ->disk('public')
                     ->circular(),
-                TextColumn::make('name_en')
+                TextColumn::make('name_en')->placeholder(__('admin.resources.general.not_provided'))
                     ->label(new HtmlString('<strong>'.__('admin.resources.product_category.name_en').'</strong>'))
                     ->placeholder($notProvided)
                     ->searchable()
                     ->sortable(),
-                TextColumn::make('name_km')
+                TextColumn::make('name_km')->placeholder(__('admin.resources.general.not_provided'))
                     ->label(new HtmlString('<strong>'.__('admin.resources.product_category.name_km').'</strong>'))
                     ->placeholder($notProvided)
                     ->searchable()
                     ->sortable(),
-                TextColumn::make('slug')
+                TextColumn::make('slug')->placeholder(__('admin.resources.general.not_provided'))
                     ->label(new HtmlString('<strong>'.__('admin.resources.product_category.slug').'</strong>'))
                     ->placeholder($notProvided)
                     ->searchable()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
-                TextColumn::make('status.translated_name')
+                TextColumn::make('status.translated_name')->placeholder(__('admin.resources.general.not_provided'))
                     ->label(new HtmlString('<strong>'.__('admin.resources.product_category.status').'</strong>'))
                     ->badge()
                     ->placeholder($notProvided)
@@ -53,13 +55,22 @@ class ProductCategoriesTable
                         ProductCategoryStatus::INACTIVE_ID => 'danger',
                         default => 'gray',
                     })
-                    ->sortable(),
-                TextColumn::make('products_count')
+                    ->sortable(query: static function (Builder $query, string $direction): Builder {
+                        $locale = App::getLocale();
+
+                        return $query->orderBy(
+                            ProductCategoryStatus::select("name_{$locale}")
+                                ->whereColumn('product_category_statuses.id', 'product_categories.product_category_status_id')
+                                ->limit(1),
+                            $direction
+                        );
+                    }),
+                TextColumn::make('products_count')->placeholder(__('admin.resources.general.not_provided'))
                     ->label(new HtmlString('<strong>'.__('admin.resources.product_category.products_count').'</strong>'))
                     ->counts('products')
                     ->placeholder($notProvided)
                     ->sortable(),
-                TextColumn::make('created_at')
+                TextColumn::make('created_at')->placeholder(__('admin.resources.general.not_provided'))
                     ->label(new HtmlString('<strong>'.__('admin.resources.product_category.created_at').'</strong>'))
                     ->dateTime()
                     ->placeholder($notProvided)

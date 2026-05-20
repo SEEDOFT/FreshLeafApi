@@ -12,6 +12,7 @@ use Override;
 
 class EditExchangeRate extends EditRecord
 {
+    #[Override]
     protected static string $resource = ExchangeRateResource::class;
 
     #[Override]

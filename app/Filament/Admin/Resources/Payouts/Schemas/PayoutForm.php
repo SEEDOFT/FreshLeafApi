@@ -10,6 +10,7 @@ use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Schema;
+use Illuminate\Support\HtmlString;
 
 class PayoutForm
 {
@@ -18,37 +19,37 @@ class PayoutForm
         return $schema
             ->components([
                 Select::make('vendor_user_id')
-                    ->label(__('admin.resources.payout.vendor'))
+                    ->label(new HtmlString('<strong>'.__('admin.resources.payout.vendor').'</strong>'))
                     ->relationship('vendor', 'first_name', fn ($query) => $query->where('user_type_id', UserType::VENDOR))
                     ->getOptionLabelFromRecordUsing(fn ($record) => "{$record->first_name} {$record->last_name} ({$record->vendorProfile?->business_name})")
                     ->searchable()
                     ->required(fn (string $operation): bool => $operation === 'create')->dehydrated(fn (mixed $state): bool => filled($state)),
 
                 Select::make('payout_status_id')
-                    ->label(__('admin.resources.payout.status'))
+                    ->label(new HtmlString('<strong>'.__('admin.resources.payout.status').'</strong>'))
                     ->relationship('status', 'name')
                     ->required(fn (string $operation): bool => $operation === 'create')->dehydrated(fn (mixed $state): bool => filled($state)),
 
                 Select::make('payout_method_id')
-                    ->label(__('admin.resources.payout.method'))
+                    ->label(new HtmlString('<strong>'.__('admin.resources.payout.method').'</strong>'))
                     ->relationship('method', 'name')
                     ->required(fn (string $operation): bool => $operation === 'create')->dehydrated(fn (mixed $state): bool => filled($state)),
 
                 TextInput::make('amount')
-                    ->label(__('admin.resources.payout.amount'))
+                    ->label(new HtmlString('<strong>'.__('admin.resources.payout.amount').'</strong>'))
                     ->numeric()
                     ->prefix('$')
                     ->required(fn (string $operation): bool => $operation === 'create')->dehydrated(fn (mixed $state): bool => filled($state)),
 
                 TextInput::make('transaction_reference')
-                    ->label(__('admin.resources.payout.transaction_ref'))
+                    ->label(new HtmlString('<strong>'.__('admin.resources.payout.transaction_ref').'</strong>'))
                     ->placeholder(__('admin.resources.payout.transaction_ref')),
 
                 DateTimePicker::make('processed_at')
-                    ->label(__('admin.resources.payout.processed_date')),
+                    ->label(new HtmlString('<strong>'.__('admin.resources.payout.processed_date').'</strong>')),
 
                 Textarea::make('admin_notes')
-                    ->label(__('admin.resources.payout.admin_notes'))
+                    ->label(new HtmlString('<strong>'.__('admin.resources.payout.admin_notes').'</strong>'))
                     ->columnSpanFull(),
             ]);
     }

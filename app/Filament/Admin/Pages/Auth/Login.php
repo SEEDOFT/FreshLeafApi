@@ -13,6 +13,7 @@ use Filament\Auth\Pages\Login as BaseLogin;
 use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Schema;
 use Illuminate\Contracts\Support\Htmlable;
+use Illuminate\Support\HtmlString;
 use Illuminate\Validation\ValidationException;
 use Override;
 
@@ -46,7 +47,7 @@ class Login extends BaseLogin
             ->components([
                 $this->getPhoneNumberFormComponent(),
                 PasswordInput::make('password')
-                    ->label(__('admin.auth.login.password'))
+                    ->label(new HtmlString('<strong>'.__('admin.auth.login.password').'</strong>'))
                     ->required()
                     ->revealable(),
                 $this->getRememberFormComponent(),
@@ -59,7 +60,7 @@ class Login extends BaseLogin
         return Grid::make(5)
             ->schema([
                 PhoneNumberInput::make('phone_number')
-                    ->label(__('admin.auth.login.phone'))
+                    ->label(new HtmlString('<strong>'.__('admin.auth.login.phone').'</strong>'))
                     ->required()
                     ->columnSpanFull(),
             ]);

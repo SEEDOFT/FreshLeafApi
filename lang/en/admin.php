@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 return [
     'navigation' => [
+        'dashboard' => 'Dashboard',
         'shop' => 'Shop',
         'catalog' => 'Catalog',
         'accounts' => 'Accounts',

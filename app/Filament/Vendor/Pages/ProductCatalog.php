@@ -48,7 +48,7 @@ class ProductCatalog extends Page implements HasTable
     #[Override]
     public function getTitle(): string
     {
-        return __('shared.product.add_product');
+        return __('shared.form.add_product');
     }
 
     public function table(Table $table): Table

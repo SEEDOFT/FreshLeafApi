@@ -9,6 +9,7 @@ use App\Filament\Vendor\Clusters\Settings\Pages\BusinessProfile;
 use App\Filament\Vendor\Clusters\Settings\Pages\VendorProfile;
 use App\Filament\Vendor\Pages\Auth\Login;
 use App\Filament\Vendor\Pages\Auth\Register;
+use App\Filament\Vendor\Pages\Dashboard;
 use App\Filament\Vendor\Widgets\VendorEarningsChart;
 use App\Filament\Vendor\Widgets\VendorStatsOverview;
 use App\Http\Middleware\SetLocaleFromAcceptLanguage;
@@ -19,7 +20,6 @@ use Filament\Http\Middleware\AuthenticateSession;
 use Filament\Http\Middleware\DisableBladeIconComponents;
 use Filament\Http\Middleware\DispatchServingFilamentEvent;
 use Filament\Navigation\NavigationGroup;
-use Filament\Pages\Dashboard;
 use Filament\Panel;
 use Filament\PanelProvider;
 use Filament\Support\Enums\Width;
@@ -69,6 +69,9 @@ class VendorPanelProvider extends PanelProvider
             )
             ->colors(ThemeColors::getPalette())
             ->navigationGroups([
+                NavigationGroup::make()
+                    ->label(__('admin.navigation.dashboard'))
+                    ->icon('heroicon-o-home'),
                 NavigationGroup::make()
                     ->label(__('admin.navigation.shop')),
                 NavigationGroup::make()

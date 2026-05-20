@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 return [
     'navigation' => [
+        'dashboard' => 'ផ្ទាំងគ្រប់គ្រង',
         'shop' => 'ហាង',
         'catalog' => 'បញ្ជីផលិតផល',
         'accounts' => 'គណនី',

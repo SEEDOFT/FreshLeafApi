@@ -25,6 +25,8 @@ class AdminRevenueChart extends ChartWidget
 
     protected ?string $chartColor = 'success';
 
+    protected int|string|array $columnSpan = 1;
+
     protected function getData(): array
     {
         $data = Order::query()

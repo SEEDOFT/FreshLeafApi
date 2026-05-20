@@ -22,6 +22,8 @@ class VendorStatsOverview extends BaseWidget
     #[Override]
     protected string $view = 'filament.widgets.stats-overview';
 
+    protected int|string|array $columnSpan = 'full';
+
     #[Override]
     public function getViewData(): array
     {

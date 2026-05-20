@@ -25,6 +25,12 @@ class PayoutResource extends Resource
     protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-banknotes';
 
     #[Override]
+    public static function getNavigationGroup(): ?string
+    {
+        return __('admin.navigation.financial');
+    }
+
+    #[Override]
     public static function canCreate(): bool
     {
         return false;

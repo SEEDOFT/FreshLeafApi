@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Filament\Vendor\Clusters\Settings\Pages;
 
+use App\Constants\StorageDirectory;
 use App\Filament\Vendor\Clusters\Settings;
 use BackedEnum;
 use Filament\Actions\Action;
@@ -50,15 +51,19 @@ class VendorProfile extends Page
     public function mount(): void
     {
         $user = Auth::user();
+
         if (! $user) {
             return;
         }
 
         $this->data = $user->toArray();
 
-        // Wrap image in array for FileUpload component if it's a string
         if (isset($this->data['image']) && is_string($this->data['image'])) {
-            $this->data['image'] = [$this->data['image']];
+            $this->data['image'] = $this->getImageUploadState($this->data['image']);
+        }
+
+        if ($user->vendorProfile) {
+            $this->data['vendorProfile'] = $user->vendorProfile->toArray();
         }
     }
 
@@ -74,10 +79,9 @@ class VendorProfile extends Page
                                     ->label(new HtmlString('<strong>'.__('vendor.settings.vendor_profile.avatar').'</strong>'))
                                     ->avatar()
                                     ->imageEditor()
-                                    ->directory('avatars')
+                                    ->directory(StorageDirectory::USERS)
                                     ->alignCenter()
                                     ->columnSpan(1),
-
                                 Grid::make(2)
                                     ->schema([
                                         TextInput::make('first_name')
@@ -105,21 +109,17 @@ class VendorProfile extends Page
                                     ->columnSpan(3),
                             ]),
                     ]),
-
                 Section::make(__('vendor.settings.vendor_profile.preferences'))
                     ->description(__('vendor.settings.vendor_profile.preferences_desc'))
                     ->schema([
-                        Select::make('locale')
+                        Select::make('vendorProfile.locale')
                             ->label(new HtmlString('<strong>'.__('vendor.settings.vendor_profile.language').'</strong>'))
                             ->options([
                                 'km' => 'Khmer (ភាសាខ្មែរ)',
                                 'en' => 'English (ភាសាអង់គ្លេស)',
                             ])
                             ->required(fn (string $operation): bool => $operation === 'create')
-                            ->dehydrated(fn (mixed $state): bool => filled($state))
-                            ->native(false)
-                            ->searchable()
-                            ->preload(),
+                            ->dehydrated(fn (mixed $state): bool => filled($state)),
                     ])->columns(2),
             ])
             ->statePath('data');
@@ -183,5 +183,32 @@ class VendorProfile extends Page
                     ->dehydrated(fn (mixed $state): bool => filled($state))
                     ->maxLength(255),
             ]);
+    }
+
+    /**
+     * @return array<string>
+     */
+    private function getImageUploadState(string $image): array
+    {
+        $path = ltrim($image, '/');
+
+        return [
+            str_starts_with($path, StorageDirectory::USERS)
+                ? $path : StorageDirectory::USERS.'/'.$path,
+        ];
+    }
+
+    /**
+     * @param  array<mixed>|string  $image
+     */
+    private function getImageDatabaseState(array|string $image): ?string
+    {
+        $path = is_array($image) ? reset($image) : $image;
+
+        if (! is_string($path) || $path === '') {
+            return null;
+        }
+
+        return basename($path);
     }
 }

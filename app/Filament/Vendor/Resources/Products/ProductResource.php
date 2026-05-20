@@ -33,6 +33,12 @@ class ProductResource extends Resource
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
 
     #[Override]
+    public static function getNavigationGroup(): ?string
+    {
+        return __('admin.navigation.catalog');
+    }
+
+    #[Override]
     public static function getNavigationLabel(): string
     {
         return __('shared.product.product_inventory');

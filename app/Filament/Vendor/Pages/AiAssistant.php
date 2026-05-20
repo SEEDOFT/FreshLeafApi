@@ -45,5 +45,5 @@ class AiAssistant extends Page
     }
 
     #[Override]
-    protected string $view = 'filament.pages.ai-assistant';
+    protected string $view = 'filament.pages.shared.ai-assistant';
 }

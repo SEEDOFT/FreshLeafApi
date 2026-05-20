@@ -86,6 +86,7 @@ class AdminProfile extends Page
                                     ->label(new HtmlString('<strong>'.__('admin.profile.avatar').'</strong>'))
                                     ->avatar()
                                     ->image()
+                                    ->imageEditor()
                                     ->maxSize(6144)
                                     ->disk('public')
                                     ->directory(StorageDirectory::USERS)

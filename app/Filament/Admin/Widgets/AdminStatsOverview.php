@@ -23,6 +23,8 @@ class AdminStatsOverview extends BaseWidget
     #[Override]
     protected string $view = 'filament.widgets.stats-overview';
 
+    protected int|string|array $columnSpan = 'full';
+
     #[Override]
     protected function getStats(): array
     {

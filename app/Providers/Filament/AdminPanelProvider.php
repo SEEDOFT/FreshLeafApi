@@ -10,6 +10,7 @@ use App\Filament\Admin\Pages\Auth\Login;
 use App\Filament\Admin\Widgets\AdminRevenueChart;
 use App\Filament\Admin\Widgets\AdminStatsOverview;
 use App\Filament\ThemeColors;
+use App\Filament\Widgets\CustomAccountWidget;
 use App\Http\Middleware\SetLocaleFromAcceptLanguage;
 use Filament\Actions\Action;
 use Filament\Enums\ThemeMode;
@@ -23,7 +24,6 @@ use Filament\Panel;
 use Filament\PanelProvider;
 use Filament\Support\Enums\Width;
 use Filament\View\PanelsRenderHook;
-use Filament\Widgets\AccountWidget;
 use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
 use Illuminate\Cookie\Middleware\EncryptCookies;
 use Illuminate\Foundation\Http\Middleware\PreventRequestForgery;
@@ -93,9 +93,9 @@ class AdminPanelProvider extends PanelProvider
             ])
             ->discoverWidgets(in: app_path('Filament/Admin/Widgets'), for: 'App\Filament\Admin\Widgets')
             ->widgets(widgets: [
-                AccountWidget::class,
                 AdminStatsOverview::class,
                 AdminRevenueChart::class,
+                CustomAccountWidget::class,
             ])
             ->middleware(middleware: [
                 EncryptCookies::class,

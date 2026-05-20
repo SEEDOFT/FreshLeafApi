@@ -12,6 +12,7 @@ use App\Filament\Vendor\Pages\Auth\Register;
 use App\Filament\Vendor\Pages\Dashboard;
 use App\Filament\Vendor\Widgets\VendorEarningsChart;
 use App\Filament\Vendor\Widgets\VendorStatsOverview;
+use App\Filament\Widgets\CustomAccountWidget;
 use App\Http\Middleware\SetLocaleFromAcceptLanguage;
 use Filament\Actions\Action;
 use Filament\Enums\ThemeMode;
@@ -24,7 +25,6 @@ use Filament\Panel;
 use Filament\PanelProvider;
 use Filament\Support\Enums\Width;
 use Filament\View\PanelsRenderHook;
-use Filament\Widgets\AccountWidget;
 use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
 use Illuminate\Cookie\Middleware\EncryptCookies;
 use Illuminate\Foundation\Http\Middleware\PreventRequestForgery;
@@ -91,9 +91,9 @@ class VendorPanelProvider extends PanelProvider
             ])
             ->discoverWidgets(in: app_path('Filament/Vendor/Widgets'), for: 'App\Filament\Vendor\Widgets')
             ->widgets([
-                AccountWidget::class,
                 VendorStatsOverview::class,
                 VendorEarningsChart::class,
+                CustomAccountWidget::class,
             ])
             ->middleware([
                 EncryptCookies::class,

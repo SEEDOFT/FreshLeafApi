@@ -4,24 +4,31 @@ declare(strict_types=1);
 
 namespace App\Filament\Admin\Resources\Vendors\Schemas;
 
-use App\Models\PaymentMethod;
+use App\Constants\StorageDirectory;
+use App\Filament\Forms\Components\PasswordInput;
+use App\Filament\Forms\Components\PhoneNumberInput;
 use App\Models\PaymentMethodStatus;
+use App\Models\PaymentMethodType;
+use App\Models\User;
 use App\Models\UserStatus;
 use App\Models\UserType;
-use Dotswan\MapPicker\Fields\Map;
+use Closure;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Hidden;
-use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
-use Filament\Forms\Components\Toggle;
 use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Components\Section;
-use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Components\Utilities\Set;
 use Filament\Schemas\Schema;
-use Illuminate\Support\Facades\Http;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\HtmlString;
+use Livewire\Component;
+
+use function filled;
+use function ltrim;
+use function preg_replace;
+use function str_starts_with;
 
 class VendorForm
 {
@@ -42,26 +49,90 @@ class VendorForm
                             ->dehydrated(fn (mixed $state): bool => filled($state)),
                         TextInput::make('email')
                             ->label(new HtmlString('<strong>'.__('admin.resources.user.email').'</strong>'))
-                            ->email(),
-                        TextInput::make('phone_number')
+                            ->email()
+                            ->dehydrated(fn (mixed $state): bool => filled($state)),
+                        PhoneNumberInput::make('phone_number')
                             ->label(new HtmlString('<strong>'.__('admin.resources.user.phone').'</strong>'))
-                            ->tel()
+                            ->required(fn (string $operation): bool => $operation === 'create')
+                            ->dehydrated(fn (mixed $state): bool => filled($state))
+                            ->live(onBlur: true)
+                            ->afterStateUpdated(function (PhoneNumberInput $component, Component $livewire, ?string $state, ?Model $record): void {
+                                if (blank($state)) {
+                                    $livewire->resetValidation($component->getStatePath());
+
+                                    return;
+                                }
+                                $cleaned = (string) preg_replace('/\s+/', '', $state);
+                                $formattedPhone = str_starts_with($cleaned, '+855')
+                                    ? $cleaned
+                                    : '+855'.ltrim($cleaned, '0');
+                                $query = User::where('phone_number', $formattedPhone)
+                                    ->where('user_type_id', UserType::VENDOR_ID)
+                                    ->whereNull('deleted_at');
+                                if ($record) {
+                                    $query->where('id', '!=', $record->getKey());
+                                }
+                                if ($query->exists()) {
+                                    $livewire->addError($component->getStatePath(), __('shared.auth.register.phone_registered'));
+                                } else {
+                                    $livewire->resetValidation($component->getStatePath());
+                                }
+                            })
+                            ->rule(function (?Model $record) {
+                                return function (string $attribute, mixed $value, Closure $fail) use ($record): void {
+                                    $cleaned = (string) preg_replace('/\s+/', '', (string) $value);
+                                    $formattedPhone = str_starts_with($cleaned, '+855')
+                                        ? $cleaned
+                                        : '+855'.ltrim($cleaned, '0');
+
+                                    $query = User::where('phone_number', $formattedPhone)
+                                        ->where('user_type_id', UserType::VENDOR_ID)
+                                        ->whereIn('user_status_id', [
+                                            UserStatus::ACTIVE_ID,
+                                            UserStatus::PENDING_ID,
+                                            UserStatus::INACTIVE_ID,
+                                        ])
+                                        ->whereNull('deleted_at');
+
+                                    if ($record) {
+                                        $query->where('id', '!=', $record->getKey());
+                                    }
+
+                                    if ($query->exists()) {
+                                        $fail(__('shared.auth.register.phone_registered'));
+                                    }
+                                };
+                            }),
+                        PasswordInput::make('password')
+                            ->label(new HtmlString('<strong>'.__('shared.auth.login.password').'</strong>'))
+                            ->required(fn (string $operation): bool => $operation === 'create')
+                            ->dehydrated(fn (mixed $state): bool => filled($state))
+                            ->revealable(),
+                        PasswordInput::make('password_confirmation')
+                            ->label(new HtmlString('<strong>'.__('shared.auth.register.password_confirm').'</strong>'))
+                            ->required(fn (string $operation): bool => $operation === 'create')
+                            ->dehydrated(fn (mixed $state): bool => filled($state))
+                            ->revealable(),
+                        Select::make('user_type_id')
+                            ->label(new HtmlString('<strong>'.__('admin.resources.user.type').'</strong>'))
+                            ->options(
+                                UserType::all()
+                                    ->pluck('translated_name', 'id')
+                            )
+                            ->required(fn (string $operation): bool => $operation === 'create')
+                            ->default(UserType::VENDOR_ID)
+                            ->disabled()
+                            ->dehydrated(fn (mixed $state): bool => filled($state)),
+                        Select::make('user_status_id')
+                            ->label(new HtmlString('<strong>'.__('admin.resources.user.status').'</strong>'))
+                            ->options(
+                                UserStatus::where('id', '!=', UserStatus::DELETED_ID)
+                                    ->get()
+                                    ->pluck('translated_name', 'id')
+                            )
+                            ->default(UserStatus::ACTIVE_ID)
                             ->required(fn (string $operation): bool => $operation === 'create')
                             ->dehydrated(fn (mixed $state): bool => filled($state)),
-                        Select::make('user_type_id')
-                            ->label(new HtmlString('<strong>'.__('admin.resources.user.account_type').'</strong>'))
-                            ->relationship('type')
-                            ->getOptionLabelFromRecordUsing(fn (UserType $record) => $record->translated_name)
-                            ->default(UserType::VENDOR_ID)
-                            ->disabled(fn (string $operation): bool => $operation === 'create')
-                            ->dehydrated(),
-                        Select::make('user_status_id')
-                            ->label(new HtmlString('<strong>'.__('admin.resources.user.account_status').'</strong>'))
-                            ->relationship('status')
-                            ->getOptionLabelFromRecordUsing(fn (UserStatus $record) => $record->translated_name)
-                            ->default(UserStatus::ACTIVE_ID)
-                            ->disabled(fn (string $operation): bool => $operation === 'create')
-                            ->dehydrated(),
                     ]),
 
                 Section::make(__('admin.resources.vendor.business_profile'))
@@ -71,94 +142,38 @@ class VendorForm
                             ->schema([
                                 TextInput::make('business_name')
                                     ->label(new HtmlString('<strong>'.__('admin.resources.vendor.business_name').'</strong>'))
-                                    ->required(fn (string $operation): bool => $operation === 'create'),
-                                TextInput::make('contact_phone')
-                                    ->label(new HtmlString('<strong>'.__('admin.resources.vendor.contact_phone').'</strong>'))
-                                    ->required(fn (string $operation): bool => $operation === 'create'),
-                            ]),
-                        Toggle::make('is_verified')
-                            ->label(new HtmlString('<strong>'.__('admin.resources.vendor.verified').'</strong>'))
-                            ->disabled()
-                            ->default(true),
-                    ]),
-
-                Section::make(__('admin.resources.vendor.addresses'))
-                    ->schema([
-                        Repeater::make('addresses')
-                            ->relationship('addresses')
-                            ->schema([
-                                TextInput::make('label')
-                                    ->label(new HtmlString('<strong>'.__('admin.resources.vendor.address_label').'</strong>'))
-                                    ->required(),
-                                TextInput::make('recipient_name')
-                                    ->label(new HtmlString('<strong>'.__('admin.resources.vendor.recipient_name').'</strong>'))
-                                    ->required(),
-                                TextInput::make('phone')
-                                    ->label(new HtmlString('<strong>'.__('admin.resources.vendor.contact_phone').'</strong>'))
-                                    ->tel()
-                                    ->required(),
-                                TextInput::make('address_line_1')
-                                    ->label(new HtmlString('<strong>'.__('admin.resources.vendor.address_line_1').'</strong>'))
-                                    ->required(),
-                                TextInput::make('address_line_2')
-                                    ->label(new HtmlString('<strong>'.__('admin.resources.vendor.address_line_2').'</strong>')),
-                                TextInput::make('city')
-                                    ->label(new HtmlString('<strong>'.__('admin.resources.vendor.city').'</strong>'))
-                                    ->required(),
+                                    ->required(fn (string $operation): bool => $operation === 'create')
+                                    ->maxLength(255)
+                                    ->dehydrated(fn (mixed $state): bool => filled($state)),
+                                PhoneNumberInput::make('contact_phone')
+                                    ->label(new HtmlString('<strong>'.__('shared.form.fields.contact_phone').'</strong>'))
+                                    ->required(fn (string $operation): bool => $operation === 'create')
+                                    ->dehydrated(fn (mixed $state): bool => filled($state)),
+                                TextInput::make('village')
+                                    ->label(new HtmlString('<strong>'.__('shared.form.fields.village').'</strong>'))
+                                    ->required(fn (string $operation): bool => $operation === 'create')
+                                    ->maxLength(255)
+                                    ->dehydrated(fn (mixed $state): bool => filled($state)),
+                                TextInput::make('commune')
+                                    ->label(new HtmlString('<strong>'.__('shared.form.fields.commune').'</strong>'))
+                                    ->required(fn (string $operation): bool => $operation === 'create')
+                                    ->maxLength(255)
+                                    ->dehydrated(fn (mixed $state): bool => filled($state)),
+                                TextInput::make('district')
+                                    ->label(new HtmlString('<strong>'.__('shared.form.fields.district').'</strong>'))
+                                    ->required(fn (string $operation): bool => $operation === 'create')
+                                    ->maxLength(255)
+                                    ->dehydrated(fn (mixed $state): bool => filled($state)),
                                 TextInput::make('province')
-                                    ->label(new HtmlString('<strong>'.__('admin.resources.vendor.province').'</strong>'))
-                                    ->required(),
-                                TextInput::make('postal_code')
-                                    ->label(new HtmlString('<strong>'.__('admin.resources.vendor.postal_code').'</strong>'))
-                                    ->required(),
-                                Hidden::make('lat'),
-                                Hidden::make('long'),
-                                Map::make('location')
-                                    ->label(new HtmlString('<strong>'.__('admin.resources.vendor.location').'</strong>'))
-                                    ->columnSpanFull()
-                                    ->live()
-                                    ->afterStateUpdated(function (Get $get, Set $set, ?array $state): void {
-                                        if (! $state) {
-                                            return;
-                                        }
-                                        $set('lat', $state['lat'] ?? null);
-                                        $set('long', $state['lng'] ?? null);
-
-                                        $response = Http::withHeaders([
-                                            'User-Agent' => 'FreshLeafApp/1.0',
-                                        ])->get('https://nominatim.openstreetmap.org/reverse', [
-                                            'lat' => $state['lat'],
-                                            'lon' => $state['lng'],
-                                            'format' => 'json',
-                                            'accept-language' => 'en',
-                                        ]);
-
-                                        if ($response->successful()) {
-                                            $data = $response->json();
-                                            $address = $data['address'] ?? [];
-
-                                            if (empty($get('address_line_1'))) {
-                                                $set('address_line_1', $data['display_name'] ?? null);
-                                            }
-                                            if (empty($get('city'))) {
-                                                $set('city', $address['city'] ?? $address['town'] ?? $address['village'] ?? null);
-                                            }
-                                            if (empty($get('province'))) {
-                                                $set('province', $address['state'] ?? $address['province'] ?? null);
-                                            }
-                                            if (empty($get('postal_code'))) {
-                                                $set('postal_code', $address['postcode'] ?? null);
-                                            }
-                                        }
-                                    })
-                                    ->afterStateHydrated(function (Set $set, $state, $record) {
-                                        if ($record) {
-                                            $set('lat', $record->lat);
-                                            $set('long', $record->long);
-                                        }
-                                    }),
-                            ])
-                            ->columns(2),
+                                    ->label(new HtmlString('<strong>'.__('shared.form.fields.province').'</strong>'))
+                                    ->required(fn (string $operation): bool => $operation === 'create')
+                                    ->maxLength(255)
+                                    ->dehydrated(fn (mixed $state): bool => filled($state)),
+                            ]),
+                        Hidden::make('is_verified')
+                            ->label(new HtmlString('<strong>'.__('admin.resources.vendor.verified').'</strong>'))
+                            ->dehydrated()
+                            ->default(true),
                     ]),
 
                 Section::make(__('admin.resources.vendor.identity_verification'))
@@ -167,66 +182,83 @@ class VendorForm
                         FileUpload::make('id_card_front')
                             ->label(new HtmlString('<strong>'.__('admin.resources.vendor.id_card_front').'</strong>'))
                             ->image()
+                            ->imageEditor()
+                            ->maxSize(6144)
                             ->disk('local')
-                            ->directory('vendor-verification')
-                            ->required(fn (string $operation): bool => $operation === 'create'),
+                            ->directory(StorageDirectory::VENDOR_VERIFICATION)
+                            ->required(fn (string $operation): bool => $operation === 'create')
+                            ->dehydrated(fn (mixed $state): bool => filled($state)),
                         FileUpload::make('id_card_back')
                             ->label(new HtmlString('<strong>'.__('admin.resources.vendor.id_card_back').'</strong>'))
                             ->image()
+                            ->imageEditor()
+                            ->maxSize(6144)
                             ->disk('local')
-                            ->directory('vendor-verification')
-                            ->required(fn (string $operation): bool => $operation === 'create'),
+                            ->directory(StorageDirectory::VENDOR_VERIFICATION)
+                            ->required(fn (string $operation): bool => $operation === 'create')
+                            ->dehydrated(fn (mixed $state): bool => filled($state)),
                         FileUpload::make('store_front_image')
                             ->label(new HtmlString('<strong>'.__('admin.resources.vendor.store_photo').'</strong>'))
                             ->image()
+                            ->imageEditor()
+                            ->maxSize(6144)
                             ->disk('local')
-                            ->directory('vendor-verification')
-                            ->required(fn (string $operation): bool => $operation === 'create'),
+                            ->directory(StorageDirectory::VENDOR_VERIFICATION)
+                            ->required(fn (string $operation): bool => $operation === 'create')
+                            ->dehydrated(fn (mixed $state): bool => filled($state)),
                         FileUpload::make('organic_certificate_url')
                             ->label(new HtmlString('<strong>'.__('admin.resources.vendor.organic_cert').'</strong>'))
+                            ->maxSize(6144)
                             ->disk('local')
-                            ->required(fn (string $operation): bool => $operation === 'create')
-                            ->directory('vendor-verification'),
+                            ->directory(StorageDirectory::VENDOR_VERIFICATION)
+                            ->dehydrated(fn (mixed $state): bool => filled($state)),
                     ])->columns(2),
 
                 Section::make(__('admin.resources.vendor.payment_methods'))
+                    ->relationship('vendorFinancialDetails')
                     ->schema([
-                        Repeater::make('paymentMethods')
-                            ->relationship('paymentMethods')
-                            ->schema([
-                                Select::make('payment_method_type_id')
-                                    ->label(new HtmlString('<strong>'.__('admin.resources.vendor.payment_method_type').'</strong>'))
-                                    ->relationship('type', 'name_en')
-                                    ->required()
-                                    ->live()
-                                    ->afterStateUpdated(function (Set $set, $state) {
-                                        if ((int) $state === PaymentMethod::ABA_ID) {
-                                            $set('bank_name', 'ABA');
-                                        } elseif ((int) $state === PaymentMethod::ACLEDA_ID) {
-                                            $set('bank_name', 'Acleda');
-                                        }
-                                    })
-                                    ->columnSpanFull(),
-                                TextInput::make('bank_name')
-                                    ->label(new HtmlString('<strong>'.__('admin.resources.vendor.bank_name').'</strong>'))
-                                    ->visible(fn (Get $get) => ! in_array((int) $get('payment_method_type_id'), [PaymentMethod::ABA_ID, PaymentMethod::ACLEDA_ID]))
-                                    ->required(),
-                                TextInput::make('account_name')
-                                    ->label(new HtmlString('<strong>'.__('admin.resources.vendor.account_holder').'</strong>'))
-                                    ->required(),
-                                TextInput::make('account_number')
-                                    ->label(new HtmlString('<strong>'.__('admin.resources.vendor.account_number').'</strong>'))
-                                    ->required(),
-                                FileUpload::make('qr_code')
-                                    ->label(new HtmlString('<strong>'.__('admin.resources.vendor.qr_code').'</strong>'))
-                                    ->image()
-                                    ->disk('local')
-                                    ->directory('vendor-verification')
-                                    ->columnSpanFull(),
-                                Hidden::make('payment_method_status_id')
-                                    ->default(PaymentMethodStatus::ACTIVE_ID),
-                            ])
-                            ->columns(2),
+                        Grid::make(3)->schema([
+                            Select::make('payment_method_type_id')
+                                ->label(new HtmlString('<strong>'.__('admin.resources.vendor.bank_name').'</strong>'))
+                                ->options(
+                                    PaymentMethodType::whereIn('id', [
+                                        PaymentMethodType::ABA_ID,
+                                        PaymentMethodType::ACLEDA_ID,
+                                    ])->pluck('name_en', 'id')
+                                )
+                                ->required(fn (string $operation): bool => $operation === 'create')
+                                ->live()
+                                ->dehydrated(fn (mixed $state): bool => filled($state))
+                                ->afterStateUpdated(function (Set $set, ?string $state): void {
+                                    if ($state) {
+                                        $type = PaymentMethodType::find((int) $state);
+                                        $set('bank_name', $type?->name_en);
+                                    }
+                                }),
+                            TextInput::make('account_name')
+                                ->label(new HtmlString('<strong>'.__('admin.resources.vendor.account_holder').'</strong>'))
+                                ->required(fn (string $operation): bool => $operation === 'create')
+                                ->maxLength(255)
+                                ->dehydrated(fn (mixed $state): bool => filled($state)),
+                            TextInput::make('account_number')
+                                ->label(new HtmlString('<strong>'.__('admin.resources.vendor.account_number').'</strong>'))
+                                ->required(fn (string $operation): bool => $operation === 'create')
+                                ->maxLength(255)
+                                ->dehydrated(fn (mixed $state): bool => filled($state)),
+                        ]),
+                        FileUpload::make('qr_code')
+                            ->label(new HtmlString('<strong>'.__('admin.resources.vendor.qr_code').'</strong>'))
+                            ->image()
+                            ->maxSize(6144)
+                            ->disk('local')
+                            ->required(fn (string $operation): bool => $operation === 'create')
+                            ->directory(StorageDirectory::VENDOR_VERIFICATION)
+                            ->dehydrated(fn (mixed $state): bool => filled($state)),
+                        Hidden::make('bank_name')
+                            ->dehydrated(fn (mixed $state): bool => filled($state)),
+                        Hidden::make('payment_method_status_id')
+                            ->default(PaymentMethodStatus::ACTIVE_ID)
+                            ->dehydrated(fn (mixed $state): bool => filled($state)),
                     ]),
             ]);
     }

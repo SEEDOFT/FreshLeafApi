@@ -19,17 +19,17 @@ class AuthTest extends TestCase
         parent::setUp();
 
         UserStatus::upsert([
-            ['id' => UserStatus::ACTIVE, 'code' => 'ACTIVE', 'name' => 'Active'],
-            ['id' => UserStatus::INACTIVE, 'code' => 'INACTIVE', 'name' => 'Inactive'],
-            ['id' => UserStatus::DELETED, 'code' => 'DELETED', 'name' => 'Deleted'],
-            ['id' => UserStatus::PENDING, 'code' => 'PENDING', 'name' => 'Pending'],
-        ], ['id'], ['code', 'name']);
+            ['id' => UserStatus::ACTIVE_ID, 'name_en' => 'Active', 'name_km' => 'សកម្ម'],
+            ['id' => UserStatus::INACTIVE_ID, 'name_en' => 'Inactive', 'name_km' => 'អសកម្ម'],
+            ['id' => UserStatus::DELETED_ID, 'name_en' => 'Deleted', 'name_km' => 'បានលុប'],
+            ['id' => UserStatus::PENDING_ID, 'name_en' => 'Pending', 'name_km' => 'រង់ចាំ'],
+        ], ['id'], ['name_en', 'name_km']);
 
         UserType::upsert([
-            ['id' => UserType::CONSUMER_ID, 'code' => 'USER', 'name' => 'User'],
-            ['id' => UserType::VENDOR, 'code' => 'VENDOR', 'name' => 'Vendor'],
-            ['id' => UserType::ADMIN, 'code' => 'ADMIN', 'name' => 'Admin'],
-        ], ['id'], ['code', 'name']);
+            ['id' => UserType::CONSUMER_ID, 'name_en' => 'User', 'name_km' => 'អ្នកប្រើប្រាស់'],
+            ['id' => UserType::VENDOR_ID, 'name_en' => 'Vendor', 'name_km' => 'អ្នកលក់'],
+            ['id' => UserType::ADMIN_ID, 'name_en' => 'Admin', 'name_km' => 'អ្នកគ្រប់គ្រង'],
+        ], ['id'], ['name_en', 'name_km']);
     }
 
     /**
@@ -76,7 +76,7 @@ class AuthTest extends TestCase
         $user = User::factory()->create([
             'phone_number' => '+855123456789',
             'password' => bcrypt('password123'),
-            'user_status_id' => UserStatus::ACTIVE,
+            'user_status_id' => UserStatus::ACTIVE_ID,
             'user_type_id' => UserType::CONSUMER_ID,
         ]);
 
@@ -90,7 +90,7 @@ class AuthTest extends TestCase
                 'status' => [
                     'code' => '200',
                     'success' => true,
-                    'message' => 'Login success',
+                    'message' => 'Login successful',
                 ],
             ])
             ->assertJsonStructure([
@@ -110,7 +110,7 @@ class AuthTest extends TestCase
         User::factory()->create([
             'phone_number' => '+855123456789',
             'password' => bcrypt('password123'),
-            'user_status_id' => UserStatus::ACTIVE,
+            'user_status_id' => UserStatus::ACTIVE_ID,
             'user_type_id' => UserType::CONSUMER_ID,
         ]);
 
@@ -145,7 +145,7 @@ class AuthTest extends TestCase
                 'status' => [
                     'code' => '200',
                     'success' => true,
-                    'message' => 'Tokens Revoked',
+                    'message' => 'Tokens revoked',
                 ],
             ]);
 
@@ -156,7 +156,7 @@ class AuthTest extends TestCase
     {
         config()->set('auth.admin_registration_key', 'dev-secret');
 
-        $this->postJson('/api/v1/admin/auth/register', [
+        $this->postJson('/api/v1/auth/register-admin', [
             'first_name' => 'Admin',
             'last_name' => 'User',
             'phone_number' => '+85510000112',
@@ -174,12 +174,12 @@ class AuthTest extends TestCase
             'last_name' => 'User',
             'phone_number' => '+85510000112',
             'user_type_id' => UserType::CONSUMER_ID,
-            'user_status_id' => UserStatus::ACTIVE,
+            'user_status_id' => UserStatus::ACTIVE_ID,
         ]);
 
         $response = $this
             ->withHeader('X-Admin-Registration-Key', 'dev-secret')
-            ->postJson('/api/v1/admin/auth/register', [
+            ->postJson('/api/v1/auth/register-admin', [
                 'first_name' => 'Admin',
                 'last_name' => 'User',
                 'phone_number' => '+85510000112',
@@ -199,14 +199,14 @@ class AuthTest extends TestCase
 
         $this->assertDatabaseHas('users', [
             'phone_number' => '+85510000112',
-            'user_type_id' => UserType::ADMIN,
-            'user_status_id' => UserStatus::ACTIVE,
+            'user_type_id' => UserType::ADMIN_ID,
+            'user_status_id' => UserStatus::ACTIVE_ID,
         ]);
 
         $this->assertDatabaseHas('users', [
             'phone_number' => '+85510000112',
             'user_type_id' => UserType::CONSUMER_ID,
-            'user_status_id' => UserStatus::ACTIVE,
+            'user_status_id' => UserStatus::ACTIVE_ID,
         ]);
     }
 }

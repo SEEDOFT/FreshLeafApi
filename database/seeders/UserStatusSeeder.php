@@ -31,6 +31,11 @@ class UserStatusSeeder extends Seeder
                 'name_km' => 'បានផ្អាកសកម្មភាព',
             ],
             [
+                'id' => UserStatus::REJECTED_ID,
+                'name_en' => 'REJECTED',
+                'name_km' => 'មិនអនុញ្ញាត',
+            ],
+            [
                 'id' => UserStatus::DELETED_ID,
                 'name_en' => 'DELETED',
                 'name_km' => 'បានលុបចោល',

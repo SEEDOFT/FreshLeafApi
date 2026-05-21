@@ -37,6 +37,12 @@ class SupportChat extends Page
     }
 
     #[Override]
+    public static function getNavigationGroup(): ?string
+    {
+        return __('admin.navigation.app_control');
+    }
+
+    #[Override]
     public static function getNavigationBadge(): ?string
     {
         $unreadCount = SupportMessage::where('sender_type', SupportMessage::USER)

@@ -35,11 +35,11 @@ use Illuminate\Support\Carbon;
  * @property int|null $rejected_by_admin_id
  * @property string|null $approve_reason
  * @property string|null $reject_reason
- * @property array<string, mixed> $meta
  * @property string|null $id_card_front
  * @property string|null $id_card_back
  * @property string|null $store_front_image
  * @property string|null $organic_certificate_url
+ * @property-read string $address
  * @property-read User $user
  */
 #[Table('vendor_profiles', key: 'id', keyType: 'int')]
@@ -64,7 +64,6 @@ use Illuminate\Support\Carbon;
     'rejected_by_admin_id',
     'approve_reason',
     'reject_reason',
-    'meta',
     'id_card_front',
     'id_card_back',
     'store_front_image',
@@ -90,7 +89,6 @@ class VendorProfile extends Model
             'rejected_at' => 'datetime',
             'approved_by_admin_id' => 'integer',
             'rejected_by_admin_id' => 'integer',
-            'meta' => 'array',
         ];
     }
 
@@ -120,6 +118,18 @@ class VendorProfile extends Model
      */
     public public(set) bool $canSell {
         get => $this->is_verified && ! $this->rejected_at;
+    }
+
+    /**
+     * Get the full address of the vendor.
+     */
+    public public(set) string $address {
+        get => implode(', ', array_filter([
+            $this->village,
+            $this->commune,
+            $this->district,
+            $this->province,
+        ]));
     }
 
     /**

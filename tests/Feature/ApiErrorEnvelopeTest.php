@@ -21,16 +21,16 @@ class ApiErrorEnvelopeTest extends TestCase
         parent::setUp();
 
         UserStatus::upsert([
-            ['id' => UserStatus::ACTIVE, 'code' => 'ACTIVE', 'name' => 'Active'],
-            ['id' => UserStatus::INACTIVE, 'code' => 'INACTIVE', 'name' => 'Inactive'],
-            ['id' => UserStatus::DELETED, 'code' => 'DELETED', 'name' => 'Deleted'],
-        ], ['id'], ['code', 'name']);
+            ['id' => UserStatus::ACTIVE_ID,  'name_en' => 'Active', 'name_km' => 'សកម្ម'],
+            ['id' => UserStatus::INACTIVE_ID, 'name_en' => 'Inactive', 'name_km' => 'អសកម្ម'],
+            ['id' => UserStatus::DELETED_ID, 'name_en' => 'Deleted', 'name_km' => 'បានលុប'],
+        ], ['id'], ['name_en', 'name_km']);
 
         UserType::upsert([
-            ['id' => UserType::CONSUMER_ID, 'code' => 'USER', 'name' => 'User'],
-            ['id' => UserType::VENDOR, 'code' => 'VENDOR', 'name' => 'Vendor'],
-            ['id' => UserType::ADMIN, 'code' => 'ADMIN', 'name' => 'Admin'],
-        ], ['id'], ['code', 'name']);
+            ['id' => UserType::CONSUMER_ID, 'name_en' => 'User', 'name_km' => 'អ្នកប្រើប្រាស់'],
+            ['id' => UserType::VENDOR_ID, 'name_en' => 'Vendor', 'name_km' => 'អ្នកលក់'],
+            ['id' => UserType::ADMIN_ID, 'name_en' => 'Admin', 'name_km' => 'អ្នកគ្រប់គ្រង'],
+        ], ['id'], ['name_en', 'name_km']);
 
         Route::middleware('api')->get('/api/v1/test/error-envelope-500', static function (): never {
             throw new RuntimeException('Synthetic failure');
@@ -57,7 +57,7 @@ class ApiErrorEnvelopeTest extends TestCase
     public function test_forbidden_requests_return_standard_error_envelope(): void
     {
         $user = User::factory()->create([
-            'user_status_id' => UserStatus::ACTIVE,
+            'user_status_id' => UserStatus::ACTIVE_ID,
             'user_type_id' => UserType::CONSUMER_ID,
         ]);
 
@@ -78,7 +78,7 @@ class ApiErrorEnvelopeTest extends TestCase
     public function test_validation_errors_return_standard_error_envelope(): void
     {
         $user = User::factory()->create([
-            'user_status_id' => UserStatus::ACTIVE,
+            'user_status_id' => UserStatus::ACTIVE_ID,
             'user_type_id' => UserType::CONSUMER_ID,
         ]);
 

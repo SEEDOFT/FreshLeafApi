@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Filament\Admin\Resources\ProductCategories\Schemas;
 
+use App\Constants\StorageDirectory;
 use App\Models\ProductCategoryStatus;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Select;
@@ -77,7 +78,7 @@ class ProductCategoryForm
                                             ->label(new HtmlString('<strong>'.__('admin.resources.product_category.image').'</strong>'))
                                             ->image()
                                             ->disk('public')
-                                            ->directory('product-categories'),
+                                            ->directory(StorageDirectory::PRODUCT_CATEGORIES),
                                     ]),
                             ]),
                     ]),

@@ -4,19 +4,20 @@ declare(strict_types=1);
 
 namespace App\Filament\Vendor\Clusters\Settings\Pages;
 
+use App\Constants\StorageDirectory;
 use App\Filament\Vendor\Clusters\Settings;
-use App\Models\User;
 use BackedEnum;
-use Filament\Actions\Action;
 use Filament\Forms\Components\FileUpload;
-use Filament\Notifications\Notification;
 use Filament\Pages\Page;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
-use Illuminate\Auth\AuthenticationException;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\HtmlString;
 use Override;
+
+use function is_string;
+use function ltrim;
+use function str_starts_with;
 
 class VerificationDocs extends Page
 {
@@ -27,7 +28,10 @@ class VerificationDocs extends Page
     protected static ?string $slug = 'verification';
 
     #[Override]
-    protected static ?string $navigationLabel = 'Verification';
+    public static function getNavigationLabel(): string
+    {
+        return __('vendor.settings.verification_docs.label');
+    }
 
     #[Override]
     protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-shield-check';
@@ -45,10 +49,31 @@ class VerificationDocs extends Page
         $user = Auth::user();
 
         if (! $user) {
-            throw new AuthenticationException;
+            return;
         }
 
-        $this->data = $user->vendorProfile->toArray();
+        $profile = $user->vendorProfile;
+
+        if (! $profile) {
+            return;
+        }
+
+        $profileData = $profile->toArray();
+
+        $imageFields = [
+            'id_card_front',
+            'id_card_back',
+            'store_front_image',
+            'organic_certificate_url',
+        ];
+
+        foreach ($imageFields as $field) {
+            if (isset($profileData[$field]) && is_string($profileData[$field])) {
+                $profileData[$field] = $this->getFileUploadState($profileData[$field]);
+            }
+        }
+
+        $this->data = $profileData;
     }
 
     public function form(Schema $schema): Schema
@@ -61,74 +86,51 @@ class VerificationDocs extends Page
                         FileUpload::make('id_card_front')
                             ->label(new HtmlString('<strong>'.__('vendor.settings.verification_docs.id_front').'</strong>'))
                             ->image()
+                            ->imageEditor()
+                            ->maxSize(6144)
                             ->disk('local')
-                            ->directory('vendor-verification')
-                            ->disabled(static fn (User $record): bool => (bool) $record->vendorProfile->is_verified),
+                            ->directory(StorageDirectory::VENDOR_VERIFICATION)
+                            ->disabled(),
                         FileUpload::make('id_card_back')
                             ->label(new HtmlString('<strong>'.__('vendor.settings.verification_docs.id_back').'</strong>'))
                             ->image()
+                            ->imageEditor()
+                            ->maxSize(6144)
                             ->disk('local')
-                            ->directory('vendor-verification')
-                            ->disabled(static fn (User $record): bool => (bool) $record->vendorProfile->is_verified),
+                            ->directory(StorageDirectory::VENDOR_VERIFICATION)
+                            ->disabled(),
                         FileUpload::make('store_front_image')
                             ->label(new HtmlString('<strong>'.__('vendor.settings.verification_docs.store_photo').'</strong>'))
                             ->image()
+                            ->imageEditor()
+                            ->maxSize(6144)
                             ->disk('local')
-                            ->directory('vendor-verification')
-                            ->disabled(static fn (User $record): bool => (bool) $record->vendorProfile->is_verified),
+                            ->directory(StorageDirectory::VENDOR_VERIFICATION)
+                            ->disabled(),
                         FileUpload::make('organic_certificate_url')
                             ->label(new HtmlString('<strong>'.__('vendor.settings.verification_docs.organic_cert').'</strong>'))
+                            ->maxSize(6144)
                             ->disk('local')
-                            ->directory('vendor-verification')
-                            ->disabled(static fn (User $record): bool => (bool) $record->vendorProfile->is_verified),
+                            ->directory(StorageDirectory::VENDOR_VERIFICATION)
+                            ->disabled(),
                     ])->columns(2),
             ])
             ->statePath('data');
     }
 
-    public function save(): void
-    {
-        $user = Auth::user();
-
-        if (! $user) {
-            return;
-        }
-
-        if ($user->vendorProfile->is_verified) {
-            Notification::make()
-                ->title(__('vendor.settings.verification_docs.lock_title'))
-                ->body(__('vendor.settings.verification_docs.lock_body'))
-                ->danger()
-                ->send();
-
-            return;
-        }
-
-        $form = $this->getSchema('form');
-
-        if (! $form) {
-            return;
-        }
-
-        $state = $form->getState();
-        $user->vendorProfile()->update($state);
-
-        Notification::make()
-            ->title(__('vendor.settings.verification_docs.success_notification'))
-            ->success()
-            ->send();
-    }
-
     /**
-     * @return Action[]
+     * Resolve a stored filename into the full path the FileUpload
+     * component expects for displaying existing files.
+     *
+     * @return array<string>
      */
-    protected function getFormActions(): array
+    private function getFileUploadState(string $path): array
     {
+        $path = ltrim($path, '/');
+
         return [
-            Action::make('save')
-                ->label(new HtmlString('<strong>'.__('shared.profile.save_changes').'</strong>'))
-                ->submit('save')
-                ->keyBindings(['mod+s']),
+            str_starts_with($path, StorageDirectory::VENDOR_VERIFICATION)
+                ? $path : StorageDirectory::VENDOR_VERIFICATION.'/'.$path,
         ];
     }
 }

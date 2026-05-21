@@ -22,9 +22,12 @@ use Illuminate\Support\HtmlString;
 use Override;
 
 use function __;
+use function basename;
 use function is_array;
 use function is_string;
+use function ltrim;
 use function reset;
+use function str_starts_with;
 
 class VendorProfile extends Page
 {
@@ -35,7 +38,10 @@ class VendorProfile extends Page
     protected static ?string $slug = 'profile';
 
     #[Override]
-    protected static ?string $navigationLabel = 'My Profile';
+    public static function getNavigationLabel(): string
+    {
+        return __('admin.navigation.my_profile');
+    }
 
     #[Override]
     protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-user-circle';
@@ -56,15 +62,17 @@ class VendorProfile extends Page
             return;
         }
 
-        $this->data = $user->toArray();
+        $data = $user->toArray();
 
-        if (isset($this->data['image']) && is_string($this->data['image'])) {
-            $this->data['image'] = $this->getImageUploadState($this->data['image']);
+        if (isset($data['image']) && is_string($data['image'])) {
+            $data['image'] = $this->getImageUploadState($data['image']);
         }
 
         if ($user->vendorProfile) {
-            $this->data['vendorProfile'] = $user->vendorProfile->toArray();
+            $data['vendorProfile'] = $user->vendorProfile->toArray();
         }
+
+        $this->form->fill($data);
     }
 
     public function form(Schema $schema): Schema
@@ -72,16 +80,19 @@ class VendorProfile extends Page
         return $schema
             ->components([
                 Section::make(__('vendor.settings.vendor_profile.general_info'))
+                    ->description(__('vendor.settings.vendor_profile.general_info_desc'))
                     ->schema([
                         Grid::make(4)
                             ->schema([
                                 FileUpload::make('image')
                                     ->label(new HtmlString('<strong>'.__('vendor.settings.vendor_profile.avatar').'</strong>'))
                                     ->avatar()
+                                    ->image()
                                     ->imageEditor()
+                                    ->maxSize(6144)
+                                    ->disk('public')
                                     ->directory(StorageDirectory::USERS)
-                                    ->alignCenter()
-                                    ->columnSpan(1),
+                                    ->alignCenter(),
                                 Grid::make(2)
                                     ->schema([
                                         TextInput::make('first_name')
@@ -102,9 +113,7 @@ class VendorProfile extends Page
                                             ->maxLength(255),
                                         TextInput::make('phone_number')
                                             ->label(new HtmlString('<strong>'.__('vendor.settings.vendor_profile.phone').'</strong>'))
-                                            ->tel()
-                                            ->required(fn (string $operation): bool => $operation === 'create')
-                                            ->dehydrated(fn (mixed $state): bool => filled($state)),
+                                            ->tel(),
                                     ])
                                     ->columnSpan(3),
                             ]),
@@ -128,30 +137,40 @@ class VendorProfile extends Page
     public function save(): void
     {
         $user = Auth::user();
+
         if (! $user) {
             return;
         }
 
         $form = $this->getSchema('form');
+
         if (! $form) {
             return;
         }
 
         $state = $form->getState();
 
-        // Unwrap image from array before saving to DB
         if (isset($state['image']) && is_array($state['image'])) {
-            $state['image'] = reset($state['image']) ?: null;
+            $state['image'] = $this->getImageDatabaseState($state['image']);
+        } elseif (isset($state['image']) && is_string($state['image'])) {
+            $state['image'] = $this->getImageDatabaseState($state['image']);
         }
 
+        $vendorProfileData = $state['vendorProfile'] ?? [];
+        unset($state['vendorProfile']);
+
         $user->update($state);
+
+        if ($user->vendorProfile) {
+            $user->vendorProfile->update($vendorProfileData);
+        }
 
         Notification::make()
             ->title(__('vendor.settings.vendor_profile.success_notification'))
             ->success()
             ->send();
 
-        // Refresh to apply language change if locale changed
+        // Refresh to apply language change
         $this->redirect(static::getUrl());
     }
 

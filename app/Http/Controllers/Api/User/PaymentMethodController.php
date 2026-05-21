@@ -171,7 +171,7 @@ class PaymentMethodController extends Controller
         }
 
         $paymentMethod->update([
-            'payment_method_status_id' => PaymentMethodStatus::DELETE,
+            'payment_method_status_id' => PaymentMethodStatus::DELETE_ID,
             'is_default' => false,
             'deleted_at' => Carbon::now(),
         ]);

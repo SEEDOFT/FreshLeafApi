@@ -4,8 +4,10 @@ declare(strict_types=1);
 
 namespace App\Filament\Vendor\Clusters\Settings\Pages;
 
+use App\Filament\Forms\Components\PhoneNumberInput;
 use App\Filament\Vendor\Clusters\Settings;
 use App\Models\User;
+use BackedEnum;
 use Filament\Actions\Action;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
@@ -20,6 +22,8 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\HtmlString;
 use Override;
 
+use function filled;
+
 class BusinessProfile extends Page
 {
     #[Override]
@@ -30,6 +34,9 @@ class BusinessProfile extends Page
 
     #[Override]
     protected static ?string $navigationLabel = 'Business Info';
+
+    #[Override]
+    protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-building-office-2';
 
     #[Override]
     protected string $view = 'filament.pages.shared.form-page';
@@ -43,9 +50,10 @@ class BusinessProfile extends Page
     {
         $user = Auth::user();
 
-        $this->data = $user instanceof User
-            ? $user->vendorProfile->toArray() ?? []
-            : [];
+        $data = $user instanceof User && $user->vendorProfile
+            ? $user->vendorProfile->toArray() : [];
+
+        $this->form->fill($data);
     }
 
     public function form(Schema $schema): Schema
@@ -62,33 +70,48 @@ class BusinessProfile extends Page
                                     ->required(fn (string $operation): bool => $operation === 'create')
                                     ->dehydrated(fn (mixed $state): bool => filled($state))
                                     ->maxLength(255),
-                                TextInput::make('contact_phone')
+                                PhoneNumberInput::make('contact_phone')
                                     ->label(new HtmlString('<strong>'.__('shared.form.fields.contact_phone').'</strong>'))
-                                    ->tel()
+                                    ->required(fn (string $operation): bool => $operation === 'create')
+                                    ->dehydrated(fn (mixed $state): bool => filled($state)),
+                                TextInput::make('village')
+                                    ->label(new HtmlString('<strong>'.__('shared.form.fields.village').'</strong>'))
+                                    ->dehydrated(fn (mixed $state): bool => filled($state))
                                     ->maxLength(255),
-                                TextInput::make('city')
-                                    ->label(new HtmlString('<strong>'.__('shared.form.fields.city').'</strong>'))
+                                TextInput::make('commune')
+                                    ->label(new HtmlString('<strong>'.__('shared.form.fields.commune').'</strong>'))
+                                    ->dehydrated(fn (mixed $state): bool => filled($state))
+                                    ->maxLength(255),
+                                TextInput::make('district')
+                                    ->label(new HtmlString('<strong>'.__('shared.form.fields.district').'</strong>'))
+                                    ->dehydrated(fn (mixed $state): bool => filled($state))
                                     ->maxLength(255),
                                 TextInput::make('province')
                                     ->label(new HtmlString('<strong>'.__('shared.form.fields.province').'</strong>'))
+                                    ->dehydrated(fn (mixed $state): bool => filled($state))
                                     ->maxLength(255),
                             ]),
                         TextInput::make('address')
                             ->label(new HtmlString('<strong>'.__('shared.form.fields.address').'</strong>'))
+                            ->dehydrated(fn (mixed $state): bool => filled($state))
                             ->columnSpanFull()
                             ->maxLength(255),
                         Textarea::make('shop_description')
                             ->label(new HtmlString('<strong>'.__('vendor.settings.business_profile.description').'</strong>'))
+                            ->dehydrated(fn (mixed $state): bool => filled($state))
                             ->placeholder('Describe your farm or organic vegetables...')
                             ->columnSpanFull(),
                         Grid::make(3)
                             ->schema([
                                 TimePicker::make('opening_time')
-                                    ->label(new HtmlString('<strong>'.__('vendor.settings.business_profile.opening_time').'</strong>')),
+                                    ->label(new HtmlString('<strong>'.__('vendor.settings.business_profile.opening_time').'</strong>'))
+                                    ->dehydrated(fn (mixed $state): bool => filled($state)),
                                 TimePicker::make('closing_time')
-                                    ->label(new HtmlString('<strong>'.__('vendor.settings.business_profile.closing_time').'</strong>')),
+                                    ->label(new HtmlString('<strong>'.__('vendor.settings.business_profile.closing_time').'</strong>'))
+                                    ->dehydrated(fn (mixed $state): bool => filled($state)),
                                 Toggle::make('is_open')
-                                    ->label(new HtmlString('<strong>'.__('vendor.settings.business_profile.is_open').'</strong>')),
+                                    ->label(new HtmlString('<strong>'.__('vendor.settings.business_profile.is_open').'</strong>'))
+                                    ->dehydrated(fn (mixed $state): bool => filled($state)),
                             ]),
                     ]),
             ])
@@ -99,6 +122,7 @@ class BusinessProfile extends Page
     {
         $user = Auth::user();
         $form = $this->getSchema('form');
+
         if (! $user instanceof User || ! $form) {
             return;
         }

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Filament\Vendor\Resources\Products\Tables;
 
+use App\Constants\StorageDirectory;
 use Filament\Actions\Action;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
@@ -96,7 +97,7 @@ class ProductsTable
                         FileUpload::make('proof_image_path')
                             ->label(new HtmlString('<strong>'.__('shared.product.proof_photo').'</strong>'))
                             ->image()
-                            ->directory('inventory-proofs')
+                            ->directory(StorageDirectory::INVENTORY_ADJUSTMENTS)
                             ->visibility('public')
                             ->required(fn ($get) => in_array($get('type'), ['IN', 'LOSS'])),
                         Textarea::make('notes')

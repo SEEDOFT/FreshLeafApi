@@ -65,6 +65,7 @@ class AuthController extends Controller
                 'last_name' => $validatedData['last_name'],
                 'email' => $validatedData['email'] ?? null,
                 'email_verified_at' => null,
+                'image' => User::DEFAULT_PROFILE,
                 'phone_number' => $validatedData['phone_number'],
                 'phone_number_verified_at' => null,
                 'password' => Hash::make($validatedData['password']),

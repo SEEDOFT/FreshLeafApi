@@ -22,7 +22,7 @@ class EnsureActiveUserType
     {
         /** @var User|null $user */
         $user = $request->user();
-        if (! $user || ! $user->isActive() || ! $user->isType(UserType::CONSUMER_ID)) {
+        if (! $user || ! $user->isActive()) {
             /** @var JsonResponse $response */
             $response = response()->json(['message' => 'Unauthenticated.'], 401);
 

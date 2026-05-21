@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Filament\Vendor\Clusters\Settings\Pages;
 
 use App\Filament\Vendor\Clusters\Settings;
-use App\Models\User;
 use BackedEnum;
 use Filament\Actions\Action;
 use Filament\Forms\Components\TextInput;
@@ -20,6 +19,8 @@ use Override;
 
 class VendorSecurity extends Page
 {
+    public bool $passwordVerified = false;
+
     #[Override]
     protected static ?string $cluster = Settings::class;
 
@@ -27,7 +28,10 @@ class VendorSecurity extends Page
     protected static ?string $slug = 'security';
 
     #[Override]
-    protected static ?string $navigationLabel = 'Security';
+    public static function getNavigationLabel(): string
+    {
+        return __('admin.resources.security.label');
+    }
 
     #[Override]
     protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-lock-closed';
@@ -49,26 +53,34 @@ class VendorSecurity extends Page
     {
         return $schema
             ->components([
-                Section::make(__('shared.security.change_password'))
-                    ->description(__('shared.security.change_password_desc'))
+                Section::make(__('admin.resources.security.change_password'))
+                    ->description(__('admin.resources.security.change_password_desc'))
                     ->schema([
                         TextInput::make('current_password')
-                            ->label(new HtmlString('<strong>'.__('shared.security.current_password').'</strong>'))
+                            ->label(new HtmlString('<strong>'.__('admin.resources.security.current_password').'</strong>'))
                             ->password()
-                            ->required(fn (string $operation): bool => $operation === 'create')
+                            ->required(fn (): bool => ! $this->passwordVerified)
                             ->dehydrated(fn (mixed $state): bool => filled($state))
-                            ->currentPassword(),
+                            ->currentPassword()
+                            ->columnSpan(1),
+                        Action::make('check_password')
+                            ->label(new HtmlString('<strong>'.__('admin.resources.security.check_password').'</strong>'))
+                            ->action('checkPassword')
+                            ->color('primary')
+                            ->extraAttributes(['class' => 'flex items-end mt-7']),
                         TextInput::make('password')
-                            ->label(new HtmlString('<strong>'.__('shared.security.password').'</strong>'))
+                            ->label(new HtmlString('<strong>'.__('admin.resources.security.password').'</strong>'))
                             ->password()
-                            ->required(fn (string $operation): bool => $operation === 'create')
+                            ->required(fn (): bool => $this->passwordVerified)
                             ->dehydrated(fn (mixed $state): bool => filled($state))
-                            ->confirmed(),
+                            ->confirmed()
+                            ->columnSpan(1),
                         TextInput::make('password_confirmation')
-                            ->label(new HtmlString('<strong>'.__('shared.security.password_confirmation').'</strong>'))
+                            ->label(new HtmlString('<strong>'.__('admin.resources.security.password_confirmation').'</strong>'))
                             ->password()
-                            ->required(fn (string $operation): bool => $operation === 'create')
-                            ->dehydrated(fn (mixed $state): bool => filled($state)),
+                            ->required(fn (): bool => $this->passwordVerified)
+                            ->dehydrated(fn (mixed $state): bool => filled($state))
+                            ->columnSpan(1),
                     ])->columns(2),
             ])
             ->statePath('data');
@@ -77,35 +89,77 @@ class VendorSecurity extends Page
     public function save(): void
     {
         $user = Auth::user();
+
+        if (! $user) {
+            return;
+        }
+
         $form = $this->getSchema('form');
-        if (! $user instanceof User || ! $form) {
+
+        if (! $form) {
             return;
         }
 
         $state = $form->getState();
 
-        $user->update([
-            'password' => Hash::make($state['password'] ?? ''),
-        ]);
+        if ($this->passwordVerified && filled($state['password'] ?? null)) {
+            $user->update([
+                'password' => Hash::make($state['password']),
+            ]);
 
-        $this->data = [];
+            $this->passwordVerified = false;
+            $this->data['current_password'] = null;
+            $this->data['password'] = null;
+            $this->data['password_confirmation'] = null;
+        }
 
         Notification::make()
-            ->title(__('shared.security.success_notification'))
+            ->title(__('admin.settings.app_settings.success_notification'))
             ->success()
             ->send();
     }
 
     /**
-     * @return Action[]
+     * @return array<Action>
      */
     protected function getFormActions(): array
     {
         return [
             Action::make('save')
-                ->label(new HtmlString('<strong>'.__('shared.security.update_password').'</strong>'))
+                ->label(new HtmlString('<strong>'.__('admin.resources.security.update_password').'</strong>'))
                 ->submit('save')
-                ->keyBindings(['mod+s']),
+                ->keyBindings([]),
         ];
+    }
+
+    public function checkPassword(): void
+    {
+        $user = Auth::user();
+
+        if (! $user) {
+            return;
+        }
+
+        $currentPassword = $this->data['current_password'] ?? '';
+
+        if (! Hash::check($currentPassword, $user->password)) {
+            Notification::make()
+                ->title(__('admin.resources.security.password_incorrect'))
+                ->danger()
+                ->send();
+
+            $this->addError('data.current_password', __('admin.resources.security.password_incorrect'));
+
+            $this->passwordVerified = false;
+
+            return;
+        }
+
+        $this->passwordVerified = true;
+
+        Notification::make()
+            ->title(__('admin.resources.security.password_verified'))
+            ->success()
+            ->send();
     }
 }

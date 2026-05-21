@@ -20,7 +20,10 @@ class CurrencyFactory extends Factory
     public function definition(): array
     {
         return [
-            //
+            'code' => $this->faker->unique()->currencyCode(),
+            'name_en' => $this->faker->word(),
+            'name_km' => $this->faker->word(),
+            'symbol' => '$',
         ];
     }
 }

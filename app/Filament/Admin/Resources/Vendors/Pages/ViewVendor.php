@@ -30,8 +30,10 @@ class ViewVendor extends ViewRecord
                 ->icon('heroicon-o-check-circle')
                 ->color('success')
                 ->visible(
-                    fn (User $record) => $record->isType(UserType::VENDOR_ID) &&
-                    $record->vendorProfile && ! $record->vendorProfile->is_verified
+                    fn (User $record) => $record->vendorProfile &&
+                    $record->user_type_id === UserType::VENDOR_ID &&
+                    $record->user_status_id === UserStatus::PENDING_ID &&
+                    ! $record->vendorProfile->is_verified
                 )
                 ->action(static function (User $record, array $data) {
                     $record->vendorProfile->update([
@@ -40,7 +42,10 @@ class ViewVendor extends ViewRecord
                         'approved_by_admin_id' => Auth::id(),
                         'approve_reason' => $data['note'] ?? null,
                     ]);
-                    $record->update(['user_status_id' => UserStatus::ACTIVE_ID]);
+                    $record->update([
+                        'user_type_id' => UserType::VENDOR_ID,
+                        'user_status_id' => UserStatus::ACTIVE_ID,
+                    ]);
 
                     Notification::make()
                         ->title(__('admin.resources.vendor.notifications.approved'))
@@ -58,8 +63,9 @@ class ViewVendor extends ViewRecord
                 ->icon('heroicon-o-x-circle')
                 ->color('danger')
                 ->visible(
-                    fn (User $record) => $record->isType(UserType::VENDOR_ID) &&
-                    $record->vendorProfile &&
+                    fn (User $record) => $record->vendorProfile &&
+                    $record->user_type_id === UserType::VENDOR_ID &&
+                    $record->user_status_id === UserStatus::PENDING_ID &&
                     ! $record->vendorProfile->is_verified
                 )
                 ->action(static function (User $record, array $data) {
@@ -68,6 +74,11 @@ class ViewVendor extends ViewRecord
                         'rejected_at' => now(),
                         'rejected_by_admin_id' => Auth::id(),
                         'reject_reason' => $data['reason'],
+                    ]);
+
+                    $record->update([
+                        'user_type_id' => UserType::VENDOR_ID,
+                        'user_status_id' => UserStatus::REJECTED_ID,
                     ]);
 
                     Notification::make()

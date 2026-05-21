@@ -30,7 +30,7 @@ class WishlistResource extends JsonResource
                 'status',
                 fn () => [
                     'id' => $this->status->id,
-                    'name' => $this->status->name_en,
+                    'name' => translate($this->status->name_en, $this->status->name_km),
                 ]
             ),
             'product' => $this->whenLoaded(

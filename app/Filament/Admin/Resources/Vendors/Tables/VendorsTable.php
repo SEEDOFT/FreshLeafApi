@@ -20,6 +20,7 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Filters\TrashedFilter;
 use Filament\Tables\Table;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\HtmlString;
 
@@ -33,40 +34,47 @@ class VendorsTable
             ->stackedOnMobile()
             ->recordAction('view')
             ->columns([
-                TextColumn::make('vendorProfile.business_name')->placeholder(__('admin.resources.general.not_provided'))
+                TextColumn::make('vendorProfile.business_name')
+                    ->placeholder(__('admin.resources.general.not_provided'))
                     ->label(new HtmlString('<strong>'.__('admin.resources.vendor.business_name').'</strong>'))
                     ->searchable()
                     ->placeholder($notProvided)
                     ->sortable(),
-                TextColumn::make('name')->placeholder(__('admin.resources.general.not_provided'))
+                TextColumn::make('name')
+                    ->placeholder(__('admin.resources.general.not_provided'))
                     ->label(new HtmlString('<strong>'.__('admin.resources.vendor.owner').'</strong>'))
-                    ->getStateUsing(fn (User $record) => $record->last_name.' '.$record->first_name)
+                    ->getStateUsing(fn (User $record) => $record->fullName)
                     ->searchable(['first_name', 'last_name'])
+                    ->sortable()
                     ->placeholder($notProvided),
-                TextColumn::make('phone_number')->placeholder(__('admin.resources.general.not_provided'))
+                TextColumn::make('phone_number')
+                    ->placeholder(__('admin.resources.general.not_provided'))
                     ->label(new HtmlString('<strong>'.__('admin.resources.vendor.phone').'</strong>'))
                     ->searchable()
                     ->placeholder($notProvided),
-                TextColumn::make('type.translated_name')->placeholder(__('admin.resources.general.not_provided'))
+                TextColumn::make('type.translated_name')
+                    ->placeholder(__('admin.resources.general.not_provided'))
                     ->label(new HtmlString('<strong>'.__('admin.resources.user.type').'</strong>'))
                     ->badge()
                     ->placeholder($notProvided)
                     ->color('warning'),
-                TextColumn::make('status.translated_name')->placeholder(__('admin.resources.general.not_provided'))
+                TextColumn::make('status.translated_name')
+                    ->placeholder(__('admin.resources.general.not_provided'))
                     ->label(new HtmlString('<strong>'.__('admin.resources.user.status').'</strong>'))
                     ->badge()
                     ->placeholder($notProvided)
                     ->color(fn (User $record): string => match ($record->status->id) {
                         UserStatus::ACTIVE_ID => 'success',
                         UserStatus::PENDING_ID => 'warning',
-                        UserStatus::INACTIVE_ID, UserStatus::DELETED_ID => 'danger',
+                        UserStatus::INACTIVE_ID, UserStatus::DELETED_ID, UserStatus::REJECTED_ID => 'danger',
                         default => 'secondary',
                     }),
                 IconColumn::make('vendorProfile.is_verified')
                     ->label(new HtmlString('<strong>'.__('admin.resources.vendor.verified').'</strong>'))
                     ->boolean()
                     ->sortable(),
-                TextColumn::make('created_at')->placeholder(__('admin.resources.general.not_provided'))
+                TextColumn::make('created_at')
+                    ->placeholder(__('admin.resources.general.not_provided'))
                     ->label(new HtmlString('<strong>'.__('admin.resources.created_at').'</strong>'))
                     ->dateTime('d M Y, h:i A')
                     ->sortable()
@@ -100,11 +108,13 @@ class VendorsTable
                     ->visible(
                         fn (User $record) => $record->vendorProfile &&
                          ! $record->vendorProfile->is_verified
+                         && $record->user_status_id === UserStatus::PENDING_ID
+                         && $record->user_type_id === UserType::VENDOR_ID
                     )
-                    ->action(static function (User $record, array $data) {
+                    ->action(function (User $record, array $data) {
                         $record->vendorProfile->update([
                             'is_verified' => true,
-                            'approved_at' => now(),
+                            'approved_at' => Carbon::now(),
                             'approved_by_admin_id' => Auth::id(),
                             'approve_reason' => $data['note'] ?? null,
                         ]);
@@ -115,10 +125,10 @@ class VendorsTable
                     })
                     ->form([
                         Textarea::make('note')
-                            ->label(new HtmlString('<strong>'.__('admin.resources.vendor.approval_note').'</strong>')),
+                            ->label(new HtmlString('<strong>'.__('admin.resources.vendor.approval_note').'</strong>'))
+                            ->required(),
                     ])
                     ->requiresConfirmation(),
-
                 Action::make('rejectVendor')
                     ->label(new HtmlString('<strong>'.__('admin.resources.vendor.reject').'</strong>'))
                     ->icon('heroicon-o-x-circle')
@@ -126,11 +136,17 @@ class VendorsTable
                     ->visible(
                         fn (User $record) => $record->vendorProfile &&
                         ! $record->vendorProfile->is_verified
+                        && $record->user_status_id === UserStatus::PENDING_ID
+                        && $record->user_type_id === UserType::VENDOR_ID
                     )
-                    ->action(static function (User $record, array $data) {
+                    ->action(function (User $record, array $data) {
+                        $record->update([
+                            'user_type_id' => UserType::VENDOR_ID,
+                            'user_status_id' => UserStatus::REJECTED_ID,
+                        ]);
                         $record->vendorProfile->update([
                             'is_verified' => false,
-                            'rejected_at' => now(),
+                            'rejected_at' => Carbon::now(),
                             'rejected_by_admin_id' => Auth::id(),
                             'reject_reason' => $data['reason'],
                         ]);
@@ -138,8 +154,7 @@ class VendorsTable
                     ->form([
                         Textarea::make('reason')
                             ->label(new HtmlString('<strong>'.__('admin.resources.vendor.rejection_reason').'</strong>'))
-                            ->required(fn (string $operation): bool => $operation === 'create')
-                            ->dehydrated(fn (mixed $state): bool => filled($state)),
+                            ->required(),
                     ])
                     ->requiresConfirmation(),
             ])

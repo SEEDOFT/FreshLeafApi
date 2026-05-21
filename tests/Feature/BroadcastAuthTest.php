@@ -22,16 +22,16 @@ class BroadcastAuthTest extends TestCase
         parent::setUp();
 
         UserStatus::upsert([
-            ['id' => UserStatus::ACTIVE, 'code' => 'ACTIVE', 'name' => 'Active'],
-            ['id' => UserStatus::INACTIVE, 'code' => 'INACTIVE', 'name' => 'Inactive'],
-            ['id' => UserStatus::DELETED, 'code' => 'DELETED', 'name' => 'Deleted'],
-        ], ['id'], ['code', 'name']);
+            ['id' => UserStatus::ACTIVE_ID, 'name_en' => 'Active', 'name_km' => 'សកម្ម'],
+            ['id' => UserStatus::INACTIVE_ID, 'name_en' => 'Inactive', 'name_km' => 'អសកម្ម'],
+            ['id' => UserStatus::DELETED_ID, 'name_en' => 'Deleted', 'name_km' => 'បានលុប'],
+        ], ['id'], ['name_en', 'name_km']);
 
         UserType::upsert([
-            ['id' => UserType::CONSUMER_ID, 'code' => 'USER', 'name' => 'User'],
-            ['id' => UserType::VENDOR, 'code' => 'VENDOR', 'name' => 'Vendor'],
-            ['id' => UserType::ADMIN, 'code' => 'ADMIN', 'name' => 'Admin'],
-        ], ['id'], ['code', 'name']);
+            ['id' => UserType::CONSUMER_ID, 'name_en' => 'User', 'name_km' => 'អ្នកប្រើប្រាស់'],
+            ['id' => UserType::VENDOR_ID, 'name_en' => 'Vendor', 'name_km' => 'អ្នកលក់'],
+            ['id' => UserType::ADMIN_ID, 'name_en' => 'Admin', 'name_km' => 'អ្នកគ្រប់គ្រង'],
+        ], ['id'], ['name_en', 'name_km']);
 
         config()->set('broadcasting.default', 'reverb');
         config()->set('broadcasting.connections.reverb.key', 'test-key');
@@ -45,7 +45,7 @@ class BroadcastAuthTest extends TestCase
     public function test_broadcast_auth_succeeds_for_session_owner(): void
     {
         $user = User::factory()->create([
-            'user_status_id' => UserStatus::ACTIVE,
+            'user_status_id' => UserStatus::ACTIVE_ID,
             'user_type_id' => UserType::CONSUMER_ID,
         ]);
 
@@ -69,8 +69,8 @@ class BroadcastAuthTest extends TestCase
     public function test_support_admin_broadcast_auth_succeeds_for_admin(): void
     {
         $admin = User::factory()->create([
-            'user_status_id' => UserStatus::ACTIVE,
-            'user_type_id' => UserType::ADMIN,
+            'user_status_id' => UserStatus::ACTIVE_ID,
+            'user_type_id' => UserType::ADMIN_ID,
         ]);
 
         Sanctum::actingAs($admin);
@@ -86,7 +86,7 @@ class BroadcastAuthTest extends TestCase
     public function test_support_admin_broadcast_auth_rejects_normal_user(): void
     {
         $user = User::factory()->create([
-            'user_status_id' => UserStatus::ACTIVE,
+            'user_status_id' => UserStatus::ACTIVE_ID,
             'user_type_id' => UserType::CONSUMER_ID,
         ]);
 

@@ -13,11 +13,13 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\App;
 
 /**
  * @property int $id
  * @property string $name_en
  * @property string $name_km
+ * @property-read string|null $translated_name
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  * @property-read Collection<int, PaymentMethod> $paymentMethods
@@ -63,6 +65,14 @@ class PaymentMethodType extends Model
             self::ACLEDA_ID,
             self::COD_ID,
         ];
+    }
+
+    /**
+     * Get the translated name attribute.
+     */
+    public function getTranslatedNameAttribute(): ?string
+    {
+        return $this->{'name_'.App::getLocale()};
     }
 
     /**

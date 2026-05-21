@@ -81,10 +81,12 @@ class User extends Authenticatable implements FilamentUser, HasAvatar, HasName
     /** @use HasFactory<UserFactory> */
     use HasApiTokens, HasFactory, Notifiable, SoftDeletes;
 
+    public const string DEFAULT_PROFILE = StorageDirectory::USERS.'/'.'user.png';
+
     #[Override]
     public function getFilamentAvatarUrl(): string
     {
-        return Storage::url(StorageDirectory::USERS.'/'.$this->image);
+        return Storage::url($this->image);
     }
 
     /**

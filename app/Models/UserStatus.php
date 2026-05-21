@@ -41,6 +41,8 @@ class UserStatus extends Model
 
     public const int DELETED_ID = 4;
 
+    public const int REJECTED_ID = 5;
+
     /**
      * Get the users for this status.
      *

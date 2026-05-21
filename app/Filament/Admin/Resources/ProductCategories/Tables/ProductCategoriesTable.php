@@ -60,9 +60,12 @@ class ProductCategoriesTable
 
                         return $query->orderBy(
                             ProductCategoryStatus::select("name_{$locale}")
-                                ->whereColumn('product_category_statuses.id', 'product_categories.product_category_status_id')
+                                ->whereColumn(
+                                    'product_category_statuses.id',
+                                    'product_categories.product_category_status_id'
+                                )
                                 ->limit(1),
-                            $direction
+                            $direction === 'desc' ? 'desc' : 'asc'
                         );
                     }),
                 TextColumn::make('products_count')->placeholder(__('admin.resources.general.not_provided'))

@@ -23,6 +23,12 @@ class AiAssistant extends Page
     }
 
     #[Override]
+    public static function getNavigationGroup(): ?string
+    {
+        return __('admin.navigation.app_control');
+    }
+
+    #[Override]
     public function getHeading(): string
     {
         return __('admin.ai.assistant');

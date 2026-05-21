@@ -6,7 +6,7 @@ namespace Tests\Feature;
 
 use App\Events\SupportMessageSent;
 use App\Events\SupportTyping;
-use App\Filament\Pages\SupportChat;
+use App\Livewire\SupportChat;
 use App\Models\SupportMessage;
 use App\Models\SupportTicket;
 use App\Models\User;
@@ -28,16 +28,16 @@ class SupportChatRealtimeTest extends TestCase
         parent::setUp();
 
         UserStatus::upsert([
-            ['id' => UserStatus::ACTIVE, 'code' => 'ACTIVE', 'name' => 'Active'],
-            ['id' => UserStatus::INACTIVE, 'code' => 'INACTIVE', 'name' => 'Inactive'],
-            ['id' => UserStatus::DELETED, 'code' => 'DELETED', 'name' => 'Deleted'],
-        ], ['id'], ['code', 'name']);
+            ['id' => UserStatus::ACTIVE_ID, 'name_en' => 'Active', 'name_km' => 'សកម្ម'],
+            ['id' => UserStatus::INACTIVE_ID, 'name_en' => 'Inactive', 'name_km' => 'អសកម្ម'],
+            ['id' => UserStatus::DELETED_ID, 'name_en' => 'Deleted', 'name_km' => 'បានលុប'],
+        ], ['id'], ['name_en', 'name_km']);
 
         UserType::upsert([
-            ['id' => UserType::CONSUMER_ID, 'code' => 'USER', 'name' => 'User'],
-            ['id' => UserType::VENDOR, 'code' => 'VENDOR', 'name' => 'Vendor'],
-            ['id' => UserType::ADMIN, 'code' => 'ADMIN', 'name' => 'Admin'],
-        ], ['id'], ['code', 'name']);
+            ['id' => UserType::CONSUMER_ID, 'name_en' => 'Consumer', 'name_km' => 'អ្នកប្រើប្រាស់'],
+            ['id' => UserType::VENDOR_ID, 'name_en' => 'Vendor', 'name_km' => 'អ្នកលក់'],
+            ['id' => UserType::ADMIN_ID, 'name_en' => 'Admin', 'name_km' => 'អ្នកគ្រប់គ្រង'],
+        ], ['id'], ['name_en', 'name_km']);
     }
 
     public function test_user_support_message_broadcasts_to_ticket_and_admin_channels(): void
@@ -106,7 +106,7 @@ class SupportChatRealtimeTest extends TestCase
     {
         $user = User::factory()->create([
             'user_type_id' => UserType::CONSUMER_ID,
-            'user_status_id' => UserStatus::ACTIVE,
+            'user_status_id' => UserStatus::ACTIVE_ID,
         ]);
         $ticket = SupportTicket::query()->create([
             'user_id' => $user->id,
@@ -116,10 +116,10 @@ class SupportChatRealtimeTest extends TestCase
 
         Sanctum::actingAs($user);
 
-        $this->postJson('/api/v1/user/support/messages', [
+        $this->postJson('/api/v1/support/messages', [
             'ticket_id' => $ticket->id,
             'message' => 'Hello support',
-        ])->assertCreated();
+        ])->assertOk();
 
         $this->assertTrue($ticket->fresh()->updated_at->greaterThan(now()->subMinute()));
     }
@@ -129,12 +129,12 @@ class SupportChatRealtimeTest extends TestCase
         Notification::fake();
 
         $admin = User::factory()->create([
-            'user_type_id' => UserType::ADMIN,
-            'user_status_id' => UserStatus::ACTIVE,
+            'user_type_id' => UserType::ADMIN_ID,
+            'user_status_id' => UserStatus::ACTIVE_ID,
         ]);
         $user = User::factory()->create([
             'user_type_id' => UserType::CONSUMER_ID,
-            'user_status_id' => UserStatus::ACTIVE,
+            'user_status_id' => UserStatus::ACTIVE_ID,
         ]);
         $ticket = SupportTicket::query()->create([
             'user_id' => $user->id,

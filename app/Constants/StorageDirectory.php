@@ -62,4 +62,11 @@ final class StorageDirectory
      * @var string
      */
     public const string PRODUCT_CATEGORIES = 'product_categories';
+
+    /**
+     * The directory for storing product batches.
+     *
+     * @var string
+     */
+    public const string PRODUCT_BATCHES = 'product_batches';
 }

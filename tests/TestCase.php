@@ -8,5 +8,10 @@ use Illuminate\Foundation\Testing\TestCase as BaseTestCase;
 
 abstract class TestCase extends BaseTestCase
 {
-    //
+    protected function setUp(): void
+    {
+        parent::setUp();
+        config(['app.locale' => 'en']);
+        $this->withHeaders(['Accept-Language' => 'en']);
+    }
 }

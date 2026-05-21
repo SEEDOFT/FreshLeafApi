@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Filament\Vendor\Resources\Products\Schemas;
 
+use App\Constants\StorageDirectory;
 use App\Models\VendorInventoryStatus;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\FileUpload;
@@ -92,7 +93,7 @@ class ProductForm
                             ->multiple()
                             ->image()
                             ->disk('public')
-                            ->directory('vendor-inventory')
+                            ->directory(StorageDirectory::PRODUCT_BATCHES)
                             ->columnSpanFull(),
                     ]),
             ]);

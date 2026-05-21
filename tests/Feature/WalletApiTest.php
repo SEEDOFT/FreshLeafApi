@@ -16,9 +16,17 @@ class WalletApiTest extends TestCase
 {
     use LazilyRefreshDatabase;
 
+    protected function setUp(): void
+    {
+        parent::setUp();
+        
+        Currency::factory()->create(['id' => Currency::KHR_ID, 'code' => Currency::KHR]);
+        Currency::factory()->create(['id' => Currency::USD_ID, 'code' => Currency::USD]);
+    }
+
     public function test_user_wallet_list_requires_authentication(): void
     {
-        $this->getJson('/api/v1/user/wallets')
+        $this->getJson('/api/v1/wallets')
             ->assertUnauthorized();
     }
 
@@ -29,7 +37,7 @@ class WalletApiTest extends TestCase
 
         Sanctum::actingAs($user);
 
-        $this->getJson('/api/v1/user/wallets')
+        $this->getJson('/api/v1/wallets')
             ->assertOk()
             ->assertJsonPath('status.success', true)
             ->assertJsonPath('status.message', 'Wallets retrieved successfully')
@@ -46,7 +54,7 @@ class WalletApiTest extends TestCase
 
         Sanctum::actingAs($other);
 
-        $this->getJson('/api/v1/user/wallets/'.$walletId)
+        $this->getJson('/api/v1/wallets/'.$walletId)
             ->assertNotFound();
     }
 
@@ -72,7 +80,7 @@ class WalletApiTest extends TestCase
             'updated_at' => now(),
         ]);
 
-        $this->getJson('/api/v1/user/wallets/'.$wallet->id.'/histories')
+        $this->getJson('/api/v1/wallets/'.$wallet->id.'/histories')
             ->assertOk()
             ->assertJsonPath('status.success', true)
             ->assertJsonPath('status.message', 'Wallet history retrieved successfully')
@@ -85,7 +93,7 @@ class WalletApiTest extends TestCase
 
     public function test_vendor_can_view_wallet_history(): void
     {
-        $vendor = User::factory()->create(['user_type_id' => UserType::VENDOR]);
+        $vendor = User::factory()->create(['user_type_id' => UserType::VENDOR_ID]);
         $usdId = (int) Currency::query()->where('code', Currency::USD)->value('id');
         $wallet = Wallet::query()->create([
             'user_id' => $vendor->id,
@@ -104,7 +112,7 @@ class WalletApiTest extends TestCase
             'updated_at' => now(),
         ]);
 
-        $this->getJson('/api/v1/vendor/wallets/'.$wallet->id.'/histories')
+        $this->getJson('/api/v1/wallets/'.$wallet->id.'/histories')
             ->assertOk()
             ->assertJsonPath('status.success', true)
             ->assertJsonPath('status.message', 'Wallet history retrieved successfully')
@@ -115,12 +123,12 @@ class WalletApiTest extends TestCase
 
     public function test_admin_can_list_own_wallets(): void
     {
-        $admin = User::factory()->create(['user_type_id' => UserType::ADMIN]);
+        $admin = User::factory()->create(['user_type_id' => UserType::ADMIN_ID]);
         $admin->ensureDefaultWallets();
 
         Sanctum::actingAs($admin);
 
-        $this->getJson('/api/v1/admin/wallets')
+        $this->getJson('/api/v1/wallets')
             ->assertOk()
             ->assertJsonPath('status.success', true)
             ->assertJsonPath('status.message', 'Wallets retrieved successfully');
@@ -128,13 +136,13 @@ class WalletApiTest extends TestCase
 
     public function test_admin_can_view_own_wallet(): void
     {
-        $admin = User::factory()->create(['user_type_id' => UserType::ADMIN]);
+        $admin = User::factory()->create(['user_type_id' => UserType::ADMIN_ID]);
         $admin->ensureDefaultWallets();
         $walletId = (int) $admin->wallets()->value('id');
 
         Sanctum::actingAs($admin);
 
-        $this->getJson('/api/v1/admin/wallets/'.$walletId)
+        $this->getJson('/api/v1/wallets/'.$walletId)
             ->assertOk()
             ->assertJsonPath('status.success', true)
             ->assertJsonPath('status.message', 'Wallet retrieved successfully');
@@ -142,7 +150,7 @@ class WalletApiTest extends TestCase
 
     public function test_admin_can_view_own_wallet_history(): void
     {
-        $admin = User::factory()->create(['user_type_id' => UserType::ADMIN]);
+        $admin = User::factory()->create(['user_type_id' => UserType::ADMIN_ID]);
         $usdId = (int) Currency::query()->where('code', Currency::USD)->value('id');
         $wallet = Wallet::query()->create([
             'user_id' => $admin->id,
@@ -161,7 +169,7 @@ class WalletApiTest extends TestCase
             'updated_at' => now(),
         ]);
 
-        $this->getJson('/api/v1/admin/wallets/'.$wallet->id.'/histories')
+        $this->getJson('/api/v1/wallets/'.$wallet->id.'/histories')
             ->assertOk()
             ->assertJsonPath('status.success', true)
             ->assertJsonPath('status.message', 'Wallet history retrieved successfully')
@@ -174,13 +182,13 @@ class WalletApiTest extends TestCase
     {
         $owner = User::factory()->create(['user_type_id' => UserType::CONSUMER_ID]);
         $owner->ensureDefaultWallets();
-        $admin = User::factory()->create(['user_type_id' => UserType::ADMIN]);
+        $admin = User::factory()->create(['user_type_id' => UserType::ADMIN_ID]);
 
         $walletId = (int) $owner->wallets()->value('id');
 
         Sanctum::actingAs($admin);
 
-        $this->getJson('/api/v1/admin/wallets/'.$walletId)
+        $this->getJson('/api/v1/wallets/'.$walletId)
             ->assertNotFound();
     }
 }

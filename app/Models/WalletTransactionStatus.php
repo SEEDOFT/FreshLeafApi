@@ -18,6 +18,7 @@ use Illuminate\Support\Facades\App;
  * @property int $id
  * @property string $name_en
  * @property string $name_km
+ * @property-read string $code
  * @property-read string|null $translated_name
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
@@ -53,6 +54,20 @@ class WalletTransactionStatus extends Model
     public function getTranslatedNameAttribute(): ?string
     {
         return $this->{'name_'.App::getLocale()};
+    }
+
+    /**
+     * Get status code.
+     */
+    public function getCodeAttribute(): string
+    {
+        return match ($this->id) {
+            self::PENDING_ID => self::PENDING,
+            self::COMPLETED_ID => self::COMPLETED,
+            self::FAILED_ID => self::FAILED,
+            self::CANCELLED_ID => self::CANCELLED,
+            default => 'UNKNOWN',
+        };
     }
 
     /**

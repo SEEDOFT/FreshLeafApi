@@ -21,7 +21,7 @@ class PaymentMethodFactory extends Factory
     {
         return [
             'user_id' => fake()->randomNumber(),
-            'payment_method_type_id' => 1,
+            'payment_method_type_id' => 2,
             'payment_method_status_id' => 1,
             'label' => fake()->word(),
             'card_holder_name' => fake()->name(),

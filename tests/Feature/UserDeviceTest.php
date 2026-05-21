@@ -19,7 +19,7 @@ class UserDeviceTest extends TestCase
         $user = User::factory()->create();
         Sanctum::actingAs($user);
 
-        $response = $this->postJson('/api/v1/user/devices', [
+        $response = $this->postJson('/api/v1/devices', [
             'device_token' => 'test-token-123',
             'device_type' => 'android',
         ]);
@@ -29,7 +29,7 @@ class UserDeviceTest extends TestCase
 
         $this->assertDatabaseHas('user_devices', [
             'user_id' => $user->id,
-            'device_token' => 'test-token-123',
+            'device_token_hash' => hash('sha256', 'test-token-123'),
             'device_type' => 'android',
             'is_active' => true,
         ]);
@@ -44,11 +44,12 @@ class UserDeviceTest extends TestCase
         UserDevice::factory()->create([
             'user_id' => $otherUser->id,
             'device_token' => 'test-token-123',
+            'device_token_hash' => hash('sha256', 'test-token-123'),
         ]);
 
         Sanctum::actingAs($user);
 
-        $response = $this->postJson('/api/v1/user/devices', [
+        $response = $this->postJson('/api/v1/devices', [
             'device_token' => 'test-token-123',
             'device_type' => 'ios',
         ]);
@@ -58,7 +59,7 @@ class UserDeviceTest extends TestCase
         // Token should now belong to $user and be 'ios'
         $this->assertDatabaseHas('user_devices', [
             'user_id' => $user->id,
-            'device_token' => 'test-token-123',
+            'device_token_hash' => hash('sha256', 'test-token-123'),
             'device_type' => 'ios',
         ]);
 
@@ -73,14 +74,15 @@ class UserDeviceTest extends TestCase
         $device = UserDevice::factory()->create([
             'user_id' => $user->id,
             'device_token' => 'test-token-123',
+            'device_token_hash' => hash('sha256', 'test-token-123'),
         ]);
 
-        $response = $this->deleteJson("/api/v1/user/devices/{$device->device_token}");
+        $response = $this->deleteJson("/api/v1/devices/{$device->device_token}");
 
         $response->assertStatus(200);
 
         $this->assertDatabaseHas('user_devices', [
-            'device_token' => 'test-token-123',
+            'device_token_hash' => hash('sha256', 'test-token-123'),
             'is_active' => false,
         ]);
     }

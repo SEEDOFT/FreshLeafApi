@@ -20,7 +20,7 @@ abstract class Controller
      *
      * @throws AuthenticationException
      */
-    protected function authenticatedUser(Request $request, ?int $userType = UserType::CONSUMER_ID): User
+    protected function authenticatedUser(Request $request, ?int $userType = null): User
     {
         /** @var User|null $user */
         $user = $request->user();
@@ -29,11 +29,15 @@ abstract class Controller
             throw new AuthenticationException('Unauthenticated.');
         }
 
-        $authorizedUser = User::where('id', $user->id)
+        $query = User::where('id', $user->id)
             ->where('user_status_id', UserStatus::ACTIVE_ID)
-            ->where('phone_number', $user->phone_number)
-            ->where('user_type_id', $userType)
-            ->first();
+            ->where('phone_number', $user->phone_number);
+            
+        if ($userType !== null) {
+            $query->where('user_type_id', $userType);
+        }
+
+        $authorizedUser = $query->first();
 
         if (! $authorizedUser) {
             throw new AuthenticationException('Account inactive or unauthorized.');

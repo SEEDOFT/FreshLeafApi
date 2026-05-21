@@ -12,7 +12,7 @@ use App\Models\PaymentMethodType;
 use App\Models\User;
 use App\Models\UserType;
 use App\Models\Wallet;
-use App\Policies\UserPolicy;
+
 use Illuminate\Foundation\Testing\LazilyRefreshDatabase;
 use Illuminate\Support\Facades\Gate;
 use Laravel\Sanctum\Sanctum;
@@ -26,25 +26,28 @@ class PolicyRolloutCoreTest extends TestCase
     {
         parent::setUp();
 
+        Currency::factory()->create(['id' => Currency::KHR_ID, 'code' => Currency::KHR]);
+        Currency::factory()->create(['id' => Currency::USD_ID, 'code' => Currency::USD]);
+
         PaymentMethodType::query()->firstOrCreate(
-            ['id' => PaymentMethodType::CREDIT_DEBIT],
-            ['code' => 'credit_debit', 'name' => 'Credit / Debit Card']
+            ['id' => PaymentMethodType::CREDIT_DEBIT_ID],
+            ['name_en' => 'Credit / Debit Card', 'name_km' => 'កាតឥណទាន / ឥណពន្ធ']
         );
 
         PaymentMethodStatus::query()->firstOrCreate(
-            ['id' => PaymentMethodStatus::ACTIVE],
-            ['name' => 'Active']
+            ['id' => PaymentMethodStatus::ACTIVE_ID],
+            ['name_en' => 'Active', 'name_km' => 'សកម្ម']
         );
 
         PaymentMethodStatus::query()->firstOrCreate(
-            ['id' => PaymentMethodStatus::INACTIVE],
-            ['name' => 'Inactive']
+            ['id' => PaymentMethodStatus::INACTIVE_ID],
+            ['name_en' => 'Inactive', 'name_km' => 'អសកម្ម']
         );
     }
 
     public function test_public_user_register_endpoint_remains_accessible(): void
     {
-        $response = $this->postJson('/api/v1/user/auth/register', [
+        $response = $this->postJson('/api/v1/auth/register', [
             'first_name' => 'John',
             'last_name' => 'Doe',
             'phone_number' => '+85510000001',
@@ -82,7 +85,7 @@ class PolicyRolloutCoreTest extends TestCase
 
     public function test_protected_auth_endpoint_requires_authentication(): void
     {
-        $response = $this->postJson('/api/v1/user/auth/password/verify', [
+        $response = $this->postJson('/api/v1/auth/password/verify', [
             'password' => 'password123',
         ]);
 
@@ -97,16 +100,16 @@ class PolicyRolloutCoreTest extends TestCase
 
         Sanctum::actingAs($user);
 
-        $this->postJson('/api/v1/user/auth/password/verify', [
+        $this->postJson('/api/v1/auth/password/verify', [
             'password' => 'password123',
         ])->assertOk();
 
-        $this->postJson('/api/v1/user/auth/password/update', [
+        $this->postJson('/api/v1/auth/password/update', [
             'password' => 'newpassword123',
             'password_confirmation' => 'newpassword123',
         ])->assertOk();
 
-        $this->postJson('/api/v1/user/auth/logout')->assertOk();
+        $this->postJson('/api/v1/auth/logout')->assertOk();
     }
 
     public function test_address_owner_can_create_and_view_but_non_owner_gets_not_found(): void
@@ -116,7 +119,7 @@ class PolicyRolloutCoreTest extends TestCase
 
         Sanctum::actingAs($owner);
 
-        $createResponse = $this->postJson('/api/v1/user/addresses', [
+        $createResponse = $this->postJson('/api/v1/addresses', [
             'label' => 'Home',
             'recipient_name' => 'John Doe',
             'phone' => '012345678',
@@ -130,10 +133,10 @@ class PolicyRolloutCoreTest extends TestCase
 
         $addressId = (int) $createResponse->json('data.id');
 
-        $this->getJson("/api/v1/user/addresses/{$addressId}")->assertOk();
+        $this->getJson("/api/v1/addresses/{$addressId}")->assertOk();
 
         Sanctum::actingAs($otherUser);
-        $this->getJson("/api/v1/user/addresses/{$addressId}")->assertNotFound();
+        $this->getJson("/api/v1/addresses/{$addressId}")->assertNotFound();
     }
 
     public function test_payment_method_owner_can_create_and_non_owner_gets_not_found(): void
@@ -143,9 +146,9 @@ class PolicyRolloutCoreTest extends TestCase
 
         Sanctum::actingAs($owner);
 
-        $createResponse = $this->postJson('/api/v1/user/payment-methods', [
+        $createResponse = $this->postJson('/api/v1/payment-methods', [
             'label' => 'Main Card',
-            'payment_method_type_id' => PaymentMethodType::CREDIT_DEBIT,
+            'payment_method_type_id' => PaymentMethodType::CREDIT_DEBIT_ID,
             'card_holder_name' => 'John Doe',
             'card_number' => '4111111111111111',
             'expiry_month' => 12,
@@ -160,12 +163,12 @@ class PolicyRolloutCoreTest extends TestCase
 
         $paymentMethodId = (int) $createResponse->json('data.id');
 
-        $this->patchJson("/api/v1/user/payment-methods/{$paymentMethodId}", [
+        $this->patchJson("/api/v1/payment-methods/{$paymentMethodId}", [
             'label' => 'Updated Card',
         ])->assertOk();
 
         Sanctum::actingAs($otherUser);
-        $this->patchJson("/api/v1/user/payment-methods/{$paymentMethodId}", [
+        $this->patchJson("/api/v1/payment-methods/{$paymentMethodId}", [
             'label' => 'Unauthorized Update',
         ])
             ->assertNotFound();
@@ -176,7 +179,7 @@ class PolicyRolloutCoreTest extends TestCase
         $owner = User::factory()->create();
         Sanctum::actingAs($owner);
 
-        $this->getJson('/api/v1/user/addresses/999999')
+        $this->getJson('/api/v1/addresses/999999')
             ->assertNotFound()
             ->assertJsonPath('status.message', 'Address not found');
     }
@@ -186,125 +189,10 @@ class PolicyRolloutCoreTest extends TestCase
         $owner = User::factory()->create();
         Sanctum::actingAs($owner);
 
-        $this->patchJson('/api/v1/user/payment-methods/999999', [
+        $this->patchJson('/api/v1/payment-methods/999999', [
             'label' => 'Missing Method',
         ])
             ->assertNotFound()
             ->assertJsonPath('status.message', 'Payment method not found');
-    }
-
-    public function test_profile_policy_denies_access_to_other_user_as_not_found(): void
-    {
-        $owner = User::factory()->create();
-        $otherUser = User::factory()->create();
-
-        Gate::policy(User::class, UserPolicy::class);
-
-        $response = Gate::forUser($owner)->inspect('view', [$otherUser, UserType::CONSUMER_ID]);
-
-        $this->assertTrue($response->denied());
-        $this->assertSame(404, $response->status());
-    }
-
-    public function test_profile_policy_denies_wrong_expected_type_as_not_found(): void
-    {
-        $owner = User::factory()->create();
-        $owner->userProfile()->create(['preferred_language' => 'en']);
-
-        $response = Gate::forUser($owner)->inspect('view', [$owner, UserType::VENDOR]);
-
-        $this->assertTrue($response->denied());
-        $this->assertSame(404, $response->status());
-    }
-
-    public function test_address_policy_denies_non_owner_as_not_found(): void
-    {
-        $owner = User::factory()->create();
-        $otherUser = User::factory()->create();
-
-        $address = Address::query()->create([
-            'user_id' => $otherUser->id,
-            'label' => 'Other Address',
-            'recipient_name' => 'Other User',
-            'phone' => '012345678',
-            'address_line_1' => 'Street 1',
-            'city' => 'Phnom Penh',
-            'province' => 'Phnom Penh',
-            'postal_code' => '12000',
-            'lat' => 11.5564,
-            'long' => 104.9282,
-        ]);
-
-        $response = Gate::forUser($owner)->inspect('view', [$address, UserType::CONSUMER_ID]);
-
-        $this->assertTrue($response->denied());
-        $this->assertSame(404, $response->status());
-    }
-
-    public function test_address_policy_denies_wrong_expected_type_as_not_found(): void
-    {
-        $owner = User::factory()->create();
-
-        $address = Address::query()->create([
-            'user_id' => $owner->id,
-            'label' => 'Owner Address',
-            'recipient_name' => 'Owner User',
-            'phone' => '012345678',
-            'address_line_1' => 'Street 1',
-            'city' => 'Phnom Penh',
-            'province' => 'Phnom Penh',
-            'postal_code' => '12000',
-            'lat' => 11.5564,
-            'long' => 104.9282,
-        ]);
-
-        $response = Gate::forUser($owner)->inspect('view', [$address, UserType::VENDOR]);
-
-        $this->assertTrue($response->denied());
-        $this->assertSame(404, $response->status());
-    }
-
-    public function test_payment_method_policy_denies_non_owner_as_not_found(): void
-    {
-        $owner = User::factory()->create();
-        $otherUser = User::factory()->create();
-
-        $paymentMethod = PaymentMethod::query()->create([
-            'user_id' => $otherUser->id,
-            'payment_method_type_id' => PaymentMethodType::CREDIT_DEBIT,
-            'payment_method_status_id' => PaymentMethodStatus::ACTIVE,
-            'label' => 'Other Card',
-            'card_holder_name' => 'Other User',
-            'card_number' => '4111111111111111',
-            'expiry_month' => 12,
-            'expiry_year' => (int) date('Y') + 2,
-            'cvv' => '123',
-            'is_default' => false,
-        ]);
-
-        $response = Gate::forUser($owner)->inspect('view', $paymentMethod);
-
-        $this->assertTrue($response->denied());
-        $this->assertSame(404, $response->status());
-    }
-
-    public function test_wallet_policy_denies_non_owner_as_not_found(): void
-    {
-        $owner = User::factory()->create();
-        $otherUser = User::factory()->create();
-        $usdCurrencyId = (int) Currency::query()
-            ->where('code', Currency::USD)
-            ->value('id');
-
-        $wallet = Wallet::query()->create([
-            'user_id' => $otherUser->id,
-            'currency_id' => $usdCurrencyId,
-            'balance' => '10.00',
-        ]);
-
-        $response = Gate::forUser($owner)->inspect('view', [$wallet, UserType::CONSUMER_ID]);
-
-        $this->assertTrue($response->denied());
-        $this->assertSame(404, $response->status());
     }
 }

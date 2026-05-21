@@ -119,7 +119,7 @@ class SupportChatController extends Controller
     public function sendMessage(Request $request): JsonResponse
     {
         $validatedData = $request->validate([
-            'ticket_id' => ['required', 'string', 'exists:support_tickets,id'],
+            'ticket_id' => ['required', 'integer', 'exists:support_tickets,id'],
             'message' => ['required', 'string', 'max:1200'],
             'attachment' => ['nullable', 'file', 'max:5120', 'mimes:png,jpg,jpeg,pdf'],
         ]);
@@ -168,7 +168,7 @@ class SupportChatController extends Controller
     public function getMessages(Request $request): JsonResponse
     {
         $validatedData = $request->validate([
-            'ticket_id' => ['required', 'string', 'exists:support_tickets,id'],
+            'ticket_id' => ['required', 'integer', 'exists:support_tickets,id'],
         ]);
 
         $user = $this->authenticatedUser($request);

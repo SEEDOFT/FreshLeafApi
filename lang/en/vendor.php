@@ -21,6 +21,7 @@ return [
             'account_number' => 'Account Number',
             'qr_code' => 'Bank QR Code',
             'success_notification' => 'Financial details updated.',
+            'description' => 'Financial details about your business.',
         ],
         'vendor_security' => [
             'label' => 'Security',
@@ -46,6 +47,7 @@ return [
             'email' => 'Email',
             'phone' => 'Phone Number',
             'general_info' => 'General Information',
+            'general_info_desc' => 'Update your basic profile information and avatar.',
             'preferences' => 'Preferences',
             'preferences_desc' => 'Customize your store dashboard language.',
             'language' => 'Display Language',

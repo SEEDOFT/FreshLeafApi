@@ -48,11 +48,11 @@ class ProductResource extends JsonResource
                 'slug' => $this->productCategory->slug,
             ] : null),
             'type' => $this->whenLoaded('type', fn () => $this->type ? [
-                'name' => $this->type->name,
+                'name' => translate($this->type->name_en, $this->type->name_km),
             ] : null),
             'default_unit' => $this->whenLoaded('defaultUnit', fn () => [
                 'id' => $this->default_unit_id,
-                'name' => $this->defaultUnit->name,
+                'name' => translate($this->defaultUnit->name_en, $this->defaultUnit->name_km),
                 'symbol' => $this->defaultUnit->symbol,
             ]),
             'status' => $this->whenLoaded('status', fn () => [

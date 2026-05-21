@@ -4,18 +4,27 @@ declare(strict_types=1);
 
 namespace App\Filament\Vendor\Clusters\Settings\Pages;
 
+use App\Constants\StorageDirectory;
 use App\Filament\Vendor\Clusters\Settings;
-use App\Models\User;
+use BackedEnum;
 use Filament\Actions\Action;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\TextInput;
 use Filament\Notifications\Notification;
 use Filament\Pages\Page;
+use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\HtmlString;
 use Override;
+
+use function basename;
+use function is_array;
+use function is_string;
+use function ltrim;
+use function reset;
+use function str_starts_with;
 
 class FinancialDetails extends Page
 {
@@ -26,7 +35,13 @@ class FinancialDetails extends Page
     protected static ?string $slug = 'financials';
 
     #[Override]
-    protected static ?string $navigationLabel = 'Financials';
+    public static function getNavigationLabel(): string
+    {
+        return __('vendor.settings.financial_details.label');
+    }
+
+    #[Override]
+    protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-currency-dollar';
 
     #[Override]
     protected string $view = 'filament.pages.shared.form-page';
@@ -40,9 +55,18 @@ class FinancialDetails extends Page
     {
         $user = Auth::user();
 
-        $this->data = $user instanceof User
-            ? $user->vendorProfile->toArray() ?? []
-            : [];
+        if (! $user) {
+            return;
+        }
+
+        $financial = $user->vendorFinancialDetails;
+        $financialData = $financial ? $financial->toArray() : [];
+
+        if (isset($financialData['qr_code']) && is_string($financialData['qr_code'])) {
+            $financialData['qr_code'] = $this->getFileUploadState($financialData['qr_code']);
+        }
+
+        $this->data = $financialData;
     }
 
     public function form(Schema $schema): Schema
@@ -50,26 +74,36 @@ class FinancialDetails extends Page
         return $schema
             ->components([
                 Section::make(__('vendor.settings.financial_details.label'))
-                    ->description('Used for weekly earnings payouts.')
+                    ->description(__('vendor.settings.financial_details.description'))
                     ->schema([
-                        TextInput::make('bank_name')
-                            ->label(new HtmlString('<strong>'.__('vendor.settings.financial_details.bank_name').'</strong>'))
-                            ->placeholder('e.g. ABA Bank')
-                            ->maxLength(255),
-                        TextInput::make('bank_account_name')
-                            ->label(new HtmlString('<strong>'.__('vendor.settings.financial_details.account_holder').'</strong>'))
-                            ->placeholder('e.g. KOY YOTRABOTH')
-                            ->maxLength(255),
-                        TextInput::make('bank_account_number')
-                            ->label(new HtmlString('<strong>'.__('vendor.settings.financial_details.account_number').'</strong>'))
-                            ->maxLength(255),
-                        FileUpload::make('bank_qr_code')
-                            ->label(new HtmlString('<strong>'.__('vendor.settings.financial_details.qr_code').'</strong>'))
-                            ->image()
-                            ->disk('local')
-                            ->directory('vendor-verification')
-                            ->columnSpanFull(),
-                    ])->columns(3),
+                        Grid::make(2)
+                            ->columnSpan(1)
+                            ->schema([
+                                TextInput::make('vendorFinancialDetails.bank_name')
+                                    ->label(new HtmlString('<strong>'.__('vendor.settings.financial_details.bank_name').'</strong>'))
+                                    ->disabled(),
+                                TextInput::make('vendorFinancialDetails.account_name')
+                                    ->label(new HtmlString('<strong>'.__('vendor.settings.financial_details.account_holder').'</strong>'))
+                                    ->disabled()
+                                    ->maxLength(255),
+                                TextInput::make('vendorFinancialDetails.account_number')
+                                    ->label(new HtmlString('<strong>'.__('vendor.settings.financial_details.account_number').'</strong>'))
+                                    ->disabled()
+                                    ->columnSpanFull()
+                                    ->maxLength(255),
+                            ]),
+                        Grid::make(1)
+                            ->columnSpan(1)
+                            ->schema([
+                                FileUpload::make('qr_code')
+                                    ->label(new HtmlString('<strong>'.__('vendor.settings.financial_details.qr_code').'</strong>'))
+                                    ->image()
+                                    ->maxSize(6144)
+                                    ->disk(null)
+                                    ->directory(StorageDirectory::VENDOR_VERIFICATION)
+                                    ->columnSpanFull(),
+                            ]),
+                    ])->columns(2),
             ])
             ->statePath('data');
     }
@@ -77,13 +111,29 @@ class FinancialDetails extends Page
     public function save(): void
     {
         $user = Auth::user();
+
+        if (! $user) {
+            return;
+        }
+
         $form = $this->getSchema('form');
-        if (! $user instanceof User || ! $form) {
+
+        if (! $form) {
             return;
         }
 
         $state = $form->getState();
-        $user->vendorProfile()->update($state);
+
+        if (isset($state['qr_code']) && is_array($state['qr_code'])) {
+            $value = reset($state['qr_code']);
+            $state['qr_code'] = is_string($value) ? basename($value) : null;
+        }
+
+        $user->vendorFinancialDetails()
+            ->updateOrCreate(
+                ['user_id' => $user->id],
+                $state,
+            );
 
         Notification::make()
             ->title(__('vendor.settings.financial_details.success_notification'))
@@ -92,7 +142,7 @@ class FinancialDetails extends Page
     }
 
     /**
-     * @return Action[]
+     * @return array<Action>
      */
     protected function getFormActions(): array
     {
@@ -101,6 +151,22 @@ class FinancialDetails extends Page
                 ->label(new HtmlString('<strong>'.__('shared.profile.save_changes').'</strong>'))
                 ->submit('save')
                 ->keyBindings(['mod+s']),
+        ];
+    }
+
+    /**
+     * Resolve a stored filename into the full path the FileUpload
+     * component expects for displaying existing files.
+     *
+     * @return array<string>
+     */
+    private function getFileUploadState(string $path): array
+    {
+        $path = ltrim($path, '/');
+
+        return [
+            str_starts_with($path, StorageDirectory::VENDOR_VERIFICATION)
+                ? $path : StorageDirectory::VENDOR_VERIFICATION.'/'.$path,
         ];
     }
 }

@@ -21,6 +21,7 @@ return [
             'account_number' => 'លេខគណនី',
             'qr_code' => 'កូដ QR ធនាគារ',
             'success_notification' => 'បានធ្វើបច្ចុប្បន្នភាពព័ត៌មានហិរញ្ញវត្ថុដោយជោគជ័យ។',
+            'description' => '',
         ],
         'vendor_security' => [
             'label' => 'សុវត្ថិភាព',
@@ -46,6 +47,7 @@ return [
             'email' => 'អ៊ីមែល',
             'phone' => 'លេខទូរស័ព្ទ',
             'general_info' => 'ព័ត៌មានទូទៅ',
+            'general_info_desc' => 'ធ្វើបច្ចុប្បន្នភាពព័ត៌មានមូលដ្ឋាន និងរូបតំណាងរបស់អ្នក។',
             'preferences' => 'ចំណូលចិត្ត',
             'preferences_desc' => 'កំណត់ភាសាសម្រាប់ផ្ទាំងគ្រប់គ្រងហាងរបស់អ្នក។',
             'language' => 'ភាសាបង្ហាញ',

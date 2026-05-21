@@ -25,23 +25,31 @@ class PhoneNumberInput extends Field
 
         $dialCode = $this->dialCode;
 
-        $this->dehydrateStateUsing(
-            static function (?string $state) use ($dialCode): ?string {
-                if (blank($state)) {
-                    return null;
-                }
-
-                $cleaned = preg_replace('/\s+/', '', $state);
-
-                if (! $cleaned) {
-                    throw new InvalidArgumentException('Invalid phone number');
-                }
-
-                $cleaned = ltrim($cleaned, '0');
-
-                return $dialCode.$cleaned;
+        $this->formatStateUsing(static function (?string $state) use ($dialCode): ?string {
+            if (blank($state)) {
+                return null;
             }
-        );
+
+            return str_starts_with($state, $dialCode)
+                ? substr($state, strlen($dialCode))
+                : $state;
+        });
+
+        $this->dehydrateStateUsing(static function (?string $state) use ($dialCode): ?string {
+            if (blank($state)) {
+                return null;
+            }
+
+            $cleaned = preg_replace('/\s+/', '', $state);
+
+            if (! $cleaned) {
+                throw new InvalidArgumentException('Invalid phone number');
+            }
+
+            $cleaned = ltrim($cleaned, '0');
+
+            return $dialCode.$cleaned;
+        });
     }
 
     #[Override]

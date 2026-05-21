@@ -27,7 +27,7 @@ class OrdersTable
                     ->sortable(),
                 TextColumn::make('user.name')->placeholder(__('admin.resources.general.not_provided'))
                     ->label(new HtmlString('<strong>'.__('admin.resources.order.customer').'</strong>'))
-                    ->getStateUsing(fn (Order $record) => $record->user->fullName)
+                    ->getStateUsing(fn (Order $record) => $record->user?->fullName)
                     ->searchable()
                     ->sortable(),
                 TextColumn::make('status.translated_name')->placeholder(__('admin.resources.general.not_provided'))

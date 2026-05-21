@@ -27,8 +27,16 @@ class PaymentMethodTest extends TestCase
         parent::setUp();
 
         $this->user = User::factory()->create();
-        $this->paymentMethodType = PaymentMethodType::query()->findOrFail(PaymentMethodType::CREDIT_DEBIT);
-        $this->paymentMethodStatus = PaymentMethodStatus::query()->findOrFail(PaymentMethodStatus::ACTIVE);
+
+        $this->paymentMethodType = PaymentMethodType::query()->firstOrCreate(
+            ['id' => PaymentMethodType::CREDIT_DEBIT_ID],
+            ['name_en' => 'Credit / Debit Card', 'name_km' => 'កាតឥណទាន / ឥណពន្ធ']
+        );
+
+        $this->paymentMethodStatus = PaymentMethodStatus::query()->firstOrCreate(
+            ['id' => PaymentMethodStatus::ACTIVE_ID],
+            ['name_en' => 'Active', 'name_km' => 'សកម្ម']
+        );
     }
 
     public function test_user_can_list_their_payment_methods(): void
@@ -38,7 +46,7 @@ class PaymentMethodTest extends TestCase
 
         Sanctum::actingAs($this->user);
 
-        $response = $this->getJson('/api/v1/user/payment-methods');
+        $response = $this->getJson('/api/v1/payment-methods');
 
         $response->assertStatus(200)
             ->assertJsonCount(3, 'data');
@@ -64,7 +72,7 @@ class PaymentMethodTest extends TestCase
 
         Sanctum::actingAs($this->user);
 
-        $response = $this->postJson('/api/v1/user/payment-methods', $data);
+        $response = $this->postJson('/api/v1/payment-methods', $data);
 
         $response->assertStatus(201)
             ->assertJsonPath('data.label', 'Personal Visa')
@@ -77,7 +85,7 @@ class PaymentMethodTest extends TestCase
             'is_default' => true,
         ]);
 
-        $response2 = $this->postJson('/api/v1/user/payment-methods', array_merge($data, ['label' => 'Second Visa']));
+        $response2 = $this->postJson('/api/v1/payment-methods', array_merge($data, ['label' => 'Second Visa']));
 
         $response2->assertStatus(201);
         $this->assertDatabaseHas('payment_methods', ['label' => 'Personal Visa', 'is_default' => false]);
@@ -95,7 +103,7 @@ class PaymentMethodTest extends TestCase
 
         Sanctum::actingAs($this->user);
 
-        $response = $this->getJson("/api/v1/user/payment-methods/{$paymentMethod->id}");
+        $response = $this->getJson("/api/v1/payment-methods/{$paymentMethod->id}");
 
         $response->assertStatus(200)
             ->assertJsonPath('data.id', $paymentMethod->id);
@@ -108,7 +116,7 @@ class PaymentMethodTest extends TestCase
 
         Sanctum::actingAs($this->user);
 
-        $response = $this->getJson("/api/v1/user/payment-methods/{$paymentMethod->id}");
+        $response = $this->getJson("/api/v1/payment-methods/{$paymentMethod->id}");
 
         $response->assertStatus(404);
     }
@@ -119,7 +127,7 @@ class PaymentMethodTest extends TestCase
 
         Sanctum::actingAs($this->user);
 
-        $response = $this->patchJson("/api/v1/user/payment-methods/{$paymentMethod->id}", [
+        $response = $this->patchJson("/api/v1/payment-methods/{$paymentMethod->id}", [
             'label' => 'Updated via PATCH',
         ]);
 
@@ -150,7 +158,7 @@ class PaymentMethodTest extends TestCase
 
         Sanctum::actingAs($this->user);
 
-        $response = $this->putJson("/api/v1/user/payment-methods/{$paymentMethod->id}", $data);
+        $response = $this->putJson("/api/v1/payment-methods/{$paymentMethod->id}", $data);
 
         $response->assertStatus(200)
             ->assertJsonPath('data.label', 'Full Replace via PUT')
@@ -168,7 +176,7 @@ class PaymentMethodTest extends TestCase
 
         Sanctum::actingAs($this->user);
 
-        $response = $this->deleteJson("/api/v1/user/payment-methods/{$paymentMethod->id}");
+        $response = $this->deleteJson("/api/v1/payment-methods/{$paymentMethod->id}");
 
         $response->assertStatus(200);
         $this->assertDatabaseHas('payment_methods', [

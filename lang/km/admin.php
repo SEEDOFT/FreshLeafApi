@@ -241,7 +241,7 @@ return [
             'view_submission' => 'មើលការដាក់ស្នើ',
             'approve' => 'អនុម័ត',
             'reject' => 'បដិសេធ',
-            'approval_note' => 'កំណត់សម្គាល់ការអនុម័ត (ប្រសិនបើមាន)',
+            'approval_note' => 'កំណត់សម្គាល់ការអនុម័ត',
             'rejection_reason' => 'មូលហេតុនៃការបដិសេធ',
             'status' => 'ស្ថានភាព',
             'identity_verification' => 'ការបញ្ជាក់អត្តសញ្ញាណ',

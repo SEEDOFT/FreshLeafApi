@@ -23,8 +23,7 @@ class ProfileService
     {
         if ($image) {
             if ($user->image) {
-                Storage::disk('public')
-                    ->delete(StorageDirectory::USERS.'/'.$user->image);
+                Storage::disk('public')->delete($user->image);
             }
             $data['image'] = $this->storeUserImage($image);
         }
@@ -62,6 +61,6 @@ class ProfileService
         $fileName = Str::ulid().'.'.$file->getClientOriginalExtension();
         $file->storeAs(StorageDirectory::USERS, $fileName, 'public');
 
-        return $fileName;
+        return StorageDirectory::USERS.'/'.$fileName;
     }
 }

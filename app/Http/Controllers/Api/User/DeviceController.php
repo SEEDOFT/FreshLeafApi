@@ -22,10 +22,10 @@ class DeviceController extends Controller
 
         $device = UserDevice::updateOrCreate(
             [
-                'user_id' => $user->id,
                 'device_token_hash' => hash('sha256', $validatedData['device_token']),
             ],
             [
+                'user_id' => $user->id,
                 'device_token' => $validatedData['device_token'],
                 'device_type' => $validatedData['device_type'],
                 'is_active' => true,
@@ -41,15 +41,12 @@ class DeviceController extends Controller
     /**
      * Deactivate a user device token (on logout).
      */
-    public function destroy(Request $request): JsonResponse
+    public function destroy(Request $request, string $token): JsonResponse
     {
         $user = $this->authenticatedUser($request);
-        $validatedData = $request->validate([
-            'device_token' => ['required', 'string'],
-        ]);
 
         UserDevice::where('user_id', $user->id)
-            ->where('device_token_hash', hash('sha256', $validatedData['device_token']))
+            ->where('device_token_hash', hash('sha256', $token))
             ->update(['is_active' => false]);
 
         return static::successResponse(message: __('api.device.deactivated'));

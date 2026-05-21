@@ -66,6 +66,10 @@ class AdminPanelProvider extends PanelProvider
                 PanelsRenderHook::BODY_END,
                 fn (): string => view('filament.hooks.panel-assets')->render(),
             )
+            ->renderHook(
+                PanelsRenderHook::BODY_END,
+                fn (): string => view('filament.components.lightbox')->render(),
+            )
             ->colors(ThemeColors::getPalette())
             ->navigationGroups([
                 NavigationGroup::make()

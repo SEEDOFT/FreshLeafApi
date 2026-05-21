@@ -48,7 +48,7 @@ class VendorInventoryResource extends JsonResource
                 'unit',
                 fn () => [
                     'id' => $this->unit_id,
-                    'name' => $this->unit->name,
+                    'name' => translate($this->unit->name_en, $this->unit->name_km),
                     'symbol' => $this->unit->symbol,
                 ]),
             'vendor' => $this->whenLoaded(

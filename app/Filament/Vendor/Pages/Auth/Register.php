@@ -7,6 +7,8 @@ namespace App\Filament\Vendor\Pages\Auth;
 use App\Constants\StorageDirectory;
 use App\Filament\Forms\Components\PasswordInput;
 use App\Filament\Forms\Components\PhoneNumberInput;
+use App\Models\PaymentMethodStatus;
+use App\Models\PaymentMethodType;
 use App\Models\User;
 use App\Models\UserStatus;
 use App\Models\UserType;
@@ -15,10 +17,12 @@ use DanHarrin\LivewireRateLimiting\Exceptions\TooManyRequestsException;
 use Filament\Auth\Http\Responses\Contracts\RegistrationResponse;
 use Filament\Auth\Pages\Register as BaseRegister;
 use Filament\Forms\Components\FileUpload;
+use Filament\Forms\Components\Hidden;
+use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Notifications\Notification;
 use Filament\Schemas\Components\Grid;
-use Filament\Schemas\Components\Utilities\Get;
+use Filament\Schemas\Components\Utilities\Set;
 use Filament\Schemas\Components\Wizard;
 use Filament\Schemas\Components\Wizard\Step;
 use Filament\Schemas\Schema;
@@ -30,7 +34,13 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\HtmlString;
 use Livewire\Attributes\Session;
+use Livewire\Component;
 use Override;
+
+use function basename;
+use function is_array;
+use function is_string;
+use function reset;
 
 class Register extends BaseRegister
 {
@@ -202,11 +212,22 @@ class Register extends BaseRegister
             ->description(__('shared.auth.register.steps.financials_desc'))
             ->schema([
                 Grid::make(3)->schema([
-                    TextInput::make('bank_name')
+                    Select::make('payment_method_type_id')
                         ->label(new HtmlString('<strong>'.__('shared.auth.register.bank_name').'</strong>'))
-                        ->placeholder('e.g. ABA Bank')
+                        ->options(
+                            PaymentMethodType::whereIn('id', [
+                                PaymentMethodType::ABA_ID,
+                                PaymentMethodType::ACLEDA_ID,
+                            ])->pluck('name_en', 'id')
+                        )
                         ->required()
-                        ->maxLength(255),
+                        ->live()
+                        ->afterStateUpdated(function (Set $set, ?string $state): void {
+                            if ($state) {
+                                $type = PaymentMethodType::find((int) $state);
+                                $set('bank_name', $type?->name_en);
+                            }
+                        }),
                     TextInput::make('account_name')
                         ->label(new HtmlString('<strong>'.__('shared.auth.register.account_holder').'</strong>'))
                         ->required()
@@ -216,6 +237,7 @@ class Register extends BaseRegister
                         ->required()
                         ->maxLength(255),
                 ]),
+                Hidden::make('bank_name'),
                 FileUpload::make('qr_code')
                     ->label(new HtmlString('<strong>'.__('shared.auth.register.qr_code').'</strong>'))
                     ->image()
@@ -244,10 +266,20 @@ class Register extends BaseRegister
                     ->label(new HtmlString('<strong>'.__('shared.auth.login.phone').'</strong>'))
                     ->required()
                     ->columnSpanFull()
-                    ->rule(static function (Get $get) {
-                        return static function (string $attribute, $value, Closure $fail) {
-                            $exists = User::where('phone_number', $value)
-                                ->where('user_type_id', UserType::VENDOR)
+                    ->dehydrated(fn (mixed $state): bool => filled($state))
+                    ->live(onBlur: true)
+                    ->afterStateUpdated(function (PhoneNumberInput $component, Component $livewire): void {
+                        $livewire->validateOnly($component->getStatePath());
+                    })
+                    ->rule(static function (): Closure {
+                        return static function (string $attribute, mixed $value, Closure $fail): void {
+                            $cleaned = (string) preg_replace('/\s+/', '', (string) $value);
+                            $formattedPhone = str_starts_with($cleaned, '+855')
+                                ? $cleaned
+                                : '+855'.ltrim($cleaned, '0');
+
+                            $exists = User::where('phone_number', $formattedPhone)
+                                ->where('user_type_id', UserType::VENDOR_ID)
                                 ->whereIn('user_status_id', [
                                     UserStatus::ACTIVE_ID,
                                     UserStatus::PENDING_ID,
@@ -270,6 +302,21 @@ class Register extends BaseRegister
         $data['user_type_id'] = UserType::VENDOR_ID;
         $data['user_status_id'] = UserStatus::PENDING_ID;
 
+        $imageFields = [
+            'id_card_front',
+            'id_card_back',
+            'store_front_image',
+            'organic_certificate_url',
+            'qr_code',
+        ];
+
+        foreach ($imageFields as $field) {
+            if (isset($data[$field]) && is_array($data[$field])) {
+                $value = reset($data[$field]);
+                $data[$field] = is_string($value) ? basename($value) : null;
+            }
+        }
+
         return $data;
     }
 
@@ -288,6 +335,7 @@ class Register extends BaseRegister
                 'id_card_back',
                 'store_front_image',
                 'organic_certificate_url',
+                'payment_method_type_id',
                 'bank_name',
                 'account_name',
                 'account_number',
@@ -319,6 +367,11 @@ class Register extends BaseRegister
                 'id_card_back' => $vendorData['id_card_back'],
                 'store_front_image' => $vendorData['store_front_image'],
                 'organic_certificate_url' => $vendorData['organic_certificate_url'],
+            ]);
+
+            $user->vendorFinancialDetails()->create([
+                'payment_method_type_id' => $vendorData['payment_method_type_id'],
+                'payment_method_status_id' => PaymentMethodStatus::ACTIVE_ID,
                 'bank_name' => $vendorData['bank_name'],
                 'account_name' => $vendorData['account_name'],
                 'account_number' => $vendorData['account_number'],

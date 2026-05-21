@@ -20,9 +20,11 @@ class UserDeviceFactory extends Factory
      */
     public function definition(): array
     {
+        $token = $this->faker->sha256();
         return [
             'user_id' => User::factory(),
-            'device_token' => $this->faker->sha256(),
+            'device_token' => $token,
+            'device_token_hash' => hash('sha256', $token),
             'device_type' => $this->faker->randomElement(['android', 'ios']),
             'is_active' => true,
         ];

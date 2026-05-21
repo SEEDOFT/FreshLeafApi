@@ -111,6 +111,7 @@ return [
         'default_unit' => 'Default Unit',
         'visuals' => 'Visuals',
         'view_detail' => 'View Detail',
+        'currency' => 'Currency',
         'notifications' => [
             'added_to_store' => 'Product added to your store inventory.',
             'stock_adjusted' => 'Stock quantity adjusted successfully.',

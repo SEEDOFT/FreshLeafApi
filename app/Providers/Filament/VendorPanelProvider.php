@@ -70,18 +70,18 @@ class VendorPanelProvider extends PanelProvider
             ->colors(ThemeColors::getPalette())
             ->navigationGroups([
                 NavigationGroup::make()
-                    ->label(__('admin.navigation.dashboard'))
+                    ->label(fn (): string => __('admin.navigation.dashboard'))
                     ->icon('heroicon-o-home'),
                 NavigationGroup::make()
-                    ->label(__('admin.navigation.shop')),
+                    ->label(fn (): string => __('admin.navigation.shop')),
                 NavigationGroup::make()
-                    ->label(__('admin.navigation.catalog')),
+                    ->label(fn (): string => __('admin.navigation.catalog')),
                 NavigationGroup::make()
-                    ->label(__('admin.navigation.sales')),
+                    ->label(fn (): string => __('admin.navigation.sales')),
                 NavigationGroup::make()
-                    ->label(__('admin.navigation.financial')),
+                    ->label(fn (): string => __('admin.navigation.financial')),
                 NavigationGroup::make()
-                    ->label(__('admin.navigation.settings')),
+                    ->label(fn (): string => __('admin.navigation.settings')),
             ])
             ->discoverResources(in: app_path('Filament/Vendor/Resources'), for: 'App\Filament\Vendor\Resources')
             ->discoverPages(in: app_path('Filament/Vendor/Pages'), for: 'App\Filament\Vendor\Pages')

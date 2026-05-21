@@ -2,16 +2,15 @@
 
 declare(strict_types=1);
 
-namespace App\Filament\Vendor\Resources\Products;
+namespace App\Filament\Vendor\Resources\ProductInventories;
 
 use App\Filament\Admin\Resources\VendorInventories\RelationManagers\AdjustmentsRelationManager;
-use App\Filament\Vendor\Resources\Products\Pages\CreateProduct;
-use App\Filament\Vendor\Resources\Products\Pages\EditProduct;
-use App\Filament\Vendor\Resources\Products\Pages\ListProducts;
-use App\Filament\Vendor\Resources\Products\Pages\ViewProduct;
-use App\Filament\Vendor\Resources\Products\Schemas\ProductForm;
-use App\Filament\Vendor\Resources\Products\Schemas\ProductInfolist;
-use App\Filament\Vendor\Resources\Products\Tables\ProductsTable;
+use App\Filament\Vendor\Resources\ProductInventories\Pages\CreateProductInventory;
+use App\Filament\Vendor\Resources\ProductInventories\Pages\EditProductInventory;
+use App\Filament\Vendor\Resources\ProductInventories\Pages\ListProductInventories;
+use App\Filament\Vendor\Resources\ProductInventories\Pages\ViewProductInventory;
+use App\Filament\Vendor\Resources\ProductInventories\Schemas\ProductInventoryForm;
+use App\Filament\Vendor\Resources\ProductInventories\Schemas\ProductInventoryInfolist;
 use App\Models\User;
 use App\Models\UserStatus;
 use App\Models\UserType;
@@ -24,7 +23,7 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Override;
 
-class ProductResource extends Resource
+class ProductInventoryResource extends Resource
 {
     #[Override]
     protected static ?string $model = VendorInventory::class;
@@ -77,19 +76,19 @@ class ProductResource extends Resource
     #[Override]
     public static function form(Schema $schema): Schema
     {
-        return ProductForm::configure($schema);
+        return ProductInventoryForm::configure($schema);
     }
 
     #[Override]
     public static function infolist(Schema $schema): Schema
     {
-        return ProductInfolist::configure($schema);
+        return ProductInventoryInfolist::configure($schema);
     }
 
     #[Override]
     public static function table(Table $table): Table
     {
-        return ProductsTable::configure($table);
+        return ProductInventoryTable::configure($table);
     }
 
     #[Override]
@@ -104,10 +103,10 @@ class ProductResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => ListProducts::route('/'),
-            'create' => CreateProduct::route('/create'),
-            'view' => ViewProduct::route('/{record}'),
-            'edit' => EditProduct::route('/{record}/edit'),
+            'index' => ListProductInventories::route('/'),
+            'create' => CreateProductInventory::route('/create'),
+            'view' => ViewProductInventory::route('/{record}'),
+            'edit' => EditProductInventory::route('/{record}/edit'),
         ];
     }
 }

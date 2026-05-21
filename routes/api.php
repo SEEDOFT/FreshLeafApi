@@ -40,8 +40,10 @@ Route::prefix('v1')->name('v1.')->group(static function () {
     // Unified Auth (Login/Register remain type-specific for clarity, but Logout is shared)
     Route::prefix('auth')->name('auth.')->group(static function () {
         Route::post('login', [AuthController::class, 'login'])
+            ->middleware('throttle:10,1')
             ->name('login');
         Route::post('register', [AuthController::class, 'register'])
+            ->middleware('throttle:5,1')
             ->name('register');
 
         Route::middleware('auth:sanctum')->group(static function () {

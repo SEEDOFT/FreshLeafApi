@@ -79,16 +79,16 @@ class FinancialDetails extends Page
                         Grid::make(2)
                             ->columnSpan(1)
                             ->schema([
-                                TextInput::make('vendorFinancialDetails.bank_name')
+                                TextInput::make('bank_name')
                                     ->label(new HtmlString('<strong>'.__('vendor.settings.financial_details.bank_name').'</strong>'))
-                                    ->disabled(),
-                                TextInput::make('vendorFinancialDetails.account_name')
+                                    ->dehydrated(),
+                                TextInput::make('account_name')
                                     ->label(new HtmlString('<strong>'.__('vendor.settings.financial_details.account_holder').'</strong>'))
-                                    ->disabled()
+                                    ->dehydrated()
                                     ->maxLength(255),
-                                TextInput::make('vendorFinancialDetails.account_number')
+                                TextInput::make('account_number')
                                     ->label(new HtmlString('<strong>'.__('vendor.settings.financial_details.account_number').'</strong>'))
-                                    ->disabled()
+                                    ->dehydrated()
                                     ->columnSpanFull()
                                     ->maxLength(255),
                             ]),
@@ -99,7 +99,8 @@ class FinancialDetails extends Page
                                     ->label(new HtmlString('<strong>'.__('vendor.settings.financial_details.qr_code').'</strong>'))
                                     ->image()
                                     ->maxSize(6144)
-                                    ->disk(null)
+                                    ->imagePreviewHeight('400px')
+                                    ->disk('local')
                                     ->directory(StorageDirectory::VENDOR_VERIFICATION)
                                     ->columnSpanFull(),
                             ]),

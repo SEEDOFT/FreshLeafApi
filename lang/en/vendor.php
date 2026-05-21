@@ -33,7 +33,7 @@ return [
             'id_front' => 'ID Card (Front)',
             'id_back' => 'ID Card (Back)',
             'store_photo' => 'Farm / Store Photo',
-            'organic_cert' => 'Organic Certificate (Optional)',
+            'organic_cert' => 'Organic Certificate',
             'lock_title' => 'Verification Lock',
             'lock_body' => 'You cannot change verification documents once verified.',
             'success_notification' => 'Verification documents updated.',

@@ -4,17 +4,12 @@ declare(strict_types=1);
 
 namespace Tests\Feature;
 
-use App\Models\Address;
 use App\Models\Currency;
-use App\Models\PaymentMethod;
 use App\Models\PaymentMethodStatus;
 use App\Models\PaymentMethodType;
 use App\Models\User;
-use App\Models\UserType;
 use App\Models\Wallet;
-
 use Illuminate\Foundation\Testing\LazilyRefreshDatabase;
-use Illuminate\Support\Facades\Gate;
 use Laravel\Sanctum\Sanctum;
 use Tests\TestCase;
 

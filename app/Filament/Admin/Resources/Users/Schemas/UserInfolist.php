@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Filament\Admin\Resources\Users\Schemas;
 
-use App\Constants\StorageDirectory;
 use App\Models\Currency;
 use App\Models\User;
 use App\Models\UserStatus;
@@ -13,6 +12,7 @@ use App\Models\Wallet;
 use Filament\Infolists\Components\ImageEntry;
 use Filament\Infolists\Components\RepeatableEntry;
 use Filament\Infolists\Components\TextEntry;
+use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 use Illuminate\Support\HtmlString;
@@ -28,6 +28,15 @@ class UserInfolist
                 Section::make(__('admin.resources.user.account_info'))
                     ->columns(2)
                     ->schema([
+                        Grid::make(1)
+                            ->columnSpanFull()
+                            ->schema([
+                                ImageEntry::make('image')
+                                    ->label(new HtmlString('<strong>'.__('admin.profile.avatar').'</strong>'))
+                                    ->circular()
+                                    ->imageSize(200)
+                                    ->alignCenter(),
+                            ]),
                         TextEntry::make('first_name')
                             ->placeholder(__('admin.resources.general.not_provided'))
                             ->label(new HtmlString('<strong>'.__('admin.resources.user.first_name').'</strong>'))
@@ -67,24 +76,11 @@ class UserInfolist
                                 default => 'gray',
                             }),
                     ]),
-
-                Section::make(__('admin.resources.user.personal_info'))
-                    ->schema([
-                        ImageEntry::make('image')
-                            ->label(new HtmlString('<strong>'.__('admin.profile.avatar').'</strong>'))
-                            ->disk('public')
-                            ->getStateUsing(
-                                fn (User $record) => $record->image
-                                ? StorageDirectory::USERS.'/'.$record->image : null
-                            )
-                            ->circular()
-                            ->imageSize(200),
-                    ]),
-
                 Section::make(__('admin.resources.user.wallets_info'))
                     ->schema([
                         RepeatableEntry::make('wallets')
                             ->label(new HtmlString('<strong>'.__('admin.resources.user.wallets_info').'</strong>'))
+                            ->columns(2)
                             ->schema([
                                 TextEntry::make('currency.translated_currency')
                                     ->placeholder(__('admin.resources.general.not_provided'))
@@ -102,10 +98,8 @@ class UserInfolist
                                             ? "$symbol $balance"
                                             : "$balance $symbol";
                                     }),
-                            ])
-                            ->columns(2),
+                            ]),
                     ]),
-
                 Section::make(__('admin.resources.user.system_info'))
                     ->columns(2)
                     ->schema([

@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace App\Filament\Vendor\Resources\Products\Pages;
+namespace App\Filament\Vendor\Resources\ProductInventories\Pages;
 
-use App\Filament\Vendor\Resources\Products\ProductResource;
+use App\Filament\Vendor\Resources\ProductInventories\ProductInventoryResource;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\ForceDeleteAction;
 use Filament\Actions\RestoreAction;
@@ -12,10 +12,10 @@ use Filament\Actions\ViewAction;
 use Filament\Resources\Pages\EditRecord;
 use Override;
 
-class EditProduct extends EditRecord
+class EditProductInventory extends EditRecord
 {
     #[Override]
-    protected static string $resource = ProductResource::class;
+    protected static string $resource = ProductInventoryResource::class;
 
     #[Override]
     protected function getHeaderActions(): array

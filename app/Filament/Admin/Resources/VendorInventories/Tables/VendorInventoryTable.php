@@ -21,7 +21,8 @@ class VendorInventoryTable
             ->recordAction('view')
             ->stackedOnMobile()
             ->columns([
-                TextColumn::make('vendor.name')->placeholder(__('admin.resources.general.not_provided'))
+                TextColumn::make('vendor.name')
+                    ->placeholder(__('admin.resources.general.not_provided'))
                     ->label(new HtmlString('<strong>'.__('admin.resources.vendor_inventory.vendor').'</strong>'))
                     ->getStateUsing(
                         static fn (VendorInventory $record) => $record->vendor->fullName
@@ -30,28 +31,35 @@ class VendorInventoryTable
                     ->sortable(),
                 ImageColumn::make('product.image_url')
                     ->label(new HtmlString('<strong>'.__('admin.resources.product.image').'</strong>')),
-                TextColumn::make('product.name_en')->placeholder(__('admin.resources.general.not_provided'))
+                TextColumn::make('product.name_en')
+                    ->placeholder(__('admin.resources.general.not_provided'))
                     ->label(new HtmlString('<strong>'.__('admin.resources.product.name_en').'</strong>'))
                     ->searchable()
                     ->sortable(),
-                TextColumn::make('price')->placeholder(__('admin.resources.general.not_provided'))
+                TextColumn::make('price')
+                    ->placeholder(__('admin.resources.general.not_provided'))
                     ->label(new HtmlString('<strong>'.__('admin.resources.product.unit_price').'</strong>'))
-                    ->money('USD')
+                    ->money(fn ($record) => $record->currency?->code ?? 'USD')
                     ->sortable(),
-                TextColumn::make('stock_quantity')->placeholder(__('admin.resources.general.not_provided'))
+                TextColumn::make('stock_quantity')
+                    ->placeholder(__('admin.resources.general.not_provided'))
                     ->label(new HtmlString('<strong>'.__('admin.resources.product.stock').'</strong>'))
                     ->numeric()
                     ->sortable(),
-                TextColumn::make('unit.name')->placeholder(__('admin.resources.general.not_provided'))
+                TextColumn::make('unit.name')
+                    ->placeholder(__('admin.resources.general.not_provided'))
                     ->label(new HtmlString('<strong>'.__('admin.resources.product.unit').'</strong>')),
-                TextColumn::make('province_of_origin')->placeholder(__('admin.resources.general.not_provided'))
+                TextColumn::make('province_of_origin')
+                    ->placeholder(__('admin.resources.general.not_provided'))
                     ->label(new HtmlString('<strong>'.__('admin.resources.product.province_of_origin').'</strong>'))
                     ->searchable(),
-                TextColumn::make('status.translated_name')->placeholder(__('admin.resources.general.not_provided'))
+                TextColumn::make('status.translated_name')
+                    ->placeholder(__('admin.resources.general.not_provided'))
                     ->label(new HtmlString('<strong>'.__('admin.resources.product.status').'</strong>'))
                     ->badge()
                     ->sortable(),
-                TextColumn::make('updated_at')->placeholder(__('admin.resources.general.not_provided'))
+                TextColumn::make('updated_at')
+                    ->placeholder(__('admin.resources.general.not_provided'))
                     ->label(new HtmlString('<strong>'.__('admin.resources.updated_at').'</strong>'))
                     ->dateTime()
                     ->sortable()

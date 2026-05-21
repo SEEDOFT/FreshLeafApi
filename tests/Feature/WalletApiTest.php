@@ -19,7 +19,7 @@ class WalletApiTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        
+
         Currency::factory()->create(['id' => Currency::KHR_ID, 'code' => Currency::KHR]);
         Currency::factory()->create(['id' => Currency::USD_ID, 'code' => Currency::USD]);
     }

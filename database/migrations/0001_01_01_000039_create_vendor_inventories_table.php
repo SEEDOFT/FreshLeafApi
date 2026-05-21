@@ -28,6 +28,7 @@ return new class extends Migration
             $table->string('packaging_type')->nullable();
             $table->integer('shelf_life_days')->nullable();
             $table->text('batch_images')->nullable();
+            $table->unsignedBigInteger('currency_id');
             $table->timestamps();
             $table->softDeletes();
         });

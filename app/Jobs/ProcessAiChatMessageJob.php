@@ -90,9 +90,21 @@ class ProcessAiChatMessageJob implements ShouldQueue
         }
     }
 
+    /**
+     * Check if the prompt needs product context.
+     */
     private function needsProductContext(string $prompt): bool
     {
-        $keywords = ['price', 'stock', 'available', 'product', 'carrot', 'lettuce', 'tomato', 'morning glory'];
+        $keywords = [
+            'price',
+            'stock',
+            'available',
+            'product',
+            'carrot',
+            'lettuce',
+            'tomato',
+            'morning glory',
+        ];
         foreach ($keywords as $keyword) {
             if (stripos($prompt, $keyword) !== false) {
                 return true;
@@ -102,6 +114,9 @@ class ProcessAiChatMessageJob implements ShouldQueue
         return false;
     }
 
+    /**
+     * Fetch Product Context from Vendor Inventory
+     */
     private function fetchProductContext(string $prompt): string
     {
         $inventoryItems = VendorInventory::active()
@@ -171,7 +186,13 @@ class ProcessAiChatMessageJob implements ShouldQueue
             if ($this->needsProductContext($this->prompt)) {
                 $context = $this->fetchProductContext($this->prompt);
                 if ($context !== '') {
-                    $this->broadcastChunk($assistantMessage, $userId, $sessionId, " [Looking up product details] \n\n", ++$sequence);
+                    $this->broadcastChunk(
+                        $assistantMessage,
+                        $userId,
+                        $sessionId,
+                        " [Looking up product details] \n\n",
+                        ++$sequence
+                    );
                 }
             }
 
@@ -328,8 +349,13 @@ class ProcessAiChatMessageJob implements ShouldQueue
     /**
      * Stream the AI response and return the full text.
      */
-    private function streamAiResponse(AiService $aiService, AiChatMessage $assistantMessage, string $prompt, int &$sequence, string $context = ''): string
-    {
+    private function streamAiResponse(
+        AiService $aiService,
+        AiChatMessage $assistantMessage,
+        string $prompt,
+        int &$sequence,
+        string $context = ''
+    ): string {
         $buffer = '';
         $persistedResponse = '';
         $hasLoggedFirstChunk = false;
@@ -337,7 +363,13 @@ class ProcessAiChatMessageJob implements ShouldQueue
             systemPrompt: $this->getSystemPrompt($assistantMessage, $context),
             history: $this->history,
             prompt: $prompt,
-            onChunk: function (string $chunk) use (&$sequence, &$buffer, &$persistedResponse, &$hasLoggedFirstChunk, $assistantMessage): void {
+            onChunk: function (string $chunk) use (
+                &$sequence,
+                &$buffer,
+                &$persistedResponse,
+                &$hasLoggedFirstChunk,
+                $assistantMessage
+            ): void {
                 if (Cache::has("ai_stop_{$assistantMessage->message_id}")) {
                     throw new Exception('STOP_SIGNAL');
                 }
@@ -356,8 +388,17 @@ class ProcessAiChatMessageJob implements ShouldQueue
                     ]);
                 }
 
-                if (str_contains($chunk, "\n") || count((array) preg_split('/(?<=[.!?])\s+/', $buffer)) > 1) {
-                    $this->broadcastChunk($assistantMessage, $this->userId, $this->sessionId, $buffer, ++$sequence);
+                if (
+                    str_contains($chunk, "\n") ||
+                    count((array) preg_split('/(?<=[.!?])\s+/', $buffer)) > 1
+                ) {
+                    $this->broadcastChunk(
+                        $assistantMessage,
+                        $this->userId,
+                        $this->sessionId,
+                        $buffer,
+                        ++$sequence
+                    );
                     $buffer = '';
                 }
             },
@@ -365,7 +406,13 @@ class ProcessAiChatMessageJob implements ShouldQueue
         );
 
         if ($buffer !== '') {
-            $this->broadcastChunk($assistantMessage, $this->userId, $this->sessionId, $buffer, ++$sequence);
+            $this->broadcastChunk(
+                $assistantMessage,
+                $this->userId,
+                $this->sessionId,
+                $buffer,
+                ++$sequence
+            );
         }
 
         return $fullResponse;
@@ -419,8 +466,13 @@ class ProcessAiChatMessageJob implements ShouldQueue
     /**
      * Broadcast a chunk to the user via WebSocket.
      */
-    private function broadcastChunk(AiChatMessage $message, int $userId, string $sessionId, string $content, int $sequence): void
-    {
+    private function broadcastChunk(
+        AiChatMessage $message,
+        int $userId,
+        string $sessionId,
+        string $content,
+        int $sequence
+    ): void {
         if ($content === '') {
             return;
         }
@@ -467,6 +519,6 @@ class ProcessAiChatMessageJob implements ShouldQueue
      */
     private function shouldPerformLiveSearch(string $prompt): bool
     {
-        return false;
+        return true;
     }
 }

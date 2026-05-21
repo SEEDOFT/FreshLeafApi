@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Http\Middleware;
 
 use App\Models\User;
-use App\Models\UserType;
 use App\Traits\ApiResponse;
 use Closure;
 use Illuminate\Http\JsonResponse;

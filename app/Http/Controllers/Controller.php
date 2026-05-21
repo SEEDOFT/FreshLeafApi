@@ -6,7 +6,6 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use App\Models\UserStatus;
-use App\Models\UserType;
 use App\Traits\ApiResponse;
 use Illuminate\Auth\AuthenticationException;
 use Illuminate\Http\Request;
@@ -32,7 +31,7 @@ abstract class Controller
         $query = User::where('id', $user->id)
             ->where('user_status_id', UserStatus::ACTIVE_ID)
             ->where('phone_number', $user->phone_number);
-            
+
         if ($userType !== null) {
             $query->where('user_type_id', $userType);
         }

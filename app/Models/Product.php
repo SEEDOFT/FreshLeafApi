@@ -95,7 +95,7 @@ class Product extends Model
      */
     public function getTranslatedNameAttribute(): ?string
     {
-        return 'name_'.App::getLocale();
+        return $this->{'name_'.App::getLocale()};
     }
 
     /**
@@ -103,7 +103,7 @@ class Product extends Model
      */
     public function getTranslatedDescriptionAttribute(): ?string
     {
-        return 'description_'.App::getLocale();
+        return $this->{'description_'.App::getLocale()};
     }
 
     /**

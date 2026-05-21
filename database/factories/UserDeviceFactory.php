@@ -21,6 +21,7 @@ class UserDeviceFactory extends Factory
     public function definition(): array
     {
         $token = $this->faker->sha256();
+
         return [
             'user_id' => User::factory(),
             'device_token' => $token,

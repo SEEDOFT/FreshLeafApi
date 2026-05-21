@@ -39,26 +39,37 @@ class ProductResource extends JsonResource
             'product_type_id' => $this->product_type_id,
             'default_unit_id' => $this->default_unit_id,
             'product_status_id' => $this->product_status_id,
-            'product_category' => $this->whenLoaded('productCategory', fn () => $this->productCategory
-            ? [
-                'id' => $this->productCategory->id,
-                'name_en' => $this->productCategory->name_en,
-                'name_km' => $this->productCategory->name_km,
-                'localized_name' => $this->productCategory->localizedName,
-                'slug' => $this->productCategory->slug,
-            ] : null),
-            'type' => $this->whenLoaded('type', fn () => $this->type ? [
-                'name' => translate($this->type->name_en, $this->type->name_km),
-            ] : null),
-            'default_unit' => $this->whenLoaded('defaultUnit', fn () => [
-                'id' => $this->default_unit_id,
-                'name' => translate($this->defaultUnit->name_en, $this->defaultUnit->name_km),
-                'symbol' => $this->defaultUnit->symbol,
-            ]),
-            'status' => $this->whenLoaded('status', fn () => [
-                'id' => $this->product_status_id,
-                'name' => translate($this->status->name_en, $this->status->name_km),
-            ]),
+            'product_category' => $this->whenLoaded(
+                'productCategory',
+                fn () => $this->productCategory
+                    ? [
+                        'id' => $this->productCategory->id,
+                        'name' => $this->productCategory->translated_name,
+                    ]
+                    : null
+            ),
+            'type' => $this->whenLoaded(
+                'type',
+                fn () => $this->type ? [
+                    'id' => $this->type->id,
+                    'name' => $this->type->translated_name,
+                ] : null
+            ),
+            'default_unit' => $this->whenLoaded(
+                'defaultUnit',
+                fn () => $this->defaultUnit ? [
+                    'id' => $this->default_unit_id,
+                    'name' => $this->defaultUnit->translated_name,
+                    'symbol' => $this->defaultUnit->symbol,
+                ] : null
+            ),
+            'status' => $this->whenLoaded(
+                'status',
+                fn () => $this->status ? [
+                    'id' => $this->product_status_id,
+                    'name' => $this->status->translated_name,
+                ] : null
+            ),
             'created_at' => $this->created_at?->toIso8601String(),
             'updated_at' => $this->updated_at?->toIso8601String(),
         ];

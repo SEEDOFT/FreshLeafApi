@@ -111,7 +111,8 @@ class BusinessProfile extends Page
                                     ->dehydrated(fn (mixed $state): bool => filled($state)),
                                 Toggle::make('is_open')
                                     ->label(new HtmlString('<strong>'.__('vendor.settings.business_profile.is_open').'</strong>'))
-                                    ->dehydrated(fn (mixed $state): bool => filled($state)),
+                                    ->dehydrated(fn (mixed $state): bool => filled($state))
+                                    ->inline(false),
                             ]),
                     ]),
             ])

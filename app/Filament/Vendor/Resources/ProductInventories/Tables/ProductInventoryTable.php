@@ -2,18 +2,14 @@
 
 declare(strict_types=1);
 
-namespace App\Filament\Vendor\Resources\Products\Tables;
+namespace App\Filament\Vendor\Resources\ProductInventories\Tables;
 
-use App\Constants\StorageDirectory;
+use App\Filament\Vendor\Resources\ProductInventories\Schemas\AdjustStockForm;
 use Filament\Actions\Action;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Actions\ViewAction;
-use Filament\Forms\Components\FileUpload;
-use Filament\Forms\Components\Select as FormSelect;
-use Filament\Forms\Components\Textarea;
-use Filament\Forms\Components\TextInput as FormTextInput;
 use Filament\Notifications\Notification;
 use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\TextColumn;
@@ -21,7 +17,7 @@ use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Illuminate\Support\HtmlString;
 
-class ProductsTable
+class ProductInventoryTable
 {
     public static function configure(Table $table): Table
     {
@@ -44,7 +40,7 @@ class ProductsTable
 
                 TextColumn::make('price')->placeholder(__('admin.resources.general.not_provided'))
                     ->label(new HtmlString('<strong>'.__('shared.product.unit_price').'</strong>'))
-                    ->money('USD')
+                    ->money(fn ($record) => $record->currency?->code ?? 'USD')
                     ->sortable(),
 
                 TextColumn::make('stock_quantity')->placeholder(__('admin.resources.general.not_provided'))
@@ -78,33 +74,7 @@ class ProductsTable
                     ->label(new HtmlString('<strong>'.__('shared.product.adjust_stock').'</strong>'))
                     ->icon('heroicon-o-adjustments-vertical')
                     ->color('warning')
-                    ->form([
-                        FormSelect::make('type')
-                            ->label(new HtmlString('<strong>'.__('shared.product.adjustment_type').'</strong>'))
-                            ->options([
-                                'IN' => 'Restock (In)',
-                                'OUT' => 'Sold / Removed (Out)',
-                                'LOSS' => 'Damage / Loss',
-                                'CORRECTION' => 'Correction',
-                            ])
-                            ->required()
-                            ->reactive(),
-                        FormTextInput::make('quantity_change')
-                            ->label(new HtmlString('<strong>'.__('shared.product.quantity_change').'</strong>'))
-                            ->helperText('Use negative numbers for stock reduction.')
-                            ->numeric()
-                            ->required(),
-                        FileUpload::make('proof_image_path')
-                            ->label(new HtmlString('<strong>'.__('shared.product.proof_photo').'</strong>'))
-                            ->image()
-                            ->directory(StorageDirectory::INVENTORY_ADJUSTMENTS)
-                            ->visibility('public')
-                            ->required(fn ($get) => in_array($get('type'), ['IN', 'LOSS'])),
-                        Textarea::make('notes')
-                            ->label(new HtmlString('<strong>'.__('shared.product.reason').'</strong>'))
-                            ->placeholder('Explain why you are adjusting the stock...')
-                            ->required(),
-                    ])
+                    ->form(AdjustStockForm::schema())
                     ->action(function ($record, array $data): void {
                         $record->adjustStock(
                             change: (float) $data['quantity_change'],

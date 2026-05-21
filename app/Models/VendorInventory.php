@@ -22,6 +22,7 @@ use Illuminate\Support\Facades\DB;
  * @property int $id
  * @property int $vendor_id
  * @property int $product_id
+ * @property int $currency_id
  * @property int $inventory_status_id
  * @property float $price
  * @property float $stock_quantity
@@ -30,7 +31,7 @@ use Illuminate\Support\Facades\DB;
  * @property string|null $farm_location
  * @property string|null $province_of_origin
  * @property string|null $certification_type
- * @property string|null $packaging_type
+ * @property int|null $packaging_type_id
  * @property int|null $shelf_life_days
  * @property array<string>|null $batch_images
  * @property Carbon|null $created_at
@@ -38,6 +39,8 @@ use Illuminate\Support\Facades\DB;
  * @property Carbon|null $deleted_at
  * @property-read User $vendor
  * @property-read Product $product
+ * @property-read PackagingType|null $packagingType
+ * @property-read Currency $currency
  * @property-read Unit $unit
  * @property-read VendorInventoryStatus $status
  */
@@ -45,6 +48,7 @@ use Illuminate\Support\Facades\DB;
 #[Fillable([
     'vendor_id',
     'product_id',
+    'currency_id',
     'inventory_status_id',
     'price',
     'stock_quantity',
@@ -53,7 +57,7 @@ use Illuminate\Support\Facades\DB;
     'farm_location',
     'province_of_origin',
     'certification_type',
-    'packaging_type',
+    'packaging_type_id',
     'shelf_life_days',
     'batch_images',
 ])]
@@ -99,6 +103,16 @@ class VendorInventory extends Model
     }
 
     /**
+     * Get the currency associated with this inventory.
+     *
+     * @return BelongsTo<Currency, $this>
+     */
+    public function currency(): BelongsTo
+    {
+        return $this->belongsTo(Currency::class, 'currency_id', 'id');
+    }
+
+    /**
      * Get the unit associated with this inventory.
      *
      * @return BelongsTo<Unit, $this>
@@ -106,6 +120,16 @@ class VendorInventory extends Model
     public function unit(): BelongsTo
     {
         return $this->belongsTo(Unit::class, 'unit_id', 'id');
+    }
+
+    /**
+     * Get the packaging type associated with this inventory.
+     *
+     * @return BelongsTo<PackagingType, $this>
+     */
+    public function packagingType(): BelongsTo
+    {
+        return $this->belongsTo(PackagingType::class, 'packaging_type_id', 'id');
     }
 
     /**
@@ -166,11 +190,10 @@ class VendorInventory extends Model
      * Scope a query to only include active inventory items.
      *
      * @param  Builder<VendorInventory>  $query
-     * @return Builder<VendorInventory>
      */
     #[Scope]
-    public function scopeActive(Builder $query): Builder
+    protected function active(Builder $query): void
     {
-        return $query->where('inventory_status_id', VendorInventoryStatus::AVAILABLE_ID);
+        $query->where('inventory_status_id', VendorInventoryStatus::AVAILABLE_ID);
     }
 }

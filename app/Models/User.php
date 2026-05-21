@@ -241,7 +241,9 @@ class User extends Authenticatable implements FilamentUser, HasAvatar, HasName
     public function vendorFinancialDetails(): HasOne
     {
         return $this->hasOne(PaymentMethod::class, 'user_id', 'id')
-            ->where('user_type_id', UserType::VENDOR_ID);
+            ->whereHas('user', function ($query) {
+                $query->where('user_type_id', UserType::VENDOR_ID);
+            });
     }
 
     /**

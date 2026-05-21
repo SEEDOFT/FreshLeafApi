@@ -103,10 +103,14 @@ return [
         'adjust_stock' => 'កែតម្រូវស្តុក',
         'adjustment_type' => 'ប្រភេទនៃការកែតម្រូវ',
         'quantity_change' => 'ចំនួនផ្លាស់ប្តូរ',
+        'default_unit' => 'ខ្នាតលក់',
+        'view_detail' => 'មើលលម្អិត',
         'proof_photo' => 'រូបភាពបញ្ជាក់',
         'proof' => 'ភស្តុតាង',
+        'visuals' => 'រូបភាព',
         'adjustment_detail' => 'ព័ត៌មានលម្អិតនៃការកែតម្រូវ',
         'reason' => 'មូលហេតុ',
+        'currency' => 'រូបិយប័ណ្ណ',
         'image' => 'រូបភាព',
         'notifications' => [
             'added_to_store' => 'បានបន្ថែមផលិតផលទៅក្នុងស្តុកហាងរបស់អ្នកដោយជោគជ័យ។',
@@ -200,7 +204,8 @@ return [
         'required' => 'ត្រូវបំពេញ',
         'cancel' => 'បោះបង់',
         'save' => 'រក្សាទុក',
-        'save_changes' => 'Save Changes', // keep English for km when not translated
+        'save_changes' => 'Save Changes',
+        'add_product' => 'បន្ថែមផលិតផល',
     ],
     'security' => [
         'change_password' => 'ផ្លាស់ប្តូរពាក្យសម្ងាត់',

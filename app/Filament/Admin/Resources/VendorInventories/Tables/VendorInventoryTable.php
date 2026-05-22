@@ -22,41 +22,37 @@ class VendorInventoryTable
             ->stackedOnMobile()
             ->columns([
                 TextColumn::make('vendor.name')
-
                     ->label(__('admin.resources.vendor_inventory.vendor'))
                     ->getStateUsing(fn (VendorInventory $record) => $record->vendor->fullName)
                     ->searchable(['first_name', 'last_name']),
                 ImageColumn::make('product.image_url')
                     ->label(__('admin.resources.product.image')),
                 TextColumn::make('product.name_en')
-
                     ->label(__('admin.resources.product.name_en'))
                     ->searchable()
                     ->sortable(),
+                TextColumn::make('product.name_km')
+                    ->label(__('admin.resources.product.name_km'))
+                    ->searchable()
+                    ->sortable(),
                 TextColumn::make('price')
-
                     ->label(__('admin.resources.product.unit_price'))
                     ->money(fn (VendorInventory $record) => $record->currency->code)
                     ->sortable(),
                 TextColumn::make('stock_quantity')
-
                     ->label(__('admin.resources.product.stock'))
                     ->numeric()
                     ->sortable(),
-                TextColumn::make('unit.name')
-
+                TextColumn::make('unit.translated_name')
                     ->label(__('admin.resources.product.unit')),
                 TextColumn::make('province_of_origin')
-
                     ->label(__('admin.resources.product.province_of_origin'))
                     ->searchable(),
                 TextColumn::make('status.translated_name')
-
                     ->label(__('admin.resources.product.status'))
                     ->badge()
-                    ->sortable(),
+                    ->sortable(['name_en', 'name_km']),
                 TextColumn::make('updated_at')
-
                     ->label(__('admin.resources.updated_at'))
                     ->dateTime()
                     ->sortable()

@@ -10,6 +10,7 @@ use App\Http\Controllers\Api\User\AddressController;
 use App\Http\Controllers\Api\User\AuthController;
 use App\Http\Controllers\Api\User\CartController;
 use App\Http\Controllers\Api\User\DeviceController;
+use App\Http\Controllers\Api\User\OrderController;
 use App\Http\Controllers\Api\User\PaymentMethodController;
 use App\Http\Controllers\Api\User\PaymentMethodTypeController;
 use App\Http\Controllers\Api\User\ProfileController;
@@ -141,6 +142,14 @@ Route::prefix('v1')->name('v1.')->group(static function () {
                     Route::post('checkout', 'checkout')->name('checkout');
                     Route::put('{itemId}', 'update')->name('update');
                     Route::delete('{itemId}', 'destroy')->name('destroy');
+                });
+
+            Route::prefix('orders')
+                ->name('orders.')
+                ->controller(OrderController::class)
+                ->group(static function () {
+                    Route::get('/', 'index')->name('index');
+                    Route::get('{id}', 'show')->name('show');
                 });
 
             Route::prefix('wishlist')

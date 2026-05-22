@@ -19,11 +19,12 @@ class VendorInventoryInfolist
                 Section::make(__('admin.resources.vendor_inventory.vendor'))
                     ->columns(2)
                     ->schema([
-                        TextEntry::make('vendor_name')
-                            ->label(__('admin.resources.user.full_name'))
-                            ->getStateUsing(
-                                static fn (VendorInventory $record) => $record->vendor->fullName
-                            ),
+                        TextEntry::make('first_name')
+                            ->label(__('admin.resources.user.first_name'))
+                            ->getStateUsing(fn (VendorInventory $record): string => $record->vendor->first_name),
+                        TextEntry::make('last_name')
+                            ->label(__('admin.resources.user.last_name'))
+                            ->getStateUsing(fn (VendorInventory $record): string => $record->vendor->last_name),
                         TextEntry::make('vendor.email')
                             ->label(__('admin.resources.user.email')),
                         TextEntry::make('vendor.phone_number')
@@ -42,9 +43,9 @@ class VendorInventoryInfolist
                             ->money('USD'),
                         TextEntry::make('stock_quantity')
                             ->label(__('admin.resources.product.stock')),
-                        TextEntry::make('unit.name')
+                        TextEntry::make('unit.translated_name')
                             ->label(__('admin.resources.product.unit')),
-                        TextEntry::make('status.name')
+                        TextEntry::make('status.translated_name')
                             ->label(__('admin.resources.product.status'))
                             ->badge(),
                     ]),
@@ -60,11 +61,11 @@ class VendorInventoryInfolist
                             ->label(__('admin.resources.product.farm_location')),
                         TextEntry::make('harvest_date')
                             ->label(__('admin.resources.product.harvest_date'))
-                            ->date(),
+                            ->dateTime('d M Y, h:i A'),
                         TextEntry::make('shelf_life_days')
                             ->label(__('admin.resources.product.shelf_life'))
                             ->suffix(' '.__('admin.resources.product.days')),
-                        TextEntry::make('packaging_type')
+                        TextEntry::make('packagingType.translated_name')
                             ->label(__('admin.resources.product.packaging_type')),
                         ImageEntry::make('batch_images')
                             ->label(__('shared.product.visuals'))

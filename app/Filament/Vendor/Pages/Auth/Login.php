@@ -51,7 +51,7 @@ class Login extends BaseLogin
                     ->label(__('shared.auth.login.password'))
                     ->required()
                     ->revealable(),
-                TextEntry::make('registration_link')->placeholder(__('admin.resources.general.not_provided'))
+                TextEntry::make('registration_link')
                     ->hiddenLabel()
                     ->state(new HtmlString(
                         '<div class="text-sm text-center py-2">'.

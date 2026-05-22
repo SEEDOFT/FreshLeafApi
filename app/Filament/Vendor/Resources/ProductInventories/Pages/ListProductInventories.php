@@ -8,7 +8,6 @@ use App\Filament\Vendor\Pages\ProductCatalog;
 use App\Filament\Vendor\Resources\ProductInventories\ProductInventoryResource;
 use Filament\Actions\Action;
 use Filament\Resources\Pages\ListRecords;
-use Illuminate\Support\HtmlString;
 use Override;
 
 class ListProductInventories extends ListRecords

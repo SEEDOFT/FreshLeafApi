@@ -7,7 +7,6 @@ namespace App\Filament\Vendor\Resources\Payouts\Tables;
 use Filament\Actions\ViewAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
-use Illuminate\Support\HtmlString;
 
 class PayoutsTable
 {
@@ -15,12 +14,12 @@ class PayoutsTable
     {
         return $table
             ->columns([
-                TextColumn::make('amount')->placeholder(__('admin.resources.general.not_provided'))
+                TextColumn::make('amount')
                     ->label(__('shared.payout.amount'))
                     ->money('USD')
                     ->sortable(),
 
-                TextColumn::make('status.name')->placeholder(__('admin.resources.general.not_provided'))
+                TextColumn::make('status.name')
                     ->label(__('shared.payout.status'))
                     ->badge()
                     ->color(fn (string $state): string => match ($state) {
@@ -31,14 +30,14 @@ class PayoutsTable
                         default => 'gray',
                     }),
 
-                TextColumn::make('method.name')->placeholder(__('admin.resources.general.not_provided'))
+                TextColumn::make('method.name')
                     ->label(__('shared.payout.method')),
 
-                TextColumn::make('transaction_reference')->placeholder(__('admin.resources.general.not_provided'))
+                TextColumn::make('transaction_reference')
                     ->label(__('shared.payout.reference'))
                     ->searchable(),
 
-                TextColumn::make('processed_at')->placeholder(__('admin.resources.general.not_provided'))
+                TextColumn::make('processed_at')
                     ->label(__('shared.payout.paid_on'))
                     ->dateTime()
                     ->sortable(),

@@ -15,7 +15,6 @@ use Filament\Schemas\Schema;
 use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
-use Illuminate\Support\HtmlString;
 use Override;
 
 class AdjustmentsRelationManager extends RelationManager
@@ -34,11 +33,11 @@ class AdjustmentsRelationManager extends RelationManager
         return $table
             ->recordTitleAttribute('reason')
             ->columns([
-                TextColumn::make('created_at')->placeholder(__('admin.resources.general.not_provided'))
+                TextColumn::make('created_at')
                     ->label(__('admin.resources.created_at'))
                     ->dateTime()
                     ->sortable(),
-                TextColumn::make('type')->placeholder(__('admin.resources.general.not_provided'))
+                TextColumn::make('type')
                     ->label(__('admin.resources.product.adjustment_type'))
                     ->badge()
                     ->color(fn (string $state): string => match ($state) {
@@ -48,17 +47,17 @@ class AdjustmentsRelationManager extends RelationManager
                         'CORRECTION' => 'warning',
                         default => 'gray',
                     }),
-                TextColumn::make('quantity_change')->placeholder(__('admin.resources.general.not_provided'))
+                TextColumn::make('quantity_change')
                     ->label(__('admin.resources.product.quantity_change'))
                     ->numeric(decimalPlaces: 2)
                     ->color(fn ($state) => $state > 0 ? 'success' : 'danger'),
                 ImageColumn::make('proof_image_path')
                     ->label(__('admin.resources.product.proof'))
                     ->circular(),
-                TextColumn::make('user.name')->placeholder(__('admin.resources.general.not_provided'))
+                TextColumn::make('user.name')
                     ->label(__('admin.resources.user.label'))
                     ->getStateUsing(fn ($record) => "{$record->user?->first_name} {$record->user?->last_name}"),
-                TextColumn::make('reason')->placeholder(__('admin.resources.general.not_provided'))
+                TextColumn::make('reason')
                     ->label(__('admin.resources.product.reason'))
                     ->limit(30),
             ])
@@ -75,19 +74,19 @@ class AdjustmentsRelationManager extends RelationManager
                             Section::make(__('admin.resources.product.adjustment_detail'))
                                 ->columns(2)
                                 ->schema([
-                                    TextEntry::make('created_at')->placeholder(__('admin.resources.general.not_provided'))
+                                    TextEntry::make('created_at')
                                         ->label(__('admin.resources.created_at'))
                                         ->dateTime(),
-                                    TextEntry::make('user.name')->placeholder(__('admin.resources.general.not_provided'))
+                                    TextEntry::make('user.name')
                                         ->label(__('admin.resources.user.label'))
                                         ->getStateUsing(fn ($record) => "{$record->user?->first_name} {$record->user?->last_name}"),
-                                    TextEntry::make('type')->placeholder(__('admin.resources.general.not_provided'))
+                                    TextEntry::make('type')
                                         ->label(__('admin.resources.product.adjustment_type'))
                                         ->badge(),
-                                    TextEntry::make('quantity_change')->placeholder(__('admin.resources.general.not_provided'))
+                                    TextEntry::make('quantity_change')
                                         ->label(__('admin.resources.product.quantity_change'))
                                         ->numeric(),
-                                    TextEntry::make('reason')->placeholder(__('admin.resources.general.not_provided'))
+                                    TextEntry::make('reason')
                                         ->label(__('admin.resources.product.reason'))
                                         ->columnSpanFull(),
                                     ImageEntry::make('proof_image_path')

@@ -17,7 +17,6 @@ use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
-use Illuminate\Support\HtmlString;
 
 class ProductInventoryTable
 {
@@ -30,35 +29,35 @@ class ProductInventoryTable
                 ImageColumn::make('product.image_url')
                     ->label(__('shared.product.image')),
 
-                TextColumn::make('product.name_en')->placeholder(__('admin.resources.general.not_provided'))
+                TextColumn::make('product.name_en')
                     ->label(__('shared.product.name_en'))
                     ->searchable()
                     ->sortable(),
 
-                TextColumn::make('product.name_km')->placeholder(__('admin.resources.general.not_provided'))
+                TextColumn::make('product.name_km')
                     ->label(__('shared.product.name_km'))
                     ->searchable()
                     ->sortable(),
 
-                TextColumn::make('price')->placeholder(__('admin.resources.general.not_provided'))
+                TextColumn::make('price')
                     ->label(__('shared.product.unit_price'))
                     ->money(fn (VendorInventory $record) => $record->currency->code)
                     ->sortable(),
 
-                TextColumn::make('stock_quantity')->placeholder(__('admin.resources.general.not_provided'))
+                TextColumn::make('stock_quantity')
                     ->label(__('shared.product.stock'))
                     ->numeric()
                     ->sortable(),
 
-                TextColumn::make('unit.name')->placeholder(__('admin.resources.general.not_provided'))
+                TextColumn::make('unit.name')
                     ->label(__('shared.product.unit')),
 
-                TextColumn::make('status.name')->placeholder(__('admin.resources.general.not_provided'))
+                TextColumn::make('status.name')
                     ->label(__('shared.product.status'))
                     ->badge()
                     ->sortable(),
 
-                TextColumn::make('updated_at')->placeholder(__('admin.resources.general.not_provided'))
+                TextColumn::make('updated_at')
                     ->label(__('shared.updated_at'))
                     ->dateTime()
                     ->sortable()

@@ -15,7 +15,6 @@ use Filament\Infolists\Components\TextEntry;
 use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
-use Illuminate\Support\HtmlString;
 
 class UserInfolist
 {
@@ -38,23 +37,23 @@ class UserInfolist
                                     ->alignCenter(),
                             ]),
                         TextEntry::make('first_name')
-                            ->placeholder(__('admin.resources.general.not_provided'))
+
                             ->label(__('admin.resources.user.first_name'))
                             ->placeholder($notProvided),
                         TextEntry::make('last_name')
-                            ->placeholder(__('admin.resources.general.not_provided'))
+
                             ->label(__('admin.resources.user.last_name'))
                             ->placeholder($notProvided),
                         TextEntry::make('email')
-                            ->placeholder(__('admin.resources.general.not_provided'))
+
                             ->label(__('admin.resources.user.email'))
                             ->placeholder($notProvided),
                         TextEntry::make('phone_number')
-                            ->placeholder(__('admin.resources.general.not_provided'))
+
                             ->label(__('admin.resources.user.phone'))
                             ->placeholder($notProvided),
                         TextEntry::make('type.translated_name')
-                            ->placeholder(__('admin.resources.general.not_provided'))
+
                             ->label(__('admin.resources.user.type'))
                             ->badge()
                             ->placeholder($notProvided)
@@ -65,7 +64,7 @@ class UserInfolist
                                 default => 'gray',
                             }),
                         TextEntry::make('status.translated_name')
-                            ->placeholder(__('admin.resources.general.not_provided'))
+
                             ->label(__('admin.resources.user.status'))
                             ->placeholder($notProvided)
                             ->badge()
@@ -83,11 +82,11 @@ class UserInfolist
                             ->columns(2)
                             ->schema([
                                 TextEntry::make('currency.translated_currency')
-                                    ->placeholder(__('admin.resources.general.not_provided'))
+
                                     ->label(__('admin.resources.wallet.currency'))
                                     ->placeholder($notProvided),
                                 TextEntry::make('balance')
-                                    ->placeholder(__('admin.resources.general.not_provided'))
+
                                     ->label(__('admin.resources.wallet.balance'))
                                     ->placeholder('0.00')
                                     ->getStateUsing(function (Wallet $record): string {
@@ -104,11 +103,11 @@ class UserInfolist
                     ->columns(2)
                     ->schema([
                         TextEntry::make('created_at')
-                            ->placeholder(__('admin.resources.general.not_provided'))
+
                             ->label(__('admin.resources.created_at'))
                             ->dateTime('d M Y, h:i A'),
                         TextEntry::make('updated_at')
-                            ->placeholder(__('admin.resources.general.not_provided'))
+
                             ->label(__('admin.resources.updated_at'))
                             ->dateTime('d M Y, h:i A'),
                     ]),

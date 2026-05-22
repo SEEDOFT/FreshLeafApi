@@ -22,7 +22,6 @@ use Filament\Tables\Filters\TrashedFilter;
 use Filament\Tables\Table;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\HtmlString;
 
 class VendorsTable
 {
@@ -35,31 +34,31 @@ class VendorsTable
             ->recordAction('view')
             ->columns([
                 TextColumn::make('vendorProfile.business_name')
-                    ->placeholder(__('admin.resources.general.not_provided'))
+
                     ->label(__('admin.resources.vendor.business_name'))
                     ->searchable()
                     ->placeholder($notProvided)
                     ->sortable(),
                 TextColumn::make('name')
-                    ->placeholder(__('admin.resources.general.not_provided'))
+
                     ->label(__('admin.resources.vendor.owner'))
                     ->getStateUsing(fn (User $record) => $record->fullName)
                     ->searchable(['first_name', 'last_name'])
                     ->sortable()
                     ->placeholder($notProvided),
                 TextColumn::make('phone_number')
-                    ->placeholder(__('admin.resources.general.not_provided'))
+
                     ->label(__('admin.resources.vendor.phone'))
                     ->searchable()
                     ->placeholder($notProvided),
                 TextColumn::make('type.translated_name')
-                    ->placeholder(__('admin.resources.general.not_provided'))
+
                     ->label(__('admin.resources.user.type'))
                     ->badge()
                     ->placeholder($notProvided)
                     ->color('warning'),
                 TextColumn::make('status.translated_name')
-                    ->placeholder(__('admin.resources.general.not_provided'))
+
                     ->label(__('admin.resources.user.status'))
                     ->badge()
                     ->placeholder($notProvided)
@@ -74,7 +73,7 @@ class VendorsTable
                     ->boolean()
                     ->sortable(),
                 TextColumn::make('created_at')
-                    ->placeholder(__('admin.resources.general.not_provided'))
+
                     ->label(__('admin.resources.created_at'))
                     ->dateTime('d M Y, h:i A')
                     ->sortable()

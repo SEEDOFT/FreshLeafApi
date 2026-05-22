@@ -6,7 +6,6 @@ namespace App\Filament\Admin\Resources\ExchangeRates\Schemas;
 
 use Filament\Infolists\Components\TextEntry;
 use Filament\Schemas\Schema;
-use Illuminate\Support\HtmlString;
 
 class ExchangeRateInfolist
 {
@@ -14,14 +13,14 @@ class ExchangeRateInfolist
     {
         return $schema
             ->components([
-                TextEntry::make('fromCurrency.translated_currency')->placeholder(__('admin.resources.general.not_provided'))
+                TextEntry::make('fromCurrency.translated_currency')
                     ->label(__('admin.resources.exchange_rate.base_currency')),
-                TextEntry::make('toCurrency.translated_currency')->placeholder(__('admin.resources.general.not_provided'))
+                TextEntry::make('toCurrency.translated_currency')
                     ->label(__('admin.resources.exchange_rate.target_currency')),
-                TextEntry::make('rate')->placeholder(__('admin.resources.general.not_provided'))
+                TextEntry::make('rate')
                     ->label(__('admin.resources.exchange_rate.rate'))
                     ->numeric(),
-                TextEntry::make('updated_at')->placeholder(__('admin.resources.general.not_provided'))
+                TextEntry::make('updated_at')
                     ->label(__('admin.resources.updated_at'))
                     ->dateTime(),
             ]);

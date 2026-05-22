@@ -11,7 +11,6 @@ use App\Models\Wallet;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
-use Illuminate\Support\HtmlString;
 
 class WalletInfolist
 {

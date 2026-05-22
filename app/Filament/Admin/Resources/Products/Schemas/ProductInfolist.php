@@ -9,7 +9,6 @@ use Filament\Infolists\Components\ImageEntry;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
-use Illuminate\Support\HtmlString;
 
 class ProductInfolist
 {
@@ -20,25 +19,25 @@ class ProductInfolist
                 Section::make(__('admin.resources.product.general_info'))
                     ->columns(2)
                     ->schema([
-                        TextEntry::make('name_en')->placeholder(__('admin.resources.general.not_provided'))
+                        TextEntry::make('name_en')
                             ->label(__('admin.resources.product.name_en')),
-                        TextEntry::make('name_km')->placeholder(__('admin.resources.general.not_provided'))
+                        TextEntry::make('name_km')
                             ->label(__('admin.resources.product.name_km')),
-                        TextEntry::make('slug')->placeholder(__('admin.resources.general.not_provided'))
+                        TextEntry::make('slug')
                             ->label(__('admin.resources.product.slug')),
-                        TextEntry::make('productCategory.translated_name')->placeholder(__('admin.resources.general.not_provided'))
+                        TextEntry::make('productCategory.translated_name')
                             ->label(__('admin.resources.product.system_category')),
-                        TextEntry::make('type.translated_name')->placeholder(__('admin.resources.general.not_provided'))
+                        TextEntry::make('type.translated_name')
                             ->label(__('admin.resources.product.type')),
-                        TextEntry::make('status.translated_name')->placeholder(__('admin.resources.general.not_provided'))
+                        TextEntry::make('status.translated_name')
                             ->label(__('admin.resources.product.status'))
                             ->badge(),
-                        TextEntry::make('defaultUnit.translated_name')->placeholder(__('admin.resources.general.not_provided'))
+                        TextEntry::make('defaultUnit.translated_name')
                             ->label(__('admin.resources.product.unit')),
-                        TextEntry::make('description_en')->placeholder(__('admin.resources.general.not_provided'))
+                        TextEntry::make('description_en')
                             ->label(__('admin.resources.product.description_en'))
                             ->columnSpanFull(),
-                        TextEntry::make('description_km')->placeholder(__('admin.resources.general.not_provided'))
+                        TextEntry::make('description_km')
                             ->label(__('admin.resources.product.description_km'))
                             ->columnSpanFull(),
                     ]),

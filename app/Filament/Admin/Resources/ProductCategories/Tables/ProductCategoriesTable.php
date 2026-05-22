@@ -15,7 +15,6 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\App;
-use Illuminate\Support\HtmlString;
 
 class ProductCategoriesTable
 {
@@ -30,23 +29,23 @@ class ProductCategoriesTable
                     ->label(__('admin.resources.product_category.image'))
                     ->disk('public')
                     ->circular(),
-                TextColumn::make('name_en')->placeholder(__('admin.resources.general.not_provided'))
+                TextColumn::make('name_en')
                     ->label(__('admin.resources.product_category.name_en'))
                     ->placeholder($notProvided)
                     ->searchable()
                     ->sortable(),
-                TextColumn::make('name_km')->placeholder(__('admin.resources.general.not_provided'))
+                TextColumn::make('name_km')
                     ->label(__('admin.resources.product_category.name_km'))
                     ->placeholder($notProvided)
                     ->searchable()
                     ->sortable(),
-                TextColumn::make('slug')->placeholder(__('admin.resources.general.not_provided'))
+                TextColumn::make('slug')
                     ->label(__('admin.resources.product_category.slug'))
                     ->placeholder($notProvided)
                     ->searchable()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
-                TextColumn::make('status.translated_name')->placeholder(__('admin.resources.general.not_provided'))
+                TextColumn::make('status.translated_name')
                     ->label(__('admin.resources.product_category.status'))
                     ->badge()
                     ->placeholder($notProvided)
@@ -68,12 +67,12 @@ class ProductCategoriesTable
                             $direction === 'desc' ? 'desc' : 'asc'
                         );
                     }),
-                TextColumn::make('products_count')->placeholder(__('admin.resources.general.not_provided'))
+                TextColumn::make('products_count')
                     ->label(__('admin.resources.product_category.products_count'))
                     ->counts('products')
                     ->placeholder($notProvided)
                     ->sortable(),
-                TextColumn::make('created_at')->placeholder(__('admin.resources.general.not_provided'))
+                TextColumn::make('created_at')
                     ->label(__('admin.resources.product_category.created_at'))
                     ->dateTime()
                     ->placeholder($notProvided)

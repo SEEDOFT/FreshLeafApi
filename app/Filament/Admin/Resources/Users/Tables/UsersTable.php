@@ -16,7 +16,6 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Filters\TrashedFilter;
 use Filament\Tables\Table;
-use Illuminate\Support\HtmlString;
 
 class UsersTable
 {
@@ -28,25 +27,25 @@ class UsersTable
             ->stackedOnMobile()
             ->recordAction('view')
             ->columns([
-                TextColumn::make('first_name')->placeholder(__('admin.resources.general.not_provided'))
+                TextColumn::make('first_name')
                     ->label(__('admin.resources.user.first_name'))
                     ->getStateUsing(fn (User $record): string => $record->first_name),
-                TextColumn::make('last_name')->placeholder(__('admin.resources.general.not_provided'))
+                TextColumn::make('last_name')
                     ->label(__('admin.resources.user.last_name'))
                     ->getStateUsing(fn (User $record): string => $record->last_name),
-                TextColumn::make('email')->placeholder(__('admin.resources.general.not_provided'))
+                TextColumn::make('email')
                     ->label(__('admin.resources.user.email'))
                     ->placeholder($notProvided)
                     ->searchable(),
-                TextColumn::make('phone_number')->placeholder(__('admin.resources.general.not_provided'))
+                TextColumn::make('phone_number')
                     ->label(__('admin.resources.user.phone'))
                     ->searchable(),
-                TextColumn::make('type.translated_name')->placeholder(__('admin.resources.general.not_provided'))
+                TextColumn::make('type.translated_name')
                     ->label(__('admin.resources.user.type'))
                     ->badge()
                     ->placeholder($notProvided)
                     ->color('info'),
-                TextColumn::make('status.translated_name')->placeholder(__('admin.resources.general.not_provided'))
+                TextColumn::make('status.translated_name')
                     ->label(__('admin.resources.user.status'))
                     ->badge()
                     ->color(fn (User $record): string => match ($record->status->id) {
@@ -56,7 +55,7 @@ class UsersTable
                         default => 'secondary',
                     })
                     ->placeholder($notProvided),
-                TextColumn::make('created_at')->placeholder(__('admin.resources.general.not_provided'))
+                TextColumn::make('created_at')
                     ->label(__('admin.resources.created_at'))
                     ->dateTime('d M Y, h:i A')
                     ->sortable()

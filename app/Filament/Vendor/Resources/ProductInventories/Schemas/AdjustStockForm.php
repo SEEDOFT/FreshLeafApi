@@ -9,7 +9,6 @@ use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Select as FormSelect;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput as FormTextInput;
-use Illuminate\Support\HtmlString;
 
 class AdjustStockForm
 {

@@ -7,7 +7,6 @@ namespace App\Filament\Vendor\Resources\Payouts\Schemas;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
-use Illuminate\Support\HtmlString;
 
 class PayoutInfolist
 {
@@ -18,22 +17,22 @@ class PayoutInfolist
                 Section::make(__('shared.payout.details'))
                     ->columns(2)
                     ->schema([
-                        TextEntry::make('amount')->placeholder(__('admin.resources.general.not_provided'))
+                        TextEntry::make('amount')
                             ->label(__('shared.payout.amount'))
                             ->money('USD'),
-                        TextEntry::make('status.name')->placeholder(__('admin.resources.general.not_provided'))
+                        TextEntry::make('status.name')
                             ->label(__('shared.payout.status'))
                             ->badge(),
-                        TextEntry::make('method.name')->placeholder(__('admin.resources.general.not_provided'))
+                        TextEntry::make('method.name')
                             ->label(__('shared.payout.method')),
-                        TextEntry::make('transaction_reference')->placeholder(__('admin.resources.general.not_provided'))
+                        TextEntry::make('transaction_reference')
                             ->label(__('shared.payout.transaction_ref'))
                             ->placeholder('-'),
-                        TextEntry::make('processed_at')->placeholder(__('admin.resources.general.not_provided'))
+                        TextEntry::make('processed_at')
                             ->label(__('shared.payout.processed_at'))
                             ->dateTime()
                             ->placeholder('-'),
-                        TextEntry::make('admin_notes')->placeholder(__('admin.resources.general.not_provided'))
+                        TextEntry::make('admin_notes')
                             ->label(__('shared.payout.admin_notes'))
                             ->placeholder('-')
                             ->columnSpanFull(),
@@ -42,10 +41,10 @@ class PayoutInfolist
                 Section::make(__('shared.timestamps'))
                     ->columns(2)
                     ->schema([
-                        TextEntry::make('created_at')->placeholder(__('admin.resources.general.not_provided'))
+                        TextEntry::make('created_at')
                             ->label(__('shared.created_at'))
                             ->dateTime(),
-                        TextEntry::make('updated_at')->placeholder(__('admin.resources.general.not_provided'))
+                        TextEntry::make('updated_at')
                             ->label(__('shared.updated_at'))
                             ->dateTime(),
                     ]),

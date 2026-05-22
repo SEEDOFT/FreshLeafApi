@@ -7,6 +7,8 @@ namespace App\Providers;
 use App\Models\Order;
 use App\Models\UserDevice;
 use App\Observers\OrderObserver;
+use Filament\Infolists\Components\TextEntry;
+use Filament\Tables\Columns\TextColumn;
 use Illuminate\Notifications\Events\NotificationFailed;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Log;
@@ -32,6 +34,14 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         Order::observe(OrderObserver::class);
+
+        TextColumn::configureUsing(function (TextColumn $column): void {
+            $column->placeholder(__('admin.resources.general.not_provided'));
+        });
+
+        TextEntry::configureUsing(function (TextEntry $entry): void {
+            $entry->placeholder(__('admin.resources.general.not_provided'));
+        });
 
         Event::listen(NotificationFailed::class, static function (NotificationFailed $event): void {
             if ($event->channel !== FcmChannel::class) {

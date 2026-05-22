@@ -13,7 +13,6 @@ use Filament\Actions\EditAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
-use Illuminate\Support\HtmlString;
 
 class WalletTransactionsTable
 {
@@ -22,16 +21,16 @@ class WalletTransactionsTable
         return $table
             ->stackedOnMobile()
             ->columns([
-                TextColumn::make('wallet.user.name')->placeholder(__('admin.resources.general.not_provided'))
+                TextColumn::make('wallet.user.name')
                     ->label(__('admin.resources.wallet_transaction.user'))
                     ->getStateUsing(static fn (WalletTransaction $record) => $record->wallet->user->fullName)
                     ->searchable()
                     ->sortable(),
-                TextColumn::make('type.translated_name')->placeholder(__('admin.resources.general.not_provided'))
+                TextColumn::make('type.translated_name')
                     ->label(__('admin.resources.wallet_transaction.type'))
                     ->badge()
                     ->sortable(),
-                TextColumn::make('status.translated_name')->placeholder(__('admin.resources.general.not_provided'))
+                TextColumn::make('status.translated_name')
                     ->label(__('admin.resources.wallet_transaction.status'))
                     ->badge()
                     ->color(fn (WalletTransaction $record): string => match ($record->status->id) {
@@ -41,11 +40,11 @@ class WalletTransactionsTable
                         default => 'gray',
                     })
                     ->sortable(),
-                TextColumn::make('amount')->placeholder(__('admin.resources.general.not_provided'))
+                TextColumn::make('amount')
                     ->label(__('admin.resources.wallet_transaction.amount'))
                     ->money(fn (WalletTransaction $record) => $record->wallet->currency->code ?? 'USD')
                     ->sortable(),
-                TextColumn::make('created_at')->placeholder(__('admin.resources.general.not_provided'))
+                TextColumn::make('created_at')
                     ->label(__('admin.resources.created_at'))
                     ->dateTime()
                     ->sortable(),

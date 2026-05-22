@@ -10,7 +10,6 @@ use Filament\Infolists\Components\ImageEntry;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
-use Illuminate\Support\HtmlString;
 
 class ProductCategoryInfolist
 {
@@ -23,13 +22,13 @@ class ProductCategoryInfolist
                 Section::make(__('admin.resources.product_category.basic_info'))
                     ->columns(2)
                     ->schema([
-                        TextEntry::make('name_en')->placeholder(__('admin.resources.general.not_provided'))
+                        TextEntry::make('name_en')
                             ->label(__('admin.resources.product_category.name_en')),
-                        TextEntry::make('name_km')->placeholder(__('admin.resources.general.not_provided'))
+                        TextEntry::make('name_km')
                             ->label(__('admin.resources.product_category.name_km')),
-                        TextEntry::make('slug')->placeholder(__('admin.resources.general.not_provided'))
+                        TextEntry::make('slug')
                             ->label(__('admin.resources.product_category.slug')),
-                        TextEntry::make('status.translated_name')->placeholder(__('admin.resources.general.not_provided'))
+                        TextEntry::make('status.translated_name')
                             ->label(__('admin.resources.product_category.status'))
                             ->badge()
                             ->placeholder($notProvided)
@@ -38,10 +37,10 @@ class ProductCategoryInfolist
                                 ProductCategoryStatus::INACTIVE_ID => 'danger',
                                 default => 'gray',
                             }),
-                        TextEntry::make('description_en')->placeholder(__('admin.resources.general.not_provided'))
+                        TextEntry::make('description_en')
                             ->label(__('admin.resources.product_category.description_en'))
                             ->columnSpanFull(),
-                        TextEntry::make('description_km')->placeholder(__('admin.resources.general.not_provided'))
+                        TextEntry::make('description_km')
                             ->label(__('admin.resources.product_category.description_km'))
                             ->columnSpanFull(),
                     ]),

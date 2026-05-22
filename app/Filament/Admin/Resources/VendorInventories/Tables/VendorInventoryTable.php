@@ -12,7 +12,6 @@ use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
-use Illuminate\Support\HtmlString;
 
 class VendorInventoryTable
 {
@@ -23,41 +22,41 @@ class VendorInventoryTable
             ->stackedOnMobile()
             ->columns([
                 TextColumn::make('vendor.name')
-                    ->placeholder(__('admin.resources.general.not_provided'))
+
                     ->label(__('admin.resources.vendor_inventory.vendor'))
                     ->getStateUsing(fn (VendorInventory $record) => $record->vendor->fullName)
                     ->searchable(['first_name', 'last_name']),
                 ImageColumn::make('product.image_url')
                     ->label(__('admin.resources.product.image')),
                 TextColumn::make('product.name_en')
-                    ->placeholder(__('admin.resources.general.not_provided'))
+
                     ->label(__('admin.resources.product.name_en'))
                     ->searchable()
                     ->sortable(),
                 TextColumn::make('price')
-                    ->placeholder(__('admin.resources.general.not_provided'))
+
                     ->label(__('admin.resources.product.unit_price'))
                     ->money(fn (VendorInventory $record) => $record->currency->code)
                     ->sortable(),
                 TextColumn::make('stock_quantity')
-                    ->placeholder(__('admin.resources.general.not_provided'))
+
                     ->label(__('admin.resources.product.stock'))
                     ->numeric()
                     ->sortable(),
                 TextColumn::make('unit.name')
-                    ->placeholder(__('admin.resources.general.not_provided'))
+
                     ->label(__('admin.resources.product.unit')),
                 TextColumn::make('province_of_origin')
-                    ->placeholder(__('admin.resources.general.not_provided'))
+
                     ->label(__('admin.resources.product.province_of_origin'))
                     ->searchable(),
                 TextColumn::make('status.translated_name')
-                    ->placeholder(__('admin.resources.general.not_provided'))
+
                     ->label(__('admin.resources.product.status'))
                     ->badge()
                     ->sortable(),
                 TextColumn::make('updated_at')
-                    ->placeholder(__('admin.resources.general.not_provided'))
+
                     ->label(__('admin.resources.updated_at'))
                     ->dateTime()
                     ->sortable()

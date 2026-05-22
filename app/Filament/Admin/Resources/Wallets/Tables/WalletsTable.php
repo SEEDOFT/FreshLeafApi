@@ -15,7 +15,6 @@ use Filament\Actions\ViewAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
-use Illuminate\Support\HtmlString;
 
 class WalletsTable
 {
@@ -27,19 +26,19 @@ class WalletsTable
             ->recordAction('view')
             ->stackedOnMobile()
             ->columns([
-                TextColumn::make('name')->placeholder(__('admin.resources.general.not_provided'))
+                TextColumn::make('name')
                     ->label(__('admin.resources.user.full_name'))
                     ->getStateUsing(static fn (Wallet $record) => $record->user->fullName)
                     ->placeholder($notProvided)
                     ->sortable()
                     ->searchable(),
                 TextColumn::make('currency.translated_currency')
-                    ->placeholder(__('admin.resources.general.not_provided'))
+
                     ->label(__('admin.resources.wallet.currency'))
                     ->placeholder($notProvided)
                     ->sortable()
                     ->searchable(),
-                TextColumn::make('balance')->placeholder(__('admin.resources.general.not_provided'))
+                TextColumn::make('balance')
                     ->label(__('admin.resources.wallet.balance'))
                     ->placeholder($notProvided)
                     ->getStateUsing(static function (Wallet $record): string {
@@ -53,7 +52,7 @@ class WalletsTable
                     })
                     ->sortable(),
                 TextColumn::make('user.type.translated_name')
-                    ->placeholder(__('admin.resources.general.not_provided'))
+
                     ->label(__('admin.resources.user.type'))
                     ->badge()
                     ->placeholder($notProvided)
@@ -64,7 +63,7 @@ class WalletsTable
                         default => 'secondary',
                     }),
                 TextColumn::make('user.status.translated_name')
-                    ->placeholder(__('admin.resources.general.not_provided'))
+
                     ->label(__('admin.resources.user.status'))
                     ->badge()
                     ->color(fn (Wallet $record): string => match ($record->user->status->id) {
@@ -74,7 +73,7 @@ class WalletsTable
                         default => 'secondary',
                     }),
                 TextColumn::make('updated_at')
-                    ->placeholder(__('admin.resources.general.not_provided'))
+
                     ->label(__('admin.resources.updated_at'))
                     ->placeholder($notProvided)
                     ->dateTime()

@@ -15,7 +15,6 @@ use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Schemas\Schema;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
-use Illuminate\Support\HtmlString;
 use Override;
 
 class VariantsRelationManager extends RelationManager
@@ -59,18 +58,18 @@ class VariantsRelationManager extends RelationManager
             ->stackedOnMobile()
             ->recordTitleAttribute('name')
             ->columns([
-                TextColumn::make('name')->placeholder(__('admin.resources.general.not_provided'))
+                TextColumn::make('name')
                     ->label(__('admin.resources.unit.name'))
                     ->searchable()
                     ->sortable(),
-                TextColumn::make('unit.symbol')->placeholder(__('admin.resources.general.not_provided'))
+                TextColumn::make('unit.symbol')
                     ->label(__('admin.resources.product.unit'))
                     ->sortable(),
-                TextColumn::make('quantity_in_unit')->placeholder(__('admin.resources.general.not_provided'))
+                TextColumn::make('quantity_in_unit')
                     ->label(__('admin.resources.product.quantity_in_unit'))
                     ->numeric()
                     ->sortable(),
-                TextColumn::make('price')->placeholder(__('admin.resources.general.not_provided'))
+                TextColumn::make('price')
                     ->label(__('admin.resources.product.price'))
                     ->money('USD')
                     ->sortable(),

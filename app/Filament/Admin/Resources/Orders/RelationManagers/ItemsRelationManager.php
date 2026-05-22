@@ -17,7 +17,6 @@ use Filament\Schemas\Schema;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Support\HtmlString;
 use Override;
 
 class ItemsRelationManager extends RelationManager
@@ -70,18 +69,18 @@ class ItemsRelationManager extends RelationManager
             ->stackedOnMobile()
             ->recordTitleAttribute('product_name_snapshot')
             ->columns([
-                TextColumn::make('product_name_snapshot')->placeholder(__('admin.resources.general.not_provided'))
+                TextColumn::make('product_name_snapshot')
                     ->label(__('admin.resources.order.product'))
                     ->sortable(),
-                TextColumn::make('unit_snapshot')->placeholder(__('admin.resources.general.not_provided'))
+                TextColumn::make('unit_snapshot')
                     ->label(__('admin.resources.product.unit')),
-                TextColumn::make('unit_price_snapshot')->placeholder(__('admin.resources.general.not_provided'))
+                TextColumn::make('unit_price_snapshot')
                     ->money('USD')
                     ->label(__('admin.resources.product.unit_price')),
-                TextColumn::make('quantity')->placeholder(__('admin.resources.general.not_provided'))
+                TextColumn::make('quantity')
                     ->label(__('admin.resources.product.quantity'))
                     ->numeric(),
-                TextColumn::make('subtotal')->placeholder(__('admin.resources.general.not_provided'))
+                TextColumn::make('subtotal')
                     ->label(__('admin.resources.order.subtotal'))
                     ->money('USD'),
             ])

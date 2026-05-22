@@ -28,7 +28,6 @@ use Filament\Tables\Contracts\HasTable;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\HtmlString;
 use Override;
 
 class ProductCatalog extends Page implements HasTable

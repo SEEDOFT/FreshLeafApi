@@ -10,7 +10,6 @@ use Filament\Actions\EditAction;
 use Filament\Actions\ViewAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
-use Illuminate\Support\HtmlString;
 
 class ExchangeRatesTable
 {
@@ -19,17 +18,17 @@ class ExchangeRatesTable
         return $table
             ->recordAction('view')
             ->columns([
-                TextColumn::make('fromCurrency.translated_currency')->placeholder(__('admin.resources.general.not_provided'))
+                TextColumn::make('fromCurrency.translated_currency')
                     ->label(__('admin.resources.exchange_rate.base_currency'))
                     ->searchable(),
-                TextColumn::make('toCurrency.translated_currency')->placeholder(__('admin.resources.general.not_provided'))
+                TextColumn::make('toCurrency.translated_currency')
                     ->label(__('admin.resources.exchange_rate.target_currency'))
                     ->searchable(),
-                TextColumn::make('rate')->placeholder(__('admin.resources.general.not_provided'))
+                TextColumn::make('rate')
                     ->label(__('admin.resources.exchange_rate.rate'))
                     ->numeric()
                     ->sortable(),
-                TextColumn::make('updated_at')->placeholder(__('admin.resources.general.not_provided'))
+                TextColumn::make('updated_at')
                     ->label(__('admin.resources.updated_at'))
                     ->dateTime()
                     ->sortable(),

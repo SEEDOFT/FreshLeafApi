@@ -17,7 +17,6 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Filters\TrashedFilter;
 use Filament\Tables\Table;
-use Illuminate\Support\HtmlString;
 
 class ProductsTable
 {
@@ -30,22 +29,22 @@ class ProductsTable
                     ->label(__('admin.resources.product.image'))
                     ->disk('public')
                     ->circular(),
-                TextColumn::make('name_km')->placeholder(__('admin.resources.general.not_provided'))
+                TextColumn::make('name_km')
                     ->label(__('admin.resources.product.name_km'))
                     ->sortable()
                     ->searchable(),
-                TextColumn::make('name_en')->placeholder(__('admin.resources.general.not_provided'))
+                TextColumn::make('name_en')
                     ->label(__('admin.resources.product.name_en'))
                     ->sortable()
                     ->searchable(),
-                TextColumn::make('productCategory.translated_name')->placeholder(__('admin.resources.general.not_provided'))
+                TextColumn::make('productCategory.translated_name')
                     ->label(__('admin.resources.product.system_category'))
                     ->sortable(),
-                TextColumn::make('status.translated_name')->placeholder(__('admin.resources.general.not_provided'))
+                TextColumn::make('status.translated_name')
                     ->label(__('admin.resources.product.status'))
                     ->badge()
                     ->sortable(),
-                TextColumn::make('created_at')->placeholder(__('admin.resources.general.not_provided'))
+                TextColumn::make('created_at')
                     ->label(__('admin.resources.created_at'))
                     ->dateTime()
                     ->sortable()

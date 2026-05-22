@@ -11,7 +11,6 @@ use Filament\Actions\ViewAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
-use Illuminate\Support\HtmlString;
 
 class OrdersTable
 {
@@ -21,16 +20,16 @@ class OrdersTable
             ->recordAction('view')
             ->stackedOnMobile()
             ->columns([
-                TextColumn::make('order_number')->placeholder(__('admin.resources.general.not_provided'))
+                TextColumn::make('order_number')
                     ->label(__('shared.order.order_number'))
                     ->searchable()
                     ->sortable(),
-                TextColumn::make('user.name')->placeholder(__('admin.resources.general.not_provided'))
+                TextColumn::make('user.name')
                     ->label(__('admin.resources.order.customer'))
                     ->getStateUsing(fn (Order $record) => $record->user?->fullName)
                     ->searchable()
                     ->sortable(),
-                TextColumn::make('status.translated_name')->placeholder(__('admin.resources.general.not_provided'))
+                TextColumn::make('status.translated_name')
                     ->label(__('admin.resources.order.status'))
                     ->badge()
                     ->color(fn (Order $record): string => match ($record->status->id) {
@@ -42,7 +41,7 @@ class OrdersTable
                         default => 'gray',
                     })
                     ->sortable(),
-                TextColumn::make('paymentStatus.translated_name')->placeholder(__('admin.resources.general.not_provided'))
+                TextColumn::make('paymentStatus.translated_name')
                     ->label(__('admin.resources.order.payment_status'))
                     ->badge()
                     ->color(fn (Order $record): string => match ($record->paymentStatus->id) {
@@ -53,15 +52,15 @@ class OrdersTable
                         default => 'gray',
                     })
                     ->sortable(),
-                TextColumn::make('total_amount')->placeholder(__('admin.resources.general.not_provided'))
+                TextColumn::make('total_amount')
                     ->label(__('shared.order.total'))
                     ->money('USD')
                     ->sortable(),
-                TextColumn::make('delivery_date')->placeholder(__('admin.resources.general.not_provided'))
+                TextColumn::make('delivery_date')
                     ->label(__('shared.order.delivery_date'))
                     ->date()
                     ->sortable(),
-                TextColumn::make('created_at')->placeholder(__('admin.resources.general.not_provided'))
+                TextColumn::make('created_at')
                     ->label(__('shared.created_at'))
                     ->dateTime()
                     ->sortable()

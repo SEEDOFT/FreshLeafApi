@@ -9,7 +9,6 @@ use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Schemas\Schema;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
-use Illuminate\Support\HtmlString;
 use Override;
 
 class ItemsRelationManager extends RelationManager
@@ -57,24 +56,24 @@ class ItemsRelationManager extends RelationManager
             ->stackedOnMobile()
             ->recordTitleAttribute('product_name_snapshot')
             ->columns([
-                TextColumn::make('product_name_snapshot')->placeholder(__('admin.resources.general.not_provided'))
+                TextColumn::make('product_name_snapshot')
                     ->label(__('shared.order.product'))
                     ->sortable(),
-                TextColumn::make('unit_snapshot')->placeholder(__('admin.resources.general.not_provided'))
+                TextColumn::make('unit_snapshot')
                     ->label(__('shared.product.unit')),
-                TextColumn::make('unit_price_snapshot')->placeholder(__('admin.resources.general.not_provided'))
+                TextColumn::make('unit_price_snapshot')
                     ->money('USD')
                     ->label(__('shared.product.unit_price')),
-                TextColumn::make('quantity')->placeholder(__('admin.resources.general.not_provided'))
+                TextColumn::make('quantity')
                     ->label(__('shared.product.quantity'))
                     ->numeric(),
-                TextColumn::make('subtotal')->placeholder(__('admin.resources.general.not_provided'))
+                TextColumn::make('subtotal')
                     ->label(__('shared.order.subtotal'))
                     ->money('USD'),
-                TextColumn::make('commission_amount')->placeholder(__('admin.resources.general.not_provided'))
+                TextColumn::make('commission_amount')
                     ->label(__('shared.order.commission'))
                     ->money('USD'),
-                TextColumn::make('vendor_net_amount')->placeholder(__('admin.resources.general.not_provided'))
+                TextColumn::make('vendor_net_amount')
                     ->label(__('shared.order.total'))
                     ->money('USD'),
             ])

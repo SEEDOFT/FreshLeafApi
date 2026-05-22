@@ -13,7 +13,6 @@ use Filament\Auth\Pages\Login as BaseLogin;
 use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Schema;
 use Illuminate\Contracts\Support\Htmlable;
-use Illuminate\Support\HtmlString;
 use Illuminate\Validation\ValidationException;
 use Override;
 

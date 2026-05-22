@@ -6,7 +6,6 @@ namespace App\Filament\Admin\Resources\Units\Schemas;
 
 use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Schema;
-use Illuminate\Support\HtmlString;
 
 class UnitForm
 {

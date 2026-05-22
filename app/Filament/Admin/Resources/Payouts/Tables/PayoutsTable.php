@@ -20,17 +20,17 @@ class PayoutsTable
             ->recordAction('view')
             ->columns([
                 TextColumn::make('vendor.vendorProfile.business_name')->placeholder(__('admin.resources.general.not_provided'))
-                    ->label(new HtmlString('<strong>'.__('admin.resources.payout.business').'</strong>'))
+                    ->label(__('admin.resources.payout.business'))
                     ->searchable()
                     ->sortable(),
 
                 TextColumn::make('amount')->placeholder(__('admin.resources.general.not_provided'))
-                    ->label(new HtmlString('<strong>'.__('admin.resources.payout.amount').'</strong>'))
+                    ->label(__('admin.resources.payout.amount'))
                     ->money('USD')
                     ->sortable(),
 
                 TextColumn::make('status.name')->placeholder(__('admin.resources.general.not_provided'))
-                    ->label(new HtmlString('<strong>'.__('admin.resources.payout.status').'</strong>'))
+                    ->label(__('admin.resources.payout.status'))
                     ->badge()
                     ->color(fn (string $state): string => match ($state) {
                         'Pending' => 'warning',
@@ -41,15 +41,15 @@ class PayoutsTable
                     }),
 
                 TextColumn::make('method.name')->placeholder(__('admin.resources.general.not_provided'))
-                    ->label(new HtmlString('<strong>'.__('admin.resources.payout.method').'</strong>')),
+                    ->label(__('admin.resources.payout.method')),
 
                 TextColumn::make('processed_at')->placeholder(__('admin.resources.general.not_provided'))
-                    ->label(new HtmlString('<strong>'.__('admin.resources.payout.processed_at').'</strong>'))
+                    ->label(__('admin.resources.payout.processed_at'))
                     ->dateTime()
                     ->sortable(),
 
                 TextColumn::make('created_at')->placeholder(__('admin.resources.general.not_provided'))
-                    ->label(new HtmlString('<strong>'.__('admin.resources.created_at').'</strong>'))
+                    ->label(__('admin.resources.created_at'))
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),

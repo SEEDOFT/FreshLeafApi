@@ -21,35 +21,35 @@ class WalletTransactionForm
                     ->columns(2)
                     ->schema([
                         Select::make('wallet_id')
-                            ->label(new HtmlString('<strong>'.__('admin.resources.wallet_transaction.wallet').'</strong>'))
+                            ->label(__('admin.resources.wallet_transaction.wallet'))
                             ->relationship('wallet.user', 'first_name')
                             ->getOptionLabelFromRecordUsing(fn ($record) => "{$record->first_name} {$record->last_name} ({$record->wallets->first()?->currency->code})")
                             ->searchable()
                             ->required(fn (string $operation): bool => $operation === 'create')
                             ->dehydrated(fn (mixed $state): bool => filled($state)),
                         Select::make('wallet_transaction_type_id')
-                            ->label(new HtmlString('<strong>'.__('admin.resources.wallet_transaction.type').'</strong>'))
+                            ->label(__('admin.resources.wallet_transaction.type'))
                             ->relationship('type', 'name')
                             ->required(fn (string $operation): bool => $operation === 'create')
                             ->dehydrated(fn (mixed $state): bool => filled($state)),
                         Select::make('wallet_transaction_status_id')
-                            ->label(new HtmlString('<strong>'.__('admin.resources.wallet_transaction.status').'</strong>'))
+                            ->label(__('admin.resources.wallet_transaction.status'))
                             ->relationship('status', 'name')
                             ->required(fn (string $operation): bool => $operation === 'create')
                             ->dehydrated(fn (mixed $state): bool => filled($state)),
                         TextInput::make('amount')
-                            ->label(new HtmlString('<strong>'.__('admin.resources.wallet_transaction.amount').'</strong>'))
+                            ->label(__('admin.resources.wallet_transaction.amount'))
                             ->numeric()
                             ->required(fn (string $operation): bool => $operation === 'create')
                             ->dehydrated(fn (mixed $state): bool => filled($state))
                             ->prefix('$'),
                         TextInput::make('reference_type')
-                            ->label(new HtmlString('<strong>'.__('admin.resources.wallet_transaction.ref_type').'</strong>')),
+                            ->label(__('admin.resources.wallet_transaction.ref_type')),
                         TextInput::make('reference_id')
-                            ->label(new HtmlString('<strong>'.__('admin.resources.wallet_transaction.ref_id').'</strong>'))
+                            ->label(__('admin.resources.wallet_transaction.ref_id'))
                             ->numeric(),
                         Textarea::make('description')
-                            ->label(new HtmlString('<strong>'.__('admin.resources.wallet_transaction.description').'</strong>'))
+                            ->label(__('admin.resources.wallet_transaction.description'))
                             ->columnSpanFull(),
                     ]),
             ]);

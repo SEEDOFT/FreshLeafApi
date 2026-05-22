@@ -6,6 +6,7 @@ namespace App\Filament\Admin\Resources\VendorInventories\Tables;
 
 use App\Models\VendorInventory;
 use App\Models\VendorInventoryStatus;
+use Filament\Actions\Action;
 use Filament\Actions\ViewAction;
 use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\TextColumn;
@@ -23,57 +24,54 @@ class VendorInventoryTable
             ->columns([
                 TextColumn::make('vendor.name')
                     ->placeholder(__('admin.resources.general.not_provided'))
-                    ->label(new HtmlString('<strong>'.__('admin.resources.vendor_inventory.vendor').'</strong>'))
-                    ->getStateUsing(
-                        static fn (VendorInventory $record) => $record->vendor->fullName
-                    )
-                    ->searchable(['first_name', 'last_name'])
-                    ->sortable(),
+                    ->label(__('admin.resources.vendor_inventory.vendor'))
+                    ->getStateUsing(fn (VendorInventory $record) => $record->vendor->fullName)
+                    ->searchable(['first_name', 'last_name']),
                 ImageColumn::make('product.image_url')
-                    ->label(new HtmlString('<strong>'.__('admin.resources.product.image').'</strong>')),
+                    ->label(__('admin.resources.product.image')),
                 TextColumn::make('product.name_en')
                     ->placeholder(__('admin.resources.general.not_provided'))
-                    ->label(new HtmlString('<strong>'.__('admin.resources.product.name_en').'</strong>'))
+                    ->label(__('admin.resources.product.name_en'))
                     ->searchable()
                     ->sortable(),
                 TextColumn::make('price')
                     ->placeholder(__('admin.resources.general.not_provided'))
-                    ->label(new HtmlString('<strong>'.__('admin.resources.product.unit_price').'</strong>'))
-                    ->money(fn ($record) => $record->currency?->code ?? 'USD')
+                    ->label(__('admin.resources.product.unit_price'))
+                    ->money(fn (VendorInventory $record) => $record->currency->code)
                     ->sortable(),
                 TextColumn::make('stock_quantity')
                     ->placeholder(__('admin.resources.general.not_provided'))
-                    ->label(new HtmlString('<strong>'.__('admin.resources.product.stock').'</strong>'))
+                    ->label(__('admin.resources.product.stock'))
                     ->numeric()
                     ->sortable(),
                 TextColumn::make('unit.name')
                     ->placeholder(__('admin.resources.general.not_provided'))
-                    ->label(new HtmlString('<strong>'.__('admin.resources.product.unit').'</strong>')),
+                    ->label(__('admin.resources.product.unit')),
                 TextColumn::make('province_of_origin')
                     ->placeholder(__('admin.resources.general.not_provided'))
-                    ->label(new HtmlString('<strong>'.__('admin.resources.product.province_of_origin').'</strong>'))
+                    ->label(__('admin.resources.product.province_of_origin'))
                     ->searchable(),
                 TextColumn::make('status.translated_name')
                     ->placeholder(__('admin.resources.general.not_provided'))
-                    ->label(new HtmlString('<strong>'.__('admin.resources.product.status').'</strong>'))
+                    ->label(__('admin.resources.product.status'))
                     ->badge()
                     ->sortable(),
                 TextColumn::make('updated_at')
                     ->placeholder(__('admin.resources.general.not_provided'))
-                    ->label(new HtmlString('<strong>'.__('admin.resources.updated_at').'</strong>'))
+                    ->label(__('admin.resources.updated_at'))
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
                 SelectFilter::make('vendor_id')
-                    ->label(new HtmlString('<strong>'.__('admin.resources.vendor_inventory.vendor').'</strong>'))
+                    ->label(__('admin.resources.vendor_inventory.vendor'))
                     ->relationship('vendor', 'last_name'),
                 SelectFilter::make('product_category_id')
-                    ->label(new HtmlString('<strong>'.__('admin.resources.product.system_category').'</strong>'))
+                    ->label(__('admin.resources.product.system_category'))
                     ->relationship('product.productCategory', 'name_en'),
                 SelectFilter::make('inventory_status_id')
-                    ->label(new HtmlString('<strong>'.__('admin.resources.product.status').'</strong>'))
+                    ->label(__('admin.resources.product.status'))
                     ->options(
                         VendorInventoryStatus::all()
                             ->pluck('translated_name', 'id')
@@ -81,6 +79,20 @@ class VendorInventoryTable
             ])
             ->actions([
                 ViewAction::make(),
+                Action::make('approve')
+                    ->label('Approve')
+                    ->icon('heroicon-o-check-circle')
+                    ->color('success')
+                    ->visible(fn (VendorInventory $record): bool => $record->inventory_status_id === VendorInventoryStatus::PENDING_REVIEW_ID)
+                    ->action(function (VendorInventory $record): void {
+                        $record->update([
+                            'inventory_status_id' => VendorInventoryStatus::AVAILABLE_ID,
+                        ]);
+                    })
+                    ->requiresConfirmation()
+                    ->modalHeading('Approve Inventory')
+                    ->modalDescription('Are you sure you want to approve this inventory and make it available in the store?')
+                    ->modalSubmitActionLabel('Approve'),
             ]);
     }
 }

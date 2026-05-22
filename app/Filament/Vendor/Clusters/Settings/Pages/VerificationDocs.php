@@ -84,7 +84,7 @@ class VerificationDocs extends Page
                     ->description(__('vendor.settings.verification_docs.section_desc'))
                     ->schema([
                         FileUpload::make('id_card_front')
-                            ->label(new HtmlString('<strong>'.__('vendor.settings.verification_docs.id_front').'</strong>'))
+                            ->label(__('vendor.settings.verification_docs.id_front'))
                             ->image()
                             ->imageEditor()
                             ->maxSize(6144)
@@ -92,7 +92,7 @@ class VerificationDocs extends Page
                             ->directory(StorageDirectory::VENDOR_VERIFICATION)
                             ->disabled(),
                         FileUpload::make('id_card_back')
-                            ->label(new HtmlString('<strong>'.__('vendor.settings.verification_docs.id_back').'</strong>'))
+                            ->label(__('vendor.settings.verification_docs.id_back'))
                             ->image()
                             ->imageEditor()
                             ->maxSize(6144)
@@ -100,7 +100,7 @@ class VerificationDocs extends Page
                             ->directory(StorageDirectory::VENDOR_VERIFICATION)
                             ->disabled(),
                         FileUpload::make('store_front_image')
-                            ->label(new HtmlString('<strong>'.__('vendor.settings.verification_docs.store_photo').'</strong>'))
+                            ->label(__('vendor.settings.verification_docs.store_photo'))
                             ->image()
                             ->imageEditor()
                             ->maxSize(6144)
@@ -108,7 +108,7 @@ class VerificationDocs extends Page
                             ->directory(StorageDirectory::VENDOR_VERIFICATION)
                             ->disabled(),
                         FileUpload::make('organic_certificate_url')
-                            ->label(new HtmlString('<strong>'.__('vendor.settings.verification_docs.organic_cert').'</strong>'))
+                            ->label(__('vendor.settings.verification_docs.organic_cert'))
                             ->maxSize(6144)
                             ->disk('local')
                             ->directory(StorageDirectory::VENDOR_VERIFICATION)

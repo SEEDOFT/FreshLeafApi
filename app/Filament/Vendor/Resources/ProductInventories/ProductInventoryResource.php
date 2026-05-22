@@ -11,6 +11,7 @@ use App\Filament\Vendor\Resources\ProductInventories\Pages\ListProductInventorie
 use App\Filament\Vendor\Resources\ProductInventories\Pages\ViewProductInventory;
 use App\Filament\Vendor\Resources\ProductInventories\Schemas\ProductInventoryForm;
 use App\Filament\Vendor\Resources\ProductInventories\Schemas\ProductInventoryInfolist;
+use App\Filament\Vendor\Resources\ProductInventories\Tables\ProductInventoryTable;
 use App\Models\User;
 use App\Models\UserStatus;
 use App\Models\UserType;

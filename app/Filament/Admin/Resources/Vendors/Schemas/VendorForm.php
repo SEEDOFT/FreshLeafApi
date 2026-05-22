@@ -40,19 +40,19 @@ class VendorForm
                     ->columns(2)
                     ->schema([
                         TextInput::make('first_name')
-                            ->label(new HtmlString('<strong>'.__('admin.resources.user.first_name').'</strong>'))
+                            ->label(__('admin.resources.user.first_name'))
                             ->required(fn (string $operation): bool => $operation === 'create')
                             ->dehydrated(fn (mixed $state): bool => filled($state)),
                         TextInput::make('last_name')
-                            ->label(new HtmlString('<strong>'.__('admin.resources.user.last_name').'</strong>'))
+                            ->label(__('admin.resources.user.last_name'))
                             ->required(fn (string $operation): bool => $operation === 'create')
                             ->dehydrated(fn (mixed $state): bool => filled($state)),
                         TextInput::make('email')
-                            ->label(new HtmlString('<strong>'.__('admin.resources.user.email').'</strong>'))
+                            ->label(__('admin.resources.user.email'))
                             ->email()
                             ->dehydrated(fn (mixed $state): bool => filled($state)),
                         PhoneNumberInput::make('phone_number')
-                            ->label(new HtmlString('<strong>'.__('admin.resources.user.phone').'</strong>'))
+                            ->label(__('admin.resources.user.phone'))
                             ->required(fn (string $operation): bool => $operation === 'create')
                             ->dehydrated(fn (mixed $state): bool => filled($state))
                             ->live(onBlur: true)
@@ -104,17 +104,17 @@ class VendorForm
                                 };
                             }),
                         PasswordInput::make('password')
-                            ->label(new HtmlString('<strong>'.__('shared.auth.login.password').'</strong>'))
+                            ->label(__('shared.auth.login.password'))
                             ->required(fn (string $operation): bool => $operation === 'create')
                             ->dehydrated(fn (mixed $state): bool => filled($state))
                             ->revealable(),
                         PasswordInput::make('password_confirmation')
-                            ->label(new HtmlString('<strong>'.__('shared.auth.register.password_confirm').'</strong>'))
+                            ->label(__('shared.auth.register.password_confirm'))
                             ->required(fn (string $operation): bool => $operation === 'create')
                             ->dehydrated(fn (mixed $state): bool => filled($state))
                             ->revealable(),
                         Select::make('user_type_id')
-                            ->label(new HtmlString('<strong>'.__('admin.resources.user.type').'</strong>'))
+                            ->label(__('admin.resources.user.type'))
                             ->options(
                                 UserType::all()
                                     ->pluck('translated_name', 'id')
@@ -124,7 +124,7 @@ class VendorForm
                             ->disabled()
                             ->dehydrated(fn (mixed $state): bool => filled($state)),
                         Select::make('user_status_id')
-                            ->label(new HtmlString('<strong>'.__('admin.resources.user.status').'</strong>'))
+                            ->label(__('admin.resources.user.status'))
                             ->options(
                                 UserStatus::where('id', '!=', UserStatus::DELETED_ID)
                                     ->get()
@@ -141,37 +141,37 @@ class VendorForm
                         Grid::make(2)
                             ->schema([
                                 TextInput::make('business_name')
-                                    ->label(new HtmlString('<strong>'.__('admin.resources.vendor.business_name').'</strong>'))
+                                    ->label(__('admin.resources.vendor.business_name'))
                                     ->required(fn (string $operation): bool => $operation === 'create')
                                     ->maxLength(255)
                                     ->dehydrated(fn (mixed $state): bool => filled($state)),
                                 PhoneNumberInput::make('contact_phone')
-                                    ->label(new HtmlString('<strong>'.__('shared.form.fields.contact_phone').'</strong>'))
+                                    ->label(__('shared.form.fields.contact_phone'))
                                     ->required(fn (string $operation): bool => $operation === 'create')
                                     ->dehydrated(fn (mixed $state): bool => filled($state)),
                                 TextInput::make('village')
-                                    ->label(new HtmlString('<strong>'.__('shared.form.fields.village').'</strong>'))
+                                    ->label(__('shared.form.fields.village'))
                                     ->required(fn (string $operation): bool => $operation === 'create')
                                     ->maxLength(255)
                                     ->dehydrated(fn (mixed $state): bool => filled($state)),
                                 TextInput::make('commune')
-                                    ->label(new HtmlString('<strong>'.__('shared.form.fields.commune').'</strong>'))
+                                    ->label(__('shared.form.fields.commune'))
                                     ->required(fn (string $operation): bool => $operation === 'create')
                                     ->maxLength(255)
                                     ->dehydrated(fn (mixed $state): bool => filled($state)),
                                 TextInput::make('district')
-                                    ->label(new HtmlString('<strong>'.__('shared.form.fields.district').'</strong>'))
+                                    ->label(__('shared.form.fields.district'))
                                     ->required(fn (string $operation): bool => $operation === 'create')
                                     ->maxLength(255)
                                     ->dehydrated(fn (mixed $state): bool => filled($state)),
                                 TextInput::make('province')
-                                    ->label(new HtmlString('<strong>'.__('shared.form.fields.province').'</strong>'))
+                                    ->label(__('shared.form.fields.province'))
                                     ->required(fn (string $operation): bool => $operation === 'create')
                                     ->maxLength(255)
                                     ->dehydrated(fn (mixed $state): bool => filled($state)),
                             ]),
                         Hidden::make('is_verified')
-                            ->label(new HtmlString('<strong>'.__('admin.resources.vendor.verified').'</strong>'))
+                            ->label(__('admin.resources.vendor.verified'))
                             ->dehydrated()
                             ->default(true),
                     ]),
@@ -180,7 +180,7 @@ class VendorForm
                     ->relationship('vendorProfile')
                     ->schema([
                         FileUpload::make('id_card_front')
-                            ->label(new HtmlString('<strong>'.__('admin.resources.vendor.id_card_front').'</strong>'))
+                            ->label(__('admin.resources.vendor.id_card_front'))
                             ->image()
                             ->imageEditor()
                             ->maxSize(6144)
@@ -189,7 +189,7 @@ class VendorForm
                             ->required(fn (string $operation): bool => $operation === 'create')
                             ->dehydrated(fn (mixed $state): bool => filled($state)),
                         FileUpload::make('id_card_back')
-                            ->label(new HtmlString('<strong>'.__('admin.resources.vendor.id_card_back').'</strong>'))
+                            ->label(__('admin.resources.vendor.id_card_back'))
                             ->image()
                             ->imageEditor()
                             ->maxSize(6144)
@@ -198,7 +198,7 @@ class VendorForm
                             ->required(fn (string $operation): bool => $operation === 'create')
                             ->dehydrated(fn (mixed $state): bool => filled($state)),
                         FileUpload::make('store_front_image')
-                            ->label(new HtmlString('<strong>'.__('admin.resources.vendor.store_photo').'</strong>'))
+                            ->label(__('admin.resources.vendor.store_photo'))
                             ->image()
                             ->imageEditor()
                             ->maxSize(6144)
@@ -207,7 +207,7 @@ class VendorForm
                             ->required(fn (string $operation): bool => $operation === 'create')
                             ->dehydrated(fn (mixed $state): bool => filled($state)),
                         FileUpload::make('organic_certificate_url')
-                            ->label(new HtmlString('<strong>'.__('admin.resources.vendor.organic_cert').'</strong>'))
+                            ->label(__('admin.resources.vendor.organic_cert'))
                             ->maxSize(6144)
                             ->disk('local')
                             ->directory(StorageDirectory::VENDOR_VERIFICATION)
@@ -219,7 +219,7 @@ class VendorForm
                     ->schema([
                         Grid::make(3)->schema([
                             Select::make('payment_method_type_id')
-                                ->label(new HtmlString('<strong>'.__('admin.resources.vendor.bank_name').'</strong>'))
+                                ->label(__('admin.resources.vendor.bank_name'))
                                 ->options(
                                     PaymentMethodType::whereIn('id', [
                                         PaymentMethodType::ABA_ID,
@@ -236,18 +236,18 @@ class VendorForm
                                     }
                                 }),
                             TextInput::make('account_name')
-                                ->label(new HtmlString('<strong>'.__('admin.resources.vendor.account_holder').'</strong>'))
+                                ->label(__('admin.resources.vendor.account_holder'))
                                 ->required(fn (string $operation): bool => $operation === 'create')
                                 ->maxLength(255)
                                 ->dehydrated(fn (mixed $state): bool => filled($state)),
                             TextInput::make('account_number')
-                                ->label(new HtmlString('<strong>'.__('admin.resources.vendor.account_number').'</strong>'))
+                                ->label(__('admin.resources.vendor.account_number'))
                                 ->required(fn (string $operation): bool => $operation === 'create')
                                 ->maxLength(255)
                                 ->dehydrated(fn (mixed $state): bool => filled($state)),
                         ]),
                         FileUpload::make('qr_code')
-                            ->label(new HtmlString('<strong>'.__('admin.resources.vendor.qr_code').'</strong>'))
+                            ->label(__('admin.resources.vendor.qr_code'))
                             ->image()
                             ->maxSize(6144)
                             ->disk('local')

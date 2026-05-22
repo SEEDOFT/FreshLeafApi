@@ -24,13 +24,13 @@ class ProductCategoryInfolist
                     ->columns(2)
                     ->schema([
                         TextEntry::make('name_en')->placeholder(__('admin.resources.general.not_provided'))
-                            ->label(new HtmlString('<strong>'.__('admin.resources.product_category.name_en').'</strong>')),
+                            ->label(__('admin.resources.product_category.name_en')),
                         TextEntry::make('name_km')->placeholder(__('admin.resources.general.not_provided'))
-                            ->label(new HtmlString('<strong>'.__('admin.resources.product_category.name_km').'</strong>')),
+                            ->label(__('admin.resources.product_category.name_km')),
                         TextEntry::make('slug')->placeholder(__('admin.resources.general.not_provided'))
-                            ->label(new HtmlString('<strong>'.__('admin.resources.product_category.slug').'</strong>')),
+                            ->label(__('admin.resources.product_category.slug')),
                         TextEntry::make('status.translated_name')->placeholder(__('admin.resources.general.not_provided'))
-                            ->label(new HtmlString('<strong>'.__('admin.resources.product_category.status').'</strong>'))
+                            ->label(__('admin.resources.product_category.status'))
                             ->badge()
                             ->placeholder($notProvided)
                             ->color(fn (ProductCategory $record): string => match ($record->product_category_status_id) {
@@ -39,16 +39,16 @@ class ProductCategoryInfolist
                                 default => 'gray',
                             }),
                         TextEntry::make('description_en')->placeholder(__('admin.resources.general.not_provided'))
-                            ->label(new HtmlString('<strong>'.__('admin.resources.product_category.description_en').'</strong>'))
+                            ->label(__('admin.resources.product_category.description_en'))
                             ->columnSpanFull(),
                         TextEntry::make('description_km')->placeholder(__('admin.resources.general.not_provided'))
-                            ->label(new HtmlString('<strong>'.__('admin.resources.product_category.description_km').'</strong>'))
+                            ->label(__('admin.resources.product_category.description_km'))
                             ->columnSpanFull(),
                     ]),
                 Section::make(__('admin.resources.product_category.visuals'))
                     ->schema([
                         ImageEntry::make('image_url')
-                            ->label(new HtmlString('<strong>'.__('admin.resources.product_category.image').'</strong>'))
+                            ->label(__('admin.resources.product_category.image'))
                             ->imageSize(200),
                     ]),
             ]);

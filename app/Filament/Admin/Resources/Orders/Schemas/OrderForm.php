@@ -22,30 +22,30 @@ class OrderForm
                     ->columns(2)
                     ->schema([
                         TextInput::make('order_number')
-                            ->label(new HtmlString('<strong>'.__('admin.resources.order.order_number').'</strong>'))
+                            ->label(__('admin.resources.order.order_number'))
                             ->disabled()
                             ->dehydrated(false),
                         Select::make('user_id')
-                            ->label(new HtmlString('<strong>'.__('admin.resources.order.user').'</strong>'))
+                            ->label(__('admin.resources.order.user'))
                             ->relationship('user', 'first_name')
                             ->getOptionLabelFromRecordUsing(fn ($record) => "{$record->first_name} {$record->last_name}")
                             ->searchable()
                             ->preload()
                             ->required(fn (string $operation): bool => $operation === 'create')->dehydrated(fn (mixed $state): bool => filled($state)),
                         Select::make('order_type_id')
-                            ->label(new HtmlString('<strong>'.__('admin.resources.order.type').'</strong>'))
+                            ->label(__('admin.resources.order.type'))
                             ->relationship('type', 'name')
                             ->required(fn (string $operation): bool => $operation === 'create')->dehydrated(fn (mixed $state): bool => filled($state)),
                         Select::make('order_status_id')
-                            ->label(new HtmlString('<strong>'.__('admin.resources.order.status').'</strong>'))
+                            ->label(__('admin.resources.order.status'))
                             ->relationship('status', 'name')
                             ->required(fn (string $operation): bool => $operation === 'create')->dehydrated(fn (mixed $state): bool => filled($state)),
                         Select::make('payment_status_id')
-                            ->label(new HtmlString('<strong>'.__('admin.resources.order.payment_status').'</strong>'))
+                            ->label(__('admin.resources.order.payment_status'))
                             ->relationship('paymentStatus', 'name')
                             ->required(fn (string $operation): bool => $operation === 'create')->dehydrated(fn (mixed $state): bool => filled($state)),
                         Select::make('address_id')
-                            ->label(new HtmlString('<strong>'.__('admin.resources.order.address').'</strong>'))
+                            ->label(__('admin.resources.order.address'))
                             ->relationship('address', 'label')
                             ->required(fn (string $operation): bool => $operation === 'create')->dehydrated(fn (mixed $state): bool => filled($state)),
                     ]),
@@ -54,11 +54,11 @@ class OrderForm
                     ->columns(2)
                     ->schema([
                         DatePicker::make('delivery_date')
-                            ->label(new HtmlString('<strong>'.__('admin.resources.order.delivery_date').'</strong>')),
+                            ->label(__('admin.resources.order.delivery_date')),
                         TextInput::make('delivery_slot')
-                            ->label(new HtmlString('<strong>'.__('admin.resources.order.delivery_slot').'</strong>')),
+                            ->label(__('admin.resources.order.delivery_slot')),
                         Textarea::make('notes')
-                            ->label(new HtmlString('<strong>'.__('admin.resources.order.notes').'</strong>'))
+                            ->label(__('admin.resources.order.notes'))
                             ->columnSpanFull(),
                     ]),
 
@@ -66,23 +66,23 @@ class OrderForm
                     ->columns(3)
                     ->schema([
                         TextInput::make('subtotal')
-                            ->label(new HtmlString('<strong>'.__('admin.resources.order.subtotal').'</strong>'))
+                            ->label(__('admin.resources.order.subtotal'))
                             ->numeric()
                             ->prefix('$'),
                         TextInput::make('discount_amount')
-                            ->label(new HtmlString('<strong>'.__('admin.resources.order.discount').'</strong>'))
+                            ->label(__('admin.resources.order.discount'))
                             ->numeric()
                             ->prefix('$'),
                         TextInput::make('delivery_fee')
-                            ->label(new HtmlString('<strong>'.__('admin.resources.order.delivery_fee').'</strong>'))
+                            ->label(__('admin.resources.order.delivery_fee'))
                             ->numeric()
                             ->prefix('$'),
                         TextInput::make('tax_amount')
-                            ->label(new HtmlString('<strong>'.__('admin.resources.order.tax').'</strong>'))
+                            ->label(__('admin.resources.order.tax'))
                             ->numeric()
                             ->prefix('$'),
                         TextInput::make('total_amount')
-                            ->label(new HtmlString('<strong>'.__('admin.resources.order.total').'</strong>'))
+                            ->label(__('admin.resources.order.total'))
                             ->numeric()
                             ->prefix('$')
                             ->required(fn (string $operation): bool => $operation === 'create')->dehydrated(fn (mixed $state): bool => filled($state)),

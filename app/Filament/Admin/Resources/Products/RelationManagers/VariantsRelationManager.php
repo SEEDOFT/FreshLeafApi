@@ -29,22 +29,22 @@ class VariantsRelationManager extends RelationManager
         return $schema
             ->components([
                 Select::make('unit_id')
-                    ->label(new HtmlString('<strong>'.__('admin.resources.product.unit').'</strong>'))
+                    ->label(__('admin.resources.product.unit'))
                     ->relationship('unit', 'name')
                     ->required(fn (string $operation): bool => $operation === 'create')
                     ->dehydrated(fn (mixed $state): bool => filled($state)),
                 TextInput::make('name')
-                    ->label(new HtmlString('<strong>'.__('admin.resources.unit.name').'</strong>'))
+                    ->label(__('admin.resources.unit.name'))
                     ->placeholder('e.g. 500g Pack, Bulk 5kg')
                     ->required(fn (string $operation): bool => $operation === 'create')
                     ->dehydrated(fn (mixed $state): bool => filled($state)),
                 TextInput::make('quantity_in_unit')
-                    ->label(new HtmlString('<strong>'.__('admin.resources.product.quantity_in_unit').'</strong>'))
+                    ->label(__('admin.resources.product.quantity_in_unit'))
                     ->required(fn (string $operation): bool => $operation === 'create')
                     ->dehydrated(fn (mixed $state): bool => filled($state))
                     ->numeric(),
                 TextInput::make('price')
-                    ->label(new HtmlString('<strong>'.__('admin.resources.product.price').'</strong>'))
+                    ->label(__('admin.resources.product.price'))
                     ->required(fn (string $operation): bool => $operation === 'create')
                     ->dehydrated(fn (mixed $state): bool => filled($state))
                     ->numeric()
@@ -60,18 +60,18 @@ class VariantsRelationManager extends RelationManager
             ->recordTitleAttribute('name')
             ->columns([
                 TextColumn::make('name')->placeholder(__('admin.resources.general.not_provided'))
-                    ->label(new HtmlString('<strong>'.__('admin.resources.unit.name').'</strong>'))
+                    ->label(__('admin.resources.unit.name'))
                     ->searchable()
                     ->sortable(),
                 TextColumn::make('unit.symbol')->placeholder(__('admin.resources.general.not_provided'))
-                    ->label(new HtmlString('<strong>'.__('admin.resources.product.unit').'</strong>'))
+                    ->label(__('admin.resources.product.unit'))
                     ->sortable(),
                 TextColumn::make('quantity_in_unit')->placeholder(__('admin.resources.general.not_provided'))
-                    ->label(new HtmlString('<strong>'.__('admin.resources.product.quantity_in_unit').'</strong>'))
+                    ->label(__('admin.resources.product.quantity_in_unit'))
                     ->numeric()
                     ->sortable(),
                 TextColumn::make('price')->placeholder(__('admin.resources.general.not_provided'))
-                    ->label(new HtmlString('<strong>'.__('admin.resources.product.price').'</strong>'))
+                    ->label(__('admin.resources.product.price'))
                     ->money('USD')
                     ->sortable(),
             ])

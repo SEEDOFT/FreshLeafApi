@@ -31,31 +31,31 @@ class ItemsRelationManager extends RelationManager
         return $schema
             ->components([
                 Select::make('product_id')
-                    ->label(new HtmlString('<strong>'.__('admin.resources.order.product').'</strong>'))
+                    ->label(__('admin.resources.order.product'))
                     ->relationship('product', 'name')
                     ->required(fn (string $operation): bool => $operation === 'create')
                     ->dehydrated(fn (mixed $state): bool => filled($state))
                     ->live(),
                 Select::make('product_variant_id')
-                    ->label(new HtmlString('<strong>'.__('admin.resources.product.variant').'</strong>'))
+                    ->label(__('admin.resources.product.variant'))
                     ->relationship('productVariant', 'name',
                         fn (Builder $query, Get $get) => $query->where('product_id', $get('product_id'))
                     )
                     ->required(fn (string $operation): bool => $operation === 'create')
                     ->dehydrated(fn (mixed $state): bool => filled($state)),
                 TextInput::make('quantity')
-                    ->label(new HtmlString('<strong>'.__('admin.resources.product.quantity').'</strong>'))
+                    ->label(__('admin.resources.product.quantity'))
                     ->required(fn (string $operation): bool => $operation === 'create')
                     ->dehydrated(fn (mixed $state): bool => filled($state))
                     ->numeric(),
                 TextInput::make('unit_price_snapshot')
-                    ->label(new HtmlString('<strong>'.__('admin.resources.product.unit_price').'</strong>'))
+                    ->label(__('admin.resources.product.unit_price'))
                     ->required(fn (string $operation): bool => $operation === 'create')
                     ->dehydrated(fn (mixed $state): bool => filled($state))
                     ->numeric()
                     ->prefix('$'),
                 TextInput::make('subtotal')
-                    ->label(new HtmlString('<strong>'.__('admin.resources.order.subtotal').'</strong>'))
+                    ->label(__('admin.resources.order.subtotal'))
                     ->required(fn (string $operation): bool => $operation === 'create')
                     ->dehydrated(fn (mixed $state): bool => filled($state))
                     ->numeric()
@@ -71,18 +71,18 @@ class ItemsRelationManager extends RelationManager
             ->recordTitleAttribute('product_name_snapshot')
             ->columns([
                 TextColumn::make('product_name_snapshot')->placeholder(__('admin.resources.general.not_provided'))
-                    ->label(new HtmlString('<strong>'.__('admin.resources.order.product').'</strong>'))
+                    ->label(__('admin.resources.order.product'))
                     ->sortable(),
                 TextColumn::make('unit_snapshot')->placeholder(__('admin.resources.general.not_provided'))
-                    ->label(new HtmlString('<strong>'.__('admin.resources.product.unit').'</strong>')),
+                    ->label(__('admin.resources.product.unit')),
                 TextColumn::make('unit_price_snapshot')->placeholder(__('admin.resources.general.not_provided'))
                     ->money('USD')
-                    ->label(new HtmlString('<strong>'.__('admin.resources.product.unit_price').'</strong>')),
+                    ->label(__('admin.resources.product.unit_price')),
                 TextColumn::make('quantity')->placeholder(__('admin.resources.general.not_provided'))
-                    ->label(new HtmlString('<strong>'.__('admin.resources.product.quantity').'</strong>'))
+                    ->label(__('admin.resources.product.quantity'))
                     ->numeric(),
                 TextColumn::make('subtotal')->placeholder(__('admin.resources.general.not_provided'))
-                    ->label(new HtmlString('<strong>'.__('admin.resources.order.subtotal').'</strong>'))
+                    ->label(__('admin.resources.order.subtotal'))
                     ->money('USD'),
             ])
             ->filters([

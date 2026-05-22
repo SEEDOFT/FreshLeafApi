@@ -15,8 +15,8 @@ use Illuminate\Support\Facades\App;
  * @property string $name_km
  * @property string|null $translated_name
  */
-#[Table('packaging_types', key: 'id', keyType: 'int')]
-#[Fillable(['name_en', 'name_km'])]
+#[Table('packaging_types', key: 'id', keyType: 'int', incrementing: false)]
+#[Fillable(['id', 'name_en', 'name_km'])]
 class PackagingType extends Model
 {
     public function getTranslatedNameAttribute(): ?string

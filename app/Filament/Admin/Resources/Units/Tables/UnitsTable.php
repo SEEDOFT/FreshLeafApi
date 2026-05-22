@@ -19,27 +19,27 @@ class UnitsTable
             ->stackedOnMobile()
             ->columns([
                 TextColumn::make('name_km')->placeholder(__('admin.resources.general.not_provided'))
-                    ->label(new HtmlString('<strong>'.__('admin.resources.unit.name_km').'</strong>'))
+                    ->label(__('admin.resources.unit.name_km'))
                     ->searchable()
                     ->sortable(),
                 TextColumn::make('name_en')->placeholder(__('admin.resources.general.not_provided'))
-                    ->label(new HtmlString('<strong>'.__('admin.resources.unit.name_en').'</strong>'))
+                    ->label(__('admin.resources.unit.name_en'))
                     ->searchable()
                     ->sortable(),
                 TextColumn::make('symbol')->placeholder(__('admin.resources.general.not_provided'))
-                    ->label(new HtmlString('<strong>'.__('admin.resources.unit.symbol').'</strong>'))
+                    ->label(__('admin.resources.unit.symbol'))
                     ->searchable()
                     ->sortable(),
                 TextColumn::make('conversion_to_base')->placeholder(__('admin.resources.general.not_provided'))
-                    ->label(new HtmlString('<strong>'.__('admin.resources.unit.conversion').'</strong>'))
+                    ->label(__('admin.resources.unit.conversion'))
                     ->numeric()
                     ->sortable(),
                 TextColumn::make('created_at')->placeholder(__('admin.resources.general.not_provided'))
-                    ->label(new HtmlString('<strong>'.__('admin.resources.created_at').'</strong>'))
+                    ->label(__('admin.resources.created_at'))
                     ->dateTime('d M Y, h:i A')
                     ->sortable(),
                 TextColumn::make('updated_at')->placeholder(__('admin.resources.general.not_provided'))
-                    ->label(new HtmlString('<strong>'.__('admin.resources.updated_at').'</strong>'))
+                    ->label(__('admin.resources.updated_at'))
                     ->dateTime('d M Y, h:i A')
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),

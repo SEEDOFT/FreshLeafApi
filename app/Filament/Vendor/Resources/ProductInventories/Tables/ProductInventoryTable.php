@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace App\Filament\Vendor\Resources\ProductInventories\Tables;
 
 use App\Filament\Vendor\Resources\ProductInventories\Schemas\AdjustStockForm;
+use App\Models\ProductCategory;
+use App\Models\VendorInventory;
 use Filament\Actions\Action;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
@@ -26,56 +28,59 @@ class ProductInventoryTable
             ->stackedOnMobile()
             ->columns([
                 ImageColumn::make('product.image_url')
-                    ->label(new HtmlString('<strong>'.__('shared.product.image').'</strong>')),
+                    ->label(__('shared.product.image')),
 
                 TextColumn::make('product.name_en')->placeholder(__('admin.resources.general.not_provided'))
-                    ->label(new HtmlString('<strong>'.__('shared.product.name_en').'</strong>'))
+                    ->label(__('shared.product.name_en'))
                     ->searchable()
                     ->sortable(),
 
                 TextColumn::make('product.name_km')->placeholder(__('admin.resources.general.not_provided'))
-                    ->label(new HtmlString('<strong>'.__('shared.product.name_km').'</strong>'))
+                    ->label(__('shared.product.name_km'))
                     ->searchable()
                     ->sortable(),
 
                 TextColumn::make('price')->placeholder(__('admin.resources.general.not_provided'))
-                    ->label(new HtmlString('<strong>'.__('shared.product.unit_price').'</strong>'))
-                    ->money(fn ($record) => $record->currency?->code ?? 'USD')
+                    ->label(__('shared.product.unit_price'))
+                    ->money(fn (VendorInventory $record) => $record->currency->code)
                     ->sortable(),
 
                 TextColumn::make('stock_quantity')->placeholder(__('admin.resources.general.not_provided'))
-                    ->label(new HtmlString('<strong>'.__('shared.product.stock').'</strong>'))
+                    ->label(__('shared.product.stock'))
                     ->numeric()
                     ->sortable(),
 
                 TextColumn::make('unit.name')->placeholder(__('admin.resources.general.not_provided'))
-                    ->label(new HtmlString('<strong>'.__('shared.product.unit').'</strong>')),
+                    ->label(__('shared.product.unit')),
 
                 TextColumn::make('status.name')->placeholder(__('admin.resources.general.not_provided'))
-                    ->label(new HtmlString('<strong>'.__('shared.product.status').'</strong>'))
+                    ->label(__('shared.product.status'))
                     ->badge()
                     ->sortable(),
 
                 TextColumn::make('updated_at')->placeholder(__('admin.resources.general.not_provided'))
-                    ->label(new HtmlString('<strong>'.__('shared.updated_at').'</strong>'))
+                    ->label(__('shared.updated_at'))
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
                 SelectFilter::make('product_category_id')
-                    ->label(new HtmlString('<strong>'.__('shared.product.system_category').'</strong>'))
-                    ->relationship('product.productCategory', 'name_en'),
+                    ->label(__('shared.product.system_category'))
+                    ->options(
+                        ProductCategory::all()
+                            ->pluck('translated_name', 'id')
+                    ),
             ])
             ->actions([
                 ViewAction::make(),
                 EditAction::make(),
                 Action::make('adjustStock')
-                    ->label(new HtmlString('<strong>'.__('shared.product.adjust_stock').'</strong>'))
+                    ->label(__('shared.product.adjust_stock'))
                     ->icon('heroicon-o-adjustments-vertical')
                     ->color('warning')
                     ->form(AdjustStockForm::schema())
-                    ->action(function ($record, array $data): void {
+                    ->action(function (VendorInventory $record, array $data): void {
                         $record->adjustStock(
                             change: (float) $data['quantity_change'],
                             type: $data['type'],

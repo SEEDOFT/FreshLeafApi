@@ -32,30 +32,30 @@ class UserInfolist
                             ->columnSpanFull()
                             ->schema([
                                 ImageEntry::make('image')
-                                    ->label(new HtmlString('<strong>'.__('admin.profile.avatar').'</strong>'))
+                                    ->label(__('admin.profile.avatar'))
                                     ->circular()
                                     ->imageSize(200)
                                     ->alignCenter(),
                             ]),
                         TextEntry::make('first_name')
                             ->placeholder(__('admin.resources.general.not_provided'))
-                            ->label(new HtmlString('<strong>'.__('admin.resources.user.first_name').'</strong>'))
+                            ->label(__('admin.resources.user.first_name'))
                             ->placeholder($notProvided),
                         TextEntry::make('last_name')
                             ->placeholder(__('admin.resources.general.not_provided'))
-                            ->label(new HtmlString('<strong>'.__('admin.resources.user.last_name').'</strong>'))
+                            ->label(__('admin.resources.user.last_name'))
                             ->placeholder($notProvided),
                         TextEntry::make('email')
                             ->placeholder(__('admin.resources.general.not_provided'))
-                            ->label(new HtmlString('<strong>'.__('admin.resources.user.email').'</strong>'))
+                            ->label(__('admin.resources.user.email'))
                             ->placeholder($notProvided),
                         TextEntry::make('phone_number')
                             ->placeholder(__('admin.resources.general.not_provided'))
-                            ->label(new HtmlString('<strong>'.__('admin.resources.user.phone').'</strong>'))
+                            ->label(__('admin.resources.user.phone'))
                             ->placeholder($notProvided),
                         TextEntry::make('type.translated_name')
                             ->placeholder(__('admin.resources.general.not_provided'))
-                            ->label(new HtmlString('<strong>'.__('admin.resources.user.type').'</strong>'))
+                            ->label(__('admin.resources.user.type'))
                             ->badge()
                             ->placeholder($notProvided)
                             ->color(fn (User $record): string => match ($record->user_type_id) {
@@ -66,7 +66,7 @@ class UserInfolist
                             }),
                         TextEntry::make('status.translated_name')
                             ->placeholder(__('admin.resources.general.not_provided'))
-                            ->label(new HtmlString('<strong>'.__('admin.resources.user.status').'</strong>'))
+                            ->label(__('admin.resources.user.status'))
                             ->placeholder($notProvided)
                             ->badge()
                             ->color(fn (User $record): string => match ($record->user_status_id) {
@@ -79,16 +79,16 @@ class UserInfolist
                 Section::make(__('admin.resources.user.wallets_info'))
                     ->schema([
                         RepeatableEntry::make('wallets')
-                            ->label(new HtmlString('<strong>'.__('admin.resources.user.wallets_info').'</strong>'))
+                            ->label(__('admin.resources.user.wallets_info'))
                             ->columns(2)
                             ->schema([
                                 TextEntry::make('currency.translated_currency')
                                     ->placeholder(__('admin.resources.general.not_provided'))
-                                    ->label(new HtmlString('<strong>'.__('admin.resources.wallet.currency').'</strong>'))
+                                    ->label(__('admin.resources.wallet.currency'))
                                     ->placeholder($notProvided),
                                 TextEntry::make('balance')
                                     ->placeholder(__('admin.resources.general.not_provided'))
-                                    ->label(new HtmlString('<strong>'.__('admin.resources.wallet.balance').'</strong>'))
+                                    ->label(__('admin.resources.wallet.balance'))
                                     ->placeholder('0.00')
                                     ->getStateUsing(function (Wallet $record): string {
                                         $balance = number_format((float) $record->balance, 2);
@@ -105,11 +105,11 @@ class UserInfolist
                     ->schema([
                         TextEntry::make('created_at')
                             ->placeholder(__('admin.resources.general.not_provided'))
-                            ->label(new HtmlString('<strong>'.__('admin.resources.created_at').'</strong>'))
+                            ->label(__('admin.resources.created_at'))
                             ->dateTime('d M Y, h:i A'),
                         TextEntry::make('updated_at')
                             ->placeholder(__('admin.resources.general.not_provided'))
-                            ->label(new HtmlString('<strong>'.__('admin.resources.updated_at').'</strong>'))
+                            ->label(__('admin.resources.updated_at'))
                             ->dateTime('d M Y, h:i A'),
                     ]),
             ]);

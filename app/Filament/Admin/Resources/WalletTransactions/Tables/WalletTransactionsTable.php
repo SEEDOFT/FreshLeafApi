@@ -23,16 +23,16 @@ class WalletTransactionsTable
             ->stackedOnMobile()
             ->columns([
                 TextColumn::make('wallet.user.name')->placeholder(__('admin.resources.general.not_provided'))
-                    ->label(new HtmlString('<strong>'.__('admin.resources.wallet_transaction.user').'</strong>'))
+                    ->label(__('admin.resources.wallet_transaction.user'))
                     ->getStateUsing(static fn (WalletTransaction $record) => $record->wallet->user->fullName)
                     ->searchable()
                     ->sortable(),
                 TextColumn::make('type.translated_name')->placeholder(__('admin.resources.general.not_provided'))
-                    ->label(new HtmlString('<strong>'.__('admin.resources.wallet_transaction.type').'</strong>'))
+                    ->label(__('admin.resources.wallet_transaction.type'))
                     ->badge()
                     ->sortable(),
                 TextColumn::make('status.translated_name')->placeholder(__('admin.resources.general.not_provided'))
-                    ->label(new HtmlString('<strong>'.__('admin.resources.wallet_transaction.status').'</strong>'))
+                    ->label(__('admin.resources.wallet_transaction.status'))
                     ->badge()
                     ->color(fn (WalletTransaction $record): string => match ($record->status->id) {
                         WalletTransactionStatus::COMPLETED_ID => 'success',
@@ -42,23 +42,23 @@ class WalletTransactionsTable
                     })
                     ->sortable(),
                 TextColumn::make('amount')->placeholder(__('admin.resources.general.not_provided'))
-                    ->label(new HtmlString('<strong>'.__('admin.resources.wallet_transaction.amount').'</strong>'))
+                    ->label(__('admin.resources.wallet_transaction.amount'))
                     ->money(fn (WalletTransaction $record) => $record->wallet->currency->code ?? 'USD')
                     ->sortable(),
                 TextColumn::make('created_at')->placeholder(__('admin.resources.general.not_provided'))
-                    ->label(new HtmlString('<strong>'.__('admin.resources.created_at').'</strong>'))
+                    ->label(__('admin.resources.created_at'))
                     ->dateTime()
                     ->sortable(),
             ])
             ->filters([
                 SelectFilter::make('wallet_transaction_type_id')
-                    ->label(new HtmlString('<strong>'.__('admin.resources.wallet_transaction.type').'</strong>'))
+                    ->label(__('admin.resources.wallet_transaction.type'))
                     ->options(
                         WalletTransactionType::all()
                             ->pluck('translated_name', 'id')
                     ),
                 SelectFilter::make('wallet_transaction_status_id')
-                    ->label(new HtmlString('<strong>'.__('admin.resources.wallet_transaction.status').'</strong>'))
+                    ->label(__('admin.resources.wallet_transaction.status'))
                     ->options(
                         WalletTransactionStatus::all()
                             ->pluck('translated_name', 'id')

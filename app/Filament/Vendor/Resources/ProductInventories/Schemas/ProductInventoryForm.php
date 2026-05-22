@@ -28,19 +28,19 @@ class ProductInventoryForm
                     ->columns(2)
                     ->schema([
                         TextInput::make('product.name_en')
-                            ->label(new HtmlString('<strong>'.__('shared.product.name_en').'</strong>'))
+                            ->label(__('shared.product.name_en'))
                             ->disabled()
                             ->columnSpanFull(),
                         TextInput::make('product.name_km')
-                            ->label(new HtmlString('<strong>'.__('shared.product.name_km').'</strong>'))
+                            ->label(__('shared.product.name_km'))
                             ->disabled()
                             ->columnSpanFull(),
                         TextInput::make('product.description_en')
-                            ->label(new HtmlString('<strong>'.__('shared.product.description_en').'</strong>'))
+                            ->label(__('shared.product.description_en'))
                             ->disabled()
                             ->columnSpanFull(),
                         TextInput::make('product.description_km')
-                            ->label(new HtmlString('<strong>'.__('shared.product.description_km').'</strong>'))
+                            ->label(__('shared.product.description_km'))
                             ->disabled()
                             ->columnSpanFull(),
                     ]),
@@ -48,13 +48,13 @@ class ProductInventoryForm
                     ->columns(2)
                     ->schema([
                         Select::make('product.product_category_id')
-                            ->label(new HtmlString('<strong>'.__('shared.product.system_category').'</strong>'))
+                            ->label(__('shared.product.system_category'))
                             ->relationship('product.productCategory', 'name_en')
                             ->disabled()
                             ->dehydrated(fn (mixed $state): bool => filled($state))
                             ->columnSpanFull(),
                         Select::make('product_id')
-                            ->label(new HtmlString('<strong>'.__('shared.product.label').'</strong>'))
+                            ->label(__('shared.product.label'))
                             ->options(
                                 Product::get()
                                     ->pluck('translated_name', 'id')
@@ -64,13 +64,13 @@ class ProductInventoryForm
                             ->required()
                             ->columnSpanFull(),
                         TextInput::make('price')
-                            ->label(new HtmlString('<strong>'.__('shared.product.unit_price').'</strong>'))
+                            ->label(__('shared.product.unit_price'))
                             ->numeric()
                             ->disabled()
                             ->dehydrated(fn (mixed $state): bool => filled($state))
                             ->required(),
                         Select::make('currency_id')
-                            ->label(new HtmlString('<strong>'.__('shared.product.currency').'</strong>'))
+                            ->label(__('shared.product.currency'))
                             ->options(Currency::all()
                                 ->pluck('translated_currency', 'id')
                             )
@@ -78,18 +78,18 @@ class ProductInventoryForm
                             ->dehydrated(fn (mixed $state): bool => filled($state))
                             ->required(),
                         TextInput::make('stock_quantity')
-                            ->label(new HtmlString('<strong>'.__('shared.product.quantity').'</strong>'))
+                            ->label(__('shared.product.quantity'))
                             ->numeric()
                             ->required(),
                         Select::make('unit_id')
-                            ->label(new HtmlString('<strong>'.__('shared.product.unit').'</strong>'))
+                            ->label(__('shared.product.unit'))
                             ->options(
                                 Unit::all()
                                     ->pluck('translated_name', 'id')
                             )
                             ->required(),
                         Select::make('inventory_status_id')
-                            ->label(new HtmlString('<strong>'.__('shared.product.status').'</strong>'))
+                            ->label(__('shared.product.status'))
                             ->options(
                                 VendorInventoryStatus::all()
                                     ->pluck('translated_name', 'id')
@@ -100,28 +100,34 @@ class ProductInventoryForm
                     ->columns(2)
                     ->schema([
                         TextInput::make('province_of_origin')
-                            ->label(new HtmlString('<strong>'.__('shared.product.province_of_origin').'</strong>')),
+                            ->label(__('shared.product.province_of_origin'))
+                            ->required(),
                         TextInput::make('certification_type')
-                            ->label(new HtmlString('<strong>'.__('shared.product.certification_type').'</strong>')),
+                            ->label(__('shared.product.certification_type'))
+                            ->required(),
                         TextInput::make('farm_location')
-                            ->label(new HtmlString('<strong>'.__('shared.product.farm_location').'</strong>')),
+                            ->label(__('shared.product.farm_location'))
+                            ->required(),
                         DatePicker::make('harvest_date')
-                            ->label(new HtmlString('<strong>'.__('shared.product.harvest_date').'</strong>')),
+                            ->label(__('shared.product.harvest_date'))
+                            ->required(),
                         TextInput::make('shelf_life_days')
-                            ->label(new HtmlString('<strong>'.__('shared.product.shelf_life').'</strong>'))
+                            ->label(__('shared.product.shelf_life'))
                             ->numeric()
-                            ->suffix(' '.__('shared.product.days')),
+                            ->suffix(' '.__('shared.product.days'))
+                            ->required(),
                         Select::make('packaging_type_id')
-                            ->label(new HtmlString('<strong>'.__('shared.product.packaging_type').'</strong>'))
-                            ->relationship('packagingType', 'name_en')
-                            ->options(PackagingType::all()->pluck('translated_name', 'id')),
+                            ->label(__('shared.product.packaging_type'))
+                            ->options(PackagingType::all()->pluck('translated_name', 'id'))
+                            ->required(),
                         FileUpload::make('batch_images')
-                            ->label(new HtmlString('<strong>'.__('shared.product.visuals').'</strong>'))
+                            ->label(__('shared.product.visuals'))
                             ->multiple()
                             ->image()
                             ->disk('public')
                             ->directory(StorageDirectory::PRODUCT_BATCHES)
-                            ->columnSpanFull(),
+                            ->columnSpanFull()
+                            ->required(),
                     ]),
             ]);
     }

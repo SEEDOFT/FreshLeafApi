@@ -53,9 +53,18 @@ class CreateVendor extends CreateRecord
         });
     }
 
+    /**
+     * Create wallets for vendor after creation
+     */
     protected function afterCreate(): void
     {
-        $this->getRecord()->ensureDefaultWallets();
+        $user = $this->getRecord();
+
+        if (! $user instanceof User) {
+            return;
+        }
+
+        $user->ensureDefaultWallets();
         session()->forget('create_vendor_form_state');
     }
 }

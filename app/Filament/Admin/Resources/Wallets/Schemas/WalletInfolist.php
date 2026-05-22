@@ -26,19 +26,19 @@ class WalletInfolist
                     ->schema([
                         TextEntry::make('first_name')
                             ->placeholder($notProvided)
-                            ->label(new HtmlString('<strong>'.__('admin.resources.user.first_name').'</strong>'))
+                            ->label(__('admin.resources.user.first_name'))
                             ->getStateUsing(static fn (Wallet $record) => $record->user->first_name),
                         TextEntry::make('last_name')
                             ->placeholder($notProvided)
-                            ->label(new HtmlString('<strong>'.__('admin.resources.user.last_name').'</strong>'))
+                            ->label(__('admin.resources.user.last_name'))
                             ->getStateUsing(static fn (Wallet $record) => $record->user->last_name),
                         TextEntry::make('currency.code')
                             ->placeholder($notProvided)
-                            ->label(new HtmlString('<strong>'.__('admin.resources.wallet.currency').'</strong>'))
+                            ->label(__('admin.resources.wallet.currency'))
                             ->placeholder('-'),
                         TextEntry::make('balance')
                             ->placeholder($notProvided)
-                            ->label(new HtmlString('<strong>'.__('admin.resources.wallet.balance').'</strong>'))
+                            ->label(__('admin.resources.wallet.balance'))
                             ->getStateUsing(static function (Wallet $record): string {
                                 $id = $record->currency->id ?? null;
                                 $symbol = $record->currency->symbol ?? '';
@@ -50,7 +50,7 @@ class WalletInfolist
                             }),
                         TextEntry::make('user.type.translated_name')
                             ->placeholder($notProvided)
-                            ->label(new HtmlString('<strong>'.__('admin.resources.user.type').'</strong>'))
+                            ->label(__('admin.resources.user.type'))
                             ->badge()
                             ->color(fn (Wallet $record): string => match ($record->user->user_type_id) {
                                 UserType::ADMIN_ID => 'success',
@@ -60,7 +60,7 @@ class WalletInfolist
                             }),
                         TextEntry::make('user.status.translated_name')
                             ->placeholder($notProvided)
-                            ->label(new HtmlString('<strong>'.__('admin.resources.user.status').'</strong>'))
+                            ->label(__('admin.resources.user.status'))
                             ->badge()
                             ->color(fn (Wallet $record): string => match ($record->user->user_status_id) {
                                 UserStatus::ACTIVE_ID => 'success',
@@ -70,11 +70,11 @@ class WalletInfolist
                             }),
                         TextEntry::make('created_at')
                             ->placeholder($notProvided)
-                            ->label(new HtmlString('<strong>'.__('admin.resources.created_at').'</strong>'))
+                            ->label(__('admin.resources.created_at'))
                             ->dateTime('d M Y, h:i A'),
                         TextEntry::make('updated_at')
                             ->placeholder($notProvided)
-                            ->label(new HtmlString('<strong>'.__('admin.resources.updated_at').'</strong>'))
+                            ->label(__('admin.resources.updated_at'))
                             ->dateTime('d M Y, h:i A'),
                     ]),
             ]);

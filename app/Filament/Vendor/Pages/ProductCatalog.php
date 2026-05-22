@@ -7,6 +7,7 @@ namespace App\Filament\Vendor\Pages;
 use App\Filament\Vendor\Pages\Schemas\AddToStoreForm;
 use App\Filament\Vendor\Resources\ProductInventories\ProductInventoryResource;
 use App\Models\Product;
+use App\Models\ProductCategory;
 use App\Models\ProductStatus;
 use App\Models\VendorInventory;
 use App\Models\VendorInventoryStatus;
@@ -51,8 +52,12 @@ class ProductCatalog extends Page implements HasTable
 
     public function table(Table $table): Table
     {
+        $notProvided = __('admin.resources.general.not_provided');
+
         return $table
             ->query(Product::query()->where('product_status_id', ProductStatus::PUBLISHED_ID))
+            ->defaultPaginationPageOption(12)
+            ->paginationPageOptions([12, 24, 48, 'all'])
             ->contentGrid([
                 'md' => 2,
                 'xl' => 3,
@@ -63,28 +68,30 @@ class ProductCatalog extends Page implements HasTable
                         ->imageSize('200')
                         ->width('100%'),
                     TextColumn::make('name_en')
-                        ->placeholder(__('admin.resources.general.not_provided'))
+                        ->placeholder($notProvided)
                         ->weight('bold')
                         ->size('lg')
                         ->searchable(),
                     TextColumn::make('name_km')
-                        ->placeholder(__('admin.resources.general.not_provided'))
+                        ->placeholder($notProvided)
                         ->size('md')
                         ->color('gray'),
                     TextColumn::make('productCategory.translated_name')
-                        ->placeholder(__('admin.resources.general.not_provided'))
+                        ->placeholder($notProvided)
                         ->badge()
                         ->color('info'),
                 ]),
             ])
             ->filters([
                 SelectFilter::make('product_category_id')
-                    ->label(new HtmlString('<strong>'.__('shared.product.system_category').'</strong>'))
-                    ->columns(['name_en', 'name_km']),
+                    ->label(__('shared.product.system_category'))
+                    ->options(
+                        ProductCategory::all()->pluck('translated_name', 'id')
+                    ),
             ])
             ->actions([
                 Action::make('view')
-                    ->label(new HtmlString('<strong>'.__('shared.product.view_detail').'</strong>'))
+                    ->label(__('shared.product.view_detail'))
                     ->icon('heroicon-o-eye')
                     ->color('gray')
                     ->infolist(fn (Schema $infolist): Schema => $infolist
@@ -93,41 +100,39 @@ class ProductCatalog extends Page implements HasTable
                                 ->columns(2)
                                 ->schema([
                                     ImageEntry::make('image_url')
-                                        ->label(new HtmlString('<strong>'.__('shared.product.image').'</strong>'))
+                                        ->label(__('shared.product.image'))
                                         ->columnSpanFull()
                                         ->circular(),
                                     TextEntry::make('name_en')
-                                        ->placeholder(__('admin.resources.general.not_provided'))
-                                        ->label(new HtmlString('<strong>'.__('shared.product.name_en').'</strong>')),
+                                        ->placeholder($notProvided)
+                                        ->label(__('shared.product.name_en')),
                                     TextEntry::make('name_km')
-                                        ->placeholder(__('admin.resources.general.not_provided'))
-                                        ->label(new HtmlString('<strong>'.__('shared.product.name_km').'</strong>')),
+                                        ->placeholder($notProvided)
+                                        ->label(__('shared.product.name_km')),
                                     TextEntry::make('productCategory.translated_name')
-                                        ->placeholder(__('admin.resources.general.not_provided'))
-                                        ->label(new HtmlString('<strong>'.__('shared.product.system_category').'</strong>'))
+                                        ->placeholder($notProvided)
+                                        ->label(__('shared.product.system_category'))
                                         ->badge()
                                         ->color('info'),
                                     TextEntry::make('defaultUnit.translated_name')
-                                        ->placeholder(__('admin.resources.general.not_provided'))
-                                        ->label(new HtmlString('<strong>'.__('shared.product.default_unit').'</strong>')),
+                                        ->placeholder($notProvided)
+                                        ->label(__('shared.product.default_unit')),
                                     TextEntry::make('description_en')
-                                        ->placeholder(__('admin.resources.general.not_provided'))
-                                        ->label(new HtmlString('<strong>'.__('shared.product.description_en').'</strong>'))
-                                        ->columnSpanFull()
-                                        ->placeholder('-'),
+                                        ->placeholder($notProvided)
+                                        ->label(__('shared.product.description_en'))
+                                        ->columnSpanFull(),
                                     TextEntry::make('description_km')
-                                        ->placeholder(__('admin.resources.general.not_provided'))
-                                        ->label(new HtmlString('<strong>'.__('shared.product.description_km').'</strong>'))
-                                        ->columnSpanFull()
-                                        ->placeholder('-'),
+                                        ->placeholder($notProvided)
+                                        ->label(__('shared.product.description_km'))
+                                        ->columnSpanFull(),
                                     KeyValueEntry::make('nutrition_data')
-                                        ->label(new HtmlString('<strong>'.__('shared.product.nutrition_data').'</strong>'))
+                                        ->label(__('shared.product.nutrition_data'))
                                         ->columnSpanFull()
                                         ->visible(fn ($record) => ! empty($record->nutrition_data)),
                                 ]),
                         ])),
                 Action::make('addToStore')
-                    ->label(new HtmlString('<strong>'.__('shared.product.add_to_store').'</strong>'))
+                    ->label(__('shared.product.add_to_store'))
                     ->icon('heroicon-o-plus')
                     ->form(AddToStoreForm::schema())
                     ->action(function (Product $record, array $data): void {
@@ -144,7 +149,8 @@ class ProductCatalog extends Page implements HasTable
                             'harvest_date' => $data['harvest_date'],
                             'shelf_life_days' => $data['shelf_life_days'],
                             'packaging_type_id' => $data['packaging_type_id'],
-                            'inventory_status_id' => VendorInventoryStatus::AVAILABLE_ID,
+                            'batch_images' => $data['batch_images'],
+                            'inventory_status_id' => VendorInventoryStatus::PENDING_REVIEW_ID,
                         ]);
 
                         Notification::make()

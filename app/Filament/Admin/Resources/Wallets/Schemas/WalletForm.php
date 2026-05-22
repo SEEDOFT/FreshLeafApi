@@ -22,7 +22,7 @@ class WalletForm
                     ->columns(2)
                     ->schema([
                         Select::make('user_id')
-                            ->label(new HtmlString('<strong>'.__('admin.resources.wallet.user').'</strong>'))
+                            ->label(__('admin.resources.wallet.user'))
                             ->relationship('user', 'first_name')
                             ->getOptionLabelFromRecordUsing(fn (User $record) => "{$record->first_name} {$record->last_name}")
                             ->searchable()
@@ -30,7 +30,7 @@ class WalletForm
                             ->required(fn (string $operation): bool => $operation === 'create')
                             ->dehydrated(fn (mixed $state): bool => filled($state)),
                         Select::make('currency_id')
-                            ->label(new HtmlString('<strong>'.__('admin.resources.wallet.currency').'</strong>'))
+                            ->label(__('admin.resources.wallet.currency'))
                             ->options(
                                 Currency::all()
                                     ->pluck('translated_currency', 'id')
@@ -38,7 +38,7 @@ class WalletForm
                             ->required(fn (string $operation): bool => $operation === 'create')
                             ->dehydrated(fn (mixed $state): bool => filled($state)),
                         TextInput::make('balance')
-                            ->label(new HtmlString('<strong>'.__('admin.resources.wallet.balance').'</strong>'))
+                            ->label(__('admin.resources.wallet.balance'))
                             ->numeric()
                             ->required(fn (string $operation): bool => $operation === 'create')
                             ->dehydrated(fn (mixed $state): bool => filled($state))

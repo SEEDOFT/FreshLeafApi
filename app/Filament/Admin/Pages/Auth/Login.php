@@ -47,7 +47,7 @@ class Login extends BaseLogin
             ->components([
                 $this->getPhoneNumberFormComponent(),
                 PasswordInput::make('password')
-                    ->label(new HtmlString('<strong>'.__('admin.auth.login.password').'</strong>'))
+                    ->label(__('admin.auth.login.password'))
                     ->required()
                     ->revealable(),
                 $this->getRememberFormComponent(),
@@ -60,7 +60,7 @@ class Login extends BaseLogin
         return Grid::make(5)
             ->schema([
                 PhoneNumberInput::make('phone_number')
-                    ->label(new HtmlString('<strong>'.__('admin.auth.login.phone').'</strong>'))
+                    ->label(__('admin.auth.login.phone'))
                     ->required()
                     ->columnSpanFull(),
             ]);

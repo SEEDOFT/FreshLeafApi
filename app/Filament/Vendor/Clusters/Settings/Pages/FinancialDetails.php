@@ -80,14 +80,14 @@ class FinancialDetails extends Page
                             ->columnSpan(1)
                             ->schema([
                                 TextInput::make('bank_name')
-                                    ->label(new HtmlString('<strong>'.__('vendor.settings.financial_details.bank_name').'</strong>'))
+                                    ->label(__('vendor.settings.financial_details.bank_name'))
                                     ->dehydrated(),
                                 TextInput::make('account_name')
-                                    ->label(new HtmlString('<strong>'.__('vendor.settings.financial_details.account_holder').'</strong>'))
+                                    ->label(__('vendor.settings.financial_details.account_holder'))
                                     ->dehydrated()
                                     ->maxLength(255),
                                 TextInput::make('account_number')
-                                    ->label(new HtmlString('<strong>'.__('vendor.settings.financial_details.account_number').'</strong>'))
+                                    ->label(__('vendor.settings.financial_details.account_number'))
                                     ->dehydrated()
                                     ->columnSpanFull()
                                     ->maxLength(255),
@@ -96,7 +96,7 @@ class FinancialDetails extends Page
                             ->columnSpan(1)
                             ->schema([
                                 FileUpload::make('qr_code')
-                                    ->label(new HtmlString('<strong>'.__('vendor.settings.financial_details.qr_code').'</strong>'))
+                                    ->label(__('vendor.settings.financial_details.qr_code'))
                                     ->image()
                                     ->maxSize(6144)
                                     ->imagePreviewHeight('400px')
@@ -149,7 +149,7 @@ class FinancialDetails extends Page
     {
         return [
             Action::make('save')
-                ->label(new HtmlString('<strong>'.__('shared.profile.save_changes').'</strong>'))
+                ->label(__('shared.profile.save_changes'))
                 ->submit('save')
                 ->keyBindings(['mod+s']),
         ];

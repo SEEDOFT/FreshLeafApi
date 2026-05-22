@@ -83,7 +83,7 @@ class AdminProfile extends Page
                         Grid::make(4)
                             ->schema([
                                 FileUpload::make('image')
-                                    ->label(new HtmlString('<strong>'.__('admin.profile.avatar').'</strong>'))
+                                    ->label(__('admin.profile.avatar'))
                                     ->avatar()
                                     ->image()
                                     ->imageEditor()
@@ -94,23 +94,23 @@ class AdminProfile extends Page
                                 Grid::make(2)
                                     ->schema([
                                         TextInput::make('first_name')
-                                            ->label(new HtmlString('<strong>'.__('admin.profile.first_name').'</strong>'))
+                                            ->label(__('admin.profile.first_name'))
                                             ->required(fn (string $operation): bool => $operation === 'create')
                                             ->dehydrated(fn (mixed $state): bool => filled($state))
                                             ->maxLength(255),
                                         TextInput::make('last_name')
-                                            ->label(new HtmlString('<strong>'.__('admin.profile.last_name').'</strong>'))
+                                            ->label(__('admin.profile.last_name'))
                                             ->required(fn (string $operation): bool => $operation === 'create')
                                             ->dehydrated(fn (mixed $state): bool => filled($state))
                                             ->maxLength(255),
                                         TextInput::make('email')
-                                            ->label(new HtmlString('<strong>'.__('admin.profile.email').'</strong>'))
+                                            ->label(__('admin.profile.email'))
                                             ->email()
                                             ->required(fn (string $operation): bool => $operation === 'create')
                                             ->dehydrated(fn (mixed $state): bool => filled($state))
                                             ->maxLength(255),
                                         TextInput::make('phone_number')
-                                            ->label(new HtmlString('<strong>'.__('admin.profile.phone').'</strong>'))
+                                            ->label(__('admin.profile.phone'))
                                             ->tel(),
                                     ])
                                     ->columnSpan(3),
@@ -121,7 +121,7 @@ class AdminProfile extends Page
                     ->description(__('admin.profile.preferences_desc'))
                     ->schema([
                         Select::make('adminProfile.locale')
-                            ->label(new HtmlString('<strong>'.__('admin.profile.display_language').'</strong>'))
+                            ->label(__('admin.profile.display_language'))
                             ->options([
                                 'km' => 'Khmer (ភាសាខ្មែរ)',
                                 'en' => 'English (ភាសាអង់គ្លេស)',
@@ -134,15 +134,15 @@ class AdminProfile extends Page
                     ->description(__('admin.profile.professional_details_desc'))
                     ->schema([
                         TextInput::make('adminProfile.job_title')
-                            ->label(new HtmlString('<strong>'.__('admin.profile.job_title').'</strong>'))
+                            ->label(__('admin.profile.job_title'))
                             ->placeholder('e.g. Operations Manager')
                             ->maxLength(255),
                         TextInput::make('adminProfile.department')
-                            ->label(new HtmlString('<strong>'.__('admin.profile.department').'</strong>'))
+                            ->label(__('admin.profile.department'))
                             ->placeholder('e.g. Logistics')
                             ->maxLength(255),
                         TextInput::make('adminProfile.office_phone')
-                            ->label(new HtmlString('<strong>'.__('admin.profile.office_phone').'</strong>'))
+                            ->label(__('admin.profile.office_phone'))
                             ->tel()
                             ->maxLength(255),
                     ])->columns(3),
@@ -197,7 +197,7 @@ class AdminProfile extends Page
     {
         return [
             Action::make('save')
-                ->label(new HtmlString('<strong>'.__('admin.profile.save_changes').'</strong>'))
+                ->label(__('admin.profile.save_changes'))
                 ->submit('save')
                 ->keyBindings(['mod+s']),
         ];
@@ -208,12 +208,12 @@ class AdminProfile extends Page
         return Grid::make(2)
             ->schema([
                 TextInput::make('first_name')
-                    ->label(new HtmlString('<strong>'.__('admin.profile.first_name').'</strong>'))
+                    ->label(__('admin.profile.first_name'))
                     ->required(fn (string $operation): bool => $operation === 'create')
                     ->dehydrated(fn (mixed $state): bool => filled($state))
                     ->maxLength(255),
                 TextInput::make('last_name')
-                    ->label(new HtmlString('<strong>'.__('admin.profile.last_name').'</strong>'))
+                    ->label(__('admin.profile.last_name'))
                     ->required(fn (string $operation): bool => $operation === 'create')
                     ->dehydrated(fn (mixed $state): bool => filled($state))
                     ->maxLength(255),

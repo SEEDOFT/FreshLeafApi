@@ -15,14 +15,14 @@ class ExchangeRateInfolist
         return $schema
             ->components([
                 TextEntry::make('fromCurrency.translated_currency')->placeholder(__('admin.resources.general.not_provided'))
-                    ->label(new HtmlString('<strong>'.__('admin.resources.exchange_rate.base_currency').'</strong>')),
+                    ->label(__('admin.resources.exchange_rate.base_currency')),
                 TextEntry::make('toCurrency.translated_currency')->placeholder(__('admin.resources.general.not_provided'))
-                    ->label(new HtmlString('<strong>'.__('admin.resources.exchange_rate.target_currency').'</strong>')),
+                    ->label(__('admin.resources.exchange_rate.target_currency')),
                 TextEntry::make('rate')->placeholder(__('admin.resources.general.not_provided'))
-                    ->label(new HtmlString('<strong>'.__('admin.resources.exchange_rate.rate').'</strong>'))
+                    ->label(__('admin.resources.exchange_rate.rate'))
                     ->numeric(),
                 TextEntry::make('updated_at')->placeholder(__('admin.resources.general.not_provided'))
-                    ->label(new HtmlString('<strong>'.__('admin.resources.updated_at').'</strong>'))
+                    ->label(__('admin.resources.updated_at'))
                     ->dateTime(),
             ]);
     }

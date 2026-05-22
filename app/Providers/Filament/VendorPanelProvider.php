@@ -70,8 +70,7 @@ class VendorPanelProvider extends PanelProvider
             ->colors(ThemeColors::getPalette())
             ->navigationGroups([
                 NavigationGroup::make()
-                    ->label(fn (): string => __('admin.navigation.dashboard'))
-                    ->icon('heroicon-o-home'),
+                    ->label(fn (): string => __('admin.navigation.dashboard')),
                 NavigationGroup::make()
                     ->label(fn (): string => __('admin.navigation.shop')),
                 NavigationGroup::make()

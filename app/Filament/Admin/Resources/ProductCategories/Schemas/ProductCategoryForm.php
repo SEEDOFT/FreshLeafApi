@@ -34,7 +34,7 @@ class ProductCategoryForm
                                 Section::make(__('admin.resources.product_category.basic_info'))
                                     ->schema([
                                         TextInput::make('name_en')
-                                            ->label(new HtmlString('<strong>'.__('admin.resources.product_category.name_en').'</strong>'))
+                                            ->label(__('admin.resources.product_category.name_en'))
                                             ->required(fn (string $operation): bool => $operation === 'create')
                                             ->dehydrated(fn (mixed $state): bool => filled($state))
                                             ->live(onBlur: true)
@@ -44,15 +44,15 @@ class ProductCategoryForm
                                                 }
                                             }),
                                         TextInput::make('name_km')
-                                            ->label(new HtmlString('<strong>'.__('admin.resources.product_category.name_km').'</strong>'))
+                                            ->label(__('admin.resources.product_category.name_km'))
                                             ->required(fn (string $operation): bool => $operation === 'create')
                                             ->dehydrated(fn (mixed $state): bool => filled($state)),
                                         TextInput::make('slug')
-                                            ->label(new HtmlString('<strong>'.__('admin.resources.product_category.slug').'</strong>'))
+                                            ->label(__('admin.resources.product_category.slug'))
                                             ->dehydrated(fn (mixed $state): bool => filled($state))
                                             ->unique(ignoreRecord: true),
                                         Select::make('product_category_status_id')
-                                            ->label(new HtmlString('<strong>'.__('admin.resources.product_category.status').'</strong>'))
+                                            ->label(__('admin.resources.product_category.status'))
                                             ->options(
                                                 ProductCategoryStatus::all()
                                                     ->pluck('translated_name', 'id')
@@ -60,10 +60,10 @@ class ProductCategoryForm
                                             ->required()
                                             ->default(ProductCategoryStatus::ACTIVE_ID),
                                         Textarea::make('description_en')
-                                            ->label(new HtmlString('<strong>'.__('admin.resources.product_category.description_en').'</strong>'))
+                                            ->label(__('admin.resources.product_category.description_en'))
                                             ->columnSpanFull(),
                                         Textarea::make('description_km')
-                                            ->label(new HtmlString('<strong>'.__('admin.resources.product_category.description_km').'</strong>'))
+                                            ->label(__('admin.resources.product_category.description_km'))
                                             ->columnSpanFull(),
                                     ]),
                             ]),
@@ -75,7 +75,7 @@ class ProductCategoryForm
                                 Section::make(__('admin.resources.product_category.visuals'))
                                     ->schema([
                                         FileUpload::make('image_url')
-                                            ->label(new HtmlString('<strong>'.__('admin.resources.product_category.image').'</strong>'))
+                                            ->label(__('admin.resources.product_category.image'))
                                             ->image()
                                             ->disk('public')
                                             ->directory(StorageDirectory::PRODUCT_CATEGORIES),

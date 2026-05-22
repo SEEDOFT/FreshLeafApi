@@ -81,3 +81,10 @@
 .fi-sc-section > .fi-section {
     height: 100%;
 }
+
+/* Global Bold Labels for Forms, Tables, and Infolists */
+.fi-fo-field-wrp-label-text,
+.fi-ta-header-cell-label,
+.fi-in-entry-wrp-label-text {
+    font-weight: 700 !important;
+}

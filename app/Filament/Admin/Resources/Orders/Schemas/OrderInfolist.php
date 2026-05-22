@@ -19,53 +19,53 @@ class OrderInfolist
                     ->columns(2)
                     ->schema([
                         TextEntry::make('order_number')->placeholder(__('admin.resources.general.not_provided'))
-                            ->label(new HtmlString('<strong>'.__('admin.resources.order.order_number').'</strong>'))
+                            ->label(__('admin.resources.order.order_number'))
                             ->copyable(),
                         TextEntry::make('status.name')->placeholder(__('admin.resources.general.not_provided'))
-                            ->label(new HtmlString('<strong>'.__('admin.resources.order.status').'</strong>'))
+                            ->label(__('admin.resources.order.status'))
                             ->badge(),
                         TextEntry::make('user.first_name')->placeholder(__('admin.resources.general.not_provided'))
-                            ->label(new HtmlString('<strong>'.__('admin.resources.order.customer').'</strong>')),
+                            ->label(__('admin.resources.order.customer')),
                         TextEntry::make('vendor.business_name')->placeholder(__('admin.resources.general.not_provided'))
-                            ->label(new HtmlString('<strong>'.__('admin.resources.order.vendor').'</strong>')),
+                            ->label(__('admin.resources.order.vendor')),
                     ]),
 
                 Section::make(__('admin.resources.order.financials'))
                     ->columns(2)
                     ->schema([
                         TextEntry::make('total_amount')->placeholder(__('admin.resources.general.not_provided'))
-                            ->label(new HtmlString('<strong>'.__('admin.resources.order.total').'</strong>'))
+                            ->label(__('admin.resources.order.total'))
                             ->money('USD'),
                         TextEntry::make('commission_amount')->placeholder(__('admin.resources.general.not_provided'))
-                            ->label(new HtmlString('<strong>'.__('admin.resources.order.commission').'</strong>'))
+                            ->label(__('admin.resources.order.commission'))
                             ->money('USD'),
                         TextEntry::make('payment_status.name')->placeholder(__('admin.resources.general.not_provided'))
-                            ->label(new HtmlString('<strong>'.__('admin.resources.order.payment_status').'</strong>'))
+                            ->label(__('admin.resources.order.payment_status'))
                             ->badge(),
                         TextEntry::make('payment_method.name')->placeholder(__('admin.resources.general.not_provided'))
-                            ->label(new HtmlString('<strong>'.__('admin.resources.order.payment_method').'</strong>')),
+                            ->label(__('admin.resources.order.payment_method')),
                     ]),
 
                 Section::make(__('admin.resources.order.delivery_info'))
                     ->columns(2)
                     ->schema([
                         TextEntry::make('delivery_address')->placeholder(__('admin.resources.general.not_provided'))
-                            ->label(new HtmlString('<strong>'.__('admin.resources.order.delivery_address').'</strong>'))
+                            ->label(__('admin.resources.order.delivery_address'))
                             ->columnSpanFull(),
                         TextEntry::make('delivery_contact_name')->placeholder(__('admin.resources.general.not_provided'))
-                            ->label(new HtmlString('<strong>'.__('admin.resources.order.delivery_contact_name').'</strong>')),
+                            ->label(__('admin.resources.order.delivery_contact_name')),
                         TextEntry::make('delivery_contact_phone')->placeholder(__('admin.resources.general.not_provided'))
-                            ->label(new HtmlString('<strong>'.__('admin.resources.order.delivery_contact_phone').'</strong>')),
+                            ->label(__('admin.resources.order.delivery_contact_phone')),
                     ]),
 
                 Section::make(__('admin.resources.timestamps'))
                     ->columns(2)
                     ->schema([
                         TextEntry::make('created_at')->placeholder(__('admin.resources.general.not_provided'))
-                            ->label(new HtmlString('<strong>'.__('admin.resources.created_at').'</strong>'))
+                            ->label(__('admin.resources.created_at'))
                             ->dateTime(),
                         TextEntry::make('updated_at')->placeholder(__('admin.resources.general.not_provided'))
-                            ->label(new HtmlString('<strong>'.__('admin.resources.updated_at').'</strong>'))
+                            ->label(__('admin.resources.updated_at'))
                             ->dateTime(),
                     ]),
             ]);

@@ -16,12 +16,12 @@ class PayoutsTable
         return $table
             ->columns([
                 TextColumn::make('amount')->placeholder(__('admin.resources.general.not_provided'))
-                    ->label(new HtmlString('<strong>'.__('shared.payout.amount').'</strong>'))
+                    ->label(__('shared.payout.amount'))
                     ->money('USD')
                     ->sortable(),
 
                 TextColumn::make('status.name')->placeholder(__('admin.resources.general.not_provided'))
-                    ->label(new HtmlString('<strong>'.__('shared.payout.status').'</strong>'))
+                    ->label(__('shared.payout.status'))
                     ->badge()
                     ->color(fn (string $state): string => match ($state) {
                         'Pending' => 'warning',
@@ -32,14 +32,14 @@ class PayoutsTable
                     }),
 
                 TextColumn::make('method.name')->placeholder(__('admin.resources.general.not_provided'))
-                    ->label(new HtmlString('<strong>'.__('shared.payout.method').'</strong>')),
+                    ->label(__('shared.payout.method')),
 
                 TextColumn::make('transaction_reference')->placeholder(__('admin.resources.general.not_provided'))
-                    ->label(new HtmlString('<strong>'.__('shared.payout.reference').'</strong>'))
+                    ->label(__('shared.payout.reference'))
                     ->searchable(),
 
                 TextColumn::make('processed_at')->placeholder(__('admin.resources.general.not_provided'))
-                    ->label(new HtmlString('<strong>'.__('shared.payout.paid_on').'</strong>'))
+                    ->label(__('shared.payout.paid_on'))
                     ->dateTime()
                     ->sortable(),
             ])

@@ -36,31 +36,31 @@ class VendorsTable
             ->columns([
                 TextColumn::make('vendorProfile.business_name')
                     ->placeholder(__('admin.resources.general.not_provided'))
-                    ->label(new HtmlString('<strong>'.__('admin.resources.vendor.business_name').'</strong>'))
+                    ->label(__('admin.resources.vendor.business_name'))
                     ->searchable()
                     ->placeholder($notProvided)
                     ->sortable(),
                 TextColumn::make('name')
                     ->placeholder(__('admin.resources.general.not_provided'))
-                    ->label(new HtmlString('<strong>'.__('admin.resources.vendor.owner').'</strong>'))
+                    ->label(__('admin.resources.vendor.owner'))
                     ->getStateUsing(fn (User $record) => $record->fullName)
                     ->searchable(['first_name', 'last_name'])
                     ->sortable()
                     ->placeholder($notProvided),
                 TextColumn::make('phone_number')
                     ->placeholder(__('admin.resources.general.not_provided'))
-                    ->label(new HtmlString('<strong>'.__('admin.resources.vendor.phone').'</strong>'))
+                    ->label(__('admin.resources.vendor.phone'))
                     ->searchable()
                     ->placeholder($notProvided),
                 TextColumn::make('type.translated_name')
                     ->placeholder(__('admin.resources.general.not_provided'))
-                    ->label(new HtmlString('<strong>'.__('admin.resources.user.type').'</strong>'))
+                    ->label(__('admin.resources.user.type'))
                     ->badge()
                     ->placeholder($notProvided)
                     ->color('warning'),
                 TextColumn::make('status.translated_name')
                     ->placeholder(__('admin.resources.general.not_provided'))
-                    ->label(new HtmlString('<strong>'.__('admin.resources.user.status').'</strong>'))
+                    ->label(__('admin.resources.user.status'))
                     ->badge()
                     ->placeholder($notProvided)
                     ->color(fn (User $record): string => match ($record->status->id) {
@@ -70,25 +70,25 @@ class VendorsTable
                         default => 'secondary',
                     }),
                 IconColumn::make('vendorProfile.is_verified')
-                    ->label(new HtmlString('<strong>'.__('admin.resources.vendor.verified').'</strong>'))
+                    ->label(__('admin.resources.vendor.verified'))
                     ->boolean()
                     ->sortable(),
                 TextColumn::make('created_at')
                     ->placeholder(__('admin.resources.general.not_provided'))
-                    ->label(new HtmlString('<strong>'.__('admin.resources.created_at').'</strong>'))
+                    ->label(__('admin.resources.created_at'))
                     ->dateTime('d M Y, h:i A')
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
                 SelectFilter::make('user_status_id')
-                    ->label(new HtmlString('<strong>'.__('admin.resources.vendor.status').'</strong>'))
+                    ->label(__('admin.resources.vendor.status'))
                     ->options(
                         UserStatus::all()
                             ->pluck('translated_name', 'id')
                     ),
                 SelectFilter::make('user_type_id')
-                    ->label(new HtmlString('<strong>'.__('admin.resources.user.account_type').'</strong>'))
+                    ->label(__('admin.resources.user.account_type'))
                     ->options(
                         UserType::all()
                             ->pluck('translated_name', 'id')
@@ -97,12 +97,12 @@ class VendorsTable
             ])
             ->actions([
                 ViewAction::make()
-                    ->label(new HtmlString('<strong>'.__('admin.resources.vendor.view_submission').'</strong>'))
+                    ->label(__('admin.resources.vendor.view_submission'))
                     ->icon('heroicon-o-eye')
                     ->color('info'),
                 EditAction::make(),
                 Action::make('approveVendor')
-                    ->label(new HtmlString('<strong>'.__('admin.resources.vendor.approve').'</strong>'))
+                    ->label(__('admin.resources.vendor.approve'))
                     ->icon('heroicon-o-check-circle')
                     ->color('success')
                     ->visible(
@@ -125,12 +125,12 @@ class VendorsTable
                     })
                     ->form([
                         Textarea::make('note')
-                            ->label(new HtmlString('<strong>'.__('admin.resources.vendor.approval_note').'</strong>'))
+                            ->label(__('admin.resources.vendor.approval_note'))
                             ->required(),
                     ])
                     ->requiresConfirmation(),
                 Action::make('rejectVendor')
-                    ->label(new HtmlString('<strong>'.__('admin.resources.vendor.reject').'</strong>'))
+                    ->label(__('admin.resources.vendor.reject'))
                     ->icon('heroicon-o-x-circle')
                     ->color('danger')
                     ->visible(
@@ -153,7 +153,7 @@ class VendorsTable
                     })
                     ->form([
                         Textarea::make('reason')
-                            ->label(new HtmlString('<strong>'.__('admin.resources.vendor.rejection_reason').'</strong>'))
+                            ->label(__('admin.resources.vendor.rejection_reason'))
                             ->required(),
                     ])
                     ->requiresConfirmation(),

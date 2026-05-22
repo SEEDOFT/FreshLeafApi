@@ -21,7 +21,7 @@ class ListProductInventories extends ListRecords
     {
         return [
             Action::make('create')
-                ->label(new HtmlString('<strong>'.__('shared.form.add_product').'</strong>'))
+                ->label(__('shared.form.add_product'))
                 ->url(static fn (): string => ProductCatalog::getUrl(panel: 'vendor')),
         ];
     }

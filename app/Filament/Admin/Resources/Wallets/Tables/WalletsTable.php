@@ -28,19 +28,19 @@ class WalletsTable
             ->stackedOnMobile()
             ->columns([
                 TextColumn::make('name')->placeholder(__('admin.resources.general.not_provided'))
-                    ->label(new HtmlString('<strong>'.__('admin.resources.user.full_name').'</strong>'))
+                    ->label(__('admin.resources.user.full_name'))
                     ->getStateUsing(static fn (Wallet $record) => $record->user->fullName)
                     ->placeholder($notProvided)
                     ->sortable()
                     ->searchable(),
                 TextColumn::make('currency.translated_currency')
                     ->placeholder(__('admin.resources.general.not_provided'))
-                    ->label(new HtmlString('<strong>'.__('admin.resources.wallet.currency').'</strong>'))
+                    ->label(__('admin.resources.wallet.currency'))
                     ->placeholder($notProvided)
                     ->sortable()
                     ->searchable(),
                 TextColumn::make('balance')->placeholder(__('admin.resources.general.not_provided'))
-                    ->label(new HtmlString('<strong>'.__('admin.resources.wallet.balance').'</strong>'))
+                    ->label(__('admin.resources.wallet.balance'))
                     ->placeholder($notProvided)
                     ->getStateUsing(static function (Wallet $record): string {
                         $id = $record->currency->id;
@@ -54,7 +54,7 @@ class WalletsTable
                     ->sortable(),
                 TextColumn::make('user.type.translated_name')
                     ->placeholder(__('admin.resources.general.not_provided'))
-                    ->label(new HtmlString('<strong>'.__('admin.resources.user.type').'</strong>'))
+                    ->label(__('admin.resources.user.type'))
                     ->badge()
                     ->placeholder($notProvided)
                     ->color(fn (Wallet $record): string => match ($record->user->type->id) {
@@ -65,7 +65,7 @@ class WalletsTable
                     }),
                 TextColumn::make('user.status.translated_name')
                     ->placeholder(__('admin.resources.general.not_provided'))
-                    ->label(new HtmlString('<strong>'.__('admin.resources.user.status').'</strong>'))
+                    ->label(__('admin.resources.user.status'))
                     ->badge()
                     ->color(fn (Wallet $record): string => match ($record->user->status->id) {
                         UserStatus::ACTIVE_ID => 'success',
@@ -75,7 +75,7 @@ class WalletsTable
                     }),
                 TextColumn::make('updated_at')
                     ->placeholder(__('admin.resources.general.not_provided'))
-                    ->label(new HtmlString('<strong>'.__('admin.resources.updated_at').'</strong>'))
+                    ->label(__('admin.resources.updated_at'))
                     ->placeholder($notProvided)
                     ->dateTime()
                     ->sortable()
@@ -83,7 +83,7 @@ class WalletsTable
             ])
             ->filters([
                 SelectFilter::make('currency_id')
-                    ->label(new HtmlString('<strong>'.__('admin.resources.wallet.currency').'</strong>'))
+                    ->label(__('admin.resources.wallet.currency'))
                     ->options(
                         Currency::all()
                             ->pluck('translated_currency', 'id'),

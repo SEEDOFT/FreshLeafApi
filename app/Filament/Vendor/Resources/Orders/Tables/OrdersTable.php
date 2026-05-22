@@ -22,16 +22,16 @@ class OrdersTable
             ->stackedOnMobile()
             ->columns([
                 TextColumn::make('order_number')->placeholder(__('admin.resources.general.not_provided'))
-                    ->label(new HtmlString('<strong>'.__('shared.order.order_number').'</strong>'))
+                    ->label(__('shared.order.order_number'))
                     ->searchable()
                     ->sortable(),
                 TextColumn::make('user.name')->placeholder(__('admin.resources.general.not_provided'))
-                    ->label(new HtmlString('<strong>'.__('admin.resources.order.customer').'</strong>'))
+                    ->label(__('admin.resources.order.customer'))
                     ->getStateUsing(fn (Order $record) => $record->user?->fullName)
                     ->searchable()
                     ->sortable(),
                 TextColumn::make('status.translated_name')->placeholder(__('admin.resources.general.not_provided'))
-                    ->label(new HtmlString('<strong>'.__('admin.resources.order.status').'</strong>'))
+                    ->label(__('admin.resources.order.status'))
                     ->badge()
                     ->color(fn (Order $record): string => match ($record->status->id) {
                         OrderStatus::PENDING_ID => 'info',
@@ -43,7 +43,7 @@ class OrdersTable
                     })
                     ->sortable(),
                 TextColumn::make('paymentStatus.translated_name')->placeholder(__('admin.resources.general.not_provided'))
-                    ->label(new HtmlString('<strong>'.__('admin.resources.order.payment_status').'</strong>'))
+                    ->label(__('admin.resources.order.payment_status'))
                     ->badge()
                     ->color(fn (Order $record): string => match ($record->paymentStatus->id) {
                         PaymentStatus::PENDING_ID => 'info',
@@ -54,28 +54,28 @@ class OrdersTable
                     })
                     ->sortable(),
                 TextColumn::make('total_amount')->placeholder(__('admin.resources.general.not_provided'))
-                    ->label(new HtmlString('<strong>'.__('shared.order.total').'</strong>'))
+                    ->label(__('shared.order.total'))
                     ->money('USD')
                     ->sortable(),
                 TextColumn::make('delivery_date')->placeholder(__('admin.resources.general.not_provided'))
-                    ->label(new HtmlString('<strong>'.__('shared.order.delivery_date').'</strong>'))
+                    ->label(__('shared.order.delivery_date'))
                     ->date()
                     ->sortable(),
                 TextColumn::make('created_at')->placeholder(__('admin.resources.general.not_provided'))
-                    ->label(new HtmlString('<strong>'.__('shared.created_at').'</strong>'))
+                    ->label(__('shared.created_at'))
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
                 SelectFilter::make('order_status_id')
-                    ->label(new HtmlString('<strong>'.__('shared.order.status').'</strong>'))
+                    ->label(__('shared.order.status'))
                     ->options(
                         OrderStatus::all()
                             ->pluck('translated_name', 'id')
                     ),
                 SelectFilter::make('payment_status_id')
-                    ->label(new HtmlString('<strong>'.__('shared.order.payment_status').'</strong>'))
+                    ->label(__('shared.order.payment_status'))
                     ->options(
                         PaymentStatus::all()
                             ->pluck('translated_name', 'id')

@@ -23,26 +23,26 @@ class ItemsRelationManager extends RelationManager
         return $schema
             ->components([
                 TextInput::make('product_name_snapshot')
-                    ->label(new HtmlString('<strong>'.__('shared.order.product').'</strong>'))
+                    ->label(__('shared.order.product'))
                     ->disabled()
                     ->dehydrated(false),
                 TextInput::make('unit_snapshot')
-                    ->label(new HtmlString('<strong>'.__('shared.product.unit').'</strong>'))
+                    ->label(__('shared.product.unit'))
                     ->disabled()
                     ->dehydrated(false),
                 TextInput::make('unit_price_snapshot')
-                    ->label(new HtmlString('<strong>'.__('shared.product.unit_price').'</strong>'))
+                    ->label(__('shared.product.unit_price'))
                     ->disabled()
                     ->dehydrated(false)
                     ->numeric()
                     ->prefix('$'),
                 TextInput::make('quantity')
-                    ->label(new HtmlString('<strong>'.__('shared.product.quantity').'</strong>'))
+                    ->label(__('shared.product.quantity'))
                     ->disabled()
                     ->dehydrated(false)
                     ->numeric(),
                 TextInput::make('subtotal')
-                    ->label(new HtmlString('<strong>'.__('shared.order.subtotal').'</strong>'))
+                    ->label(__('shared.order.subtotal'))
                     ->disabled()
                     ->dehydrated(false)
                     ->numeric()
@@ -58,24 +58,24 @@ class ItemsRelationManager extends RelationManager
             ->recordTitleAttribute('product_name_snapshot')
             ->columns([
                 TextColumn::make('product_name_snapshot')->placeholder(__('admin.resources.general.not_provided'))
-                    ->label(new HtmlString('<strong>'.__('shared.order.product').'</strong>'))
+                    ->label(__('shared.order.product'))
                     ->sortable(),
                 TextColumn::make('unit_snapshot')->placeholder(__('admin.resources.general.not_provided'))
-                    ->label(new HtmlString('<strong>'.__('shared.product.unit').'</strong>')),
+                    ->label(__('shared.product.unit')),
                 TextColumn::make('unit_price_snapshot')->placeholder(__('admin.resources.general.not_provided'))
                     ->money('USD')
-                    ->label(new HtmlString('<strong>'.__('shared.product.unit_price').'</strong>')),
+                    ->label(__('shared.product.unit_price')),
                 TextColumn::make('quantity')->placeholder(__('admin.resources.general.not_provided'))
-                    ->label(new HtmlString('<strong>'.__('shared.product.quantity').'</strong>'))
+                    ->label(__('shared.product.quantity'))
                     ->numeric(),
                 TextColumn::make('subtotal')->placeholder(__('admin.resources.general.not_provided'))
-                    ->label(new HtmlString('<strong>'.__('shared.order.subtotal').'</strong>'))
+                    ->label(__('shared.order.subtotal'))
                     ->money('USD'),
                 TextColumn::make('commission_amount')->placeholder(__('admin.resources.general.not_provided'))
-                    ->label(new HtmlString('<strong>'.__('shared.order.commission').'</strong>'))
+                    ->label(__('shared.order.commission'))
                     ->money('USD'),
                 TextColumn::make('vendor_net_amount')->placeholder(__('admin.resources.general.not_provided'))
-                    ->label(new HtmlString('<strong>'.__('shared.order.total').'</strong>'))
+                    ->label(__('shared.order.total'))
                     ->money('USD'),
             ])
             ->filters([

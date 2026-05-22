@@ -30,10 +30,15 @@ class VendorInventoryStatusSeeder extends Seeder
                 'name_en' => 'Hidden',
                 'name_km' => 'លាក់',
             ],
+            [
+                'id' => VendorInventoryStatus::PENDING_REVIEW_ID,
+                'name_en' => 'Pending Review',
+                'name_km' => 'រង់ចាំការពិនិត្យ',
+            ],
         ];
 
         foreach ($types as $type) {
-            VendorInventoryStatus::create($type);
+            VendorInventoryStatus::updateOrCreate(['id' => $type['id']], $type);
         }
     }
 }

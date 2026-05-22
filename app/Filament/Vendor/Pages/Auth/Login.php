@@ -48,7 +48,7 @@ class Login extends BaseLogin
             ->components([
                 $this->getPhoneNumberFormComponent(),
                 PasswordInput::make('password')
-                    ->label(new HtmlString('<strong>'.__('shared.auth.login.password').'</strong>'))
+                    ->label(__('shared.auth.login.password'))
                     ->required()
                     ->revealable(),
                 TextEntry::make('registration_link')->placeholder(__('admin.resources.general.not_provided'))
@@ -72,7 +72,7 @@ class Login extends BaseLogin
         return Grid::make(5)
             ->schema([
                 PhoneNumberInput::make('phone_number')
-                    ->label(new HtmlString('<strong>'.__('shared.auth.login.phone').'</strong>'))
+                    ->label(__('shared.auth.login.phone'))
                     ->required()
                     ->columnSpanFull(),
             ]);

@@ -38,6 +38,8 @@ class VendorInventoryStatus extends Model
 
     public const int HIDDEN_ID = 3;
 
+    public const int PENDING_REVIEW_ID = 4;
+
     /**
      * Get the translated name of the inventory status.
      */

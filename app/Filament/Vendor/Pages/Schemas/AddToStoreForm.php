@@ -7,7 +7,9 @@ namespace App\Filament\Vendor\Pages\Schemas;
 use App\Models\Currency;
 use App\Models\PackagingType;
 use App\Models\Unit;
+use App\Constants\StorageDirectory;
 use Filament\Forms\Components\DatePicker;
+use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Illuminate\Support\HtmlString;
@@ -18,37 +20,44 @@ class AddToStoreForm
     {
         return [
             TextInput::make('price')
-                ->label(new HtmlString('<strong>'.__('shared.product.unit_price').'</strong>'))
+                ->label(__('shared.product.unit_price'))
                 ->numeric()
                 ->required(),
             Select::make('currency_id')
-                ->label(new HtmlString('<strong>'.__('shared.product.currency').'</strong>'))
+                ->label(__('shared.product.currency'))
                 ->options(Currency::all()->pluck('code', 'id'))
                 ->default(Currency::USD_ID)
                 ->required(),
             TextInput::make('stock_quantity')
-                ->label(new HtmlString('<strong>'.__('shared.product.quantity').'</strong>'))
+                ->label(__('shared.product.quantity'))
                 ->numeric()
                 ->required(),
             Select::make('unit_id')
-                ->label(new HtmlString('<strong>'.__('shared.product.unit').'</strong>'))
+                ->label(__('shared.product.unit'))
                 ->options(Unit::all()->pluck('translated_name', 'id'))
                 ->required(),
             TextInput::make('province_of_origin')
-                ->label(new HtmlString('<strong>'.__('shared.product.province_of_origin').'</strong>')),
+                ->label(__('shared.product.province_of_origin')),
             TextInput::make('certification_type')
-                ->label(new HtmlString('<strong>'.__('shared.product.certification_type').'</strong>')),
+                ->label(__('shared.product.certification_type')),
             TextInput::make('farm_location')
-                ->label(new HtmlString('<strong>'.__('shared.product.farm_location').'</strong>')),
+                ->label(__('shared.product.farm_location')),
             DatePicker::make('harvest_date')
-                ->label(new HtmlString('<strong>'.__('shared.product.harvest_date').'</strong>')),
+                ->label(__('shared.product.harvest_date')),
             TextInput::make('shelf_life_days')
-                ->label(new HtmlString('<strong>'.__('shared.product.shelf_life').'</strong>'))
+                ->label(__('shared.product.shelf_life'))
                 ->numeric()
                 ->suffix(' '.__('shared.product.days')),
             Select::make('packaging_type_id')
-                ->label(new HtmlString('<strong>'.__('shared.product.packaging_type').'</strong>'))
+                ->label(__('shared.product.packaging_type'))
                 ->options(PackagingType::all()->pluck('translated_name', 'id')),
+            FileUpload::make('batch_images')
+                ->label(__('shared.product.visuals'))
+                ->multiple()
+                ->image()
+                ->disk('public')
+                ->directory(StorageDirectory::PRODUCT_BATCHES)
+                ->columnSpanFull(),
         ];
     }
 }

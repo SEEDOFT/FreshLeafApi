@@ -33,30 +33,30 @@ class VendorInfolist
                             ->columnSpanFull()
                             ->schema([
                                 ImageEntry::make('image')
-                                    ->label(new HtmlString('<strong>'.__('admin.profile.avatar').'</strong>'))
+                                    ->label(__('admin.profile.avatar'))
                                     ->circular()
                                     ->imageSize(200)
                                     ->alignCenter(),
                             ]),
                         TextEntry::make('first_name')
-                            ->label(new HtmlString('<strong>'.__('admin.profile.first_name').'</strong>'))
+                            ->label(__('admin.profile.first_name'))
                             ->placeholder($notProvided),
                         TextEntry::make('last_name')
-                            ->label(new HtmlString('<strong>'.__('admin.profile.last_name').'</strong>'))
+                            ->label(__('admin.profile.last_name'))
                             ->placeholder($notProvided),
                         TextEntry::make('email')
-                            ->label(new HtmlString('<strong>'.__('admin.profile.email').'</strong>'))
+                            ->label(__('admin.profile.email'))
                             ->placeholder($notProvided),
                         TextEntry::make('phone_number')
-                            ->label(new HtmlString('<strong>'.__('admin.profile.phone').'</strong>'))
+                            ->label(__('admin.profile.phone'))
                             ->placeholder($notProvided),
                         TextEntry::make('type.translated_name')
-                            ->label(new HtmlString('<strong>'.__('admin.resources.user.type').'</strong>'))
+                            ->label(__('admin.resources.user.type'))
                             ->placeholder($notProvided)
                             ->badge()
                             ->color('warning'),
                         TextEntry::make('status.translated_name')
-                            ->label(new HtmlString('<strong>'.__('admin.resources.user.status').'</strong>'))
+                            ->label(__('admin.resources.user.status'))
                             ->placeholder($notProvided)
                             ->badge()
                             ->color(fn (User $record): string => match ($record->user_status_id) {
@@ -72,42 +72,42 @@ class VendorInfolist
                     ->columns(2)
                     ->schema([
                         TextEntry::make('business_name')
-                            ->label(new HtmlString('<strong>'.__('admin.resources.vendor.business_name').'</strong>'))
+                            ->label(__('admin.resources.vendor.business_name'))
                             ->placeholder($notProvided),
                         TextEntry::make('contact_phone')
-                            ->label(new HtmlString('<strong>'.__('admin.resources.vendor.contact_phone').'</strong>'))
+                            ->label(__('admin.resources.vendor.contact_phone'))
                             ->placeholder($notProvided),
                         TextEntry::make('village')
-                            ->label(new HtmlString('<strong>'.__('shared.form.fields.village').'</strong>'))
+                            ->label(__('shared.form.fields.village'))
                             ->placeholder($notProvided),
                         TextEntry::make('commune')
-                            ->label(new HtmlString('<strong>'.__('shared.form.fields.commune').'</strong>'))
+                            ->label(__('shared.form.fields.commune'))
                             ->placeholder($notProvided),
                         TextEntry::make('district')
-                            ->label(new HtmlString('<strong>'.__('shared.form.fields.district').'</strong>'))
+                            ->label(__('shared.form.fields.district'))
                             ->placeholder($notProvided),
                         TextEntry::make('province')
-                            ->label(new HtmlString('<strong>'.__('shared.form.fields.province').'</strong>'))
+                            ->label(__('shared.form.fields.province'))
                             ->placeholder($notProvided),
                         TextEntry::make('address')
-                            ->label(new HtmlString('<strong>'.__('admin.resources.vendor.address').'</strong>'))
+                            ->label(__('admin.resources.vendor.address'))
                             ->columnSpanFull()
                             ->placeholder($notProvided),
                         TextEntry::make('opening_time')
-                            ->label(new HtmlString('<strong>'.__('vendor.settings.business_profile.opening_time').'</strong>'))
+                            ->label(__('vendor.settings.business_profile.opening_time'))
                             ->placeholder($notProvided)
                             ->dateTime('h:i A'),
                         TextEntry::make('closing_time')
-                            ->label(new HtmlString('<strong>'.__('vendor.settings.business_profile.closing_time').'</strong>'))
+                            ->label(__('vendor.settings.business_profile.closing_time'))
                             ->placeholder($notProvided)
                             ->dateTime('h:i A'),
                         TextEntry::make('is_open')
-                            ->label(new HtmlString('<strong>'.__('vendor.settings.business_profile.is_open').'</strong>'))
+                            ->label(__('vendor.settings.business_profile.is_open'))
                             ->formatStateUsing(fn (bool $state): string => $state ? 'Now Is Open' : 'Now Is Closed')
                             ->color(fn (bool $state): string => $state ? 'success' : 'danger')
                             ->disabled(),
                         IconEntry::make('is_verified')
-                            ->label(new HtmlString('<strong>'.__('admin.resources.vendor.verification_status').'</strong>'))
+                            ->label(__('admin.resources.vendor.verification_status'))
                             ->boolean(),
                     ]),
 
@@ -116,7 +116,7 @@ class VendorInfolist
                     ->columns(2)
                     ->schema([
                         ImageEntry::make('id_card_front')
-                            ->label(new HtmlString('<strong>'.__('admin.resources.vendor.id_card_front').'</strong>'))
+                            ->label(__('admin.resources.vendor.id_card_front'))
                             ->placeholder($notProvided)
                             ->getStateUsing(fn ($record) => $record->id_card_front
                                 ? route('admin.documents.show', ['path' => $record->id_card_front]) : null
@@ -128,7 +128,7 @@ class VendorInfolist
                                 'x-on:click' => "\$dispatch('lightbox', { src: \$el.src })",
                             ]),
                         ImageEntry::make('id_card_back')
-                            ->label(new HtmlString('<strong>'.__('admin.resources.vendor.id_card_back').'</strong>'))
+                            ->label(__('admin.resources.vendor.id_card_back'))
                             ->placeholder($notProvided)
                             ->getStateUsing(fn ($record) => $record->id_card_back
                                 ? route('admin.documents.show', ['path' => $record->id_card_back]) : null
@@ -140,7 +140,7 @@ class VendorInfolist
                                 'x-on:click' => "\$dispatch('lightbox', { src: \$el.src })",
                             ]),
                         ImageEntry::make('store_front_image')
-                            ->label(new HtmlString('<strong>'.__('admin.resources.vendor.store_photo').'</strong>'))
+                            ->label(__('admin.resources.vendor.store_photo'))
                             ->placeholder($notProvided)
                             ->getStateUsing(fn ($record) => $record->store_front_image
                                 ? route('admin.documents.show', ['path' => $record->store_front_image]) : null
@@ -152,7 +152,7 @@ class VendorInfolist
                                 'x-on:click' => "\$dispatch('lightbox', { src: \$el.src })",
                             ]),
                         TextEntry::make('organic_certificate_url')
-                            ->label(new HtmlString('<strong>'.__('admin.resources.vendor.organic_cert').'</strong>'))
+                            ->label(__('admin.resources.vendor.organic_cert'))
                             ->placeholder($notProvided)
                             ->url(fn (mixed $state) => $state
                                 ? route('admin.documents.show', ['path' => $state]) : null
@@ -170,20 +170,20 @@ class VendorInfolist
                             ->schema([
                                 TextEntry::make('bank_name')
                                     ->placeholder($notProvided)
-                                    ->label(new HtmlString('<strong>'.__('admin.resources.vendor.bank_name').'</strong>')),
+                                    ->label(__('admin.resources.vendor.bank_name')),
                                 TextEntry::make('account_name')
                                     ->placeholder($notProvided)
-                                    ->label(new HtmlString('<strong>'.__('admin.resources.vendor.account_holder').'</strong>')),
+                                    ->label(__('admin.resources.vendor.account_holder')),
                                 TextEntry::make('account_number')
                                     ->placeholder($notProvided)
-                                    ->label(new HtmlString('<strong>'.__('admin.resources.vendor.account_number').'</strong>')),
+                                    ->label(__('admin.resources.vendor.account_number')),
                             ]),
                         Grid::make(1)
                             ->columnSpan(1)
                             ->schema([
                                 ImageEntry::make('qr_code')
                                     ->placeholder($notProvided)
-                                    ->label(new HtmlString('<strong>'.__('admin.resources.vendor.qr_code').'</strong>'))
+                                    ->label(__('admin.resources.vendor.qr_code'))
                                     ->getStateUsing(fn (PaymentMethod $record) => $record->qr_code
                                         ? route('admin.documents.show', ['path' => $record->qr_code]) : null
                                     )
@@ -199,14 +199,14 @@ class VendorInfolist
                 Section::make(__('admin.resources.vendor.wallets_info'))
                     ->schema([
                         RepeatableEntry::make('wallets')
-                            ->label(new HtmlString('<strong>'.__('admin.resources.vendor.wallets_info').'</strong>'))
+                            ->label(__('admin.resources.vendor.wallets_info'))
                             ->schema([
                                 TextEntry::make('currency.translated_currency')
                                     ->placeholder($notProvided)
-                                    ->label(new HtmlString('<strong>'.__('admin.resources.wallet.currency').'</strong>')),
+                                    ->label(__('admin.resources.wallet.currency')),
                                 TextEntry::make('balance')
                                     ->placeholder($notProvided)
-                                    ->label(new HtmlString('<strong>'.__('admin.resources.wallet.balance').'</strong>'))
+                                    ->label(__('admin.resources.wallet.balance'))
                                     ->getStateUsing(function (Wallet $record): string {
                                         $id = $record->currency->id;
                                         $symbol = $record->currency->symbol ?? '';
@@ -224,11 +224,11 @@ class VendorInfolist
                     ->columns(2)
                     ->schema([
                         TextEntry::make('created_at')
-                            ->label(new HtmlString('<strong>'.__('admin.resources.created_at').'</strong>'))
+                            ->label(__('admin.resources.created_at'))
                             ->placeholder($notProvided)
                             ->dateTime('d M Y, h:i A'),
                         TextEntry::make('updated_at')
-                            ->label(new HtmlString('<strong>'.__('admin.resources.updated_at').'</strong>'))
+                            ->label(__('admin.resources.updated_at'))
                             ->placeholder($notProvided)
                             ->dateTime('d M Y, h:i A'),
                     ]),

@@ -15,19 +15,19 @@ class UnitForm
         return $schema
             ->components([
                 TextInput::make('name_km')
-                    ->label(new HtmlString('<strong>'.__('admin.resources.unit.name_km').'</strong>'))
+                    ->label(__('admin.resources.unit.name_km'))
                     ->required(static fn (string $operation): bool => $operation === 'create')
                     ->dehydrated(static fn (mixed $state): bool => filled($state)),
                 TextInput::make('name_en')
-                    ->label(new HtmlString('<strong>'.__('admin.resources.unit.name_en').'</strong>'))
+                    ->label(__('admin.resources.unit.name_en'))
                     ->required(static fn (string $operation): bool => $operation === 'create')
                     ->dehydrated(static fn (mixed $state): bool => filled($state)),
                 TextInput::make('symbol')
-                    ->label(new HtmlString('<strong>'.__('admin.resources.unit.symbol').'</strong>'))
+                    ->label(__('admin.resources.unit.symbol'))
                     ->required(static fn (string $operation): bool => $operation === 'create')
                     ->dehydrated(static fn (mixed $state): bool => filled($state)),
                 TextInput::make('conversion_to_base')
-                    ->label(new HtmlString('<strong>'.__('admin.resources.unit.conversion').'</strong>'))
+                    ->label(__('admin.resources.unit.conversion'))
                     ->required(static fn (string $operation): bool => $operation === 'create')
                     ->dehydrated(static fn (mixed $state): bool => filled($state))
                     ->numeric()

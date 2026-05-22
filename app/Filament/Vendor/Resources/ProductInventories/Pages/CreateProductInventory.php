@@ -6,6 +6,7 @@ namespace App\Filament\Vendor\Resources\ProductInventories\Pages;
 
 use App\Filament\Vendor\Resources\ProductInventories\ProductInventoryResource;
 use Filament\Resources\Pages\CreateRecord;
+use Illuminate\Support\Facades\Auth;
 use Override;
 
 class CreateProductInventory extends CreateRecord
@@ -16,7 +17,7 @@ class CreateProductInventory extends CreateRecord
     #[Override]
     protected function mutateFormDataBeforeCreate(array $data): array
     {
-        $data['vendor_id'] = auth()->id();
+        $data['vendor_id'] = Auth::id();
 
         return $data;
     }

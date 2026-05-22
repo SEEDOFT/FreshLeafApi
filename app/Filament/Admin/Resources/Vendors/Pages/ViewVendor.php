@@ -26,7 +26,7 @@ class ViewVendor extends ViewRecord
     {
         return [
             Action::make('approveVendor')
-                ->label(new HtmlString('<strong>'.__('admin.resources.vendor.approve').'</strong>'))
+                ->label(__('admin.resources.vendor.approve'))
                 ->icon('heroicon-o-check-circle')
                 ->color('success')
                 ->visible(
@@ -54,12 +54,12 @@ class ViewVendor extends ViewRecord
                 })
                 ->form([
                     Textarea::make('note')
-                        ->label(new HtmlString('<strong>'.__('admin.resources.vendor.approval_note').'</strong>')),
+                        ->label(__('admin.resources.vendor.approval_note')),
                 ])
                 ->requiresConfirmation(),
 
             Action::make('rejectVendor')
-                ->label(new HtmlString('<strong>'.__('admin.resources.vendor.reject').'</strong>'))
+                ->label(__('admin.resources.vendor.reject'))
                 ->icon('heroicon-o-x-circle')
                 ->color('danger')
                 ->visible(
@@ -88,7 +88,7 @@ class ViewVendor extends ViewRecord
                 })
                 ->form([
                     Textarea::make('reason')
-                        ->label(new HtmlString('<strong>'.__('admin.resources.vendor.rejection_reason').'</strong>'))
+                        ->label(__('admin.resources.vendor.rejection_reason'))
                         ->required(fn (string $operation): bool => $operation === 'create')
                         ->dehydrated(fn (mixed $state): bool => filled($state)),
                 ])

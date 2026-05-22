@@ -33,21 +33,21 @@ class UserForm
                     ->columnSpanFull()
                     ->schema([
                         TextInput::make('first_name')
-                            ->label(new HtmlString('<strong>'.__('admin.resources.user.first_name').'</strong>'))
+                            ->label(__('admin.resources.user.first_name'))
                             ->required(fn (string $operation): bool => $operation === 'create')
                             ->dehydrated(fn (mixed $state): bool => filled($state))
                             ->maxLength(255),
                         TextInput::make('last_name')
-                            ->label(new HtmlString('<strong>'.__('admin.resources.user.last_name').'</strong>'))
+                            ->label(__('admin.resources.user.last_name'))
                             ->required(fn (string $operation): bool => $operation === 'create')
                             ->dehydrated(fn (mixed $state): bool => filled($state))
                             ->maxLength(255),
                         TextInput::make('email')
-                            ->label(new HtmlString('<strong>'.__('admin.resources.user.email').'</strong>'))
+                            ->label(__('admin.resources.user.email'))
                             ->email()
                             ->unique(ignoreRecord: true),
                         PhoneNumberInput::make('phone_number')
-                            ->label(new HtmlString('<strong>'.__('admin.resources.user.phone').'</strong>'))
+                            ->label(__('admin.resources.user.phone'))
                             ->required(fn (string $operation): bool => $operation === 'create')
                             ->dehydrated(fn (mixed $state): bool => filled($state))
                             ->afterStateHydrated(function (PhoneNumberInput $component, ?string $state): void {
@@ -78,25 +78,25 @@ class UserForm
                                     }
                                 }),
                         TextInput::make('password')
-                            ->label(new HtmlString('<strong>'.__('admin.resources.user.password').'</strong>'))
+                            ->label(__('admin.resources.user.password'))
                             ->password()
                             ->required(fn (string $operation): bool => $operation === 'create')
                             ->confirmed()
                             ->dehydrated(fn (mixed $state): bool => filled($state)),
                         TextInput::make('password_confirmation')
                             ->password()
-                            ->label(new HtmlString('<strong>'.__('admin.resources.user.password_confirmation').'</strong>'))
+                            ->label(__('admin.resources.user.password_confirmation'))
                             ->required(fn (string $operation): bool => $operation === 'create')
                             ->dehydrated(fn (mixed $state): bool => filled($state)),
                         Select::make('user_type_id')
-                            ->label(new HtmlString('<strong>'.__('admin.resources.user.account_type').'</strong>'))
+                            ->label(__('admin.resources.user.account_type'))
                             ->relationship('type')
                             ->getOptionLabelFromRecordUsing(fn (UserType $record) => $record->translated_name)
                             ->default(UserType::CONSUMER_ID)
                             ->disabled(fn (string $operation): bool => $operation === 'create')
                             ->dehydrated(),
                         Select::make('user_status_id')
-                            ->label(new HtmlString('<strong>'.__('admin.resources.user.account_status').'</strong>'))
+                            ->label(__('admin.resources.user.account_status'))
                             ->relationship('status')
                             ->getOptionLabelFromRecordUsing(fn (UserStatus $record) => $record->translated_name)
                             ->default(UserStatus::ACTIVE_ID)

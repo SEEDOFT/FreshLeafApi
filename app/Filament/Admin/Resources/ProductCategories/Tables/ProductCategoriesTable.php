@@ -27,27 +27,27 @@ class ProductCategoriesTable
             ->stackedOnMobile()
             ->columns([
                 ImageColumn::make('image_url')
-                    ->label(new HtmlString('<strong>'.__('admin.resources.product_category.image').'</strong>'))
+                    ->label(__('admin.resources.product_category.image'))
                     ->disk('public')
                     ->circular(),
                 TextColumn::make('name_en')->placeholder(__('admin.resources.general.not_provided'))
-                    ->label(new HtmlString('<strong>'.__('admin.resources.product_category.name_en').'</strong>'))
+                    ->label(__('admin.resources.product_category.name_en'))
                     ->placeholder($notProvided)
                     ->searchable()
                     ->sortable(),
                 TextColumn::make('name_km')->placeholder(__('admin.resources.general.not_provided'))
-                    ->label(new HtmlString('<strong>'.__('admin.resources.product_category.name_km').'</strong>'))
+                    ->label(__('admin.resources.product_category.name_km'))
                     ->placeholder($notProvided)
                     ->searchable()
                     ->sortable(),
                 TextColumn::make('slug')->placeholder(__('admin.resources.general.not_provided'))
-                    ->label(new HtmlString('<strong>'.__('admin.resources.product_category.slug').'</strong>'))
+                    ->label(__('admin.resources.product_category.slug'))
                     ->placeholder($notProvided)
                     ->searchable()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('status.translated_name')->placeholder(__('admin.resources.general.not_provided'))
-                    ->label(new HtmlString('<strong>'.__('admin.resources.product_category.status').'</strong>'))
+                    ->label(__('admin.resources.product_category.status'))
                     ->badge()
                     ->placeholder($notProvided)
                     ->color(fn (ProductCategory $record): string => match ($record->product_category_status_id) {
@@ -69,12 +69,12 @@ class ProductCategoriesTable
                         );
                     }),
                 TextColumn::make('products_count')->placeholder(__('admin.resources.general.not_provided'))
-                    ->label(new HtmlString('<strong>'.__('admin.resources.product_category.products_count').'</strong>'))
+                    ->label(__('admin.resources.product_category.products_count'))
                     ->counts('products')
                     ->placeholder($notProvided)
                     ->sortable(),
                 TextColumn::make('created_at')->placeholder(__('admin.resources.general.not_provided'))
-                    ->label(new HtmlString('<strong>'.__('admin.resources.product_category.created_at').'</strong>'))
+                    ->label(__('admin.resources.product_category.created_at'))
                     ->dateTime()
                     ->placeholder($notProvided)
                     ->sortable()

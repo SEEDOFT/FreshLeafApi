@@ -57,26 +57,26 @@ class VendorSecurity extends Page
                     ->description(__('admin.resources.security.change_password_desc'))
                     ->schema([
                         TextInput::make('current_password')
-                            ->label(new HtmlString('<strong>'.__('admin.resources.security.current_password').'</strong>'))
+                            ->label(__('admin.resources.security.current_password'))
                             ->password()
                             ->required(fn (): bool => ! $this->passwordVerified)
                             ->dehydrated(fn (mixed $state): bool => filled($state))
                             ->currentPassword()
                             ->columnSpan(1),
                         Action::make('check_password')
-                            ->label(new HtmlString('<strong>'.__('admin.resources.security.check_password').'</strong>'))
+                            ->label(__('admin.resources.security.check_password'))
                             ->action('checkPassword')
                             ->color('primary')
                             ->extraAttributes(['class' => 'flex items-end mt-7']),
                         TextInput::make('password')
-                            ->label(new HtmlString('<strong>'.__('admin.resources.security.password').'</strong>'))
+                            ->label(__('admin.resources.security.password'))
                             ->password()
                             ->required(fn (): bool => $this->passwordVerified)
                             ->dehydrated(fn (mixed $state): bool => filled($state))
                             ->confirmed()
                             ->columnSpan(1),
                         TextInput::make('password_confirmation')
-                            ->label(new HtmlString('<strong>'.__('admin.resources.security.password_confirmation').'</strong>'))
+                            ->label(__('admin.resources.security.password_confirmation'))
                             ->password()
                             ->required(fn (): bool => $this->passwordVerified)
                             ->dehydrated(fn (mixed $state): bool => filled($state))
@@ -126,7 +126,7 @@ class VendorSecurity extends Page
     {
         return [
             Action::make('save')
-                ->label(new HtmlString('<strong>'.__('admin.resources.security.update_password').'</strong>'))
+                ->label(__('admin.resources.security.update_password'))
                 ->submit('save')
                 ->keyBindings([]),
         ];

@@ -22,29 +22,29 @@ class OrderForm
                     ->columns(2)
                     ->schema([
                         TextInput::make('order_number')
-                            ->label(new HtmlString('<strong>'.__('shared.order.order_number').'</strong>'))
+                            ->label(__('shared.order.order_number'))
                             ->disabled()
                             ->dehydrated(false),
                         TextInput::make('user.name')
-                            ->label(new HtmlString('<strong>'.__('shared.order.customer').'</strong>'))
+                            ->label(__('shared.order.customer'))
                             ->disabled()
                             ->dehydrated(false),
                         TextInput::make('user.phone_number')
-                            ->label(new HtmlString('<strong>'.__('shared.user.phone').'</strong>'))
+                            ->label(__('shared.user.phone'))
                             ->disabled()
                             ->dehydrated(false),
                         Select::make('order_type_id')
-                            ->label(new HtmlString('<strong>'.__('shared.order.type').'</strong>'))
+                            ->label(__('shared.order.type'))
                             ->relationship('type', 'name')
                             ->disabled()
                             ->dehydrated(false),
                         Select::make('order_status_id')
-                            ->label(new HtmlString('<strong>'.__('shared.order.status').'</strong>'))
+                            ->label(__('shared.order.status'))
                             ->relationship('status', 'name')
                             ->disabled()
                             ->dehydrated(false),
                         Select::make('payment_status_id')
-                            ->label(new HtmlString('<strong>'.__('shared.order.payment_status').'</strong>'))
+                            ->label(__('shared.order.payment_status'))
                             ->relationship('paymentStatus', 'name')
                             ->disabled()
                             ->dehydrated(false),
@@ -54,19 +54,19 @@ class OrderForm
                     ->columns(2)
                     ->schema([
                         TextInput::make('delivery_address_label')
-                            ->label(new HtmlString('<strong>'.__('shared.order.delivery_address').'</strong>'))
+                            ->label(__('shared.order.delivery_address'))
                             ->disabled()
                             ->dehydrated(false),
                         DatePicker::make('delivery_date')
-                            ->label(new HtmlString('<strong>'.__('shared.order.delivery_date').'</strong>'))
+                            ->label(__('shared.order.delivery_date'))
                             ->disabled()
                             ->dehydrated(false),
                         TextInput::make('delivery_slot')
-                            ->label(new HtmlString('<strong>'.__('shared.order.delivery_slot').'</strong>'))
+                            ->label(__('shared.order.delivery_slot'))
                             ->disabled()
                             ->dehydrated(false),
                         Textarea::make('notes')
-                            ->label(new HtmlString('<strong>'.__('shared.order.notes').'</strong>'))
+                            ->label(__('shared.order.notes'))
                             ->disabled()
                             ->dehydrated(false)
                             ->columnSpanFull(),
@@ -76,31 +76,31 @@ class OrderForm
                     ->columns(3)
                     ->schema([
                         TextInput::make('subtotal')
-                            ->label(new HtmlString('<strong>'.__('shared.order.subtotal').'</strong>'))
+                            ->label(__('shared.order.subtotal'))
                             ->numeric()
                             ->prefix('$')
                             ->disabled()
                             ->dehydrated(false),
                         TextInput::make('discount_amount')
-                            ->label(new HtmlString('<strong>'.__('shared.order.discount').'</strong>'))
+                            ->label(__('shared.order.discount'))
                             ->numeric()
                             ->prefix('$')
                             ->disabled()
                             ->dehydrated(false),
                         TextInput::make('delivery_fee')
-                            ->label(new HtmlString('<strong>'.__('shared.order.delivery_fee').'</strong>'))
+                            ->label(__('shared.order.delivery_fee'))
                             ->numeric()
                             ->prefix('$')
                             ->disabled()
                             ->dehydrated(false),
                         TextInput::make('tax_amount')
-                            ->label(new HtmlString('<strong>'.__('shared.order.tax').'</strong>'))
+                            ->label(__('shared.order.tax'))
                             ->numeric()
                             ->prefix('$')
                             ->disabled()
                             ->dehydrated(false),
                         TextInput::make('total_amount')
-                            ->label(new HtmlString('<strong>'.__('shared.order.total').'</strong>'))
+                            ->label(__('shared.order.total'))
                             ->numeric()
                             ->prefix('$')
                             ->disabled()

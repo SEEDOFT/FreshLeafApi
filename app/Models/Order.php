@@ -11,6 +11,7 @@ use Illuminate\Database\Eloquent\Attributes\UseFactory;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Carbon;
@@ -47,6 +48,7 @@ use function substr;
  * @property-read int|null $status_histories_count
  * @property-read OrderType $type
  * @property-read User|null $user
+ * @property \Illuminate\Support\Carbon|null $deleted_at
  */
 #[Table('orders', key: 'id')]
 #[Fillable([
@@ -68,6 +70,8 @@ use function substr;
 #[UseFactory(OrderFactory::class)]
 class Order extends Model
 {
+    use SoftDeletes;
+
     /** @use HasFactory<OrderFactory> */
     use HasFactory;
 

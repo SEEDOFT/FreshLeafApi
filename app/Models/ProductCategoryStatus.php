@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\Attributes\Table;
 use Illuminate\Database\Eloquent\Attributes\UseFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Facades\App;
 
@@ -18,12 +19,15 @@ use Illuminate\Support\Facades\App;
  * @property string $name_en
  * @property string $name_km
  * @property string|null $translated_name
+ * @property \Illuminate\Support\Carbon|null $deleted_at
  */
 #[Table('product_category_statuses', key: 'id', keyType: 'int', incrementing: false)]
 #[Fillable(['id', 'name_en', 'name_km'])]
 #[UseFactory(ProductCategoryStatusFactory::class)]
 class ProductCategoryStatus extends Model
 {
+    use SoftDeletes;
+
     /** @use HasFactory<ProductCategoryStatusFactory> */
     use HasFactory;
 

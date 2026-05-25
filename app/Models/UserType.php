@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\Attributes\Table;
 use Illuminate\Database\Eloquent\Attributes\UseFactory;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\App;
@@ -23,12 +24,15 @@ use Illuminate\Support\Facades\App;
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  * @property-read Collection<int, User> $users
+ * @property \Illuminate\Support\Carbon|null $deleted_at
  */
 #[Table('user_types', key: 'id', keyType: 'int', incrementing: false)]
 #[Fillable(['code', 'name_en', 'name_km'])]
 #[UseFactory(UserTypeFactory::class)]
 class UserType extends Model
 {
+    use SoftDeletes;
+
     public const int ADMIN_ID = 1;
 
     public const int VENDOR_ID = 2;

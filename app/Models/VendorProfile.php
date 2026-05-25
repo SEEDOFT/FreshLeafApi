@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\Attributes\Table;
 use Illuminate\Database\Eloquent\Attributes\UseFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Carbon;
 
@@ -41,6 +42,7 @@ use Illuminate\Support\Carbon;
  * @property string|null $organic_certificate_url
  * @property-read string $address
  * @property-read User $user
+ * @property \Illuminate\Support\Carbon|null $deleted_at
  */
 #[Table('vendor_profiles', key: 'id', keyType: 'int')]
 #[Fillable([
@@ -72,6 +74,8 @@ use Illuminate\Support\Carbon;
 #[UseFactory(VendorProfileFactory::class)]
 class VendorProfile extends Model
 {
+    use SoftDeletes;
+
     /** @use HasFactory<VendorProfileFactory> */
     use HasFactory;
 

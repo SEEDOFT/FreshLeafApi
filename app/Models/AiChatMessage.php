@@ -7,6 +7,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Table;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Carbon;
 
@@ -24,6 +25,7 @@ use Illuminate\Support\Carbon;
  * @property Carbon|null $updated_at
  * @property-read AiChatSession $session
  * @property-read User|null $user
+ * @property \Illuminate\Support\Carbon|null $deleted_at
  */
 #[Table('ai_chat_messages', key: 'id', keyType: 'int')]
 #[Fillable([
@@ -38,6 +40,8 @@ use Illuminate\Support\Carbon;
 ])]
 class AiChatMessage extends Model
 {
+    use SoftDeletes;
+
     /**
      * Get the session that owns the AI chat message.
      *

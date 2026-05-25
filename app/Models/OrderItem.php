@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Table;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Carbon;
 
@@ -27,6 +28,7 @@ use Illuminate\Support\Carbon;
  * @property Carbon|null $updated_at
  * @property-read Order $order
  * @property-read VendorInventory $vendorInventory
+ * @property \Illuminate\Support\Carbon|null $deleted_at
  */
 #[Table('order_items', key: 'id')]
 #[Fillable([
@@ -42,6 +44,8 @@ use Illuminate\Support\Carbon;
 ])]
 class OrderItem extends Model
 {
+    use SoftDeletes;
+
     /** @use HasFactory<OrderItemFactory> */
     use HasFactory;
 

@@ -7,6 +7,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Table;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\Cache;
 
 use function is_array;
@@ -19,11 +20,14 @@ use function is_numeric;
  * @property string|null $value
  * @property string $group
  * @property string $type
+ * @property \Illuminate\Support\Carbon|null $deleted_at
  */
 #[Table('settings', key: 'id', keyType: 'int')]
 #[Fillable(['key', 'value', 'group', 'type'])]
 class Setting extends Model
 {
+    use SoftDeletes;
+
     /**
      * {@inheritDoc}
      *

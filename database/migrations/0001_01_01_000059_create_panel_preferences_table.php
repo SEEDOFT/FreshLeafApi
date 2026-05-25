@@ -20,6 +20,7 @@ return new class extends Migration
             $table->json('settings')->nullable();
             $table->timestamps();
             $table->unique(['user_id', 'panel_id']);
+            $table->softDeletes();
         });
     }
 

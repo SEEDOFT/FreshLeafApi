@@ -179,7 +179,7 @@ class VendorInventory extends Model
      */
     public function adjustments(): HasMany
     {
-        return $this->hasMany(InventoryAdjustment::class);
+        return $this->hasMany(InventoryAdjustment::class, 'vendor_inventory_id', 'id');
     }
 
     /**
@@ -189,7 +189,7 @@ class VendorInventory extends Model
      */
     public function discounts(): HasMany
     {
-        return $this->hasMany(VendorInventoryDiscount::class);
+        return $this->hasMany(VendorInventoryDiscount::class, 'vendor_inventory_id', 'id');
     }
 
     /**
@@ -199,14 +199,14 @@ class VendorInventory extends Model
      */
     public function activeDiscount()
     {
-        return $this->hasOne(VendorInventoryDiscount::class)
+        return $this->hasOne(VendorInventoryDiscount::class, 'vendor_inventory_id', 'id')
             ->where(function (Builder $query) {
                 $query->whereNull('starts_at')
-                    ->orWhere('starts_at', '<=', now());
+                    ->orWhere('starts_at', '<=', Carbon::now()->format('Y-m-d H:i:s'));
             })
             ->where(function (Builder $query) {
                 $query->whereNull('ends_at')
-                    ->orWhere('ends_at', '>=', now());
+                    ->orWhere('ends_at', '>=', Carbon::now()->format('Y-m-d H:i:s'));
             })
             ->latest('id');
     }

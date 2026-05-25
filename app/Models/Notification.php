@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\Attributes\Table;
 use Illuminate\Database\Eloquent\Attributes\UseFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Carbon;
 
@@ -27,6 +28,7 @@ use Illuminate\Support\Carbon;
  * @property-read NotificationStatus $status
  * @property-read NotificationType $type
  * @property-read User|null $user
+ * @property \Illuminate\Support\Carbon|null $deleted_at
  */
 #[Table('notifications', key: 'id')]
 #[Fillable([
@@ -41,6 +43,8 @@ use Illuminate\Support\Carbon;
 #[UseFactory(NotificationFactory::class)]
 class Notification extends Model
 {
+    use SoftDeletes;
+
     /** @use HasFactory<NotificationFactory> */
     use HasFactory;
 

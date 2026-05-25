@@ -11,6 +11,7 @@ use Illuminate\Database\Eloquent\Attributes\UseFactory;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Carbon;
@@ -32,6 +33,7 @@ use Illuminate\Support\Carbon;
  * @property-read WalletTransactionType $type
  * @property-read WalletTransactionStatus $status
  * @property-read Collection<int, WalletTransactionHistory> $histories
+ * @property \Illuminate\Support\Carbon|null $deleted_at
  */
 #[Table('wallet_transactions', key: 'id', keyType: 'int')]
 #[Fillable([
@@ -45,6 +47,8 @@ use Illuminate\Support\Carbon;
 #[UseFactory(WalletTransactionFactory::class)]
 class WalletTransaction extends Model
 {
+    use SoftDeletes;
+
     /** @use HasFactory<WalletTransactionFactory> */
     use HasFactory;
 

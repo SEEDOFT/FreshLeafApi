@@ -11,6 +11,7 @@ use Illuminate\Database\Eloquent\Attributes\UseFactory;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\App;
@@ -27,12 +28,15 @@ use Illuminate\Support\Facades\App;
  * @property-read int|null $orders_count
  * @property-read Collection<int, Payment> $payments
  * @property-read int|null $payments_count
+ * @property \Illuminate\Support\Carbon|null $deleted_at
  */
 #[Table('payment_statuses', key: 'id', keyType: 'int', incrementing: false)]
 #[Fillable(['id', 'name_en', 'name_km'])]
 #[UseFactory(PaymentStatusFactory::class)]
 class PaymentStatus extends Model
 {
+    use SoftDeletes;
+
     /** @use HasFactory<PaymentStatusFactory> */
     use HasFactory;
 

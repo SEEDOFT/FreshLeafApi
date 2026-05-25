@@ -20,6 +20,7 @@ return new class extends Migration
             $table->string('symbol');
             $table->decimal('conversion_to_base', 16, 8)->default(1);
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 

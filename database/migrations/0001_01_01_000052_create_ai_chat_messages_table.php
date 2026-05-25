@@ -27,6 +27,7 @@ return new class extends Migration
 
             $table->index(['ai_chat_session_id', 'created_at']);
             $table->index(['ai_chat_session_id', 'sequence']);
+            $table->softDeletes();
         });
     }
 

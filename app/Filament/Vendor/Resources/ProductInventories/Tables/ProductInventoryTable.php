@@ -7,12 +7,15 @@ namespace App\Filament\Vendor\Resources\ProductInventories\Tables;
 use App\Filament\Vendor\Resources\ProductInventories\Schemas\AdjustStockForm;
 use App\Models\ProductCategory;
 use App\Models\VendorInventory;
+use App\Models\VendorInventoryDiscountHistory;
 use App\Models\VendorInventoryStatus;
 use Filament\Actions\Action;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Actions\ViewAction;
+use Filament\Forms\Components\DateTimePicker;
+use Filament\Forms\Components\TextInput;
 use Filament\Notifications\Notification;
 use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\TextColumn;
@@ -75,6 +78,42 @@ class ProductInventoryTable
             ->actions([
                 ViewAction::make(),
                 EditAction::make(),
+                Action::make('addDiscount')
+                    ->label('Add Discount')
+                    ->icon('heroicon-o-receipt-percent')
+                    ->color('info')
+                    ->form([
+                        TextInput::make('discount_percentage')
+                            ->required()
+                            ->numeric()
+                            ->minValue(0)
+                            ->maxValue(100),
+                        DateTimePicker::make('starts_at')
+                            ->label('Starts At (Optional)'),
+                        DateTimePicker::make('ends_at')
+                            ->label('Ends At (Optional)'),
+                    ])
+                    ->action(function (VendorInventory $record, array $data): void {
+                        $discount = $record->discounts()->create([
+                            'discount_percentage' => $data['discount_percentage'],
+                            'starts_at' => $data['starts_at'],
+                            'ends_at' => $data['ends_at'],
+                        ]);
+
+                        VendorInventoryDiscountHistory::create([
+                            'vendor_inventory_discount_id' => $discount->id,
+                            'vendor_inventory_id' => $record->id,
+                            'discount_percentage' => $discount->discount_percentage,
+                            'starts_at' => $discount->starts_at,
+                            'ends_at' => $discount->ends_at,
+                            'action_type' => 'created',
+                        ]);
+
+                        Notification::make()
+                            ->success()
+                            ->title('Discount added successfully')
+                            ->send();
+                    }),
                 Action::make('adjustStock')
                     ->label(__('shared.product.adjust_stock'))
                     ->icon('heroicon-o-adjustments-vertical')

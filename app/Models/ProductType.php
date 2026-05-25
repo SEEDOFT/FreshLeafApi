@@ -11,6 +11,7 @@ use Illuminate\Database\Eloquent\Attributes\UseFactory;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\App;
@@ -24,12 +25,15 @@ use Illuminate\Support\Facades\App;
  * @property-read string $translated_name
  * @property-read Collection<int, Product> $products
  * @property-read int|null $products_count
+ * @property \Illuminate\Support\Carbon|null $deleted_at
  */
 #[Table('product_types', key: 'id', keyType: 'int', incrementing: false)]
 #[Fillable(['id', 'name_en', 'name_km'])]
 #[UseFactory(ProductTypeFactory::class)]
 class ProductType extends Model
 {
+    use SoftDeletes;
+
     /** @use HasFactory<ProductTypeFactory> */
     use HasFactory;
 

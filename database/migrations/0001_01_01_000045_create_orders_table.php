@@ -30,6 +30,7 @@ return new class extends Migration
             $table->decimal('total_amount', 16, 2);
             $table->text('notes')->nullable();
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 

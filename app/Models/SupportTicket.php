@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Table;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
@@ -22,11 +23,14 @@ use Illuminate\Support\Carbon;
  * @property-read User $user
  * @property-read Collection|SupportMessage[] $messages
  * @property-read SupportMessage|null $latestMessage
+ * @property \Illuminate\Support\Carbon|null $deleted_at
  */
 #[Table('support_tickets', key: 'id', keyType: 'int')]
 #[Fillable(['user_id', 'status'])]
 class SupportTicket extends Model
 {
+    use SoftDeletes;
+
     public const string OPEN = 'open';
 
     public const string RESOLVED = 'resolved';

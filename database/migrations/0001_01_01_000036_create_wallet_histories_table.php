@@ -25,6 +25,7 @@ return new class extends Migration
             $table->index('user_id');
             $table->index('currency_id');
             $table->index('balance');
+            $table->softDeletes();
         });
     }
 

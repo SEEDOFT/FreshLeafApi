@@ -7,6 +7,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Table;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 #[Table('inventory_adjustments', key: 'id', keyType: 'int')]
@@ -21,6 +22,8 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 ])]
 class InventoryAdjustment extends Model
 {
+    use SoftDeletes;
+
     /**
      * Get the vendor inventory that owns the adjustment.
      *
@@ -28,7 +31,7 @@ class InventoryAdjustment extends Model
      */
     public function vendorInventory(): BelongsTo
     {
-        return $this->belongsTo(VendorInventory::class);
+        return $this->belongsTo(VendorInventory::class, 'vendor_inventory_id', 'id');
     }
 
     /**
@@ -38,6 +41,6 @@ class InventoryAdjustment extends Model
      */
     public function user(): BelongsTo
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(User::class, 'user_id', 'id');
     }
 }

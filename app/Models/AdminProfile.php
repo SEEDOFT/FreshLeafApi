@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\Attributes\Table;
 use Illuminate\Database\Eloquent\Attributes\UseFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Carbon;
 
@@ -26,6 +27,7 @@ use Illuminate\Support\Carbon;
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  * @property-read User $user
+ * @property \Illuminate\Support\Carbon|null $deleted_at
  */
 #[Table('admin_profiles', key: 'id', keyType: 'int')]
 #[Fillable([
@@ -41,6 +43,8 @@ use Illuminate\Support\Carbon;
 #[UseFactory(AdminProfileFactory::class)]
 class AdminProfile extends Model
 {
+    use SoftDeletes;
+
     /** @use HasFactory<AdminProfileFactory> */
     use HasFactory;
 

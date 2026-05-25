@@ -7,6 +7,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Table;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
 
 #[Table('panel_preferences', key: 'id', keyType: 'int')]
@@ -18,6 +19,8 @@ use Illuminate\Database\Eloquent\Relations\MorphTo;
 ])]
 class PanelPreference extends Model
 {
+    use SoftDeletes;
+
     /**
      * @return MorphTo<Model, $this>
      */

@@ -7,6 +7,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Table;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Carbon;
 
@@ -23,6 +24,7 @@ use Illuminate\Support\Carbon;
  * @property-read User|null $changer
  * @property-read Currency $fromCurrency
  * @property-read Currency $toCurrency
+ * @property \Illuminate\Support\Carbon|null $deleted_at
  */
 #[Table('exchange_rate_histories', key: 'id')]
 #[Fillable([
@@ -34,6 +36,8 @@ use Illuminate\Support\Carbon;
 ])]
 class ExchangeRateHistory extends Model
 {
+    use SoftDeletes;
+
     /**
      * {@inheritDoc}
      *

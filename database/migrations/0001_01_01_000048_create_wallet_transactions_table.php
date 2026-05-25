@@ -25,6 +25,7 @@ return new class extends Migration
             $table->text('description')->nullable();
             $table->timestamp('transaction_date')->nullable();
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 

@@ -10,11 +10,14 @@ use Filament\Actions\CreateAction;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
+use Filament\Actions\RestoreAction;
+use Filament\Actions\RestoreBulkAction;
 use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\TextInput;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Schemas\Schema;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Filters\TrashedFilter;
 use Filament\Tables\Table;
 use Override;
 
@@ -37,9 +40,11 @@ class DiscountsRelationManager extends RelationManager
                     ->minValue(0)
                     ->maxValue(100),
                 DateTimePicker::make('starts_at')
-                    ->label('Starts At (Optional)'),
+                    ->label('Starts At')
+                    ->required(),
                 DateTimePicker::make('ends_at')
-                    ->label('Ends At (Optional)'),
+                    ->label('Ends At')
+                    ->required(),
             ]);
     }
 
@@ -57,7 +62,7 @@ class DiscountsRelationManager extends RelationManager
                     ->dateTime(),
             ])
             ->filters([
-                //
+                TrashedFilter::make(),
             ])
             ->headerActions([
                 CreateAction::make()
@@ -98,6 +103,17 @@ class DiscountsRelationManager extends RelationManager
                             'action_type' => 'deleted',
                         ]);
                     }),
+                RestoreAction::make()
+                    ->before(function ($record) {
+                        VendorInventoryDiscountHistory::create([
+                            'vendor_inventory_discount_id' => $record->id,
+                            'vendor_inventory_id' => $record->vendor_inventory_id,
+                            'discount_percentage' => $record->discount_percentage,
+                            'starts_at' => $record->starts_at,
+                            'ends_at' => $record->ends_at,
+                            'action_type' => 'restored',
+                        ]);
+                    }),
             ])
             ->bulkActions([
                 BulkActionGroup::make([
@@ -111,6 +127,19 @@ class DiscountsRelationManager extends RelationManager
                                     'starts_at' => $record->starts_at,
                                     'ends_at' => $record->ends_at,
                                     'action_type' => 'deleted',
+                                ]);
+                            }
+                        }),
+                    RestoreBulkAction::make()
+                        ->before(function ($records) {
+                            foreach ($records as $record) {
+                                VendorInventoryDiscountHistory::create([
+                                    'vendor_inventory_discount_id' => $record->id,
+                                    'vendor_inventory_id' => $record->vendor_inventory_id,
+                                    'discount_percentage' => $record->discount_percentage,
+                                    'starts_at' => $record->starts_at,
+                                    'ends_at' => $record->ends_at,
+                                    'action_type' => 'restored',
                                 ]);
                             }
                         }),

@@ -11,6 +11,7 @@ use Illuminate\Database\Eloquent\Attributes\UseFactory;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\App;
@@ -25,6 +26,7 @@ use Illuminate\Support\Facades\App;
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  * @property Collection|Wallet[] $wallets
+ * @property \Illuminate\Support\Carbon|null $deleted_at
  */
 #[Table('currencies', key: 'id')]
 #[Fillable([
@@ -36,6 +38,8 @@ use Illuminate\Support\Facades\App;
 #[UseFactory(CurrencyFactory::class)]
 class Currency extends Model
 {
+    use SoftDeletes;
+
     /** @use HasFactory<CurrencyFactory> */
     use HasFactory;
 

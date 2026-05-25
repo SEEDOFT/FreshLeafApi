@@ -25,6 +25,7 @@ return new class extends Migration
             $table->decimal('commission_amount', 16, 2)->default(0);
             $table->decimal('vendor_net_amount', 16, 2)->default(0);
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 

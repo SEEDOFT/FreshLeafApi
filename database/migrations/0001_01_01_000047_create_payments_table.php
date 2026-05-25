@@ -24,6 +24,7 @@ return new class extends Migration
             $table->string('transaction_id')->nullable();
             $table->timestamp('paid_at')->nullable();
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 

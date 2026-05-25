@@ -18,6 +18,7 @@ return new class extends Migration
             $table->foreignId('user_id')->constrained()->cascadeOnDelete();
             $table->string('status')->default('open'); // open, resolved
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 

@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\Attributes\Table;
 use Illuminate\Database\Eloquent\Attributes\UseFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Hash;
@@ -25,12 +26,15 @@ use Illuminate\Support\Facades\Hash;
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  * @property-read User $user
+ * @property \Illuminate\Support\Carbon|null $deleted_at
  */
 #[Table('user_profiles', key: 'id', keyType: 'int')]
 #[Fillable(['user_id', 'pin', 'gender', 'locale', 'theme'])]
 #[UseFactory(UserProfileFactory::class)]
 class UserProfile extends Model
 {
+    use SoftDeletes;
+
     /** @use HasFactory<UserProfileFactory> */
     use HasFactory;
 

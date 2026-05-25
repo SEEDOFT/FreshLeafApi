@@ -7,11 +7,23 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Table;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Carbon;
 
+/**
+ * @property int $id
+ * @property string $name_en
+ * @property string $name_km
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ * @property \Illuminate\Support\Carbon|null $deleted_at
+ */
 #[Table('payout_methods', key: 'id', keyType: 'int')]
 #[Fillable(['id', 'name_en', 'name_km'])]
 class PayoutMethod extends Model
 {
+    use SoftDeletes;
+
     public const int BANK_TRANSFER_ID = 1;
 
     public const string BANK_TRANSFER = 'bank_transfer';

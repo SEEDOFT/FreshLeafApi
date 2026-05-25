@@ -20,6 +20,7 @@ return new class extends Migration
             $table->string('name_km');
             $table->string('symbol');
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 

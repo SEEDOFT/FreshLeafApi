@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Resources\Cart;
 
+use App\Http\Resources\Product\VendorInventoryResource;
 use App\Models\Cart;
 use App\Models\VendorInventory;
 use Illuminate\Http\Request;
@@ -35,27 +36,9 @@ class CartResource extends JsonResource
                 'name_en' => $this->status->name_en,
                 'name_km' => $this->status->name_km,
             ]),
-            'vendor_inventory' => $inventory instanceof VendorInventory ? [
-                'id' => $inventory->id,
-                'price' => (float) $inventory->price,
-                'stock_quantity' => (float) $inventory->stock_quantity,
-                'unit' => $inventory->relationLoaded('unit') ? [
-                    'id' => $inventory->unit->id ?? null,
-                    'name_en' => $inventory->unit->name_en ?? null,
-                    'name_km' => $inventory->unit->name_km ?? null,
-                    'symbol' => $inventory->unit->symbol ?? null,
-                ] : null,
-                'vendor' => $inventory->relationLoaded('vendor') ? [
-                    'id' => $inventory->vendor->id ?? null,
-                    'name' => trim("{$inventory->vendor->first_name} {$inventory->vendor->last_name}"),
-                ] : null,
-                'product' => $inventory->relationLoaded('product') ? [
-                    'id' => $inventory->product->id ?? null,
-                    'name_en' => $inventory->product->name_en ?? null,
-                    'name_km' => $inventory->product->name_km ?? null,
-                    'image_url' => $inventory->product->image_url ?? null,
-                ] : null,
-            ] : null,
+            'vendor_inventory' => $inventory instanceof VendorInventory
+                ? new VendorInventoryResource($inventory)
+                : null,
             'created_at' => \optional($this->created_at)->toIso8601String(),
             'updated_at' => \optional($this->updated_at)->toIso8601String(),
         ];

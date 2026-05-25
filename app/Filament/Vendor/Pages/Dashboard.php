@@ -34,11 +34,11 @@ class Dashboard extends BaseDashboard
         return 1;
     }
 
-    #[Override]
-    public static function getNavigationGroup(): ?string
-    {
-        return __('admin.navigation.dashboard');
-    }
+    // #[Override]
+    // public static function getNavigationGroup(): ?string
+    // {
+    //     return __('admin.navigation.dashboard');
+    // }
 
     #[Override]
     public static function getNavigationLabel(): string

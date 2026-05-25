@@ -13,18 +13,24 @@ use App\Models\OrderStatus;
 use App\Models\OrderType;
 use App\Models\PaymentStatus;
 use App\Models\VendorInventory;
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Str;
 
 class CartController extends Controller
 {
+    /** @var list<string> */
     private const array RELATIONSHIP = [
-        'vendorInventory.product',
-        'vendorInventory.vendor',
+        'vendorInventory.product.productCategory',
+        'vendorInventory.product.type',
+        'vendorInventory.product.defaultUnit',
+        'vendorInventory.product.status',
+        'vendorInventory.packagingType',
         'vendorInventory.unit',
+        'vendorInventory.currency',
+        'vendorInventory.vendor',
+        'vendorInventory.status',
+        'vendorInventory.activeDiscount',
         'status',
     ];
 
@@ -35,12 +41,13 @@ class CartController extends Controller
     {
         $user = $this->authenticatedUser($request);
 
-        $cartRows = $this->activeCartQuery($user->id)
+        $cartRows = Cart::active()
+            ->where('user_id', $user->id)
             ->with(self::RELATIONSHIP)
-            ->get();
+            ->simplePaginate($request->integer('per_page', 10));
 
         return static::successResponse([
-            'items' => CartResource::collection($cartRows),
+            'carts' => CartResource::collection($cartRows),
             'total' => $this->cartTotal($cartRows),
         ], __('api.cart.retrieved'));
     }
@@ -52,21 +59,22 @@ class CartController extends Controller
     {
         $user = $this->authenticatedUser($request);
 
-        $validated = $request->validate([
+        $validatedData = $request->validate([
             'vendor_inventory_id' => ['required', 'integer', 'exists:vendor_inventories,id'],
             'quantity' => ['required', 'numeric', 'min:0.01'],
         ]);
 
         $inventory = VendorInventory::query()
-            ->whereKey($validated['vendor_inventory_id'])
+            ->whereKey($validatedData['vendor_inventory_id'])
             ->firstOrFail();
 
-        $quantity = (float) $validated['quantity'];
+        $quantity = (float) $validatedData['quantity'];
         if ((float) $inventory->stock_quantity < $quantity) {
             return static::errorResponse(__('api.cart.insufficient_stock'));
         }
 
-        $cartRow = $this->activeCartQuery($user->id)
+        $cartRow = Cart::active()
+            ->where('user_id', $user->id)
             ->where('vendor_inventory_id', $inventory->id)
             ->first();
 
@@ -97,15 +105,16 @@ class CartController extends Controller
     {
         $user = $this->authenticatedUser($request);
 
-        $validated = $request->validate([
+        $validatedData = $request->validate([
             'quantity' => ['required', 'numeric', 'min:0.01'],
         ]);
 
-        $cartRow = $this->activeCartQuery($user->id)
+        $cartRow = Cart::active()
+            ->where('user_id', $user->id)
             ->whereKey($itemId)
             ->firstOrFail();
 
-        $quantity = (float) $validated['quantity'];
+        $quantity = (float) $validatedData['quantity'];
         if ((float) $cartRow->vendorInventory->stock_quantity < $quantity) {
             return static::errorResponse(__('api.cart.insufficient_stock'));
         }
@@ -123,7 +132,8 @@ class CartController extends Controller
     {
         $user = $this->authenticatedUser($request);
 
-        $cartRow = $this->activeCartQuery($user->id)
+        $cartRow = Cart::active()
+            ->where('user_id', $user->id)
             ->whereKey($itemId)
             ->firstOrFail();
 
@@ -140,15 +150,16 @@ class CartController extends Controller
     {
         $user = $this->authenticatedUser($request);
 
-        $validated = $request->validate([
+        $validatedData = $request->validate([
             'address_id' => ['required', 'integer', 'exists:addresses,id'],
             'delivery_date' => ['required', 'date'],
             'delivery_slot' => ['required', 'string', 'max:255'],
             'notes' => ['nullable', 'string'],
         ]);
 
-        $order = DB::transaction(function () use ($user, $validated): Order {
-            $cartRows = $this->activeCartQuery($user->id)
+        $order = DB::transaction(function () use ($user, $validatedData): Order {
+            $cartRows = Cart::active()
+                ->where('user_id', $user->id)
                 ->with([
                     'vendorInventory.product',
                     'vendorInventory.unit',
@@ -166,23 +177,34 @@ class CartController extends Controller
                 }
             }
 
-            $subtotal = $this->cartTotal($cartRows);
+            $subtotal = 0.0;
+            $discountAmount = 0.0;
+
+            foreach ($cartRows as $cartRow) {
+                $inventory = $cartRow->vendorInventory;
+                $originalItemTotal = (float) $cartRow->quantity * (float) $inventory->price;
+                $discountedItemTotal = (float) $cartRow->quantity * $inventory->discounted_price;
+
+                $subtotal += $originalItemTotal;
+                $discountAmount += ($originalItemTotal - $discountedItemTotal);
+            }
+
+            $total = $subtotal - $discountAmount;
 
             $order = Order::query()->create([
                 'user_id' => $user->id,
-                'address_id' => $validated['address_id'],
+                'address_id' => $validatedData['address_id'],
                 'order_type_id' => OrderType::STANDARD,
                 'order_status_id' => OrderStatus::PENDING,
                 'payment_status_id' => PaymentStatus::PENDING,
-                'order_number' => $this->generateOrderNumber(),
-                'delivery_date' => $validated['delivery_date'],
-                'delivery_slot' => $validated['delivery_slot'],
-                'subtotal' => $subtotal,
-                'discount_amount' => 0,
+                'delivery_date' => $validatedData['delivery_date'],
+                'delivery_slot' => $validatedData['delivery_slot'],
+                'subtotal' => round($subtotal, 2),
+                'discount_amount' => round($discountAmount, 2),
                 'delivery_fee' => 0,
                 'tax_amount' => 0,
-                'total_amount' => $subtotal,
-                'notes' => $validated['notes'] ?? null,
+                'total_amount' => round($total, 2),
+                'notes' => $validatedData['notes'] ?? null,
             ]);
 
             foreach ($cartRows as $cartRow) {
@@ -192,9 +214,9 @@ class CartController extends Controller
                     'vendor_inventory_id' => $inventory->id,
                     'product_name_snapshot' => $inventory->product->name_en,
                     'unit_snapshot' => $inventory->unit->symbol,
-                    'unit_price_snapshot' => $inventory->price,
+                    'unit_price_snapshot' => $inventory->discounted_price,
                     'quantity' => $cartRow->quantity,
-                    'subtotal' => (float) $cartRow->quantity * (float) $inventory->price,
+                    'subtotal' => (float) $cartRow->quantity * $inventory->discounted_price,
                 ]);
             }
 
@@ -214,16 +236,6 @@ class CartController extends Controller
     }
 
     /**
-     * @return Builder<Cart>
-     */
-    private function activeCartQuery(int $userId): Builder
-    {
-        return Cart::query()
-            ->where('user_id', $userId)
-            ->where('cart_status_id', CartStatus::ACTIVE);
-    }
-
-    /**
      * @param  iterable<Cart>  $cartRows
      */
     private function cartTotal(iterable $cartRows): float
@@ -231,18 +243,9 @@ class CartController extends Controller
         $total = 0.0;
 
         foreach ($cartRows as $cartRow) {
-            $total += (float) $cartRow->quantity * (float) $cartRow->vendorInventory->price;
+            $total += (float) $cartRow->quantity * $cartRow->vendorInventory->discounted_price;
         }
 
         return round($total, 2);
-    }
-
-    private function generateOrderNumber(): string
-    {
-        do {
-            $number = 'ORD-'.now()->format('YmdHis').'-'.Str::upper(Str::random(6));
-        } while (Order::query()->where('order_number', $number)->exists());
-
-        return $number;
     }
 }

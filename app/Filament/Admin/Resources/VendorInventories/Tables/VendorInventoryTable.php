@@ -78,7 +78,7 @@ class VendorInventoryTable
                     ->label('Approve')
                     ->icon('heroicon-o-check-circle')
                     ->color('success')
-                    ->visible(fn (VendorInventory $record): bool => $record->inventory_status_id === VendorInventoryStatus::PENDING_REVIEW_ID)
+                    ->visible(fn (VendorInventory $record): bool => (int) $record->inventory_status_id === VendorInventoryStatus::PENDING_REVIEW_ID)
                     ->action(function (VendorInventory $record): void {
                         $record->update([
                             'inventory_status_id' => VendorInventoryStatus::AVAILABLE_ID,

@@ -10,10 +10,12 @@ use Illuminate\Database\Eloquent\Attributes\Scope;
 use Illuminate\Database\Eloquent\Attributes\Table;
 use Illuminate\Database\Eloquent\Attributes\UseFactory;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
@@ -37,12 +39,16 @@ use Illuminate\Support\Facades\DB;
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  * @property Carbon|null $deleted_at
+ * @property-read float $discounted_price
  * @property-read User $vendor
  * @property-read Product $product
  * @property-read PackagingType|null $packagingType
  * @property-read Currency $currency
  * @property-read Unit $unit
  * @property-read VendorInventoryStatus $status
+ * @property-read VendorInventoryDiscount|null $activeDiscount
+ * @property-read Collection<int, VendorInventoryDiscount> $discounts
+ * @property-read float $discount_percentage
  */
 #[Table('vendor_inventories', key: 'id', keyType: 'int')]
 #[Fillable([
@@ -80,6 +86,26 @@ class VendorInventory extends Model
             'harvest_date' => 'date',
             'batch_images' => 'array',
         ];
+    }
+
+    /**
+     * Get the discounted price based on the current price and active discount percentage.
+     */
+    public function getDiscountedPriceAttribute(): float
+    {
+        $discountPercentage = $this->discount_percentage;
+
+        return (float) $this->price * (1 - ($discountPercentage / 100));
+    }
+
+    /**
+     * Get the active discount percentage.
+     */
+    public function getDiscountPercentageAttribute(): float
+    {
+        $activeDiscount = $this->activeDiscount;
+
+        return $activeDiscount ? max(0, min(100, (float) $activeDiscount->discount_percentage)) : 0.0;
     }
 
     /**
@@ -154,6 +180,35 @@ class VendorInventory extends Model
     public function adjustments(): HasMany
     {
         return $this->hasMany(InventoryAdjustment::class);
+    }
+
+    /**
+     * Get all discounts for this inventory.
+     *
+     * @return HasMany<VendorInventoryDiscount, $this>
+     */
+    public function discounts(): HasMany
+    {
+        return $this->hasMany(VendorInventoryDiscount::class);
+    }
+
+    /**
+     * Get the currently active discount.
+     *
+     * @return HasOne<VendorInventoryDiscount, $this>
+     */
+    public function activeDiscount()
+    {
+        return $this->hasOne(VendorInventoryDiscount::class)
+            ->where(function (Builder $query) {
+                $query->whereNull('starts_at')
+                    ->orWhere('starts_at', '<=', now());
+            })
+            ->where(function (Builder $query) {
+                $query->whereNull('ends_at')
+                    ->orWhere('ends_at', '>=', now());
+            })
+            ->latest('id');
     }
 
     /**

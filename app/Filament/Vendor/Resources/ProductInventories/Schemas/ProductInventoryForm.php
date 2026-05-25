@@ -13,6 +13,7 @@ use App\Models\VendorInventoryStatus;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Select;
+use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
@@ -24,21 +25,22 @@ class ProductInventoryForm
         return $schema
             ->components([
                 Section::make(__('shared.product.general_info'))
+                    ->relationship('product')
                     ->columns(2)
                     ->schema([
-                        TextInput::make('product.name_en')
+                        TextInput::make('name_en')
                             ->label(__('shared.product.name_en'))
                             ->disabled()
                             ->columnSpanFull(),
-                        TextInput::make('product.name_km')
+                        TextInput::make('name_km')
                             ->label(__('shared.product.name_km'))
                             ->disabled()
                             ->columnSpanFull(),
-                        TextInput::make('product.description_en')
+                        Textarea::make('description_en')
                             ->label(__('shared.product.description_en'))
                             ->disabled()
                             ->columnSpanFull(),
-                        TextInput::make('product.description_km')
+                        Textarea::make('description_km')
                             ->label(__('shared.product.description_km'))
                             ->disabled()
                             ->columnSpanFull(),
@@ -119,6 +121,9 @@ class ProductInventoryForm
                             ->label(__('shared.product.packaging_type'))
                             ->options(PackagingType::all()->pluck('translated_name', 'id'))
                             ->required(),
+                    ]),
+                Section::make(__('shared.product.visuals'))
+                    ->schema([
                         FileUpload::make('batch_images')
                             ->label(__('shared.product.visuals'))
                             ->multiple()

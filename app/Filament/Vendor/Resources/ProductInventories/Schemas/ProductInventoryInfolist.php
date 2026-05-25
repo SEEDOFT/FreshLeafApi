@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Filament\Vendor\Resources\ProductInventories\Schemas;
 
-use Filament\Infolists\Components\ImageEntry;
 use Filament\Infolists\Components\TextEntry;
+use Filament\Infolists\Components\ViewEntry;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 
@@ -43,8 +43,10 @@ class ProductInventoryInfolist
                             ->label(__('shared.product.name_km')),
                         TextEntry::make('price')
                             ->placeholder($notProvided)
-                            ->label(__('shared.product.unit_price'))
-                            ->money('USD'),
+                            ->label(__('shared.product.unit_price')),
+                        TextEntry::make('currency.code')
+                            ->placeholder($notProvided)
+                            ->label(__('shared.product.currency')),
                         TextEntry::make('stock_quantity')
                             ->placeholder($notProvided)
                             ->label(__('shared.product.stock')),
@@ -72,16 +74,19 @@ class ProductInventoryInfolist
                         TextEntry::make('harvest_date')
                             ->placeholder($notProvided)
                             ->label(__('shared.product.harvest_date'))
-                            ->date(),
+                            ->dateTime('d M Y, h:i A'),
                         TextEntry::make('shelf_life_days')
                             ->placeholder($notProvided)
                             ->label(__('shared.product.shelf_life'))
                             ->suffix(' '.__('shared.product.days')),
-                        TextEntry::make('packaging_type')
+                        TextEntry::make('packagingType.translated_name')
                             ->placeholder($notProvided)
                             ->label(__('shared.product.packaging_type')),
-                        ImageEntry::make('batch_images')
-                            ->label(__('shared.product.visuals'))
+                    ]),
+                Section::make(__('shared.product.visuals'))
+                    ->schema([
+                        ViewEntry::make('batch_images')
+                            ->view('filament.infolists.components.horizontal-image-scroll')
                             ->columnSpanFull(),
                     ]),
             ]);

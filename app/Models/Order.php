@@ -15,6 +15,10 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Carbon;
 
+use function str_pad;
+use function strlen;
+use function substr;
+
 /**
  * @property int $id
  * @property int $user_id
@@ -66,6 +70,41 @@ class Order extends Model
 {
     /** @use HasFactory<OrderFactory> */
     use HasFactory;
+
+    /**
+     * Boot the model.
+     */
+    protected static function booted(): void
+    {
+        static::creating(function (Order $order) {
+            if (empty($order->order_number)) {
+                $order->order_number = self::generateOrderNumber();
+            }
+        });
+    }
+
+    /**
+     * Generate a sequential order number like FLDDMMYY000001
+     */
+    public static function generateOrderNumber(): string
+    {
+        $prefix = 'FL'.Carbon::now()->format('dmy');
+
+        /** @var Order|null $lastOrder */
+        $lastOrder = self::query()
+            ->where('order_number', 'LIKE', $prefix.'%')
+            ->orderBy('order_number', 'desc')
+            ->first();
+
+        if ($lastOrder) {
+            $sequence = (int) substr($lastOrder->order_number, strlen($prefix));
+            $nextSequence = $sequence + 1;
+        } else {
+            $nextSequence = 1;
+        }
+
+        return $prefix.str_pad((string) $nextSequence, 6, '0', STR_PAD_LEFT);
+    }
 
     /**
      * {@inheritDoc}

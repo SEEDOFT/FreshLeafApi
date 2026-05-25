@@ -128,32 +128,6 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | AI Chat API Messages
-    |--------------------------------------------------------------------------
-    */
-    'ai_chat' => [
-        'chat_started' => 'AI chat session started',
-        'response_received' => 'AI response received',
-        'history_retrieved' => 'Chat history retrieved',
-        'session_not_found' => 'Chat session not found',
-        'service_unavailable' => 'AI service is currently unavailable',
-    ],
-
-    /*
-    |--------------------------------------------------------------------------
-    | AI Chat API Messages
-    |--------------------------------------------------------------------------
-    */
-    'ai_chat' => [
-        'chat_started' => 'AI chat session started',
-        'response_received' => 'AI response received',
-        'history_retrieved' => 'Chat history retrieved',
-        'session_not_found' => 'Chat session not found',
-        'service_unavailable' => 'AI service is currently unavailable',
-    ],
-
-    /*
-    |--------------------------------------------------------------------------
     | Product API Messages
     |--------------------------------------------------------------------------
     */

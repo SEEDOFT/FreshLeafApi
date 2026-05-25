@@ -39,14 +39,10 @@ class OrderForm
                             ->dehydrated(false),
                         Select::make('order_status_id')
                             ->label(__('shared.order.status'))
-                            ->relationship('status', 'name')
-                            ->disabled()
-                            ->dehydrated(false),
+                            ->relationship('status', 'name'),
                         Select::make('payment_status_id')
                             ->label(__('shared.order.payment_status'))
-                            ->relationship('paymentStatus', 'name')
-                            ->disabled()
-                            ->dehydrated(false),
+                            ->relationship('paymentStatus', 'name'),
                     ]),
 
                 Section::make(__('shared.order.delivery_info'))

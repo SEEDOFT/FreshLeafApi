@@ -96,6 +96,7 @@ class ProductInventoryResource extends Resource
     public static function getRelations(): array
     {
         return [
+            RelationManagers\DiscountsRelationManager::class,
             AdjustmentsRelationManager::class,
         ];
     }

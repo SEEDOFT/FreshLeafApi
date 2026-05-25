@@ -150,6 +150,8 @@ Route::prefix('v1')->name('v1.')->group(static function () {
                 ->group(static function () {
                     Route::get('/', 'index')->name('index');
                     Route::get('{id}', 'show')->name('show');
+                    Route::post('{id}/cancel', 'cancel')->name('cancel');
+                    Route::post('{id}/confirm-receipt', 'confirmReceipt')->name('confirmReceipt');
                 });
 
             Route::prefix('wishlist')

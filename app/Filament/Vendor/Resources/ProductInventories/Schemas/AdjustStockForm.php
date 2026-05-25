@@ -9,9 +9,13 @@ use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Select as FormSelect;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput as FormTextInput;
+use Filament\Schemas\Components\Component;
 
 class AdjustStockForm
 {
+    /**
+     * @return array<int, Component>
+     */
     public static function schema(): array
     {
         return [

@@ -28,7 +28,7 @@ class OrderResource extends JsonResource
             'order_type_id' => $this->order_type_id,
             'order_status_id' => $this->order_status_id,
             'payment_status_id' => $this->payment_status_id,
-            'delivery_date' => $this->delivery_date?->format('Y-m-d'),
+            'delivery_date' => $this->delivery_date->format('Y-m-d'),
             'delivery_slot' => $this->delivery_slot,
             'subtotal' => $this->subtotal,
             'discount_amount' => $this->discount_amount,
@@ -38,19 +38,19 @@ class OrderResource extends JsonResource
             'notes' => $this->notes,
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
-            
+
             // Relationships
-            'status' => $this->whenLoaded('status', fn() => [
+            'status' => $this->whenLoaded('status', fn () => [
                 'id' => $this->status->id,
                 'name' => $this->status->name,
                 'translated_name' => $this->status->translated_name,
             ]),
-            'payment_status' => $this->whenLoaded('paymentStatus', fn() => [
+            'payment_status' => $this->whenLoaded('paymentStatus', fn () => [
                 'id' => $this->paymentStatus->id,
                 'name' => $this->paymentStatus->name,
                 'translated_name' => $this->paymentStatus->translated_name,
             ]),
-            'type' => $this->whenLoaded('type', fn() => [
+            'type' => $this->whenLoaded('type', fn () => [
                 'id' => $this->type->id,
                 'name' => $this->type->name,
                 'translated_name' => $this->type->translated_name,

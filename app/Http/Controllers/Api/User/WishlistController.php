@@ -7,38 +7,44 @@ namespace App\Http\Controllers\Api\User;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\Wishlist\WishlistResource;
 use App\Models\Wishlist;
+use App\Models\WishlistHistory;
 use App\Models\WishlistStatus;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
 
 class WishlistController extends Controller
 {
+    /**
+     * @var list<string>
+     */
     private const array RELATIONSHIP = [
-        'items.vendorInventory.product',
-        'items.vendorInventory.vendor',
-        'items.vendorInventory.unit',
-        'items.status',
-        'items.type',
+        'vendorInventory.product.productCategory',
+        'vendorInventory.product.type',
+        'vendorInventory.product.defaultUnit',
+        'vendorInventory.product.status',
+        'vendorInventory.packagingType',
+        'vendorInventory.unit',
+        'vendorInventory.currency',
+        'vendorInventory.vendor',
+        'vendorInventory.status',
+        'vendorInventory.activeDiscount',
         'status',
-        'type',
     ];
 
     /**
-     * Get the active wishlist for the authenticated user.
+     * Get active wishlist items for the authenticated user.
      */
     public function index(Request $request): JsonResponse
     {
         $user = $this->authenticatedUser($request);
 
-        $wishlist = Wishlist::create([
-            'user_id' => $user->id,
-            'user_wishlist_status_id' => WishlistStatus::ACTIVE_ID,
-        ]);
-
-        $wishlist->load(self::RELATIONSHIP);
+        $items = Wishlist::active($user->id)
+            ->with(self::RELATIONSHIP)
+            ->simplePaginate($request->integer('per_page', 10));
 
         return static::successResponse(
-            new WishlistResource($wishlist),
+            ['wishlists' => WishlistResource::collection($items)],
             __('api.wishlist.retrieved')
         );
     }
@@ -51,17 +57,66 @@ class WishlistController extends Controller
         $user = $this->authenticatedUser($request);
 
         $validatedData = $request->validate([
-            'vendor_inventory_id' => 'required|exists:vendor_inventories,id',
+            'vendor_inventory_id' => ['required', 'integer', 'exists:vendor_inventories,id'],
         ]);
 
-        $wishlist = Wishlist::create([
-            'user_id' => $user->id,
-            'vendor_inventory_id' => $validatedData['vendor_inventory_id'],
-            'user_wishlist_status_id' => WishlistStatus::ACTIVE_ID,
-        ]);
+        $wishlist = Wishlist::withTrashed()
+            ->where('user_id', $user->id)
+            ->where('vendor_inventory_id', $validatedData['vendor_inventory_id'])
+            ->first();
 
-        $wishlist->load(self::RELATIONSHIP);
+        if ($wishlist instanceof Wishlist && $wishlist->isActive()) {
+            // Toggle OFF: soft-delete the existing active record
+            $wishlist->update([
+                'wishlist_status_id' => WishlistStatus::DELETED_ID,
+                'deleted_at' => Carbon::now(),
+            ]);
 
-        return static::successResponse(new WishlistResource($wishlist));
+            $wishlist->refresh();
+
+            WishlistHistory::insert([
+                'user_id' => $user->id,
+                'wishlist_id' => $wishlist->id,
+                'vendor_inventory_id' => $wishlist->vendor_inventory_id,
+                'wishlist_status_id' => $wishlist->wishlist_status_id,
+                'created_at' => $wishlist->created_at,
+                'updated_at' => $wishlist->updated_at,
+                'deleted_at' => $wishlist->deleted_at,
+            ]);
+
+            $message = __('api.wishlist.item_removed');
+        } else {
+            // Toggle ON: resurrect a soft-deleted record, or create a fresh one
+            $wishlist = Wishlist::updateOrCreate(
+                [
+                    'user_id' => $user->id,
+                    'vendor_inventory_id' => $validatedData['vendor_inventory_id'],
+                ],
+                [
+                    'wishlist_status_id' => WishlistStatus::ACTIVE_ID,
+                    'deleted_at' => null,
+                ]
+            );
+
+            WishlistHistory::insert([
+                'user_id' => $user->id,
+                'wishlist_id' => $wishlist->id,
+                'vendor_inventory_id' => $wishlist->vendor_inventory_id,
+                'wishlist_status_id' => $wishlist->wishlist_status_id,
+                'created_at' => $wishlist->created_at,
+                'updated_at' => $wishlist->updated_at,
+            ]);
+
+            $message = __('api.wishlist.item_added');
+        }
+
+        return static::successResponse(
+            ['wishlists' => WishlistResource::collection(
+                Wishlist::active($user->id)
+                    ->with(self::RELATIONSHIP)
+                    ->simplePaginate($request->integer('per_page', 10))
+            )],
+            $message
+        );
     }
 }

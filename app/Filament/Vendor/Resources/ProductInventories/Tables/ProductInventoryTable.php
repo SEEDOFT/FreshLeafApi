@@ -7,6 +7,7 @@ namespace App\Filament\Vendor\Resources\ProductInventories\Tables;
 use App\Filament\Vendor\Resources\ProductInventories\Schemas\AdjustStockForm;
 use App\Models\ProductCategory;
 use App\Models\VendorInventory;
+use App\Models\VendorInventoryStatus;
 use Filament\Actions\Action;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
@@ -49,17 +50,17 @@ class ProductInventoryTable
                     ->numeric()
                     ->sortable(),
 
-                TextColumn::make('unit.name')
+                TextColumn::make('unit.translated_name')
                     ->label(__('shared.product.unit')),
 
-                TextColumn::make('status.name')
+                TextColumn::make('status.translated_name')
                     ->label(__('shared.product.status'))
                     ->badge()
                     ->sortable(),
 
                 TextColumn::make('updated_at')
                     ->label(__('shared.updated_at'))
-                    ->dateTime()
+                    ->dateTime('d M Y, h:i A')
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
@@ -87,6 +88,10 @@ class ProductInventoryTable
                             proofImagePath: $data['proof_image_path'] ?? null,
                             notes: $data['notes'],
                         );
+
+                        $record->update([
+                            'inventory_status_id' => VendorInventoryStatus::PENDING_REVIEW_ID,
+                        ]);
 
                         Notification::make()
                             ->success()

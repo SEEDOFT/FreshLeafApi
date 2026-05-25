@@ -17,7 +17,7 @@ class ListVendorInventories extends ListRecords
     protected function getHeaderActions(): array
     {
         return [
-            // Monitoring only
+            //
         ];
     }
 }

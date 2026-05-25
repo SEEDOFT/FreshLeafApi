@@ -6,11 +6,14 @@ namespace App\Models;
 
 use Database\Factories\CartFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
+use Illuminate\Database\Eloquent\Attributes\Scope;
 use Illuminate\Database\Eloquent\Attributes\Table;
 use Illuminate\Database\Eloquent\Attributes\UseFactory;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Carbon;
 
 /**
@@ -31,7 +34,7 @@ use Illuminate\Support\Carbon;
 class Cart extends Model
 {
     /** @use HasFactory<CartFactory> */
-    use HasFactory;
+    use HasFactory, SoftDeletes;
 
     /**
      * {@inheritDoc}
@@ -73,5 +76,16 @@ class Cart extends Model
     public function status(): BelongsTo
     {
         return $this->belongsTo(CartStatus::class, 'cart_status_id', 'id');
+    }
+
+    /**
+     * Active Cart
+     *
+     * @param  Builder<Cart>  $query
+     */
+    #[Scope]
+    protected function active(Builder $query): void
+    {
+        $query->where('cart_status_id', CartStatus::ACTIVE_ID);
     }
 }

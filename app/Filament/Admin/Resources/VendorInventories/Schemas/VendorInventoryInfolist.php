@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace App\Filament\Admin\Resources\VendorInventories\Schemas;
 
 use App\Models\VendorInventory;
-use Filament\Infolists\Components\ImageEntry;
 use Filament\Infolists\Components\TextEntry;
+use Filament\Infolists\Components\ViewEntry;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 
@@ -39,8 +39,9 @@ class VendorInventoryInfolist
                         TextEntry::make('product.name_km')
                             ->label(__('admin.resources.product.name_km')),
                         TextEntry::make('price')
-                            ->label(__('admin.resources.product.unit_price'))
-                            ->money('USD'),
+                            ->label(__('admin.resources.product.unit_price')),
+                        TextEntry::make('currency.code')
+                            ->label(__('shared.product.currency')),
                         TextEntry::make('stock_quantity')
                             ->label(__('admin.resources.product.stock')),
                         TextEntry::make('unit.translated_name')
@@ -67,9 +68,11 @@ class VendorInventoryInfolist
                             ->suffix(' '.__('admin.resources.product.days')),
                         TextEntry::make('packagingType.translated_name')
                             ->label(__('admin.resources.product.packaging_type')),
-                        ImageEntry::make('batch_images')
-                            ->label(__('shared.product.visuals'))
-                            ->disk('public')
+                    ]),
+                Section::make(__('shared.product.visuals'))
+                    ->schema([
+                        ViewEntry::make('batch_images')
+                            ->view('filament.infolists.components.horizontal-image-scroll')
                             ->columnSpanFull(),
                     ]),
             ]);

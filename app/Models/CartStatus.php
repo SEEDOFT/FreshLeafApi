@@ -33,13 +33,13 @@ class CartStatus extends Model
 
     public const int ACTIVE_ID = 1;
 
-    public const string ACTIVE = 'ACTIVE';
-
     public const int REMOVED_ID = 2;
 
-    public const string REMOVED = 'REMOVED';
-
     public const int CHECKED_OUT_ID = 3;
+
+    public const string ACTIVE = 'ACTIVE';
+
+    public const string REMOVED = 'REMOVED';
 
     public const string CHECKED_OUT = 'CHECKED_OUT';
 

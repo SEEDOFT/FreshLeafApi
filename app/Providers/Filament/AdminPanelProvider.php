@@ -86,8 +86,8 @@ class AdminPanelProvider extends PanelProvider
                     ->label(fn (): string => __('admin.navigation.financial')),
                 NavigationGroup::make()
                     ->label(fn (): string => __('admin.navigation.settings')),
-                NavigationGroup::make()
-                    ->label(fn (): string => __('admin.navigation.app_control')),
+                // NavigationGroup::make()
+                //     ->label(fn (): string => __('admin.navigation.app_control')),
             ])
             ->discoverResources(in: app_path('Filament/Admin/Resources'), for: 'App\Filament\Admin\Resources')
             ->discoverPages(in: app_path('Filament/Admin/Pages'), for: 'App\Filament\Admin\Pages')

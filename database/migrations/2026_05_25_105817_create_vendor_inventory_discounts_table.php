@@ -13,13 +13,13 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('wishlists', static function (Blueprint $table) {
+        Schema::create('vendor_inventory_discounts', static function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('user_id');
-            $table->unsignedBigInteger('vendor_inventory_id');
-            $table->unsignedBigInteger('wishlist_status_id');
+            $table->foreignId('vendor_inventory_id')->constrained('vendor_inventories')->cascadeOnDelete();
+            $table->decimal('discount_percentage', 5, 2);
+            $table->timestamp('starts_at')->nullable();
+            $table->timestamp('ends_at')->nullable();
             $table->timestamps();
-            $table->softDeletes();
         });
     }
 
@@ -28,6 +28,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('wishlists');
+        Schema::dropIfExists('vendor_inventory_discounts');
     }
 };

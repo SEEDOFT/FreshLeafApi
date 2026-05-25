@@ -22,7 +22,7 @@ use Illuminate\Support\Str;
  * @property int $id
  * @property int $product_category_id
  * @property int $product_type_id
- * @property int $default_unit_id
+ * @property int $unit
  * @property int $product_status_id
  * @property string $name_en
  * @property string $name_km

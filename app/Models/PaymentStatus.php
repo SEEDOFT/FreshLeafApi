@@ -19,6 +19,7 @@ use Illuminate\Support\Facades\App;
  * @property int $id
  * @property string $name_en
  * @property string $name_km
+ * @property-read string $name
  * @property string|null $translated_name
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
@@ -50,6 +51,14 @@ class PaymentStatus extends Model
     public const string FAILED = 'FAILED';
 
     public const string REFUNDED = 'REFUNDED';
+
+    /**
+     * Get the English name (as the generic name).
+     */
+    public function getNameAttribute(): string
+    {
+        return $this->name_en;
+    }
 
     /**
      * Get the translated name of the payment status.

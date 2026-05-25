@@ -12,9 +12,13 @@ use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
+use Filament\Schemas\Components\Component;
 
 class AddToStoreForm
 {
+    /**
+     * @return array<int, Component>
+     */
     public static function schema(): array
     {
         return [

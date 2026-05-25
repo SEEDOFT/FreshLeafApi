@@ -67,10 +67,14 @@ class VendorPanelProvider extends PanelProvider
                 PanelsRenderHook::BODY_END,
                 fn (): string => view('filament.hooks.panel-assets')->render(),
             )
+            ->renderHook(
+                PanelsRenderHook::BODY_END,
+                fn (): string => view('filament.components.lightbox')->render(),
+            )
             ->colors(ThemeColors::getPalette())
             ->navigationGroups([
-                NavigationGroup::make()
-                    ->label(fn (): string => __('admin.navigation.dashboard')),
+                // NavigationGroup::make()
+                //     ->label(fn (): string => __('admin.navigation.dashboard')),
                 NavigationGroup::make()
                     ->label(fn (): string => __('admin.navigation.shop')),
                 NavigationGroup::make()

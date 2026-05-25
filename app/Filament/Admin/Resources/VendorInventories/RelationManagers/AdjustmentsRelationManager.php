@@ -19,12 +19,13 @@ use Override;
 
 class AdjustmentsRelationManager extends RelationManager
 {
+    #[Override]
     protected static string $relationship = 'adjustments';
 
     #[Override]
     public function form(Schema $schema): Schema
     {
-        return $schema; // Read-only via Infolist/View
+        return $schema;
     }
 
     #[Override]

@@ -33,7 +33,7 @@ class UserResource extends JsonResource
             'phone_number' => $this->phone_number,
             'image' => $this->when(
                 $this->image !== null,
-                fn () => Storage::url('users/'.$this->image),
+                fn () => Storage::disk('public')->url($this->image),
                 null
             ),
             'set_pin' => (bool) ($this->userProfile->pin ?? false),

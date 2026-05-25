@@ -23,6 +23,7 @@ use Illuminate\Support\Facades\App;
  * @property string|null $color
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
+ * @property-read string $name
  * @property-read string|null $translated_name
  * @property-read Collection<int, Order> $orders
  * @property-read int|null $orders_count
@@ -54,6 +55,14 @@ class OrderStatus extends Model
     public const string DELIVERED = 'DELIVERED';
 
     public const string CANCELLED = 'CANCELLED';
+
+    /**
+     * Get the English name (as the generic name).
+     */
+    public function getNameAttribute(): string
+    {
+        return $this->name_en;
+    }
 
     /**
      * Get the translated name of the status.

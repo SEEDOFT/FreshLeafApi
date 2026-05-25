@@ -11,8 +11,8 @@ use Illuminate\Database\Eloquent\Attributes\UseFactory;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\App;
 
@@ -25,17 +25,17 @@ use Illuminate\Support\Facades\App;
  * @property Carbon|null $updated_at
  * @property-read Collection<int, PaymentMethod> $paymentMethods
  * @property-read int|null $paymentMethods_count
- * @property \Illuminate\Support\Carbon|null $deleted_at
+ * @property Carbon|null $deleted_at
  */
 #[Table('payment_method_statuses', key: 'id', keyType: 'int', incrementing: false)]
 #[Fillable(['id', 'name_en', 'name_km'])]
 #[UseFactory(PaymentMethodStatusFactory::class)]
 class PaymentMethodStatus extends Model
 {
-    use SoftDeletes;
-
     /** @use HasFactory<PaymentMethodStatusFactory> */
     use HasFactory;
+
+    use SoftDeletes;
 
     public const int ACTIVE_ID = 1;
 

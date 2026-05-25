@@ -10,9 +10,9 @@ use Illuminate\Database\Eloquent\Attributes\Table;
 use Illuminate\Database\Eloquent\Attributes\UseFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
 
@@ -27,17 +27,17 @@ use Illuminate\Support\Collection;
  * @property-read Currency $currency
  * @property-read Collection<int, WalletHistory> $histories
  * @property-read Collection<int, WalletTransaction> $transactions
- * @property \Illuminate\Support\Carbon|null $deleted_at
+ * @property Carbon|null $deleted_at
  */
 #[Table('wallets', key: 'id', keyType: 'int')]
 #[Fillable(['user_id', 'balance', 'currency_id'])]
 #[UseFactory(WalletFactory::class)]
 class Wallet extends Model
 {
-    use SoftDeletes;
-
     /** @use HasFactory<WalletFactory> */
     use HasFactory;
+
+    use SoftDeletes;
 
     /**
      * {@inheritDoc}

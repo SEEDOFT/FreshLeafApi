@@ -10,8 +10,8 @@ use Illuminate\Database\Eloquent\Attributes\Table;
 use Illuminate\Database\Eloquent\Attributes\UseFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Carbon;
 
 /**
@@ -24,17 +24,17 @@ use Illuminate\Support\Carbon;
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  * @property-read User $user
- * @property \Illuminate\Support\Carbon|null $deleted_at
+ * @property Carbon|null $deleted_at
  */
 #[Table('user_devices', key: 'id', keyType: 'int')]
 #[Fillable(['user_id', 'device_token', 'device_token_hash', 'device_type', 'is_active'])]
 #[UseFactory(UserDeviceFactory::class)]
 class UserDevice extends Model
 {
-    use SoftDeletes;
-
     /** @use HasFactory<UserDeviceFactory> */
     use HasFactory;
+
+    use SoftDeletes;
 
     /**
      * {@inheritDoc}

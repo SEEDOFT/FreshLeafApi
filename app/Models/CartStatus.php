@@ -11,8 +11,8 @@ use Illuminate\Database\Eloquent\Attributes\UseFactory;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Carbon;
 
 /**
@@ -23,17 +23,17 @@ use Illuminate\Support\Carbon;
  * @property Carbon|null $updated_at
  * @property-read Collection<int, Cart> $carts
  * @property-read int|null $carts_count
- * @property \Illuminate\Support\Carbon|null $deleted_at
+ * @property Carbon|null $deleted_at
  */
 #[Table('cart_statuses', key: 'id', keyType: 'int', incrementing: false)]
 #[Fillable(['id', 'name_en', 'name_km'])]
 #[UseFactory(CartStatusFactory::class)]
 class CartStatus extends Model
 {
-    use SoftDeletes;
-
     /** @use HasFactory<CartStatusFactory> */
     use HasFactory;
+
+    use SoftDeletes;
 
     public const int ACTIVE_ID = 1;
 

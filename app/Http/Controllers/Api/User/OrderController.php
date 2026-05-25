@@ -17,21 +17,26 @@ class OrderController extends Controller
     /**
      * Display a listing of the user's orders.
      */
-    public function index(Request $request): AnonymousResourceCollection
+    public function index(Request $request): JsonResponse
     {
+        $user = $this->authenticatedUser($request);
         $orders = Order::with(['status', 'paymentStatus', 'type'])
-            ->where('user_id', auth()->id())
+            ->where('user_id', $user->id)
             ->latest()
-            ->paginate(15);
+            ->paginate($request->integer('per_page', 15));
 
-        return OrderResource::collection($orders);
+        return static::successResponse(
+            OrderResource::collection($orders),
+            __('api.order.orders_retrieved')
+        );
     }
 
     /**
      * Display the specified order.
      */
-    public function show(Request $request, int $id): JsonResponse|OrderResource
+    public function show(Request $request, int $id): JsonResponse
     {
+        $user = $this->authenticatedUser($request);
         $order = Order::with([
             'status',
             'paymentStatus',
@@ -42,21 +47,17 @@ class OrderController extends Controller
             'items.vendorInventory.activeDiscount',
             'address',
         ])
-            ->where('user_id', auth()->id())
+            ->where('user_id', $user->id)
             ->find($id);
 
         if (! $order) {
-            return response()->json([
-                'status' => [
-                    'code' => '404',
-                    'success' => false,
-                    'message' => trans('api.general.not_found', ['model' => 'Order']),
-                ],
-                'data' => null,
-            ], 404);
+            return static::notFoundResponse(trans('api.general.not_found', ['model' => 'Order']));
         }
 
-        return new OrderResource($order);
+        return static::successResponse(
+            new OrderResource($order),
+            __('api.order.retrieved')
+        );
     }
 
     /**
@@ -64,41 +65,24 @@ class OrderController extends Controller
      */
     public function cancel(Request $request, int $id): JsonResponse
     {
-        $order = Order::where('user_id', auth()->id())->find($id);
+        $user = $this->authenticatedUser($request);
+        $order = Order::where('user_id', $user->id)->find($id);
 
         if (! $order) {
-            return response()->json([
-                'status' => [
-                    'code' => '404',
-                    'success' => false,
-                    'message' => trans('api.general.not_found', ['model' => 'Order']),
-                ],
-                'data' => null,
-            ], 404);
+            return static::notFoundResponse(trans('api.general.not_found', ['model' => 'Order']));
         }
 
         if ($order->order_status_id !== OrderStatus::PENDING_ID) {
-            return response()->json([
-                'status' => [
-                    'code' => '422',
-                    'success' => false,
-                    'message' => __('api.order.cannot_cancel'),
-                ],
-                'data' => null,
-            ], 422);
+            return static::errorResponse(__('api.order.cannot_cancel'), 422);
         }
 
         $order->order_status_id = OrderStatus::CANCELLED_ID;
         $order->save();
 
-        return response()->json([
-            'status' => [
-                'code' => '200',
-                'success' => true,
-                'message' => __('api.order.cancelled'),
-            ],
-            'data' => new OrderResource($order->fresh(['status', 'paymentStatus', 'type'])),
-        ]);
+        return static::successResponse(
+            new OrderResource($order->fresh(['status', 'paymentStatus', 'type'])),
+            __('api.order.cancelled')
+        );
     }
 
     /**
@@ -106,40 +90,23 @@ class OrderController extends Controller
      */
     public function confirmReceipt(Request $request, int $id): JsonResponse
     {
-        $order = Order::where('user_id', auth()->id())->find($id);
+        $user = $this->authenticatedUser($request);
+        $order = Order::where('user_id', $user->id)->find($id);
 
         if (! $order) {
-            return response()->json([
-                'status' => [
-                    'code' => '404',
-                    'success' => false,
-                    'message' => trans('api.general.not_found', ['model' => 'Order']),
-                ],
-                'data' => null,
-            ], 404);
+            return static::notFoundResponse(trans('api.general.not_found', ['model' => 'Order']));
         }
 
         if (! in_array($order->order_status_id, [OrderStatus::DELIVERED_ID, OrderStatus::PREPARING_ID], true)) {
-            return response()->json([
-                'status' => [
-                    'code' => '422',
-                    'success' => false,
-                    'message' => __('api.order.cannot_confirm_receipt'),
-                ],
-                'data' => null,
-            ], 422);
+            return static::errorResponse(__('api.order.cannot_confirm_receipt'), 422);
         }
 
         $order->order_status_id = OrderStatus::DELIVERED_ID;
         $order->save();
 
-        return response()->json([
-            'status' => [
-                'code' => '200',
-                'success' => true,
-                'message' => __('api.order.receipt_confirmed'),
-            ],
-            'data' => new OrderResource($order->fresh(['status', 'paymentStatus', 'type'])),
-        ]);
+        return static::successResponse(
+            new OrderResource($order->fresh(['status', 'paymentStatus', 'type'])),
+            __('api.order.receipt_confirmed')
+        );
     }
 }

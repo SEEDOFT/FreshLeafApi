@@ -7,8 +7,8 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Table;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Carbon;
 
 /**
@@ -27,7 +27,7 @@ use Illuminate\Support\Carbon;
  * @property-read PayoutStatus $status
  * @property-read PayoutMethod $method
  * @property-read User|null $processor
- * @property \Illuminate\Support\Carbon|null $deleted_at
+ * @property Carbon|null $deleted_at
  */
 #[Table('payouts', key: 'id')]
 #[Fillable([

@@ -23,17 +23,17 @@ use Illuminate\Support\Facades\App;
  * @property string|null $translated_name
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
- * @property \Illuminate\Support\Carbon|null $deleted_at
+ * @property Carbon|null $deleted_at
  */
 #[Table('units', key: 'id', keyType: 'int', incrementing: false)]
 #[Fillable(['id', 'name_en', 'name_km', 'symbol', 'conversion_to_base'])]
 #[UseFactory(UnitFactory::class)]
 class Unit extends Model
 {
-    use SoftDeletes;
-
     /** @use HasFactory<UnitFactory> */
     use HasFactory;
+
+    use SoftDeletes;
 
     /**
      * {@inheritDoc}

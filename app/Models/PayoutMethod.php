@@ -16,7 +16,7 @@ use Illuminate\Support\Carbon;
  * @property string $name_km
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
- * @property \Illuminate\Support\Carbon|null $deleted_at
+ * @property Carbon|null $deleted_at
  */
 #[Table('payout_methods', key: 'id', keyType: 'int')]
 #[Fillable(['id', 'name_en', 'name_km'])]

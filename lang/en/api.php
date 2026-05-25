@@ -139,6 +139,20 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Order API Messages
+    |--------------------------------------------------------------------------
+    */
+    'order' => [
+        'retrieved' => 'Order retrieved successfully',
+        'orders_retrieved' => 'Orders retrieved successfully',
+        'cannot_cancel' => 'Cannot cancel this order',
+        'cancelled' => 'Order cancelled successfully',
+        'cannot_confirm_receipt' => 'Cannot confirm receipt for this order',
+        'receipt_confirmed' => 'Order receipt confirmed successfully',
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
     | Cart API Messages
     |--------------------------------------------------------------------------
     */

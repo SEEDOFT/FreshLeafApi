@@ -14,9 +14,9 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\App;
 
@@ -36,7 +36,7 @@ use Illuminate\Support\Facades\App;
  * @property-read Collection<int, Product> $products
  * @property-read int|null $products_count
  * @property-read ProductCategoryStatus $status
- * @property \Illuminate\Support\Carbon|null $deleted_at
+ * @property Carbon|null $deleted_at
  */
 #[Table('product_categories', key: 'id', keyType: 'int', incrementing: false)]
 #[Fillable([
@@ -51,10 +51,10 @@ use Illuminate\Support\Facades\App;
 #[UseFactory(ProductCategoryFactory::class)]
 class ProductCategory extends Model
 {
-    use SoftDeletes;
-
     /** @use HasFactory<ProductCategoryFactory> */
     use HasFactory;
+
+    use SoftDeletes;
 
     public const int LEAFY = 1;
 

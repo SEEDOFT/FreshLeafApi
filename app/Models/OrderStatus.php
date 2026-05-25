@@ -11,8 +11,8 @@ use Illuminate\Database\Eloquent\Attributes\UseFactory;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\App;
 
@@ -28,17 +28,17 @@ use Illuminate\Support\Facades\App;
  * @property-read string|null $translated_name
  * @property-read Collection<int, Order> $orders
  * @property-read int|null $orders_count
- * @property \Illuminate\Support\Carbon|null $deleted_at
+ * @property Carbon|null $deleted_at
  */
 #[Table('order_statuses', key: 'id', keyType: 'int', incrementing: false)]
 #[Fillable(['id', 'name_en', 'name_km', 'sort_order', 'color'])]
 #[UseFactory(OrderStatusFactory::class)]
 class OrderStatus extends Model
 {
-    use SoftDeletes;
-
     /** @use HasFactory<OrderStatusFactory> */
     use HasFactory;
+
+    use SoftDeletes;
 
     public const int PENDING_ID = 1;
 

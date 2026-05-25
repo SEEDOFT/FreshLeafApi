@@ -11,8 +11,8 @@ use Illuminate\Database\Eloquent\Attributes\UseFactory;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Carbon;
 
 /**
@@ -24,17 +24,17 @@ use Illuminate\Support\Carbon;
  * @property Carbon|null $updated_at
  * @property-read Collection<int, Notification> $notifications
  * @property-read int|null $notifications_count
- * @property \Illuminate\Support\Carbon|null $deleted_at
+ * @property Carbon|null $deleted_at
  */
 #[Table('notification_types', key: 'id', keyType: 'int', incrementing: false)]
 #[Fillable(['id', 'name_en', 'name_km'])]
 #[UseFactory(NotificationTypeFactory::class)]
 class NotificationType extends Model
 {
-    use SoftDeletes;
-
     /** @use HasFactory<NotificationTypeFactory> */
     use HasFactory;
+
+    use SoftDeletes;
 
     public const int ORDER_UPDATE_ID = 1;
 

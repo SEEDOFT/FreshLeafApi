@@ -43,6 +43,17 @@ class NotificationStatus extends Model
     public const string READ = 'READ';
 
     /**
+     * Get the code attribute dynamically.
+     */
+    public function getCodeAttribute(): string
+    {
+        return match ($this->id) {
+            self::UNREAD_ID => self::UNREAD,
+            default => self::READ,
+        };
+    }
+
+    /**
      * Get the notifications for the status.
      *
      * @return HasMany<Notification, $this>

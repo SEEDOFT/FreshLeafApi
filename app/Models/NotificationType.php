@@ -49,6 +49,18 @@ class NotificationType extends Model
     public const string SYSTEM = 'SYSTEM';
 
     /**
+     * Get the code attribute dynamically.
+     */
+    public function getCodeAttribute(): string
+    {
+        return match ($this->id) {
+            self::ORDER_UPDATE_ID => self::ORDER_UPDATE,
+            self::PROMOTION_ID => self::PROMOTION,
+            default => self::SYSTEM,
+        };
+    }
+
+    /**
      * Get the notifications for the type.
      *
      * @return HasMany<Notification, $this>

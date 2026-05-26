@@ -54,4 +54,7 @@ return [
             'success_notification' => 'Profile updated successfully.',
         ],
     ],
+    'navigation' => [
+        'exchange_rate' => 'Exchange Rate',
+    ],
 ];

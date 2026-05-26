@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Notifications;
 
+use App\Channels\DatabaseChannel;
 use Illuminate\Notifications\Notification;
 use NotificationChannels\Fcm\FcmChannel;
 use NotificationChannels\Fcm\FcmMessage;
@@ -29,7 +30,10 @@ class PushNotification extends Notification
      */
     public function via(): array
     {
-        return [FcmChannel::class];
+        return [
+            DatabaseChannel::class,
+            FcmChannel::class,
+        ];
     }
 
     /**

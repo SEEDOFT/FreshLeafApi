@@ -89,6 +89,6 @@ class PaymentStatus extends Model
      */
     public function payments(): HasMany
     {
-        return $this->hasMany(Payment::class, 'payment_status_id', 'id');
+        return $this->hasMany(Payment::class, 'status_id', 'id');
     }
 }

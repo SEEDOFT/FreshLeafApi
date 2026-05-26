@@ -47,7 +47,7 @@ class AddressController extends Controller
         $address = $user->addresses()->active()->find($id);
 
         if (! $address) {
-            return static::notFoundResponse(__('api.address.not_found'));
+            abort(404, __('api.address.not_found'));
         }
 
         return static::successResponse(
@@ -67,8 +67,8 @@ class AddressController extends Controller
 
         return static::successResponse(
             new AddressResource($address),
-            __('api.address.created'),
-            201);
+            __('api.address.created'), 201
+        );
     }
 
     /**
@@ -80,7 +80,7 @@ class AddressController extends Controller
         $address = $user->addresses()->active()->find($id);
 
         if (! $address) {
-            return static::notFoundResponse(__('api.address.not_found'));
+            abort(404, __('api.address.not_found'));
         }
 
         $address = $this->addressService
@@ -101,7 +101,7 @@ class AddressController extends Controller
         $address = $user->addresses()->active()->find($id);
 
         if (! $address) {
-            return static::notFoundResponse(__('api.address.not_found'));
+            abort(404, __('api.address.not_found'));
         }
 
         $address = $this->addressService
@@ -122,7 +122,7 @@ class AddressController extends Controller
         $address = $user->addresses()->active()->find($id);
 
         if (! $address) {
-            return static::notFoundResponse(__('api.address.not_found'));
+            abort(404, __('api.address.not_found'));
         }
 
         $this->addressService->deleteAddress($address);

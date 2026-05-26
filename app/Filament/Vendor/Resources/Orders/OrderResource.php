@@ -8,6 +8,7 @@ use App\Filament\Vendor\Resources\Orders\Pages\ListOrders;
 use App\Filament\Vendor\Resources\Orders\Pages\ViewOrder;
 use App\Filament\Vendor\Resources\Orders\RelationManagers\ItemsRelationManager;
 use App\Filament\Vendor\Resources\Orders\Schemas\OrderForm;
+use App\Filament\Vendor\Resources\Orders\Schemas\OrderInfolist;
 use App\Filament\Vendor\Resources\Orders\Tables\OrdersTable;
 use App\Models\Order;
 use App\Models\User;
@@ -52,7 +53,7 @@ class OrderResource extends Resource
     #[Override]
     public static function canAccess(): bool
     {
-        $user = auth()->user();
+        $user = Auth::user();
 
         return $user instanceof User &&
             $user->user_type_id === UserType::VENDOR_ID &&
@@ -63,16 +64,20 @@ class OrderResource extends Resource
     #[Override]
     public static function getEloquentQuery(): Builder
     {
-        $user = Auth::user();
+        $vendor = Auth::user();
 
-        if (! $user instanceof User) {
+        if (
+            ! $vendor instanceof User ||
+            $vendor->user_type_id !== UserType::VENDOR_ID ||
+            $vendor->vendorProfile === null
+        ) {
             throw new AuthenticationException;
         }
 
         return parent::getEloquentQuery()
             ->whereHas(
                 'items.vendorInventory',
-                static fn (Builder $query) => $query->where('vendor_id', $user->id)
+                static fn (Builder $query) => $query->where('vendor_id', $vendor->id)
             );
     }
 
@@ -80,6 +85,12 @@ class OrderResource extends Resource
     public static function form(Schema $schema): Schema
     {
         return OrderForm::configure($schema);
+    }
+
+    #[Override]
+    public static function infolist(Schema $schema): Schema
+    {
+        return OrderInfolist::configure($schema);
     }
 
     #[Override]

@@ -11,8 +11,10 @@ use App\Http\Requests\Ai\StoreChatMessageRequest;
 use App\Jobs\ProcessAiChatMessageJob;
 use App\Models\AiChatMessage;
 use App\Models\AiChatSession;
+use App\Models\UserType;
 use App\Services\Ai\AiService;
 use Exception;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
@@ -21,6 +23,15 @@ use Illuminate\Support\Str;
 class AiChatController extends Controller
 {
     public function __construct(private AiService $aiService) {}
+
+    private function getRoleRelation(int $userTypeId): string
+    {
+        return match ($userTypeId) {
+            UserType::ADMIN_ID => 'admin',
+            UserType::VENDOR_ID => 'vendor',
+            default => 'consumer',
+        };
+    }
 
     /**
      * Create or get a chat session.
@@ -32,13 +43,21 @@ class AiChatController extends Controller
 
         $sessionId = $validatedData['session_id'] ?? (string) Str::uuid();
 
-        $session = AiChatSession::firstOrCreate([
-            'session_id' => $sessionId,
-            'user_id' => $user->id,
-        ], [
-            'title' => $validatedData['title'] ?? null,
-            'last_message_at' => Carbon::now(),
-        ]);
+        $session = AiChatSession::where('session_id', $sessionId)
+            ->whereHas(
+                $this->getRoleRelation($user->user_type_id),
+                static fn (Builder $query) => $query->where('users.id', $user->id)
+            )
+            ->first();
+
+        if (! $session) {
+            $session = AiChatSession::create([
+                'session_id' => $sessionId,
+                'user_id' => $user->id,
+                'title' => $validatedData['title'] ?? null,
+                'last_message_at' => Carbon::now(),
+            ]);
+        }
 
         return static::successResponse([
             'session_id' => $session->session_id,
@@ -57,7 +76,7 @@ class AiChatController extends Controller
         $user = $this->authenticatedUser($request);
 
         $session = AiChatSession::where('session_id', $validatedData['session_id'])
-            ->where('user_id', $user->id)
+            ->whereHas($this->getRoleRelation($user->user_type_id), fn ($query) => $query->where('users.id', $user->id))
             ->first();
 
         if (! $session) {
@@ -130,7 +149,7 @@ class AiChatController extends Controller
         $user = $this->authenticatedUser($request);
 
         $session = AiChatSession::where('session_id', $validatedData['session_id'])
-            ->where('user_id', $user->id)
+            ->whereHas($this->getRoleRelation($user->user_type_id), fn ($query) => $query->where('users.id', $user->id))
             ->first();
 
         if (! $session) {

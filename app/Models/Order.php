@@ -45,7 +45,8 @@ use function substr;
  * @property-read Collection<int, Payment> $payments
  * @property-read int|null $payments_count
  * @property-read OrderStatus $status
- * @property-read int|null $status_histories_count
+ * @property-read Collection<int, OrderHistory> $histories
+ * @property-read int|null $histories_count
  * @property-read OrderType $type
  * @property-read User|null $user
  * @property Carbon|null $deleted_at
@@ -127,7 +128,8 @@ class Order extends Model
      */
     public function user(): BelongsTo
     {
-        return $this->belongsTo(User::class, 'user_id', 'id');
+        return $this->belongsTo(User::class, 'user_id', 'id')
+            ->where('users.user_type_id', UserType::CONSUMER_ID);
     }
 
     /**
@@ -188,5 +190,15 @@ class Order extends Model
     public function payments(): HasMany
     {
         return $this->hasMany(Payment::class, 'order_id', 'id');
+    }
+
+    /**
+     * Get the histories for the order.
+     *
+     * @return HasMany<OrderHistory, $this>
+     */
+    public function histories(): HasMany
+    {
+        return $this->hasMany(OrderHistory::class, 'order_id', 'id');
     }
 }

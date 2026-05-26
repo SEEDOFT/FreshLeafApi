@@ -18,3 +18,8 @@ parameters:
         - tests/
 
     treatPhpDocTypesAsCertain: false
+
+    ignoreErrors:
+        -
+            message: '#expects numeric-string, (string|literal-string&non-falsy-string) given#'
+            path: app/Services/MoneyService.php

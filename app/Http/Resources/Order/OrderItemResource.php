@@ -6,6 +6,7 @@ namespace App\Http\Resources\Order;
 
 use App\Http\Resources\Product\VendorInventoryResource;
 use App\Models\OrderItem;
+use App\Services\MoneyService;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -27,9 +28,11 @@ class OrderItemResource extends JsonResource
             'vendor_inventory_id' => $this->vendor_inventory_id,
             'product_name_snapshot' => $this->product_name_snapshot,
             'unit_snapshot' => $this->unit_snapshot,
-            'unit_price_snapshot' => $this->unit_price_snapshot,
+            'unit_price_snapshot' => MoneyService::money($this->unit_price_snapshot),
+            'unit_price_snapshot_display' => MoneyService::displayTotalsFromUsd($this->unit_price_snapshot),
             'quantity' => $this->quantity,
-            'subtotal' => $this->subtotal,
+            'subtotal' => MoneyService::money($this->subtotal),
+            'subtotal_display' => MoneyService::displayTotalsFromUsd($this->subtotal),
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
             'vendor_inventory' => new VendorInventoryResource($this->whenLoaded('vendorInventory')),

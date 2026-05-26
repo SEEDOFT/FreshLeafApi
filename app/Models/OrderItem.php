@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use App\Services\MoneyService;
 use Database\Factories\OrderItemFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Table;
@@ -19,11 +20,11 @@ use Illuminate\Support\Carbon;
  * @property int $vendor_inventory_id
  * @property string $product_name_snapshot
  * @property string $unit_snapshot
- * @property float $unit_price_snapshot
- * @property float $quantity
- * @property float $subtotal
- * @property float $commission_amount
- * @property float $vendor_net_amount
+ * @property string $unit_price_snapshot
+ * @property string $quantity
+ * @property string $subtotal
+ * @property string $commission_amount
+ * @property string $vendor_net_amount
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  * @property-read Order $order
@@ -55,11 +56,11 @@ class OrderItem extends Model
     protected static function booted(): void
     {
         static::saving(static function (OrderItem $item): void {
-            $rate = (float) Setting::get('commission_rate_percentage', 10.00);
-            $subtotal = (float) ($item->subtotal ?? 0.0);
-
-            $commissionAmount = $subtotal * ($rate / 100.0);
-            $vendorNetAmount = $subtotal - $commissionAmount;
+            $rate = MoneyService::money(Setting::get('commission_rate_percentage', '10.00'));
+            $subtotal = MoneyService::money($item->subtotal ?? '0.00');
+            $commissionRate = MoneyService::div($rate, '100', 8);
+            $commissionAmount = MoneyService::mul($subtotal, $commissionRate);
+            $vendorNetAmount = MoneyService::sub($subtotal, $commissionAmount);
 
             $item->setAttribute('commission_amount', $commissionAmount);
             $item->setAttribute('vendor_net_amount', $vendorNetAmount);
@@ -69,8 +70,8 @@ class OrderItem extends Model
     /**
      * Get the current commission percentage from settings.
      */
-    public public(set) float $activeCommissionRate {
-        get => (float) Setting::get('commission_rate_percentage', 10.00);
+    public public(set) string $activeCommissionRate {
+        get => MoneyService::money(Setting::get('commission_rate_percentage', '10.00'));
     }
 
     /**

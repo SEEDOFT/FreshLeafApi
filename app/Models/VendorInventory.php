@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use App\Services\MoneyService;
 use Database\Factories\VendorInventoryFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Scope;
@@ -19,6 +20,7 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
+use Override;
 
 /**
  * @property int $id
@@ -26,8 +28,8 @@ use Illuminate\Support\Facades\DB;
  * @property int $product_id
  * @property int $currency_id
  * @property int $inventory_status_id
- * @property float $price
- * @property float $stock_quantity
+ * @property string $price
+ * @property string $stock_quantity
  * @property int $unit_id
  * @property Carbon|null $harvest_date
  * @property string|null $farm_location
@@ -39,16 +41,18 @@ use Illuminate\Support\Facades\DB;
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  * @property Carbon|null $deleted_at
- * @property-read float $discounted_price
+ * @property-read string $discounted_price
  * @property-read User $vendor
  * @property-read Product $product
  * @property-read PackagingType|null $packagingType
  * @property-read Currency $currency
  * @property-read Unit $unit
  * @property-read VendorInventoryStatus $status
+ * @property-read Collection<int, VendorInventoryHistory> $histories
+ * @property-read int|null $histories_count
  * @property-read VendorInventoryDiscount|null $activeDiscount
  * @property-read Collection<int, VendorInventoryDiscount> $discounts
- * @property-read float $discount_percentage
+ * @property-read string $discount_percentage
  */
 #[Table('vendor_inventories', key: 'id', keyType: 'int')]
 #[Fillable([
@@ -78,6 +82,7 @@ class VendorInventory extends Model
      *
      * @return array<string, string>
      */
+    #[Override]
     protected function casts(): array
     {
         return [
@@ -91,21 +96,31 @@ class VendorInventory extends Model
     /**
      * Get the discounted price based on the current price and active discount percentage.
      */
-    public function getDiscountedPriceAttribute(): float
+    public function getDiscountedPriceAttribute(): string
     {
-        $discountPercentage = $this->discount_percentage;
-
-        return (float) $this->price * (1 - ($discountPercentage / 100));
+        return MoneyService::discountUnitPrice($this->price, $this->discount_percentage);
     }
 
     /**
      * Get the active discount percentage.
      */
-    public function getDiscountPercentageAttribute(): float
+    public function getDiscountPercentageAttribute(): string
     {
         $activeDiscount = $this->activeDiscount;
 
-        return $activeDiscount ? max(0, min(100, (float) $activeDiscount->discount_percentage)) : 0.0;
+        if (! $activeDiscount) {
+            return '0.00';
+        }
+
+        if (MoneyService::compare($activeDiscount->discount_percentage, '0') < 0) {
+            return '0.00';
+        }
+
+        if (MoneyService::compare($activeDiscount->discount_percentage, '100') > 0) {
+            return '100.00';
+        }
+
+        return MoneyService::money($activeDiscount->discount_percentage);
     }
 
     /**
@@ -115,7 +130,8 @@ class VendorInventory extends Model
      */
     public function vendor(): BelongsTo
     {
-        return $this->belongsTo(User::class, 'vendor_id', 'id');
+        return $this->belongsTo(User::class, 'vendor_id', 'id')
+            ->where('users.user_type_id', UserType::VENDOR_ID);
     }
 
     /**
@@ -250,5 +266,15 @@ class VendorInventory extends Model
     protected function active(Builder $query): void
     {
         $query->where('inventory_status_id', VendorInventoryStatus::AVAILABLE_ID);
+    }
+
+    /**
+     * Get the histories for the vendor inventory.
+     *
+     * @return HasMany<VendorInventoryHistory, $this>
+     */
+    public function histories(): HasMany
+    {
+        return $this->hasMany(VendorInventoryHistory::class, 'vendor_inventory_id', 'id');
     }
 }

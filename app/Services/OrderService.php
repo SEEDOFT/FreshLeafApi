@@ -1,0 +1,88 @@
+<?php
+
+declare(strict_types=1);
+
+namespace App\Services;
+
+use App\Models\Order;
+use App\Models\OrderStatus;
+use App\Models\PaymentStatus;
+use App\Models\User;
+use App\Models\Wallet;
+use App\Models\WalletTransactionStatus;
+use App\Models\WalletTransactionType;
+use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\DB;
+use RuntimeException;
+use Symfony\Component\HttpKernel\Exception\HttpException;
+
+class OrderService
+{
+    public function payWithWallet(User $user, Order $order, Wallet $wallet): void
+    {
+        try {
+            DB::transaction(function () use ($user, $order, $wallet) {
+                if ($wallet->user_id !== $user->id) {
+                    abort(403, 'Unauthorized wallet access.');
+                }
+
+                if ($order->payment_status_id === PaymentStatus::COMPLETED_ID) {
+                    abort(422, 'Order is already paid.');
+                }
+
+                $orderTotal = $order->total_amount;
+
+                if (MoneyService::compare((string) $wallet->balance, (string) $orderTotal) < 0) {
+                    abort(422, 'Insufficient wallet balance.');
+                }
+
+                $newBalance = MoneyService::sub((string) $wallet->balance, (string) $orderTotal);
+
+                // Deduct from wallet
+                $wallet->update(['balance' => $newBalance]);
+
+                // Create transaction
+                $wallet->transactions()->create([
+                    'wallet_transaction_type_id' => WalletTransactionType::PAYMENT_ID,
+                    'wallet_transaction_status_id' => WalletTransactionStatus::COMPLETED_ID,
+                    'amount' => $orderTotal,
+                    'transaction_date' => Carbon::now(),
+                ]);
+
+                // Create wallet history
+                $wallet->histories()->create([
+                    'user_id' => $user->id,
+                    'currency_id' => $wallet->currency_id,
+                    'balance' => $newBalance,
+                ]);
+
+                // Update payment and order status
+                $order->update([
+                    'order_status_id' => OrderStatus::PREPARING_ID,
+                    'payment_status_id' => PaymentStatus::COMPLETED_ID,
+                ]);
+
+                // Update payments related to this order
+                $payment = $order->payments()->first();
+                if ($payment) {
+                    $payment->update([
+                        'status_id' => PaymentStatus::COMPLETED_ID,
+                    ]);
+                    $payment->histories()->create([
+                        'payment_status_id' => PaymentStatus::COMPLETED_ID,
+                        'notes' => 'Paid via Wallet ID: '.$wallet->id,
+                    ]);
+                }
+
+                $order->histories()->create([
+                    'order_status_id' => OrderStatus::PREPARING_ID,
+                    'notes' => 'Payment received via Wallet.',
+                ]);
+            });
+        } catch (HttpException $e) {
+            throw $e;
+        } catch (RuntimeException $e) {
+            abort(422, 'Payment failed: '.$e->getMessage());
+        }
+    }
+}

@@ -13,6 +13,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Carbon;
+use Override;
 
 /**
  * @property int $id
@@ -32,15 +33,14 @@ use Illuminate\Support\Carbon;
 class UserDevice extends Model
 {
     /** @use HasFactory<UserDeviceFactory> */
-    use HasFactory;
-
-    use SoftDeletes;
+    use HasFactory, SoftDeletes;
 
     /**
      * {@inheritDoc}
      *
      * @return array<string, string>
      */
+    #[Override]
     protected function casts(): array
     {
         return [

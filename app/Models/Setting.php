@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Cache;
+use Override;
 
 use function is_array;
 use function is_bool;
@@ -34,6 +35,7 @@ class Setting extends Model
      *
      * @return array<string, string>
      */
+    #[Override]
     protected function casts(): array
     {
         return [
@@ -120,7 +122,12 @@ class Setting extends Model
 
         return match ($type) {
             'boolean' => $value === '1' || $value === 'true',
-            'number' => is_numeric($value) ? (str_contains($value, '.') ? (float) $value : (int) $value) : 0,
+            'number' => is_numeric($value)
+                ? (str_contains($value, '.')
+                    ? (float) $value
+                    : (int) $value
+                )
+                : 0,
             'json' => json_decode($value, true),
             default => $value,
         };

@@ -5,9 +5,11 @@ declare(strict_types=1);
 namespace App\Http\Resources\Product;
 
 use App\Http\Resources\User\CurrencyResource;
+use App\Models\Currency;
 use App\Models\PackagingType;
 use App\Models\User;
 use App\Models\VendorInventory;
+use App\Services\MoneyService;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Facades\Storage;
@@ -32,13 +34,20 @@ class VendorInventoryResource extends JsonResource
     public function toArray(Request $request): array
     {
         $locale = $request->header('Accept-Language', 'km');
+        $currencyId = $this->currency_id ?? Currency::USD_ID;
+        $price = MoneyService::money($this->price);
+        $discountedPrice = MoneyService::money($this->discounted_price);
 
         return [
             'id' => $this->id,
-            'price' => (float) $this->price,
-            'discount_percentage' => (float) $this->discount_percentage,
+            'price' => $price,
+            'price_display' => MoneyService::displayTotals($price, $currencyId),
+            'discount_percentage' => $this->discount_percentage,
+            'discounted_price' => $discountedPrice,
+            'discounted_price_display' => MoneyService::displayTotals($discountedPrice, $currencyId),
             'stock_quantity' => (float) $this->stock_quantity,
             'harvest_date' => $this->harvest_date?->format('Y-m-d'),
+            'harvest_date_human' => $this->harvest_date?->diffForHumans(),
             'farm_location' => $this->farm_location,
             'province_of_origin' => $this->province_of_origin,
             'certification_type' => $this->certification_type,

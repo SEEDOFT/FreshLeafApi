@@ -5,12 +5,17 @@ declare(strict_types=1);
 namespace App\Http\Controllers\Api\User;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Api\Order\OrderPayRequest;
 use App\Http\Resources\Order\OrderResource;
 use App\Models\Order;
 use App\Models\OrderStatus;
+use App\Models\PaymentStatus;
+use App\Models\Wallet;
+use App\Services\OrderService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
+use Illuminate\Support\Facades\DB;
+use RuntimeException;
 
 class OrderController extends Controller
 {
@@ -25,10 +30,14 @@ class OrderController extends Controller
             ->latest()
             ->paginate($request->integer('per_page', 15));
 
-        return static::successResponse(
-            OrderResource::collection($orders),
-            __('api.order.orders_retrieved')
-        );
+        try {
+            return static::successResponse(
+                OrderResource::collection($orders),
+                __('api.orders.retrieved')
+            );
+        } catch (RuntimeException) {
+            abort(422, __('api.general.error'));
+        }
     }
 
     /**
@@ -51,38 +60,47 @@ class OrderController extends Controller
             ->find($id);
 
         if (! $order) {
-            return static::notFoundResponse(trans('api.general.not_found', ['model' => 'Order']));
+            return static::notFoundResponse(__('api.general.not_found', ['model' => 'Order']));
         }
 
-        return static::successResponse(
-            new OrderResource($order),
-            __('api.order.retrieved')
-        );
+        try {
+            return static::successResponse(
+                new OrderResource($order),
+                __('api.order.retrieved')
+            );
+        } catch (RuntimeException) {
+            abort(422, __('api.general.error'));
+        }
     }
 
     /**
      * Cancel an order.
      */
-    public function cancel(Request $request, int $id): JsonResponse
+    public function cancel(Request $request, string $id): JsonResponse
     {
         $user = $this->authenticatedUser($request);
         $order = Order::where('user_id', $user->id)->find($id);
 
         if (! $order) {
-            return static::notFoundResponse(trans('api.general.not_found', ['model' => 'Order']));
+            abort(404, __('api.general.not_found'));
         }
 
         if ($order->order_status_id !== OrderStatus::PENDING_ID) {
-            return static::errorResponse(__('api.order.cannot_cancel'), 422);
+            abort(422, __('api.order.cannot_cancel'));
         }
 
-        $order->order_status_id = OrderStatus::CANCELLED_ID;
-        $order->save();
+        $order->update([
+            'order_status_id' => OrderStatus::CANCELLED_ID,
+        ]);
 
-        return static::successResponse(
-            new OrderResource($order->fresh(['status', 'paymentStatus', 'type'])),
-            __('api.order.cancelled')
-        );
+        try {
+            return static::successResponse(
+                new OrderResource($order->fresh(['status', 'paymentStatus', 'type'])),
+                __('api.order.cancelled')
+            );
+        } catch (RuntimeException) {
+            abort(422, __('api.general.error'));
+        }
     }
 
     /**
@@ -94,19 +112,91 @@ class OrderController extends Controller
         $order = Order::where('user_id', $user->id)->find($id);
 
         if (! $order) {
-            return static::notFoundResponse(trans('api.general.not_found', ['model' => 'Order']));
+            abort(404, __('api.general.not_found'));
         }
 
         if (! in_array($order->order_status_id, [OrderStatus::DELIVERED_ID, OrderStatus::PREPARING_ID], true)) {
-            return static::errorResponse(__('api.order.cannot_confirm_receipt'), 422);
+            abort(422, __('api.order.cannot_confirm_receipt'));
         }
 
-        $order->order_status_id = OrderStatus::DELIVERED_ID;
-        $order->save();
+        $order->update([
+            'order_status_id' => OrderStatus::DELIVERED_ID,
+        ]);
+
+        try {
+            return static::successResponse(
+                new OrderResource($order->fresh(['status', 'paymentStatus', 'type'])),
+                __('api.order.receipt_confirmed')
+            );
+        } catch (RuntimeException) {
+            abort(422, __('api.general.error'));
+        }
+    }
+
+    /**
+     * Pay for an order using Wallet.
+     */
+    public function pay(OrderPayRequest $request, int $id, OrderService $orderService): JsonResponse
+    {
+        $user = $this->authenticatedUser($request);
+        $order = Order::with(['payments'])->where('user_id', $user->id)->find($id);
+
+        if (! $order) {
+            abort(404, __('api.general.not_found'));
+        }
+
+        $validated = $request->validated();
+        $wallet = Wallet::where('id', $validated['wallet_id'])->firstOrFail();
+
+        $orderService->payWithWallet($user, $order, $wallet);
 
         return static::successResponse(
             new OrderResource($order->fresh(['status', 'paymentStatus', 'type'])),
-            __('api.order.receipt_confirmed')
+            __('api.order.payment_successful', ['default' => 'Payment successful'])
+        );
+    }
+
+    /**
+     * Simulate an external payment completion (e.g. ABA/Acleda/Credit Card).
+     */
+    public function simulateExternalPayment(Request $request, int $id): JsonResponse
+    {
+        $user = $this->authenticatedUser($request);
+        $order = Order::with(['payments'])->where('user_id', $user->id)->find($id);
+
+        if (! $order) {
+            abort(404, __('api.general.not_found'));
+        }
+
+        if ($order->order_status_id !== OrderStatus::AWAITING_PAYMENT_ID) {
+            abort(422, 'Order is not awaiting payment.');
+        }
+
+        DB::transaction(function () use ($order) {
+            $order->update([
+                'order_status_id' => OrderStatus::PENDING_ID,
+                'payment_status_id' => PaymentStatus::COMPLETED_ID,
+            ]);
+
+            $order->histories()->create([
+                'order_status_id' => OrderStatus::PENDING_ID,
+                'notes' => 'External payment completed successfully.',
+            ]);
+
+            foreach ($order->payments as $payment) {
+                if ($payment->status_id === PaymentStatus::PENDING_ID) {
+                    $payment->update(['status_id' => PaymentStatus::COMPLETED_ID]);
+                    $payment->histories()->create([
+                        'payment_status_id' => PaymentStatus::COMPLETED_ID,
+                        'notes' => 'External payment simulated as completed.',
+                    ]);
+                }
+            }
+        });
+
+        return static::successResponse(
+            new OrderResource($order->fresh(['status', 'paymentStatus', 'type'])),
+            __('api.order.payment_successful', ['default' => 'Payment successful'])
         );
     }
 }

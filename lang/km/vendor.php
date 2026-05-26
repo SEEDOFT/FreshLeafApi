@@ -54,4 +54,7 @@ return [
             'success_notification' => 'បានធ្វើបច្ចុប្បន្នភាពប្រវត្តិរូបដោយជោគជ័យ។',
         ],
     ],
+    'navigation' => [
+        'exchange_rate' => 'អត្រាប្តូរប្រាក់',
+    ],
 ];

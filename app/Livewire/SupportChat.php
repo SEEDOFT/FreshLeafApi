@@ -130,6 +130,10 @@ class SupportChat extends Component
 
         $ticket->touch();
 
+        if (request()->header('X-Socket-ID') === 'undefined') {
+            request()->headers->remove('X-Socket-ID');
+        }
+
         broadcast(new SupportMessageSent($msg))->toOthers();
 
         Notification::sendNow(
@@ -148,6 +152,10 @@ class SupportChat extends Component
     public function sendTyping(): void
     {
         if ($this->activeTicketId) {
+            if (request()->header('X-Socket-ID') === 'undefined') {
+                request()->headers->remove('X-Socket-ID');
+            }
+
             broadcast(
                 new SupportTyping(
                     $this->activeTicketId,

@@ -46,6 +46,6 @@ class PaymentType extends Model
      */
     public function payments(): HasMany
     {
-        return $this->hasMany(Payment::class, 'payment_type_id', 'id');
+        return $this->hasMany(Payment::class, 'type_id', 'id');
     }
 }

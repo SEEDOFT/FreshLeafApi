@@ -13,8 +13,10 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Carbon;
+use Override;
 
 /**
  * @property int $id
@@ -41,6 +43,7 @@ class Cart extends Model
      *
      * @return array<string, string>
      */
+    #[Override]
     protected function casts(): array
     {
         return [
@@ -55,7 +58,8 @@ class Cart extends Model
      */
     public function user(): BelongsTo
     {
-        return $this->belongsTo(User::class, 'user_id', 'id');
+        return $this->belongsTo(User::class, 'user_id', 'id')
+            ->where('users.user_type_id', UserType::CONSUMER_ID);
     }
 
     /**
@@ -76,6 +80,16 @@ class Cart extends Model
     public function status(): BelongsTo
     {
         return $this->belongsTo(CartStatus::class, 'cart_status_id', 'id');
+    }
+
+    /**
+     * Get the histories that owns the cart.
+     *
+     * @return HasMany<CartHistory, $this>
+     */
+    public function histories(): HasMany
+    {
+        return $this->hasMany(CartHistory::class, 'cart_id', 'id');
     }
 
     /**

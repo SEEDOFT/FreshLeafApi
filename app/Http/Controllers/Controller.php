@@ -36,10 +36,11 @@ abstract class Controller
             $query->where('user_type_id', $userType);
         }
 
+        /** @var User|null $authorizedUser */
         $authorizedUser = $query->first();
 
         if (! $authorizedUser) {
-            throw new AuthenticationException('Account inactive or unauthorized.');
+            throw new AuthenticationException('User inactive or unauthorized.');
         }
 
         return $authorizedUser;

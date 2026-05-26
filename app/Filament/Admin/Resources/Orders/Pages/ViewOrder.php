@@ -11,6 +11,7 @@ use Override;
 
 class ViewOrder extends ViewRecord
 {
+    #[Override]
     protected static string $resource = OrderResource::class;
 
     #[Override]

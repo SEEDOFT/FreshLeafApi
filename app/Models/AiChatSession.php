@@ -59,6 +59,39 @@ class AiChatSession extends Model
     }
 
     /**
+     * Get the user that owns the chat session (if consumer).
+     *
+     * @return BelongsTo<User, $this>
+     */
+    public function consumer(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'user_id', 'id')
+            ->where('users.user_type_id', UserType::CONSUMER_ID);
+    }
+
+    /**
+     * Get the user that owns the chat session (if vendor).
+     *
+     * @return BelongsTo<User, $this>
+     */
+    public function vendor(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'user_id', 'id')
+            ->where('users.user_type_id', UserType::VENDOR_ID);
+    }
+
+    /**
+     * Get the user that owns the chat session (if admin).
+     *
+     * @return BelongsTo<User, $this>
+     */
+    public function admin(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'user_id', 'id')
+            ->where('users.user_type_id', UserType::ADMIN_ID);
+    }
+
+    /**
      * Get the chat messages for the session.
      *
      * @return HasMany<AiChatMessage, $this>

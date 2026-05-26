@@ -15,7 +15,7 @@ return new class extends Migration
     {
         Schema::create('vendor_inventory_discounts', static function (Blueprint $table) {
             $table->id();
-            $table->foreignId('vendor_inventory_id')->constrained('vendor_inventories')->cascadeOnDelete();
+            $table->unsignedBigInteger('vendor_inventory_id');
             $table->decimal('discount_percentage', 5, 2);
             $table->timestamp('starts_at')->nullable();
             $table->timestamp('ends_at')->nullable();

@@ -28,9 +28,13 @@ class ExchangeRatesTable
                     ->label(__('admin.resources.exchange_rate.rate'))
                     ->numeric()
                     ->sortable(),
+                TextColumn::make('created_at')
+                    ->label(__('admin.resources.created_at'))
+                    ->dateTime('d M Y, h:i A')
+                    ->sortable(),
                 TextColumn::make('updated_at')
                     ->label(__('admin.resources.updated_at'))
-                    ->dateTime()
+                    ->dateTime('d M Y, h:i A')
                     ->sortable(),
             ])
             ->filters([

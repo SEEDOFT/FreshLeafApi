@@ -134,6 +134,18 @@ class AiAssistantChat extends Component
         $this->isAiServiceAvailable = app(AiService::class)->healthCheck();
     }
 
+    private function getRoleRelation(): string
+    {
+        $user = UserSessionSecurity::getAuthorizedUser();
+        $userTypeId = $user ? $user->user_type_id : UserType::CONSUMER_ID;
+
+        return match ($userTypeId) {
+            UserType::ADMIN_ID => 'admin',
+            UserType::VENDOR_ID => 'vendor',
+            default => 'consumer',
+        };
+    }
+
     /**
      * Initialize Chat
      */
@@ -180,7 +192,7 @@ class AiAssistantChat extends Component
         $userId = $user->id;
 
         AiChatSession::where('id', $sessionId)
-            ->where('user_id', $userId)
+            ->whereHas($this->getRoleRelation(), fn ($query) => $query->where('users.id', $userId))
             ->delete();
 
         if ($this->activeDbSessionId === $sessionId) {
@@ -367,7 +379,7 @@ class AiAssistantChat extends Component
         $userId = $user->id;
 
         $session = AiChatSession::where('id', $sessionId)
-            ->where('user_id', $userId)
+            ->whereHas($this->getRoleRelation(), fn ($query) => $query->where('users.id', $userId))
             ->first();
 
         if (! $session) {
@@ -580,7 +592,7 @@ class AiAssistantChat extends Component
     private function updateSessionMetadata(int $userId, string $userMessage): void
     {
         $session = AiChatSession::where('id', $this->activeDbSessionId)
-            ->where('user_id', $userId)
+            ->whereHas($this->getRoleRelation(), fn ($query) => $query->where('users.id', $userId))
             ->first();
 
         if ($session) {
@@ -682,7 +694,7 @@ class AiAssistantChat extends Component
      */
     private function initializeActiveSession(int $userId): void
     {
-        $latestSession = AiChatSession::where('user_id', $userId)
+        $latestSession = AiChatSession::whereHas($this->getRoleRelation(), fn ($query) => $query->where('users.id', $userId))
             ->orderByRaw('COALESCE(last_message_at, updated_at) DESC')
             ->first();
 
@@ -723,7 +735,7 @@ class AiAssistantChat extends Component
      */
     private function loadSessions(int $userId): void
     {
-        $this->sessions = AiChatSession::where('user_id', $userId)
+        $this->sessions = AiChatSession::whereHas($this->getRoleRelation(), fn ($query) => $query->where('users.id', $userId))
             ->orderByRaw('COALESCE(last_message_at, updated_at) DESC')
             ->get(['id', 'session_id', 'title', 'last_message_at', 'updated_at'])
             ->map(static function (AiChatSession $session): array {

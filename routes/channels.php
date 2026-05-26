@@ -2,60 +2,32 @@
 
 declare(strict_types=1);
 
-use App\Models\AiChatSession;
-use App\Models\SupportTicket;
-use App\Models\User;
-use App\Models\UserType;
+use App\Broadcasting\AiChatChannel;
+use App\Broadcasting\SupportAdminChannel;
+use App\Broadcasting\SupportTicketChannel;
+use App\Broadcasting\UserChannel;
 use Illuminate\Support\Facades\Broadcast;
 
 Broadcast::channel(
     channel: 'ai-chat.{userId}.{sessionId}',
-    callback: static function (
-        User $user,
-        string $userId,
-        string $sessionId
-    ): bool {
-        if ($user->id !== (int) $userId) {
-            return false;
-        }
-
-        return AiChatSession::where('session_id', $sessionId)
-            ->where('user_id', $user->id)
-            ->exists();
-
-    },
+    callback: AiChatChannel::class,
     options: ['guards' => ['web', 'api', 'sanctum']]
 );
 
 Broadcast::channel(
     channel: 'support.ticket.{ticketId}',
-    callback: static function (User $user, string $ticketId): bool {
-        $ticket = SupportTicket::find((int) $ticketId);
-
-        if (! $ticket) {
-            return false;
-        }
-
-        return $user->id ===
-            (int) $ticket->user_id ||
-            $user->isType(UserType::ADMIN_ID);
-    },
-
+    callback: SupportTicketChannel::class,
     options: ['guards' => ['web', 'api', 'sanctum']]
 );
 
 Broadcast::channel(
     channel: 'support.admin',
-    callback: static function (User $user): bool {
-        return $user->isType(UserType::ADMIN_ID);
-    },
+    callback: SupportAdminChannel::class,
     options: ['guards' => ['web', 'api', 'sanctum']]
 );
 
 Broadcast::channel(
     channel: 'App.Models.User.{id}',
-    callback: static function (User $user, string $id): bool {
-        return $user->id === (int) $id;
-    },
+    callback: UserChannel::class,
     options: ['guards' => ['web', 'api', 'sanctum']]
 );

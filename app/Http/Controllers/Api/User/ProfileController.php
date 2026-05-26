@@ -60,11 +60,11 @@ class ProfileController extends Controller
             $request->file('image')
         );
 
-        $key = $isReplace ? 'profile.replaced' : 'profile.updated';
+        $message = $isReplace ? __('api.profile.replaced') : __('api.profile.updated');
 
         return static::successResponse(
             new UserResource($updatedUser),
-            __("api.{$key}")
+            $message
         );
     }
 

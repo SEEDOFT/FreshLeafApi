@@ -34,21 +34,9 @@ use Illuminate\Support\Facades\App;
 class OrderType extends Model
 {
     /** @use HasFactory<OrderTypeFactory> */
-    use HasFactory;
-
-    use SoftDeletes;
+    use HasFactory, SoftDeletes;
 
     public const int STANDARD_ID = 1;
-
-    public const string STANDARD = 'STANDARD';
-
-    /**
-     * Get the English name (as the generic name).
-     */
-    public function getNameAttribute(): string
-    {
-        return $this->name_en;
-    }
 
     /**
      * Get the translated name of the type.

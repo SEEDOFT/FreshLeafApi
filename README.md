@@ -97,6 +97,22 @@ The system is pre-configured in `config/ai.php` to connect to `http://127.0.0.1:
 | POST | `/api/v1/auth/login` | Login (get token) |
 | POST | `/api/v1/auth/logout` | Logout (require auth) |
 
+### Products & Inventory
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/api/v1/products` | List all products and their vendor inventories |
+| GET | `/api/v1/products/{id}` | Get product details |
+| GET | `/api/v1/categories` | List product categories |
+
+### Cart & Checkout (require auth)
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/api/v1/cart` | View current user's cart |
+| POST | `/api/v1/cart` | Add item to cart |
+| PUT | `/api/v1/cart/{itemId}` | Update cart item quantity |
+| DELETE | `/api/v1/cart/{itemId}` | Remove item from cart |
+| POST | `/api/v1/cart/checkout` | Process checkout and create order |
+
 ### Wallet & Transactions (require auth)
 | Method | Endpoint | Description |
 |--------|----------|-------------|
@@ -111,8 +127,8 @@ The system is pre-configured in `config/ai.php` to connect to `http://127.0.0.1:
 ### Payments (require auth)
 | Method | Endpoint | Description |
 |--------|----------|-------------|
-| GET | `/api/v1/user/payment-methods` | List saved payment methods |
-| POST | `/api/v1/user/payment-methods` | Save new payment method |
+| GET | `/api/v1/payment-methods` | List saved payment methods |
+| POST | `/api/v1/payment-methods` | Save new payment method |
 
 ### AI Chat (require auth)
 | Method | Endpoint | Description |

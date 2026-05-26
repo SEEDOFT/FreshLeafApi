@@ -4,14 +4,15 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use App\Services\MoneyService;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Table;
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Carbon;
+use RuntimeException;
 
 /**
  * @property int $id
@@ -43,35 +44,62 @@ class ExchangeRate extends Model
     protected function casts(): array
     {
         return [
-            'rate' => 'decimal:4',
+            'rate' => 'decimal:8',
         ];
     }
 
     /**
      * Static cache for rates to avoid multiple queries in a single request.
      *
-     * @var array<string, float>
+     * @var array<string, string>
      */
     private static array $rateCache = [];
 
     /**
      * Get the rate between two currencies by their codes.
      */
-    public static function getRate(string $fromCode, string $toCode): float
+    public static function getRate(int $fromCurrencyId, int $toCurrencyId): string
     {
-        $cacheKey = "{$fromCode}_{$toCode}";
+        $cacheKey = "{$fromCurrencyId}_{$toCurrencyId}";
+
+        if ($fromCurrencyId === $toCurrencyId) {
+            return '1.00000000';
+        }
 
         if (isset(self::$rateCache[$cacheKey])) {
             return self::$rateCache[$cacheKey];
         }
 
-        /** @var float|string|null $rate */
+        /** @var string|null $rate */
         $rate = self::query()
-            ->whereHas('fromCurrency', static fn (Builder $query) => $query->where('code', $fromCode))
-            ->whereHas('toCurrency', static fn (Builder $query) => $query->where('code', $toCode))
+            ->where('from_currency_id', $fromCurrencyId)
+            ->where('to_currency_id', $toCurrencyId)
+            ->latest('updated_at')
+            ->latest('id')
             ->value('rate');
 
-        return self::$rateCache[$cacheKey] = (float) ($rate ?? 1.0);
+        if ($rate !== null) {
+            return self::$rateCache[$cacheKey] = MoneyService::rate($rate);
+        }
+
+        /** @var string|null $inverseRate */
+        $inverseRate = self::query()
+            ->where('from_currency_id', $toCurrencyId)
+            ->where('to_currency_id', $fromCurrencyId)
+            ->latest('updated_at')
+            ->latest('id')
+            ->value('rate');
+
+        if ($inverseRate === null) {
+            throw new RuntimeException("Missing exchange rate from currency {$fromCurrencyId} to {$toCurrencyId}.");
+        }
+
+        return self::$rateCache[$cacheKey] = MoneyService::div('1', MoneyService::rate($inverseRate), 8);
+    }
+
+    public static function clearRateCache(): void
+    {
+        self::$rateCache = [];
     }
 
     /**

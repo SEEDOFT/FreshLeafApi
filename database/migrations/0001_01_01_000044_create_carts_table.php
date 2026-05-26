@@ -17,7 +17,7 @@ return new class extends Migration
             $table->id();
             $table->unsignedBigInteger('user_id');
             $table->unsignedBigInteger('vendor_inventory_id');
-            $table->unsignedBigInteger('quantity');
+            $table->decimal('quantity');
             $table->unsignedBigInteger('cart_status_id');
             $table->timestamps();
             $table->softDeletes();

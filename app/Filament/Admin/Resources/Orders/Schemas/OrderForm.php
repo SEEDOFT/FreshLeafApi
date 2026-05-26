@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Filament\Admin\Resources\Orders\Schemas;
 
+use App\Models\User;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
@@ -26,27 +27,32 @@ class OrderForm
                             ->dehydrated(false),
                         Select::make('user_id')
                             ->label(__('admin.resources.order.user'))
-                            ->relationship('user', 'first_name')
-                            ->getOptionLabelFromRecordUsing(fn ($record) => "{$record->first_name} {$record->last_name}")
+                            ->relationship('user')
+                            ->getOptionLabelFromRecordUsing(fn (User $record) => $record->fullName)
                             ->searchable()
                             ->preload()
-                            ->required(fn (string $operation): bool => $operation === 'create')->dehydrated(fn (mixed $state): bool => filled($state)),
+                            ->required(fn (string $operation): bool => $operation === 'create')
+                            ->dehydrated(fn (mixed $state): bool => filled($state)),
                         Select::make('order_type_id')
                             ->label(__('admin.resources.order.type'))
                             ->relationship('type', 'name')
-                            ->required(fn (string $operation): bool => $operation === 'create')->dehydrated(fn (mixed $state): bool => filled($state)),
+                            ->required(fn (string $operation): bool => $operation === 'create')
+                            ->dehydrated(fn (mixed $state): bool => filled($state)),
                         Select::make('order_status_id')
                             ->label(__('admin.resources.order.status'))
                             ->relationship('status', 'name')
-                            ->required(fn (string $operation): bool => $operation === 'create')->dehydrated(fn (mixed $state): bool => filled($state)),
+                            ->required(fn (string $operation): bool => $operation === 'create')
+                            ->dehydrated(fn (mixed $state): bool => filled($state)),
                         Select::make('payment_status_id')
                             ->label(__('admin.resources.order.payment_status'))
                             ->relationship('paymentStatus', 'name')
-                            ->required(fn (string $operation): bool => $operation === 'create')->dehydrated(fn (mixed $state): bool => filled($state)),
+                            ->required(fn (string $operation): bool => $operation === 'create')
+                            ->dehydrated(fn (mixed $state): bool => filled($state)),
                         Select::make('address_id')
                             ->label(__('admin.resources.order.address'))
                             ->relationship('address', 'label')
-                            ->required(fn (string $operation): bool => $operation === 'create')->dehydrated(fn (mixed $state): bool => filled($state)),
+                            ->required(fn (string $operation): bool => $operation === 'create')
+                            ->dehydrated(fn (mixed $state): bool => filled($state)),
                     ]),
 
                 Section::make(__('admin.resources.order.logistics'))

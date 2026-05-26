@@ -10,6 +10,10 @@ use App\Events\AiMessageFailed;
 use App\Events\AiMessageStarted;
 use App\Models\AiChatMessage;
 use App\Models\AiChatSession;
+use App\Models\Order;
+use App\Models\Payout;
+use App\Models\User;
+use App\Models\UserType;
 use App\Models\VendorInventory;
 use App\Services\Ai\AiService;
 use App\Services\Ai\WebSearchService;
@@ -93,17 +97,16 @@ class ProcessAiChatMessageJob implements ShouldQueue
     /**
      * Check if the prompt needs product context.
      */
-    private function needsProductContext(string $prompt): bool
+    private function needsConsumerContext(string $prompt): bool
     {
         $keywords = [
             'price',
             'stock',
             'available',
             'product',
-            'carrot',
-            'lettuce',
-            'tomato',
-            'morning glory',
+            'buy',
+            'vegetable',
+            'fruit',
         ];
         foreach ($keywords as $keyword) {
             if (stripos($prompt, $keyword) !== false) {
@@ -117,7 +120,7 @@ class ProcessAiChatMessageJob implements ShouldQueue
     /**
      * Fetch Product Context from Vendor Inventory
      */
-    private function fetchProductContext(string $prompt): string
+    private function fetchConsumerContext(string $prompt): string
     {
         $inventoryItems = VendorInventory::active()
             ->join('products', 'vendor_inventories.product_id', '=', 'products.id')
@@ -149,6 +152,62 @@ class ProcessAiChatMessageJob implements ShouldQueue
             $item->getAttribute('unit_name'),
             $item->getAttribute('farm_location')
         ))->implode("\n");
+    }
+
+    private function needsVendorContext(string $prompt): bool
+    {
+        $keywords = ['stock', 'sales', 'revenue', 'order', 'payout'];
+        foreach ($keywords as $keyword) {
+            if (stripos($prompt, $keyword) !== false) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private function fetchVendorContext(int $userId): string
+    {
+        $stockCount = VendorInventory::where('vendor_id', $userId)->sum('stock_quantity');
+        $ordersCount = Order::where('vendor_id', $userId)->count();
+        $payoutsPending = Payout::where('vendor_user_id', $userId)->where('payout_status_id', 1)->sum('amount'); // assuming 1 is pending
+
+        return sprintf(
+            "Vendor Data:\nTotal Stock Items: %s\nTotal Orders: %s\nPending Payout Amount: $%s",
+            $stockCount,
+            $ordersCount,
+            $payoutsPending
+        );
+    }
+
+    private function needsAdminContext(string $prompt): bool
+    {
+        $keywords = ['platform', 'user', 'vendor', 'consumer', 'order', 'revenue', 'payout'];
+        foreach ($keywords as $keyword) {
+            if (stripos($prompt, $keyword) !== false) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private function fetchAdminContext(): string
+    {
+        $totalUsers = User::count();
+        $totalVendors = User::where('user_type_id', UserType::VENDOR_ID)->count();
+        $totalConsumers = User::where('user_type_id', UserType::CONSUMER_ID)->count();
+        $totalOrders = Order::count();
+        $pendingPayouts = Payout::where('payout_status_id', 1)->count(); // assuming 1 is pending
+
+        return sprintf(
+            "Platform Data:\nTotal Users: %s (Vendors: %s, Consumers: %s)\nTotal Orders: %s\nPending Payout Requests: %s",
+            $totalUsers,
+            $totalVendors,
+            $totalConsumers,
+            $totalOrders,
+            $pendingPayouts
+        );
     }
 
     /**
@@ -183,16 +242,47 @@ class ProcessAiChatMessageJob implements ShouldQueue
             $aiService->assertAvailable();
 
             $context = '';
-            if ($this->needsProductContext($this->prompt)) {
-                $context = $this->fetchProductContext($this->prompt);
-                if ($context !== '') {
-                    $this->broadcastChunk(
-                        $assistantMessage,
-                        $userId,
-                        $sessionId,
-                        " [Looking up product details] \n\n",
-                        ++$sequence
-                    );
+            $userModel = $session->user;
+            $userTypeId = $userModel ? $userModel->user_type_id : UserType::CONSUMER_ID;
+
+            if ($userTypeId === UserType::ADMIN_ID) {
+                if ($this->needsAdminContext($this->prompt)) {
+                    $context = $this->fetchAdminContext();
+                    if ($context !== '') {
+                        $this->broadcastChunk(
+                            $assistantMessage,
+                            $userId,
+                            $sessionId,
+                            " [Looking up platform stats] \n\n",
+                            ++$sequence
+                        );
+                    }
+                }
+            } elseif ($userTypeId === UserType::VENDOR_ID) {
+                if ($this->needsVendorContext($this->prompt)) {
+                    $context = $this->fetchVendorContext($userId);
+                    if ($context !== '') {
+                        $this->broadcastChunk(
+                            $assistantMessage,
+                            $userId,
+                            $sessionId,
+                            " [Looking up vendor stats] \n\n",
+                            ++$sequence
+                        );
+                    }
+                }
+            } else {
+                if ($this->needsConsumerContext($this->prompt)) {
+                    $context = $this->fetchConsumerContext($this->prompt);
+                    if ($context !== '') {
+                        $this->broadcastChunk(
+                            $assistantMessage,
+                            $userId,
+                            $sessionId,
+                            " [Looking up product details] \n\n",
+                            ++$sequence
+                        );
+                    }
                 }
             }
 
@@ -453,6 +543,13 @@ class ProcessAiChatMessageJob implements ShouldQueue
         if (! $user) {
             return $prompt;
         }
+
+        $rolePrompt = match ($user->user_type_id) {
+            UserType::ADMIN_ID => 'You are an AI assistant helping a system administrator manage the FreshLeaf platform.',
+            UserType::VENDOR_ID => 'You are an AI assistant helping a vendor manage their FreshLeaf store.',
+            default => 'You are an AI assistant helping a customer shop on FreshLeaf.',
+        };
+        $prompt = $rolePrompt."\n\n".$prompt;
 
         $locale = $this->language ?: $user->currentLocale;
         $languagePrompt = (string) config(

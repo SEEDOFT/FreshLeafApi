@@ -20,9 +20,12 @@ class ExchangeRateInfolist
                 TextEntry::make('rate')
                     ->label(__('admin.resources.exchange_rate.rate'))
                     ->numeric(),
+                TextEntry::make('created_at')
+                    ->label(__('admin.resources.created_at'))
+                    ->dateTime('d M Y, h:i A'),
                 TextEntry::make('updated_at')
                     ->label(__('admin.resources.updated_at'))
-                    ->dateTime(),
+                    ->dateTime('d M Y, h:i A'),
             ]);
     }
 }

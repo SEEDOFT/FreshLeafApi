@@ -25,7 +25,7 @@ return new class extends Migration
             $table->string('farm_location')->nullable();
             $table->string('province_of_origin')->nullable();
             $table->string('certification_type')->nullable();
-            $table->string('packaging_type')->nullable();
+            $table->unsignedBigInteger('packaging_type_id')->nullable();
             $table->integer('shelf_life_days')->nullable();
             $table->text('batch_images')->nullable();
             $table->unsignedBigInteger('currency_id');

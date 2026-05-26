@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Filament\Vendor\Resources\Orders\Tables;
 
+use App\Filament\Vendor\Resources\Orders\Actions\OrderActions;
 use App\Models\Order;
 use App\Models\OrderStatus;
 use App\Models\PaymentStatus;
@@ -83,6 +84,10 @@ class OrdersTable
                     ),
             ])
             ->recordActions([
+                OrderActions::accept(),
+                OrderActions::prepare(),
+                OrderActions::deliver(),
+                OrderActions::cancel(),
                 ViewAction::make(),
             ])
             ->toolbarActions([

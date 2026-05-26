@@ -10,6 +10,7 @@ use App\Http\Controllers\Api\User\AddressController;
 use App\Http\Controllers\Api\User\AuthController;
 use App\Http\Controllers\Api\User\CartController;
 use App\Http\Controllers\Api\User\DeviceController;
+use App\Http\Controllers\Api\User\NotificationController;
 use App\Http\Controllers\Api\User\OrderController;
 use App\Http\Controllers\Api\User\PaymentMethodController;
 use App\Http\Controllers\Api\User\PaymentMethodTypeController;
@@ -150,8 +151,10 @@ Route::prefix('v1')->name('v1.')->group(static function () {
                 ->group(static function () {
                     Route::get('/', 'index')->name('index');
                     Route::get('{id}', 'show')->name('show');
+                    Route::post('{id}/pay', 'pay')->name('pay');
                     Route::post('{id}/cancel', 'cancel')->name('cancel');
                     Route::post('{id}/confirm-receipt', 'confirmReceipt')->name('confirmReceipt');
+                    Route::post('{id}/simulate-external-payment', 'simulateExternalPayment')->name('simulate-external-payment');
                 });
 
             Route::prefix('wishlist')
@@ -257,6 +260,13 @@ Route::prefix('v1')->name('v1.')->group(static function () {
                 ->group(static function () {
                     Route::post('/', 'store')->name('devices.store');
                     Route::delete('{token}', 'destroy')->name('devices.destroy');
+                });
+
+            Route::controller(NotificationController::class)->prefix('notifications')
+                ->group(static function () {
+                    Route::get('/', 'index')->name('notifications.index');
+                    Route::post('mark-all-read', 'markAllAsRead')->name('notifications.mark-all-read');
+                    Route::post('{notification}/mark-read', 'markAsRead')->name('notifications.mark-read');
                 });
         });
 

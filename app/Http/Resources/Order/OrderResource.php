@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Http\Resources\Order;
 
 use App\Models\Order;
+use App\Services\MoneyService;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -30,11 +31,16 @@ class OrderResource extends JsonResource
             'payment_status_id' => $this->payment_status_id,
             'delivery_date' => $this->delivery_date->format('Y-m-d'),
             'delivery_slot' => $this->delivery_slot,
-            'subtotal' => $this->subtotal,
-            'discount_amount' => $this->discount_amount,
-            'delivery_fee' => $this->delivery_fee,
-            'tax_amount' => $this->tax_amount,
-            'total_amount' => $this->total_amount,
+            'subtotal' => MoneyService::money($this->subtotal),
+            'subtotal_display' => MoneyService::displayTotalsFromUsd($this->subtotal),
+            'discount_amount' => MoneyService::money($this->discount_amount),
+            'discount_amount_display' => MoneyService::displayTotalsFromUsd($this->discount_amount),
+            'delivery_fee' => MoneyService::money($this->delivery_fee),
+            'delivery_fee_display' => MoneyService::displayTotalsFromUsd($this->delivery_fee),
+            'tax_amount' => MoneyService::money($this->tax_amount),
+            'tax_amount_display' => MoneyService::displayTotalsFromUsd($this->tax_amount),
+            'total_amount' => MoneyService::money($this->total_amount),
+            'total_amount_display' => MoneyService::displayTotalsFromUsd($this->total_amount),
             'notes' => $this->notes,
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,

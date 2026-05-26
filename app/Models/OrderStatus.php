@@ -36,9 +36,7 @@ use Illuminate\Support\Facades\App;
 class OrderStatus extends Model
 {
     /** @use HasFactory<OrderStatusFactory> */
-    use HasFactory;
-
-    use SoftDeletes;
+    use HasFactory, SoftDeletes;
 
     public const int PENDING_ID = 1;
 
@@ -50,6 +48,8 @@ class OrderStatus extends Model
 
     public const int CANCELLED_ID = 5;
 
+    public const int AWAITING_PAYMENT_ID = 6;
+
     public const string PENDING = 'PENDING';
 
     public const string CONFIRMED = 'CONFIRMED';
@@ -59,6 +59,8 @@ class OrderStatus extends Model
     public const string DELIVERED = 'DELIVERED';
 
     public const string CANCELLED = 'CANCELLED';
+
+    public const string AWAITING_PAYMENT = 'AWAITING_PAYMENT';
 
     /**
      * Get the English name (as the generic name).

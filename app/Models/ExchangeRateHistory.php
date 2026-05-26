@@ -67,7 +67,8 @@ class ExchangeRateHistory extends Model
      */
     public function changer(): BelongsTo
     {
-        return $this->belongsTo(User::class, 'changed_by_user_id', 'id');
+        return $this->belongsTo(User::class, 'changed_by_user_id', 'id')
+            ->where('users.user_type_id', UserType::ADMIN_ID);
     }
 
     /**

@@ -36,11 +36,11 @@ class AuthController extends Controller
             ->first();
 
         if (! $user || ! Hash::check($validatedData['password'], $user->password)) {
-            return static::errorResponse(__('api.auth.login_failed'), 401);
+            abort(401, __('api.auth.login_failed'));
         }
 
         if (! $user->isActive()) {
-            return static::errorResponse(__('api.auth.account_not_active'), 403);
+            abort(403, __('api.auth.account_not_active'));
         }
 
         $token = $user->createToken('user_auth_token')->plainTextToken;
@@ -175,7 +175,7 @@ class AuthController extends Controller
             ! is_string($user->password) ||
             ! Hash::check($validatedData['password'], $user->password)
         ) {
-            return static::errorResponse(__('api.auth.invalid_password'), 401);
+            abort(401, __('api.auth.invalid_password'));
         }
 
         return static::successResponse(message: __('api.auth.password_verified'));

@@ -158,6 +158,16 @@ return [
             'tax' => 'Tax',
             'total' => 'Total Amount',
             'commission' => 'Commission',
+            'actions' => [
+                'accept' => 'Accept Order',
+                'accepted_success' => 'Order accepted successfully.',
+                'prepare' => 'Start Preparing',
+                'prepared_success' => 'Order is now being prepared.',
+                'deliver' => 'Mark as Delivered',
+                'delivered_success' => 'Order marked as delivered.',
+                'cancel' => 'Cancel Order',
+                'cancelled_success' => 'Order has been cancelled.',
+            ],
         ],
         'payout' => [
             'label' => 'Payout',

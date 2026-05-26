@@ -63,7 +63,8 @@ class Payout extends Model
      */
     public function vendor(): BelongsTo
     {
-        return $this->belongsTo(User::class, 'vendor_user_id', 'id');
+        return $this->belongsTo(User::class, 'vendor_user_id', 'id')
+            ->where('users.user_type_id', UserType::VENDOR_ID);
     }
 
     /**
@@ -87,6 +88,7 @@ class Payout extends Model
      */
     public function processor(): BelongsTo
     {
-        return $this->belongsTo(User::class, 'processed_by_admin_id', 'id');
+        return $this->belongsTo(User::class, 'processed_by_admin_id', 'id')
+            ->where('users.user_type_id', UserType::ADMIN_ID);
     }
 }

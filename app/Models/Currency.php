@@ -39,9 +39,7 @@ use Illuminate\Support\Facades\App;
 class Currency extends Model
 {
     /** @use HasFactory<CurrencyFactory> */
-    use HasFactory;
-
-    use SoftDeletes;
+    use HasFactory, SoftDeletes;
 
     public const string KHR = 'KHR';
 
@@ -61,6 +59,9 @@ class Currency extends Model
         return $this->hasMany(Wallet::class, 'currency_id', 'id');
     }
 
+    /**
+     * Get translated currency
+     */
     public function getTranslatedCurrencyAttribute(): ?string
     {
         return $this->{'name_'.App::currentLocale()};

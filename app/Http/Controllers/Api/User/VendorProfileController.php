@@ -24,7 +24,7 @@ class VendorProfileController extends Controller
         $vendor = User::where('user_type_id', UserType::VENDOR_ID)
             ->with(['vendorProfile'])
             ->withCount([
-                'vendorInventories as active_inventories_count' => static fn (User $query): Builder => $query->active(),
+                'vendorInventories as active_inventories_count' => static fn (Builder $query): Builder => $query->active(),
             ])
             ->find((int) $id);
 

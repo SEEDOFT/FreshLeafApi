@@ -263,6 +263,8 @@ class CartService
                         'order_type_id' => $validatedData['order_type_id'],
                         'order_status_id' => $initialOrderStatus,
                         'payment_status_id' => PaymentStatus::PENDING_ID,
+                        'currency_id' => Currency::USD_ID, // Normalized to USD
+                        'place_order_date' => Carbon::now(),
                         'delivery_date' => $validatedData['delivery_date'] ?? Carbon::now()->toDateString(),
                         'delivery_slot' => $validatedData['delivery_slot'] ?? 'Standard',
                         'subtotal' => $subtotal,
@@ -289,6 +291,8 @@ class CartService
                         'payment_status_id' => PaymentStatus::PENDING_ID,
                         'notes' => 'Payment pending upon order creation.',
                     ]);
+
+                    $order->update(['payment_id' => $payment->id]);
 
                     foreach ($cartRows as $cartRow) {
                         $inventory = $cartRow->vendorInventory;

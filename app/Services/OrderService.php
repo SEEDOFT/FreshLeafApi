@@ -48,7 +48,7 @@ class OrderService
                     'amount' => $orderTotal,
                     'reference_id' => $order->id,
                     'reference_type' => Order::class,
-                    'description' => 'Payment for order #' . $order->id,
+                    'description' => 'Payment for order #'.$order->id,
                     'transaction_date' => Carbon::now(),
                 ]);
 
@@ -60,7 +60,7 @@ class OrderService
                     'amount' => $orderTotal,
                     'reference_id' => $order->id,
                     'reference_type' => Order::class,
-                    'description' => 'Payment for order #' . $order->id,
+                    'description' => 'Payment for order #'.$order->id,
                     'transaction_date' => Carbon::now(),
                 ]);
 

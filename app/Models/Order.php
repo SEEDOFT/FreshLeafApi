@@ -13,6 +13,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Carbon;
 
@@ -36,6 +37,9 @@ use function substr;
  * @property numeric $tax_amount
  * @property numeric $total_amount
  * @property string|null $notes
+ * @property int|null $currency_id
+ * @property int|null $payment_id
+ * @property Carbon|null $place_order_date
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  * @property-read Address $address
@@ -58,6 +62,9 @@ use function substr;
     'order_type_id',
     'order_status_id',
     'payment_status_id',
+    'currency_id',
+    'payment_id',
+    'place_order_date',
     'order_number',
     'delivery_date',
     'delivery_slot',
@@ -118,6 +125,7 @@ class Order extends Model
     {
         return [
             'delivery_date' => 'date',
+            'place_order_date' => 'datetime',
         ];
     }
 
@@ -200,5 +208,15 @@ class Order extends Model
     public function histories(): HasMany
     {
         return $this->hasMany(OrderHistory::class, 'order_id', 'id');
+    }
+
+    /**
+     * Get the currency for the order.
+     *
+     * @return HasOne<Currency, $this>
+     */
+    public function currency(): HasOne
+    {
+        return $this->hasOne(Currency::class, 'id', 'currency_id');
     }
 }

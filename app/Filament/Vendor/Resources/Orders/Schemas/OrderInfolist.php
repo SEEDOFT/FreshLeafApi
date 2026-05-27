@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Filament\Vendor\Resources\Orders\Schemas;
 
+use App\Models\Currency;
+use App\Models\Order;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
@@ -20,13 +22,11 @@ class OrderInfolist
                         TextEntry::make('order_number')
                             ->label(__('admin.resources.order.order_number'))
                             ->copyable(),
-                        TextEntry::make('status.name')
+                        TextEntry::make('status.translated_name')
                             ->label(__('admin.resources.order.status'))
                             ->badge(),
-                        TextEntry::make('user.first_name')
+                        TextEntry::make('user.fullName')
                             ->label(__('admin.resources.order.customer')),
-                        TextEntry::make('vendor.business_name')
-                            ->label(__('admin.resources.order.vendor')),
                     ]),
 
                 Section::make(__('admin.resources.order.financials'))
@@ -34,10 +34,18 @@ class OrderInfolist
                     ->schema([
                         TextEntry::make('total_amount')
                             ->label(__('admin.resources.order.total'))
-                            ->money('USD'),
+                            ->placeholder('0.00')
+                            ->getStateUsing(function (Order $record): string {
+                                $balance = number_format((float) $record->total_amount, 2);
+                                $symbol = $record->currency?->symbol;
+
+                                return $record->currency?->id === Currency::USD_ID
+                                    ? "$symbol $balance"
+                                    : "$balance $symbol";
+                            }),
                         TextEntry::make('commission_amount')
                             ->label(__('admin.resources.order.commission'))
-                            ->money('USD'),
+                            ->badge(),
                         TextEntry::make('payment_status.name')
                             ->label(__('admin.resources.order.payment_status'))
                             ->badge(),
@@ -62,10 +70,10 @@ class OrderInfolist
                     ->schema([
                         TextEntry::make('created_at')
                             ->label(__('admin.resources.created_at'))
-                            ->dateTime(),
+                            ->dateTime('d M Y, h:i A'),
                         TextEntry::make('updated_at')
                             ->label(__('admin.resources.updated_at'))
-                            ->dateTime(),
+                            ->dateTime('d M Y, h:i A'),
                     ]),
             ]);
     }

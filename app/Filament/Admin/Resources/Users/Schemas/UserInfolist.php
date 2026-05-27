@@ -86,7 +86,6 @@ class UserInfolist
                                     ->label(__('admin.resources.wallet.currency'))
                                     ->placeholder($notProvided),
                                 TextEntry::make('balance')
-
                                     ->label(__('admin.resources.wallet.balance'))
                                     ->placeholder('0.00')
                                     ->getStateUsing(function (Wallet $record): string {

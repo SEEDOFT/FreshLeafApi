@@ -42,6 +42,9 @@ class OrderResource extends JsonResource
             'total_amount' => MoneyService::money($this->total_amount),
             'total_amount_display' => MoneyService::displayTotalsFromUsd($this->total_amount),
             'notes' => $this->notes,
+            'place_order_date' => $this->place_order_date?->toIso8601String(),
+            'currency_id' => $this->currency_id,
+            'payment_id' => $this->payment_id,
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
 

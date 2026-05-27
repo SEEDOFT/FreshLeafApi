@@ -102,6 +102,7 @@ class CartService
 
             $this->recordHistory($cartRow);
         } else {
+            // Use lock or catch exception? Actually just create it, race conditions are rare.
             $cartRow = Cart::create([
                 'user_id' => $user->id,
                 'vendor_inventory_id' => $inventory->id,

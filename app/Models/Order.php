@@ -231,10 +231,20 @@ class Order extends Model
     /**
      * Get the currency for the order.
      *
-     * @return HasOne<Currency, $this>
+     * @return BelongsTo<Currency, $this>
      */
-    public function currency(): HasOne
+    public function currency(): BelongsTo
     {
-        return $this->hasOne(Currency::class, 'id', 'currency_id');
+        return $this->belongsTo(Currency::class, 'currency_id', 'id');
+    }
+
+    /**
+     * Get the primary payment for the order.
+     *
+     * @return BelongsTo<Payment, $this>
+     */
+    public function payment(): BelongsTo
+    {
+        return $this->belongsTo(Payment::class, 'payment_id', 'id');
     }
 }

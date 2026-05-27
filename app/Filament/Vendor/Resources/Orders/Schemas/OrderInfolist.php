@@ -68,6 +68,27 @@ class OrderInfolist
                 Section::make(__('admin.resources.timestamps'))
                     ->columns(2)
                     ->schema([
+                        TextEntry::make('place_order_date')
+                            ->label('Place Order Date')
+                            ->dateTime('d M Y, h:i A'),
+                        TextEntry::make('order_pending_date')
+                            ->label('Pending Date')
+                            ->dateTime('d M Y, h:i A'),
+                        TextEntry::make('order_confirmed_date')
+                            ->label('Confirmed Date')
+                            ->dateTime('d M Y, h:i A'),
+                        TextEntry::make('order_preparing_date')
+                            ->label('Preparing Date')
+                            ->dateTime('d M Y, h:i A'),
+                        TextEntry::make('order_delivered_date')
+                            ->label('Delivered Date')
+                            ->dateTime('d M Y, h:i A'),
+                        TextEntry::make('order_cancelled_date')
+                            ->label('Cancelled Date')
+                            ->dateTime('d M Y, h:i A'),
+                        TextEntry::make('order_awaiting_payment_date')
+                            ->label('Awaiting Payment Date')
+                            ->dateTime('d M Y, h:i A'),
                         TextEntry::make('created_at')
                             ->label(__('admin.resources.created_at'))
                             ->dateTime('d M Y, h:i A'),

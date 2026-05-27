@@ -21,6 +21,15 @@ return new class extends Migration
             $table->unsignedBigInteger('order_type_id');
             $table->unsignedBigInteger('order_status_id');
             $table->unsignedBigInteger('payment_status_id');
+            $table->unsignedBigInteger('currency_id')->nullable();
+            $table->unsignedBigInteger('payment_id')->nullable();
+            $table->datetime('place_order_date')->nullable();
+            $table->datetime('order_pending_date')->nullable();
+            $table->datetime('order_confirmed_date')->nullable();
+            $table->datetime('order_preparing_date')->nullable();
+            $table->datetime('order_delivered_date')->nullable();
+            $table->datetime('order_cancelled_date')->nullable();
+            $table->datetime('order_awaiting_payment_date')->nullable();
             $table->date('delivery_date');
             $table->string('delivery_slot');
             $table->decimal('subtotal', 16, 2);

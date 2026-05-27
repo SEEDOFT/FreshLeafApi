@@ -57,15 +57,19 @@ class OrdersTable
                     ->sortable(),
                 TextColumn::make('total_amount')
                     ->label(__('shared.order.total'))
-                    ->money('USD')
                     ->sortable(),
                 TextColumn::make('delivery_date')
                     ->label(__('shared.order.delivery_date'))
-                    ->date()
+                    ->dateTime('d M Y, h:i A')
                     ->sortable(),
                 TextColumn::make('created_at')
                     ->label(__('shared.created_at'))
-                    ->dateTime()
+                    ->dateTime('d M Y, h:i A')
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+                TextColumn::make('updated_at')
+                    ->label(__('shared.updated_at'))
+                    ->dateTime('d M Y, h:i A')
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
             ])

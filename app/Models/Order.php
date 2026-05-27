@@ -40,6 +40,12 @@ use function substr;
  * @property int|null $currency_id
  * @property int|null $payment_id
  * @property Carbon|null $place_order_date
+ * @property Carbon|null $order_pending_date
+ * @property Carbon|null $order_confirmed_date
+ * @property Carbon|null $order_preparing_date
+ * @property Carbon|null $order_delivered_date
+ * @property Carbon|null $order_cancelled_date
+ * @property Carbon|null $order_awaiting_payment_date
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  * @property-read Address $address
@@ -65,6 +71,12 @@ use function substr;
     'currency_id',
     'payment_id',
     'place_order_date',
+    'order_pending_date',
+    'order_confirmed_date',
+    'order_preparing_date',
+    'order_delivered_date',
+    'order_cancelled_date',
+    'order_awaiting_payment_date',
     'order_number',
     'delivery_date',
     'delivery_slot',
@@ -126,6 +138,12 @@ class Order extends Model
         return [
             'delivery_date' => 'date',
             'place_order_date' => 'datetime',
+            'order_pending_date' => 'datetime',
+            'order_confirmed_date' => 'datetime',
+            'order_preparing_date' => 'datetime',
+            'order_delivered_date' => 'datetime',
+            'order_cancelled_date' => 'datetime',
+            'order_awaiting_payment_date' => 'datetime',
         ];
     }
 

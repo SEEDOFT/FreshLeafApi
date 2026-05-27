@@ -11,6 +11,7 @@ use App\Filament\Vendor\Resources\Orders\Schemas\OrderForm;
 use App\Filament\Vendor\Resources\Orders\Schemas\OrderInfolist;
 use App\Filament\Vendor\Resources\Orders\Tables\OrdersTable;
 use App\Models\Order;
+use App\Models\OrderStatus;
 use App\Models\User;
 use App\Models\UserStatus;
 use App\Models\UserType;
@@ -51,6 +52,27 @@ class OrderResource extends Resource
     }
 
     #[Override]
+    public static function getNavigationBadge(): ?string
+    {
+        $vendor = Auth::user();
+        if (! $vendor) {
+            return null;
+        }
+
+        $count = static::getEloquentQuery()
+            ->where('order_status_id', OrderStatus::PENDING_ID)
+            ->count();
+
+        return $count > 0 ? (string) $count : null;
+    }
+
+    #[Override]
+    public static function getNavigationBadgeColor(): ?string
+    {
+        return 'warning';
+    }
+
+    #[Override]
     public static function canAccess(): bool
     {
         $user = Auth::user();
@@ -75,10 +97,12 @@ class OrderResource extends Resource
         }
 
         return parent::getEloquentQuery()
+            ->where('order_status_id', '!=', OrderStatus::AWAITING_PAYMENT_ID)
             ->whereHas(
                 'items.vendorInventory',
                 static fn (Builder $query) => $query->where('vendor_id', $vendor->id)
-            );
+            )
+            ->orderBy('created_at', 'desc');
     }
 
     #[Override]

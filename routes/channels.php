@@ -31,3 +31,7 @@ Broadcast::channel(
     callback: UserChannel::class,
     options: ['guards' => ['web', 'api', 'sanctum']]
 );
+
+Broadcast::channel('vendor.orders.{id}', function ($user, $id) {
+    return (int) $user->id === (int) $id;
+}, ['guards' => ['web', 'api', 'sanctum']]);

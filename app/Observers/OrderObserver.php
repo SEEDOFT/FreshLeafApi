@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Observers;
 
+use App\Events\VendorOrderUpdated;
 use App\Models\Order;
 use App\Models\OrderStatus;
 use App\Notifications\Order\NewOrderNotification;
@@ -36,8 +37,13 @@ class OrderObserver
      */
     public function created(Order $order): void
     {
-        // Notify the user who placed the order
-        $order->user?->notify(new NewOrderNotification($order));
+        if ($order->order_status_id !== OrderStatus::AWAITING_PAYMENT_ID) {
+            $order->user?->notify(new NewOrderNotification($order));
+
+            if ($order->order_status_id === OrderStatus::PENDING_ID) {
+                $this->notifyVendor($order);
+            }
+        }
     }
 
     /**
@@ -46,7 +52,24 @@ class OrderObserver
     public function updated(Order $order): void
     {
         if ($order->isDirty('order_status_id')) {
-            $order->user?->notify(new OrderStatusUpdatedNotification($order));
+            $originalStatus = (int) $order->getOriginal('order_status_id');
+            $newStatus = (int) $order->order_status_id;
+
+            if ($originalStatus === OrderStatus::AWAITING_PAYMENT_ID && $newStatus === OrderStatus::PENDING_ID) {
+                // Now it's fully placed
+                $order->user?->notify(new NewOrderNotification($order));
+                $this->notifyVendor($order);
+            } else {
+                $order->user?->notify(new OrderStatusUpdatedNotification($order));
+            }
+        }
+    }
+
+    private function notifyVendor(Order $order): void
+    {
+        $vendor = $order->items()->first()?->vendorInventory?->vendor;
+        if ($vendor) {
+            broadcast(new VendorOrderUpdated($vendor->id, $order->id, $order->order_number))->toOthers();
         }
     }
 }

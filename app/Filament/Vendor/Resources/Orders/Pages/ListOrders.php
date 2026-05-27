@@ -6,6 +6,7 @@ namespace App\Filament\Vendor\Resources\Orders\Pages;
 
 use App\Filament\Vendor\Resources\Orders\OrderResource;
 use Filament\Resources\Pages\ListRecords;
+use Illuminate\Support\Facades\Auth;
 use Override;
 
 class ListOrders extends ListRecords
@@ -18,6 +19,15 @@ class ListOrders extends ListRecords
     {
         return [
             // /
+        ];
+    }
+
+    public function getListeners(): array
+    {
+        $vendorId = Auth::id();
+
+        return [
+            "echo-private:vendor.orders.{$vendorId},VendorOrderUpdated" => '$refresh',
         ];
     }
 }

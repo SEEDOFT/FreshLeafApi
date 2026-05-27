@@ -277,6 +277,14 @@ class User extends Authenticatable implements FilamentUser, HasAvatar, HasName
     }
 
     /**
+     * The channels the user receives notification broadcasts on.
+     */
+    public function receivesBroadcastNotificationsOn(): string
+    {
+        return 'App.Models.User.'.$this->id;
+    }
+
+    /**
      * Specifies the user's FCM tokens for notifications.
      *
      * @return list<string>

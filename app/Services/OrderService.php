@@ -73,7 +73,7 @@ class OrderService
 
                 // Update payment and order status
                 $order->update([
-                    'order_status_id' => OrderStatus::PREPARING_ID,
+                    'order_status_id' => OrderStatus::PENDING_ID,
                     'payment_status_id' => PaymentStatus::COMPLETED_ID,
                 ]);
 
@@ -90,7 +90,7 @@ class OrderService
                 }
 
                 $order->histories()->create([
-                    'order_status_id' => OrderStatus::PREPARING_ID,
+                    'order_status_id' => OrderStatus::PENDING_ID,
                     'notes' => 'Payment received via Wallet.',
                 ]);
             });

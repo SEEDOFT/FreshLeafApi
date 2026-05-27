@@ -41,4 +41,20 @@
             observer.observe(document.documentElement, { attributes: true });
         });
     </script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            if (window.Echo && @json(Auth::id()) && window.location.pathname.startsWith('/vendor')) {
+                window.Echo.private(`vendor.orders.${@json(Auth::id())}`)
+                    .listen('VendorOrderUpdated', (event) => {
+                        if (!window.location.pathname.includes('/vendor/orders')) {
+                            new FilamentNotification()
+                                .title('New Order Received')
+                                .body(`You have a new order #${event.orderNumber} to prepare.`)
+                                .warning()
+                                .send();
+                        }
+                    });
+            }
+        });
+    </script>
 @endauth

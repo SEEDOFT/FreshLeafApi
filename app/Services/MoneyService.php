@@ -21,7 +21,7 @@ use function str_starts_with;
 use function strpbrk;
 use function substr;
 
-class MoneyService
+final class MoneyService
 {
     private const int MONEY_SCALE = 2;
 

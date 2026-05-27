@@ -8,7 +8,6 @@ use App\Models\Currency;
 use App\Models\User;
 use App\Models\Wallet;
 use App\Models\WalletTransaction;
-use App\Models\WalletTransactionHistory;
 use App\Models\WalletTransactionStatus;
 use App\Models\WalletTransactionType;
 use App\Services\MoneyService;
@@ -62,10 +61,11 @@ class SeedWalletMoney extends Command
                 'wallet_transaction_status_id' => WalletTransactionStatus::COMPLETED_ID,
             ]);
 
-            WalletTransactionHistory::create([
-                'wallet_transaction_id' => $transaction->id,
-                'wallet_transaction_status_id' => WalletTransactionStatus::COMPLETED_ID,
-            ]);
+            $attributes = collect($transaction->getAttributes())
+                ->except(['id', 'created_at', 'updated_at', 'deleted_at'])
+                ->toArray();
+
+            $transaction->histories()->create($attributes);
         }
 
         $this->info("Successfully seeded wallets for user {$user->first_name}.");

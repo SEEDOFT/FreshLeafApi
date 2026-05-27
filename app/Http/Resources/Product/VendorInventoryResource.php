@@ -96,9 +96,21 @@ class VendorInventoryResource extends JsonResource
                 fn () => [
                     'id' => $this->vendor->id,
                     'name' => $this->vendor->fullName,
-                    'phone' => $this->vendor->vendorProfile->contact_phone,
+                    'phone' => $this->vendor->vendorProfile->contact_phone ?? $this->vendor->phone_number,
                     'email' => $this->vendor->email,
-                    'address' => $this->vendor->vendorProfile->address,
+                    'address' => $this->vendor->vendorProfile->address ?? null,
+                    'business_name' => $this->vendor->vendorProfile->business_name ?? null,
+                    'shop_description' => $this->vendor->vendorProfile->shop_description ?? null,
+                    'store_front_image' => $this->vendor->vendorProfile->store_front_image
+                        ? Storage::disk('public')->url($this->vendor->vendorProfile->store_front_image)
+                        : null,
+                    'province' => $this->vendor->vendorProfile->province ?? null,
+                    'opening_time' => $this->vendor->vendorProfile->opening_time ?? null,
+                    'closing_time' => $this->vendor->vendorProfile->closing_time ?? null,
+                    'is_open' => (bool) ($this->vendor->vendorProfile->is_open ?? false),
+                    'is_verified' => (bool) ($this->vendor->vendorProfile->is_verified ?? false),
+                    'product_count' => $this->vendor->active_inventories_count ??
+                        $this->vendor->vendorInventories()->active()->count(),
                 ],
                 null
             ),

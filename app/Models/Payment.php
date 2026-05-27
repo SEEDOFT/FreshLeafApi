@@ -20,8 +20,9 @@ use Override;
 /**
  * @property int $id
  * @property int $order_id
- * @property int $payment_type_id
- * @property int $payment_status_id
+ * @property int $type_id
+ * @property int $status_id
+ * @property string $payment_number
  * @property numeric $amount
  * @property string|null $transaction_reference
  * @property Carbon|null $paid_at
@@ -64,9 +65,12 @@ class Payment extends Model
         ];
     }
 
+    /**
+     * {@inheritDoc}
+     */
     protected static function booted(): void
     {
-        static::creating(function (self $payment) {
+        static::creating(function (self $payment): void {
             if (empty($payment->payment_number)) {
                 $payment->payment_number = self::generatePaymentNumber();
             }

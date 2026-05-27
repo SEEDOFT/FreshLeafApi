@@ -7,6 +7,8 @@ namespace App\Http\Requests\Api\Cart;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 
+use function auth;
+
 class CartUpdateRequest extends FormRequest
 {
     /**
@@ -14,7 +16,7 @@ class CartUpdateRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return true;
+        return auth()->check();
     }
 
     /**

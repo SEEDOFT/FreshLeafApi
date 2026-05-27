@@ -42,10 +42,25 @@ class OrderService
                 $wallet->update(['balance' => $newBalance]);
 
                 // Create transaction
-                $wallet->transactions()->create([
+                $transaction = $wallet->transactions()->create([
                     'wallet_transaction_type_id' => WalletTransactionType::PAYMENT_ID,
                     'wallet_transaction_status_id' => WalletTransactionStatus::COMPLETED_ID,
                     'amount' => $orderTotal,
+                    'reference_id' => $order->id,
+                    'reference_type' => Order::class,
+                    'description' => 'Payment for order #' . $order->id,
+                    'transaction_date' => Carbon::now(),
+                ]);
+
+                // Create transaction history
+                $transaction->histories()->create([
+                    'wallet_id' => $wallet->id,
+                    'wallet_transaction_type_id' => WalletTransactionType::PAYMENT_ID,
+                    'wallet_transaction_status_id' => WalletTransactionStatus::COMPLETED_ID,
+                    'amount' => $orderTotal,
+                    'reference_id' => $order->id,
+                    'reference_type' => Order::class,
+                    'description' => 'Payment for order #' . $order->id,
                     'transaction_date' => Carbon::now(),
                 ]);
 

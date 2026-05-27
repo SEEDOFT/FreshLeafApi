@@ -267,6 +267,16 @@ class User extends Authenticatable implements FilamentUser, HasAvatar, HasName
     }
 
     /**
+     * Get the vendor inventories for the vendor.
+     *
+     * @return HasMany<VendorInventory, $this>
+     */
+    public function vendorInventories(): HasMany
+    {
+        return $this->hasMany(VendorInventory::class, 'vendor_id', 'id');
+    }
+
+    /**
      * Specifies the user's FCM tokens for notifications.
      *
      * @return list<string>

@@ -11,13 +11,15 @@
     "mcp": true,
     "nightwatch": false,
     "packages": [
-        "filament/filament"
+        "filament/filament",
+        "laramint/laravel-brain"
     ],
     "sail": false,
     "skills": [
         "laravel-best-practices",
         "livewire-development",
         "echo-development",
-        "tailwindcss-development"
+        "tailwindcss-development",
+        "laravel-brain"
     ]
 }

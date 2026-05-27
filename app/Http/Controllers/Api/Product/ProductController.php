@@ -26,7 +26,7 @@ class ProductController extends Controller
         'packagingType',
         'unit',
         'currency',
-        'vendor',
+        'vendor.vendorProfile',
         'status',
     ];
 
@@ -43,6 +43,16 @@ class ProductController extends Controller
                 )
             )
             ->with(self::RELATIONSHIPS)
+            ->when($request->filled('province'),
+                static function (Builder $query) use ($request) {
+                    $province = strtolower($request->input('province'));
+                    $query->where(static function (Builder $q) use ($province) {
+                        $q->whereRaw('lower(province_of_origin) = ?', [$province])
+                            ->orWhereHas('vendor.vendorProfile', static function (Builder $vQuery) use ($province) {
+                                $vQuery->whereRaw('lower(province) = ?', [$province]);
+                            });
+                    });
+                })
             ->when($request->filled('category_id'),
                 static function (Builder $query) use ($request) {
                     $query->whereHas('product',

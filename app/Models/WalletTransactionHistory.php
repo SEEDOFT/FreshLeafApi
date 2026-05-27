@@ -37,6 +37,9 @@ use Illuminate\Support\Carbon;
     'wallet_transaction_status_id',
     'amount',
     'payment_method_id',
+    'reference_id',
+    'reference_type',
+    'description',
     'transaction_date',
 ])]
 #[UseFactory(WalletTransactionHistoryFactory::class)]

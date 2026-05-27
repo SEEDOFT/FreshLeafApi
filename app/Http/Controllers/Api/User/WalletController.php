@@ -41,10 +41,10 @@ class WalletController extends Controller
     public function show(string $id, Request $request): JsonResponse
     {
         $user = $this->authenticatedUser($request);
-        $wallet = $user->wallets()->with('currency')->find($id);
+        $wallet = $user->wallets()->with('currency')->find((int) $id);
 
         if (! $wallet) {
-            return static::notFoundResponse(__('api.wallet.not_found'));
+            abort(404, __('api.wallet.not_found'));
         }
 
         return static::successResponse(
@@ -59,10 +59,10 @@ class WalletController extends Controller
     public function history(string $id, Request $request): JsonResponse
     {
         $user = $this->authenticatedUser($request);
-        $wallet = $user->wallets()->with('currency')->find($id);
+        $wallet = $user->wallets()->with('currency')->find((int) $id);
 
         if (! $wallet) {
-            return static::notFoundResponse(__('api.wallet.not_found'));
+            abort(404, __('api.wallet.not_found'));
         }
 
         $histories = $this->walletService

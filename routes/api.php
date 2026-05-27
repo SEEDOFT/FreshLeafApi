@@ -17,6 +17,7 @@ use App\Http\Controllers\Api\User\PaymentMethodTypeController;
 use App\Http\Controllers\Api\User\ProfileController;
 use App\Http\Controllers\Api\User\SupportChatController;
 use App\Http\Controllers\Api\User\UserPinController;
+use App\Http\Controllers\Api\User\VendorProfileController;
 use App\Http\Controllers\Api\User\WalletController;
 use App\Http\Controllers\Api\User\WalletTransactionController;
 use App\Http\Controllers\Api\User\WishlistController;
@@ -267,6 +268,11 @@ Route::prefix('v1')->name('v1.')->group(static function () {
                     Route::get('/', 'index')->name('notifications.index');
                     Route::post('mark-all-read', 'markAllAsRead')->name('notifications.mark-all-read');
                     Route::post('{notification}/mark-read', 'markAsRead')->name('notifications.mark-read');
+                });
+
+            Route::controller(VendorProfileController::class)->prefix('vendors')
+                ->group(static function () {
+                    Route::get('{id}', 'show')->name('vendors.show');
                 });
         });
 

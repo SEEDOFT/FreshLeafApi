@@ -53,6 +53,7 @@ class Register extends BaseRegister
         return 'filament-panels::components.layout.base';
     }
 
+    #[Override]
     protected string $view = 'filament.vendor.pages.auth.register';
 
     #[Override]

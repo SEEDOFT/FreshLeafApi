@@ -45,7 +45,7 @@ class WalletTransactionController extends Controller
 
         $transactions = $query->simplePaginate($request->integer('per_page', 15));
 
-        return $this->successResponse(
+        return static::successResponse(
             WalletTransactionResource::collection($transactions),
             __('api.wallet_transaction.transactions_retrieved')
         );
@@ -56,8 +56,6 @@ class WalletTransactionController extends Controller
      */
     public function store(StoreWalletTransactionRequest $request): JsonResponse
     {
-        $user = $this->authenticatedUser($request);
-
         /** @var WalletTransaction $transaction */
         $transaction = DB::transaction(
             static function () use ($request): WalletTransaction {
@@ -83,7 +81,7 @@ class WalletTransactionController extends Controller
                 return $transaction;
             });
 
-        return $this->successResponse(
+        return static::successResponse(
             new WalletTransactionResource($transaction->load(self::RELATIONSHIPS)),
             __('api.wallet_transaction.created'),
             201
@@ -96,13 +94,13 @@ class WalletTransactionController extends Controller
     public function show(string $id): JsonResponse
     {
         $transaction = WalletTransaction::with(['wallet', ...self::RELATIONSHIPS])
-            ->find($id);
+            ->find((int) $id);
 
         if (! $transaction) {
-            return $this->notFoundResponse(__('api.wallet_transaction.not_found'));
+            abort(404, __('api.wallet_transaction.not_found'));
         }
 
-        return $this->successResponse(
+        return static::successResponse(
             new WalletTransactionResource($transaction),
             __('api.wallet_transaction.retrieved')
         );
@@ -113,10 +111,10 @@ class WalletTransactionController extends Controller
      */
     public function update(UpdateWalletTransactionRequest $request, string $id): JsonResponse
     {
-        $transaction = WalletTransaction::find($id);
+        $transaction = WalletTransaction::find((int) $id);
 
         if (! $transaction) {
-            return $this->notFoundResponse(__('api.wallet_transaction.not_found'));
+            abort(404, __('api.wallet_transaction.not_found'));
         }
 
         $user = $this->authenticatedUser($request);
@@ -136,7 +134,7 @@ class WalletTransactionController extends Controller
                 ]);
             }
 
-            return $this->successResponse(
+            return static::successResponse(
                 new WalletTransactionResource($transaction->load(self::RELATIONSHIPS)),
                 __('api.wallet_transaction.updated')
             );
@@ -148,14 +146,14 @@ class WalletTransactionController extends Controller
      */
     public function destroy(string $id): JsonResponse
     {
-        $transaction = WalletTransaction::find($id);
+        $transaction = WalletTransaction::find((int) $id);
 
         if (! $transaction) {
-            return $this->notFoundResponse(__('api.wallet_transaction.not_found'));
+            abort(404, __('api.wallet_transaction.not_found'));
         }
 
         $transaction->delete();
 
-        return $this->successResponse(message: __('api.wallet_transaction.deleted'));
+        return static::successResponse(message: __('api.wallet_transaction.deleted'));
     }
 }

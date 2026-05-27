@@ -93,9 +93,9 @@ class CartController extends Controller
     public function checkout(CartCheckoutRequest $request): JsonResponse
     {
         $user = $this->authenticatedUser($request);
-        $validated = $request->validated();
+        $validatedData = $request->validated();
 
-        $order = $this->cartService->checkout($user, $validated);
+        $order = $this->cartService->checkout($user, $validatedData);
 
         return static::successResponse(
             OrderResource::make($order),

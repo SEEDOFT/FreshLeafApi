@@ -61,25 +61,25 @@ class OrderInfolist
                     ->columns(2)
                     ->schema([
                         TextEntry::make('place_order_date')
-                            ->label('Place Order Date')
+                            ->label(__('admin.resources.order.place_order_date'))
                             ->dateTime(),
                         TextEntry::make('order_pending_date')
-                            ->label('Pending Date')
+                            ->label(__('admin.resources.order.pending_date'))
                             ->dateTime(),
                         TextEntry::make('order_confirmed_date')
-                            ->label('Confirmed Date')
+                            ->label(__('admin.resources.order.confirmed_date'))
                             ->dateTime(),
                         TextEntry::make('order_preparing_date')
-                            ->label('Preparing Date')
+                            ->label(__('admin.resources.order.preparing_date'))
                             ->dateTime(),
                         TextEntry::make('order_delivered_date')
-                            ->label('Delivered Date')
+                            ->label(__('admin.resources.order.delivered_date'))
                             ->dateTime(),
                         TextEntry::make('order_cancelled_date')
-                            ->label('Cancelled Date')
+                            ->label(__('admin.resources.order.cancelled_date'))
                             ->dateTime(),
                         TextEntry::make('order_awaiting_payment_date')
-                            ->label('Awaiting Payment Date')
+                            ->label(__('admin.resources.order.awaiting_payment_date'))
                             ->dateTime(),
                         TextEntry::make('created_at')
                             ->label(__('admin.resources.created_at'))

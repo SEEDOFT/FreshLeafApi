@@ -40,10 +40,10 @@ class DiscountsRelationManager extends RelationManager
                     ->minValue(0)
                     ->maxValue(100),
                 DateTimePicker::make('starts_at')
-                    ->label('Starts At')
+                    ->label(__('shared.product.discount_starts_at'))
                     ->required(),
                 DateTimePicker::make('ends_at')
-                    ->label('Ends At')
+                    ->label(__('shared.product.discount_ends_at'))
                     ->required(),
             ]);
     }

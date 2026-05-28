@@ -20,12 +20,31 @@ use RuntimeException;
 class OrderController extends Controller
 {
     /**
+     * Relationships loaded for the index view and actions returning updated orders.
+     */
+    private const INDEX_RELATIONS = ['status', 'paymentStatus', 'type'];
+
+    /**
+     * Relationships loaded for the detailed order view.
+     */
+    private const SHOW_RELATIONS = [
+        'status',
+        'paymentStatus',
+        'type',
+        'items.vendorInventory.product',
+        'items.vendorInventory.unit',
+        'items.vendorInventory.currency',
+        'items.vendorInventory.activeDiscount',
+        'address',
+    ];
+
+    /**
      * Display a listing of the user's orders.
      */
     public function index(Request $request): JsonResponse
     {
         $user = $this->authenticatedUser($request);
-        $orders = Order::with(['status', 'paymentStatus', 'type'])
+        $orders = Order::with(self::INDEX_RELATIONS)
             ->where('user_id', $user->id)
             ->latest()
             ->paginate($request->integer('per_page', 15));
@@ -33,7 +52,7 @@ class OrderController extends Controller
         try {
             return static::successResponse(
                 OrderResource::collection($orders),
-                __('api.orders.retrieved')
+                __('api.order.orders_retrieved')
             );
         } catch (RuntimeException) {
             abort(422, __('api.general.error'));
@@ -43,21 +62,12 @@ class OrderController extends Controller
     /**
      * Display the specified order.
      */
-    public function show(Request $request, int $id): JsonResponse
+    public function show(string $id, Request $request): JsonResponse
     {
         $user = $this->authenticatedUser($request);
-        $order = Order::with([
-            'status',
-            'paymentStatus',
-            'type',
-            'items.vendorInventory.product',
-            'items.vendorInventory.unit',
-            'items.vendorInventory.currency',
-            'items.vendorInventory.activeDiscount',
-            'address',
-        ])
+        $order = Order::with(self::SHOW_RELATIONS)
             ->where('user_id', $user->id)
-            ->find($id);
+            ->find((int) $id);
 
         if (! $order) {
             return static::notFoundResponse(__('api.general.not_found', ['model' => 'Order']));
@@ -76,10 +86,10 @@ class OrderController extends Controller
     /**
      * Cancel an order.
      */
-    public function cancel(Request $request, string $id): JsonResponse
+    public function cancel(string $id, Request $request): JsonResponse
     {
         $user = $this->authenticatedUser($request);
-        $order = Order::where('user_id', $user->id)->find($id);
+        $order = Order::where('user_id', $user->id)->find((int) $id);
 
         if (! $order) {
             abort(404, __('api.general.not_found'));
@@ -95,7 +105,7 @@ class OrderController extends Controller
 
         try {
             return static::successResponse(
-                new OrderResource($order->fresh(['status', 'paymentStatus', 'type'])),
+                new OrderResource($order->fresh(self::INDEX_RELATIONS)),
                 __('api.order.cancelled')
             );
         } catch (RuntimeException) {
@@ -125,7 +135,7 @@ class OrderController extends Controller
 
         try {
             return static::successResponse(
-                new OrderResource($order->fresh(['status', 'paymentStatus', 'type'])),
+                new OrderResource($order->fresh(self::INDEX_RELATIONS)),
                 __('api.order.receipt_confirmed')
             );
         } catch (RuntimeException) {
@@ -151,7 +161,7 @@ class OrderController extends Controller
         $orderService->payWithWallet($user, $order, $wallet);
 
         return static::successResponse(
-            new OrderResource($order->fresh(['status', 'paymentStatus', 'type'])),
+            new OrderResource($order->fresh(self::INDEX_RELATIONS)),
             __('api.order.payment_successful', ['default' => 'Payment successful'])
         );
     }
@@ -159,17 +169,17 @@ class OrderController extends Controller
     /**
      * Simulate an external payment completion (e.g. ABA/Acleda/Credit Card).
      */
-    public function simulateExternalPayment(Request $request, int $id): JsonResponse
+    public function simulateExternalPayment(string $id, Request $request): JsonResponse
     {
         $user = $this->authenticatedUser($request);
-        $order = Order::with(['payments'])->where('user_id', $user->id)->find($id);
+        $order = Order::with(['payments'])->where('user_id', $user->id)->find((int) $id);
 
         if (! $order) {
             abort(404, __('api.general.not_found'));
         }
 
         if ($order->order_status_id !== OrderStatus::AWAITING_PAYMENT_ID) {
-            abort(422, 'Order is not awaiting payment.');
+            abort(422, __('api.order.not_awaiting_payment'));
         }
 
         DB::transaction(function () use ($order) {
@@ -195,7 +205,7 @@ class OrderController extends Controller
         });
 
         return static::successResponse(
-            new OrderResource($order->fresh(['status', 'paymentStatus', 'type'])),
+            new OrderResource($order->fresh(self::INDEX_RELATIONS)),
             __('api.order.payment_successful', ['default' => 'Payment successful'])
         );
     }

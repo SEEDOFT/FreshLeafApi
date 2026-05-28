@@ -17,12 +17,12 @@ class UserPinController extends Controller
      */
     public function setPin(SetPinRequest $request): JsonResponse
     {
-        $validatedData = $request->validated();
         $user = $this->authenticatedUser($request);
+        $validatedData = $request->validated();
         $profile = $user->userProfile;
 
         if ($profile->hasPin()) {
-            return static::errorResponse(__('api.pin.already_set'), 422);
+            abort(422, __('api.pin.already_set'));
         }
 
         $profile->setPin($validatedData['pin']);
@@ -35,12 +35,12 @@ class UserPinController extends Controller
      */
     public function updatePin(UpdatePinRequest $request): JsonResponse
     {
-        $validatedData = $request->validated();
         $user = $this->authenticatedUser($request);
+        $validatedData = $request->validated();
         $profile = $user->userProfile;
 
         if (! $profile->verifyPin($validatedData['current_pin'])) {
-            return static::errorResponse(__('api.pin.invalid_current_pin'), 401);
+            abort(401, __('api.pin.invalid_current_pin'));
         }
 
         $profile->setPin($validatedData['pin']);
@@ -53,16 +53,16 @@ class UserPinController extends Controller
      */
     public function verifyPin(VerifyPinRequest $request): JsonResponse
     {
-        $validatedData = $request->validated();
         $user = $this->authenticatedUser($request);
+        $validatedData = $request->validated();
         $profile = $user->userProfile;
 
         if (! $profile->hasPin()) {
-            return static::errorResponse(__('api.pin.not_set'), 422);
+            abort(422, __('api.pin.not_set'));
         }
 
         if (! $profile->verifyPin($validatedData['pin'])) {
-            return static::errorResponse(__('api.pin.invalid_pin'), 401);
+            abort(401, __('api.pin.invalid_pin'));
         }
 
         return static::successResponse(message: __('api.pin.verified'));
@@ -74,8 +74,8 @@ class UserPinController extends Controller
      */
     public function resetPin(SetPinRequest $request): JsonResponse
     {
-        $validatedData = $request->validated();
         $user = $this->authenticatedUser($request);
+        $validatedData = $request->validated();
         $profile = $user->userProfile;
 
         $profile->setPin($validatedData['pin']);

@@ -22,16 +22,16 @@ class AdjustStockForm
             FormSelect::make('type')
                 ->label(__('shared.product.adjustment_type'))
                 ->options([
-                    'IN' => 'Restock (In)',
-                    'OUT' => 'Sold / Removed (Out)',
-                    'LOSS' => 'Damage / Loss',
-                    'CORRECTION' => 'Correction',
+                    'IN' => __('shared.product.adjustment_type_in'),
+                    'OUT' => __('shared.product.adjustment_type_out'),
+                    'LOSS' => __('shared.product.adjustment_type_loss'),
+                    'CORRECTION' => __('shared.product.adjustment_type_correction'),
                 ])
                 ->required()
                 ->reactive(),
             FormTextInput::make('quantity_change')
                 ->label(__('shared.product.quantity_change'))
-                ->helperText('Use negative numbers for stock reduction.')
+                ->helperText(__('shared.product.stock_reduction_hint'))
                 ->numeric()
                 ->required(),
             FileUpload::make('proof_image_path')
@@ -42,7 +42,7 @@ class AdjustStockForm
                 ->required(fn ($get) => \in_array($get('type'), ['IN', 'LOSS'])),
             Textarea::make('notes')
                 ->label(__('shared.product.reason'))
-                ->placeholder('Explain why you are adjusting the stock...')
+                ->placeholder(__('shared.product.adjustment_reason_placeholder'))
                 ->required(),
         ];
     }

@@ -39,8 +39,8 @@ class NewOrderAlertNotification extends Notification implements ShouldBroadcast
         return [
             'type' => 'new_order',
             'order_id' => $this->order->id,
-            'title' => 'New Order Received',
-            'body' => "You have a new order #{$this->order->order_number} to prepare.",
+            'title' => __('api.notifications.new_order_title'),
+            'body' => __('api.notifications.new_order_alert_body', ['order_number' => $this->order->order_number]),
         ];
     }
 
@@ -51,8 +51,8 @@ class NewOrderAlertNotification extends Notification implements ShouldBroadcast
     {
         return new BroadcastMessage([
             'order_id' => $this->order->id,
-            'title' => 'New Order Received',
-            'body' => "You have a new order #{$this->order->order_number} to prepare.",
+            'title' => __('api.notifications.new_order_title'),
+            'body' => __('api.notifications.new_order_alert_body', ['order_number' => $this->order->order_number]),
         ]);
     }
 }

@@ -42,16 +42,16 @@ class AdminStatsOverview extends BaseWidget
             ->count();
 
         return [
-            Stat::make(__('admin.resources.product.revenue') ?: 'Total Revenue', Number::currency($totalRevenue, 'USD'))
-                ->description(__('admin.resources.order.paid_description') ?: 'Total from paid orders')
+            Stat::make(__('admin.resources.product.revenue'), Number::currency($totalRevenue, 'USD'))
+                ->description(__('admin.resources.order.paid_description'))
                 ->descriptionIcon('heroicon-m-arrow-trending-up')
                 ->color('success'),
             Stat::make(__('admin.resources.user.plural_label'), $consumerCount)
-                ->description(__('admin.resources.user.registered_description') ?: 'Total registered consumers')
+                ->description(__('admin.resources.user.registered_description'))
                 ->descriptionIcon('heroicon-m-users')
                 ->color('info'),
             Stat::make(__('admin.resources.vendor.plural_label'), $vendorCount)
-                ->description($pendingVendors.' '.(__('admin.resources.vendor.pending_approval') ?: 'pending approval'))
+                ->description($pendingVendors.' '.__('admin.resources.vendor.pending_approval'))
                 ->descriptionIcon('heroicon-m-building-storefront')
                 ->color($pendingVendors > 0 ? 'warning' : 'success'),
         ];

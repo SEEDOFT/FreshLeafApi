@@ -123,8 +123,8 @@ class VendorProfile extends Page
                         Select::make('vendorProfile.locale')
                             ->label(__('vendor.settings.vendor_profile.language'))
                             ->options([
-                                'km' => 'Khmer (ភាសាខ្មែរ)',
-                                'en' => 'English (ភាសាអង់គ្លេស)',
+                                'km' => __('admin.profile.locale_khmer'),
+                                'en' => __('admin.profile.locale_english'),
                             ])
                             ->required(fn (string $operation): bool => $operation === 'create')
                             ->dehydrated(fn (mixed $state): bool => filled($state)),

@@ -48,8 +48,8 @@
                     .listen('VendorOrderUpdated', (event) => {
                         if (!window.location.pathname.includes('/vendor/orders')) {
                             new FilamentNotification()
-                                .title('New Order Received')
-                                .body(`You have a new order #${event.orderNumber} to prepare.`)
+                                .title(@json(__('api.notifications.new_order_title')))
+                                .body(@json(__('api.notifications.new_order_alert_template')).` #${event.orderNumber}`)
                                 .warning()
                                 .send();
                         }

@@ -10,6 +10,7 @@ use App\Http\Resources\Vendor\VendorProfileResource;
 use App\Models\ProductStatus;
 use App\Models\User;
 use App\Models\UserType;
+use App\Models\VendorInventoryStatus;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -17,14 +18,34 @@ use Illuminate\Http\Request;
 class VendorProfileController extends Controller
 {
     /**
+     * Relationships loaded for the vendor.
+     */
+    private const VENDOR_RELATIONS = ['vendorProfile'];
+
+    /**
+     * Relationships loaded for the vendor's products.
+     */
+    private const PRODUCT_RELATIONS = [
+        'product.productCategory',
+        'product.type',
+        'product.defaultUnit',
+        'product.status',
+        'packagingType',
+        'unit',
+        'currency',
+        'vendor.vendorProfile',
+        'status',
+    ];
+
+    /**
      * Display the specified vendor profile and their active products.
      */
     public function show(string $id, Request $request): JsonResponse
     {
         $vendor = User::where('user_type_id', UserType::VENDOR_ID)
-            ->with(['vendorProfile'])
+            ->with(self::VENDOR_RELATIONS)
             ->withCount([
-                'vendorInventories as active_inventories_count' => static fn (Builder $query): Builder => $query->active(),
+                'vendorInventories as active_inventories_count' => static fn (Builder $query): Builder => $query->where('inventory_status_id', VendorInventoryStatus::AVAILABLE_ID),
             ])
             ->find((int) $id);
 
@@ -33,25 +54,15 @@ class VendorProfileController extends Controller
         }
 
         $products = $vendor->vendorInventories()
-            ->active()
+            ->where('inventory_status_id', VendorInventoryStatus::AVAILABLE_ID)
             ->whereHas(
                 'product',
                 static fn (Builder $query): Builder => $query->where(
                     'product_status_id', ProductStatus::PUBLISHED_ID
                 )
             )
-            ->with([
-                'product.productCategory',
-                'product.type',
-                'product.defaultUnit',
-                'product.status',
-                'packagingType',
-                'unit',
-                'currency',
-                'vendor.vendorProfile',
-                'status',
-            ])
-            ->get();
+            ->with(self::PRODUCT_RELATIONS)
+            ->paginate($request->integer('per_page', 10));
 
         return static::successResponse([
             'vendor' => new VendorProfileResource($vendor),

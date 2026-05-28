@@ -102,6 +102,12 @@ return [
         'add_to_store' => 'បន្ថែមទៅក្នុងហាង',
         'adjust_stock' => 'កែតម្រូវស្តុក',
         'adjustment_type' => 'ប្រភេទនៃការកែតម្រូវ',
+        'adjustment_type_in' => 'បញ្ចូលស្តុក',
+        'adjustment_type_out' => 'ដកស្តុក',
+        'adjustment_type_loss' => 'ខូចខាត',
+        'adjustment_type_correction' => 'កែតម្រូវ',
+        'stock_reduction_hint' => 'បញ្ចូលចំនួនវិជ្ជមានដើម្បីកាត់បន្ថយស្តុក។ ប្រើលេខអវិជ្ជមានដើម្បីបង្កើនស្តុក។',
+        'adjustment_reason_placeholder' => 'ឧ. ខូចខាត, ខូចគុណភាព, បញ្ចូលស្តុក',
         'quantity_change' => 'ចំនួនផ្លាស់ប្តូរ',
         'default_unit' => 'ខ្នាតលក់',
         'view_detail' => 'មើលលម្អិត',
@@ -111,10 +117,14 @@ return [
         'adjustment_detail' => 'ព័ត៌មានលម្អិតនៃការកែតម្រូវ',
         'reason' => 'មូលហេតុ',
         'currency' => 'រូបិយប័ណ្ណ',
+        'add_discount' => 'បន្ថែមការបញ្ចុះតម្លៃ',
+        'discount_starts_at' => 'ថ្ងៃចាប់ផ្តើមបញ្ចុះតម្លៃ',
+        'discount_ends_at' => 'ថ្ងៃបញ្ចប់ការបញ្ចុះតម្លៃ',
         'image' => 'រូបភាព',
         'notifications' => [
             'added_to_store' => 'បានបន្ថែមផលិតផលទៅក្នុងស្តុកហាងរបស់អ្នកដោយជោគជ័យ។',
             'stock_adjusted' => 'បានកែតម្រូវបរិមាណស្តុកដោយជោគជ័យ។',
+            'discount_added' => 'បានបន្ថែមការបញ្ចុះតម្លៃដោយជោគជ័យ។',
         ],
         'farming_methods' => [
             'certified_organic' => 'សរីរាង្គមានវិញ្ញាបនបត្រ',
@@ -152,6 +162,7 @@ return [
         'total' => 'ចំនួនសរុប',
         'commission' => 'កម្រៃជើងសារ',
         'product' => 'ផលិតផល',
+        'total_placeholder' => '0.00',
     ],
     'payout' => [
         'label' => 'ការបើកប្រាក់',
@@ -204,7 +215,7 @@ return [
         'required' => 'ត្រូវបំពេញ',
         'cancel' => 'បោះបង់',
         'save' => 'រក្សាទុក',
-        'save_changes' => 'Save Changes',
+        'save_changes' => 'រក្សាទុកការកែប្រែ',
         'add_product' => 'បន្ថែមផលិតផល',
     ],
     'security' => [
@@ -230,5 +241,18 @@ return [
     'timestamps' => 'ត្រាពេលវេលា',
     'general' => [
         'not_provided' => 'មិនមានព័ត៌មាន',
+    ],
+    'lightbox' => [
+        'zoom_out' => 'បង្រួម',
+        'zoom_in' => 'ពង្រីក',
+        'reset_zoom' => 'កំណត់ពង្រីកឡើងវិញ',
+    ],
+    'mcp' => [
+        'authorize_description' => 'កម្មវិធីនេះនឹងអាច៖<br/>ប្រើប្រាស់មុខងារ MCP ដែលមាន។',
+        'logged_in_as' => 'បានចូលក្នុងនាម៖',
+        'permissions' => 'ការអនុញ្ញាត៖',
+        'cancel' => 'បោះបង់',
+        'authorize' => 'អនុញ្ញាត',
+        'authorizing' => 'កំពុងអនុញ្ញាត...',
     ],
 ];

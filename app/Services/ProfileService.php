@@ -12,10 +12,16 @@ use Illuminate\Support\Str;
 
 class ProfileService
 {
-    public const array RELATIONSHIP = ['adminProfile', 'vendorProfile', 'userProfile'];
+    /**
+     * Default relationships loaded for the updated user profile.
+     *
+     * @var list<string>
+     */
+    private const DEFAULT_RELATIONS = ['adminProfile', 'vendorProfile', 'userProfile'];
 
     /**
-     * Update the user's profile.
+    /**
+     * Update the user's profile and optionally upload a new image.
      *
      * @param  array<string, mixed>  $data
      */
@@ -47,7 +53,7 @@ class ProfileService
         $freshUser = $user->fresh();
 
         if ($freshUser) {
-            $freshUser->load(self::RELATIONSHIP);
+            $freshUser->load(self::DEFAULT_RELATIONS);
         }
 
         return $freshUser;
@@ -55,6 +61,8 @@ class ProfileService
 
     /**
      * Store uploaded user's profile image in public disk.
+     *
+     * @return string The relative path of the stored file
      */
     private function storeUserImage(UploadedFile $file): string
     {

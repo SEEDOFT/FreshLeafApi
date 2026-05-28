@@ -26,7 +26,7 @@
                         <span class="fl-support-ticket-date">{{ $ticket->updated_at->diffForHumans(short: true) }}</span>
                     </div>
                     <p class="fl-support-ticket-excerpt">
-                        {{ $latestMessage?->message ?: ($latestMessage?->file_path ? 'File attached' : 'No messages yet') }}
+                        {{ $latestMessage?->message ?: ($latestMessage?->file_path ? __('admin.support.file_attached') : __('admin.support.no_messages_yet')) }}
                     </p>
                 </button>
             @empty
@@ -56,7 +56,7 @@
                 </div>
 
                 <x-filament::button color="success" size="sm" icon="heroicon-o-check-circle"
-                    wire:click="resolveTicket({{ $activeTicketId }})" wire:confirm="Mark this ticket as resolved?">
+                    wire:click="resolveTicket({{ $activeTicketId }})" wire:confirm="{{ __('admin.support.confirm_resolve') }}">
                     {{ __('admin.support.resolve') }}
                 </x-filament::button>
             </header>
@@ -67,7 +67,7 @@
                         <div class="fl-support-message-content">
                             <div class="fl-support-message-info">
                                 <span class="fl-support-message-author">
-                                    {{ $msg->sender_type === 'admin' ? 'Admin' : $activeTicket->user->fullName }}
+                                    {{ $msg->sender_type === 'admin' ? __('admin.support.admin_label') : $activeTicket->user->fullName }}
                                 </span>
                                 <span class="fl-support-message-time">{{ $msg->created_at->format('H:i') }}</span>
                             </div>
@@ -80,7 +80,7 @@
                                     @else
                                     <a href="{{ Storage::url($msg->file_path) }}" target="_blank" class="fl-chat-attachment">
                                             <x-filament::icon icon="heroicon-o-document" class="fl-chat-attachment__icon" />
-                                            <span class="fl-chat-attachment__text">Download Attachment</span>
+                                            <span class="fl-chat-attachment__text">{{ __('admin.support.download_attachment') }}</span>
                                         </a>
                                     @endif
                                 @endif

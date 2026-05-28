@@ -46,7 +46,7 @@ class AiChatController extends Controller
         $session = AiChatSession::where('session_id', $sessionId)
             ->whereHas(
                 $this->getRoleRelation($user->user_type_id),
-                static fn (Builder $query) => $query->where('users.id', $user->id)
+                static fn (Builder $query): Builder => $query->where('users.id', $user->id)
             )
             ->first();
 

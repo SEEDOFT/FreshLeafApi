@@ -18,22 +18,29 @@ use Symfony\Component\HttpKernel\Exception\HttpException;
 
 class OrderService
 {
+    /**
+     * Pay for an order using the user's wallet.
+     *
+     *
+     * @throws HttpException
+     * @throws RuntimeException
+     */
     public function payWithWallet(User $user, Order $order, Wallet $wallet): void
     {
         try {
             DB::transaction(function () use ($user, $order, $wallet) {
                 if ($wallet->user_id !== $user->id) {
-                    abort(403, 'Unauthorized wallet access.');
+                    abort(403, __('api.order.wallet_unauthorized'));
                 }
 
                 if ($order->payment_status_id === PaymentStatus::COMPLETED_ID) {
-                    abort(422, 'Order is already paid.');
+                    abort(422, __('api.order.already_paid'));
                 }
 
                 $orderTotal = $order->total_amount;
 
                 if (MoneyService::compare((string) $wallet->balance, (string) $orderTotal) < 0) {
-                    abort(422, 'Insufficient wallet balance.');
+                    abort(422, __('api.order.insufficient_balance'));
                 }
 
                 $newBalance = MoneyService::sub((string) $wallet->balance, (string) $orderTotal);
@@ -53,16 +60,7 @@ class OrderService
                 ]);
 
                 // Create transaction history
-                $transaction->histories()->create([
-                    'wallet_id' => $wallet->id,
-                    'wallet_transaction_type_id' => WalletTransactionType::PAYMENT_ID,
-                    'wallet_transaction_status_id' => WalletTransactionStatus::COMPLETED_ID,
-                    'amount' => $orderTotal,
-                    'reference_id' => $order->id,
-                    'reference_type' => Order::class,
-                    'description' => 'Payment for order #'.$order->id,
-                    'transaction_date' => Carbon::now(),
-                ]);
+                $transaction->recordHistory();
 
                 // Create wallet history
                 $wallet->histories()->create([
@@ -97,7 +95,7 @@ class OrderService
         } catch (HttpException $e) {
             throw $e;
         } catch (RuntimeException $e) {
-            abort(422, 'Payment failed: '.$e->getMessage());
+            abort(422, __('api.order.payment_failed').$e->getMessage());
         }
     }
 }

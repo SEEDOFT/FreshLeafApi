@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Http\Resources\Wishlist;
 
 use App\Http\Resources\Product\VendorInventoryResource;
+use App\Http\Resources\Shared\StatusResource;
 use App\Models\Wishlist;
 use App\Models\WishlistStatus;
 use Illuminate\Http\Request;
@@ -25,17 +26,9 @@ class WishlistResource extends JsonResource
     #[Override]
     public function toArray(Request $request): array
     {
-        $locale = $request->header('Accept-Language', 'km');
-
         return [
             'id' => $this->id,
-            'status' => $this->whenLoaded(
-                'status',
-                fn () => [
-                    'id' => $this->status->id,
-                    'name' => $locale === 'km' ? $this->status->name_km : $this->status->name_en,
-                ],
-            ),
+            'status' => new StatusResource($this->whenLoaded('status')),
             'vendor_inventory' => $this->whenLoaded(
                 'vendorInventory',
                 fn () => new VendorInventoryResource($this->vendorInventory),

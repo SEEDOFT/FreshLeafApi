@@ -23,22 +23,22 @@ class VerificationDocumentController extends Controller
         $user = $request->user();
 
         if (! $user) {
-            return static::errorResponse('Unauthenticated.', 401);
+            return static::errorResponse(__('api.general.unauthenticated'), 401);
         }
 
         $isAdmin = $user->user_type_id === UserType::ADMIN_ID;
         $isVendor = $user->user_type_id === UserType::VENDOR_ID;
 
         if (! $isAdmin && ! $isVendor) {
-            return static::errorResponse('Unauthorized.', 403);
+            return static::errorResponse(__('api.general.unauthorized'), 403);
         }
 
         if (str_contains($path, '..')) {
-            return static::errorResponse('Document not found.', 404);
+            return static::errorResponse(__('api.general.not_found'), 404);
         }
 
         if (! Storage::disk('local')->exists($path)) {
-            return static::errorResponse('Document not found.', 404);
+            return static::errorResponse(__('api.general.not_found'), 404);
         }
 
         if ($isVendor) {
@@ -54,7 +54,7 @@ class VerificationDocumentController extends Controller
             ]);
 
             if (! in_array(basename($path), $ownedFiles, true)) {
-                return static::errorResponse('Unauthorized access to document.', 403);
+                return static::errorResponse(__('api.general.document_unauthorized'), 403);
             }
         }
 

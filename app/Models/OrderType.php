@@ -20,7 +20,6 @@ use Illuminate\Support\Facades\App;
  * @property int $id
  * @property string $name_en
  * @property string $name_km
- * @property-read string $name
  * @property-read string|null $translated_name
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at

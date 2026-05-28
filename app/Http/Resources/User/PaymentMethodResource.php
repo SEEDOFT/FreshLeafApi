@@ -4,13 +4,12 @@ declare(strict_types=1);
 
 namespace App\Http\Resources\User;
 
+use App\Http\Resources\Shared\StatusResource;
+use App\Http\Resources\Shared\TypeResource;
 use App\Models\PaymentMethod;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
-
-use function str_repeat;
-use function strlen;
-use function substr;
+use Override;
 
 /**
  * @mixin PaymentMethod
@@ -18,47 +17,29 @@ use function substr;
 class PaymentMethodResource extends JsonResource
 {
     /**
-     * Transform the resource into an array.
+     * {@inheritDoc}
      *
      * @return array<string, mixed>
      */
+    #[Override]
     public function toArray(Request $request): array
     {
         return [
             'id' => $this->id,
-            'user_id' => $this->user_id,
-            'payment_method_type_id' => $this->payment_method_type_id,
-            'payment_method_status_id' => $this->payment_method_status_id,
             'label' => $this->label,
             'card_holder_name' => $this->card_holder_name,
-            'card_number' => self::maskCardNumber($this->card_number),
+            'card_number' => '**** **** **** '.substr((string) $this->card_number, -4),
             'expiry_month' => $this->expiry_month,
             'expiry_year' => $this->expiry_year,
             'is_default' => $this->is_default,
-            'cvv' => '***',
             'billing_address' => $this->billing_address,
             'billing_city' => $this->billing_city,
             'billing_state' => $this->billing_state,
             'billing_zip_code' => $this->billing_zip_code,
-            'created_at' => $this->created_at,
-            'updated_at' => $this->updated_at,
+            'created_at' => $this->created_at?->toIso8601String(),
+            'updated_at' => $this->updated_at?->toIso8601String(),
+            'type' => new TypeResource($this->whenLoaded('type')),
+            'status' => new StatusResource($this->whenLoaded('status')),
         ];
-    }
-
-    /**
-     * Mask the card number to show only last 4 digits.
-     */
-    private static function maskCardNumber(?string $cardNumber): ?string
-    {
-        if (! $cardNumber) {
-            return null;
-        }
-
-        $length = strlen($cardNumber);
-        if ($length <= 4) {
-            return $cardNumber;
-        }
-
-        return str_repeat('*', $length - 4).substr($cardNumber, -4);
     }
 }

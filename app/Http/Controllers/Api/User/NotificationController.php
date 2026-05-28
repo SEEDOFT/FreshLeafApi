@@ -5,8 +5,9 @@ declare(strict_types=1);
 namespace App\Http\Controllers\Api\User;
 
 use App\Http\Controllers\Controller;
-use App\Http\Resources\Api\User\NotificationResource;
+use App\Http\Resources\User\NotificationResource;
 use App\Models\Notification;
+use App\Models\NotificationStatus;
 use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -19,18 +20,17 @@ class NotificationController extends Controller
      */
     public function index(Request $request): JsonResponse
     {
-        /** @var User $user */
-        $user = $request->user();
+        $user = $this->authenticatedUser($request);
 
         $notifications = Notification::query()
             ->where('user_id', $user->id)
             ->with(['type', 'status'])
             ->latest()
-            ->paginate();
+            ->paginate($request->integer('per_page', 15));
 
         return static::successResponse(
-            message: __('api.notifications.retrieved'),
-            data: NotificationResource::collection($notifications)->response()->getData(true)
+            NotificationResource::collection($notifications),
+            __('api.notifications.retrieved')
         );
     }
 
@@ -39,18 +39,20 @@ class NotificationController extends Controller
      */
     public function markAsRead(Request $request, Notification $notification): JsonResponse
     {
-        /** @var User $user */
-        $user = $request->user();
+        $user = $this->authenticatedUser($request);
 
         if ($notification->user_id !== $user->id) {
-            return static::errorResponse(
-                message: __('api.notifications.not_found'),
-                code: 404
-            );
+            abort(404, __('api.notifications.not_found'));
         }
 
-        if ($notification->read_at === null) {
-            $notification->update(['read_at' => Carbon::now()]);
+        if (
+            $notification->notification_status_id === NotificationStatus::UNREAD_ID
+            || $notification->read_at === null
+        ) {
+            $notification->update([
+                'notification_status_id' => NotificationStatus::READ_ID,
+                'read_at' => Carbon::now(),
+            ]);
         }
 
         return static::successResponse(
@@ -63,13 +65,15 @@ class NotificationController extends Controller
      */
     public function markAllAsRead(Request $request): JsonResponse
     {
-        /** @var User $user */
-        $user = $request->user();
+        $user = $this->authenticatedUser($request);
 
-        Notification::query()
-            ->where('user_id', $user->id)
+        Notification::where('user_id', $user->id)
+            ->where('notification_status_id', NotificationStatus::UNREAD_ID)
             ->whereNull('read_at')
-            ->update(['read_at' => Carbon::now()]);
+            ->update([
+                'notification_status_id' => NotificationStatus::READ_ID,
+                'read_at' => Carbon::now(),
+            ]);
 
         return static::successResponse(
             message: __('api.notifications.all_marked_read')

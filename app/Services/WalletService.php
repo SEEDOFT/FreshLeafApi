@@ -7,33 +7,40 @@ namespace App\Services;
 use App\Models\User;
 use App\Models\Wallet;
 use App\Models\WalletHistory;
-use Illuminate\Pagination\Paginator;
+use Illuminate\Pagination\LengthAwarePaginator;
 
 class WalletService
 {
     /**
-     * Get user wallets.
+     * Default relationships loaded for wallet resources.
      *
-     * @return Paginator<int, Wallet>
+     * @var list<string>
      */
-    public function getUserWallets(User $user, int $perPage): Paginator
+    private const DEFAULT_RELATIONS = ['currency'];
+
+    /**
+     * Get user wallets with default relationships.
+     *
+     * @return LengthAwarePaginator<int, Wallet>
+     */
+    public function getUserWallets(User $user, int $perPage): LengthAwarePaginator
     {
         return $user->wallets()
-            ->with('currency')
+            ->with(self::DEFAULT_RELATIONS)
             ->orderByDesc('id')
-            ->simplePaginate($perPage);
+            ->paginate($perPage);
     }
 
     /**
-     * Get wallet history.
+     * Get paginated wallet history.
      *
-     * @return Paginator<int, WalletHistory>
+     * @return LengthAwarePaginator<int, WalletHistory>
      */
-    public function getWalletHistory(Wallet $wallet, int $perPage): Paginator
+    public function getWalletHistory(Wallet $wallet, int $perPage): LengthAwarePaginator
     {
         return $wallet->histories()
-            ->with('currency')
+            ->with(self::DEFAULT_RELATIONS)
             ->orderByDesc('id')
-            ->simplePaginate($perPage);
+            ->paginate($perPage);
     }
 }

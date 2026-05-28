@@ -17,7 +17,7 @@ class NewSupportMessageNotification extends PushNotification
         public SupportMessage $supportMessage
     ) {
         parent::__construct(
-            title: 'New Support Message',
+            title: __('api.notifications.new_support_message_title'),
             body: Str::limit($this->supportMessage->message, 50),
             data: [
                 'type' => 'support_chat',

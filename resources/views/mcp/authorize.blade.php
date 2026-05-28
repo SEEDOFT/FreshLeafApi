@@ -58,11 +58,11 @@
                 </div>
 
                 <h3 class="text-center text-xl font-semibold leading-tight tracking-tight sm:text-2xl">
-                    Authorize {{ $client->name }}
+                    {{ __('shared.mcp.authorize') }} {{ $client->name }}
                 </h3>
 
                 <p class="text-sm text-muted-foreground text-center">
-                    This application will be able to:<br/>Use available MCP functionality.
+                    {{ __('shared.mcp.authorize_description') }}
                 </p>
             </div>
 
@@ -70,14 +70,14 @@
             <div class="space-y-4 px-4 pb-0 pt-0 sm:p-6 sm:pt-0">
                 <!-- User Info -->
                 <div class="rounded-lg border bg-muted/50 p-3 sm:p-4">
-                    <p class="text-sm text-muted-foreground mb-2">Logged in as:</p>
+                    <p class="text-sm text-muted-foreground mb-2">{{ __('shared.mcp.logged_in_as') }}</p>
                     <p class="break-all text-sm font-medium sm:text-base">{{ $user->email }}</p>
                 </div>
 
                 <!-- Scopes / Permissions -->
                 @if(count($scopes) > 0)
                     <div class="space-y-2">
-                        <p class="text-sm font-medium">Permissions:</p>
+                        <p class="text-sm font-medium">{{ __('shared.mcp.permissions') }}</p>
 
                         <ul class="space-y-2">
                             @foreach($scopes as $scope)
@@ -108,7 +108,7 @@
                         <svg class="mr-2 h-4 w-4" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
                         </svg>
-                        Cancel
+                        {{ __('shared.mcp.cancel') }}
                     </button>
                 </form>
 
@@ -118,8 +118,8 @@
                     <input type="hidden" name="state" value="">
                     <input type="hidden" name="client_id" value="{{ $client->id }}">
                     <input type="hidden" name="auth_token" value="{{ $authToken }}">
-                    <button type="submit" class="inline-flex h-11 w-full items-center justify-center whitespace-nowrap rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 hover:bg-primary/90" id="authorizeButton">
-                        <span id="authorizeText">Authorize</span>
+                    <button type="submit" class="inline-flex h-11 w-full items-center justify-center whitespace-nowrap rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:pointer-events-none hover:bg-primary/90" id="authorizeButton">
+                        <span id="authorizeText">{{ __('shared.mcp.authorize') }}</span>
 
                         <svg id="loadingSpinner" class="animate-spin -ml-1 mr-3 h-4 w-4 text-white hidden" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                             <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
@@ -142,7 +142,7 @@
         form.addEventListener('submit', function(e) {
             // Show loading state...
             button.disabled = true;
-            authorizeText.textContent = 'Authorizing...';
+            authorizeText.textContent = '{{ __('shared.mcp.authorizing') }}';
             loadingSpinner.classList.remove('hidden');
 
             // After form submission, watch for redirect and close window...

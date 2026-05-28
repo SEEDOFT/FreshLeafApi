@@ -35,9 +35,7 @@ use Illuminate\Support\Collection;
 class Wallet extends Model
 {
     /** @use HasFactory<WalletFactory> */
-    use HasFactory;
-
-    use SoftDeletes;
+    use HasFactory, SoftDeletes;
 
     /**
      * {@inheritDoc}
@@ -52,6 +50,17 @@ class Wallet extends Model
     }
 
     /**
+     * Get the admin that owns the wallet.
+     *
+     * @return BelongsTo<User, $this>
+     */
+    public function admin(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'user_id', 'id')
+            ->where('users.user_type_id', UserType::ADMIN_ID);
+    }
+
+    /**
      * Get the user that owns the wallet.
      *
      * @return BelongsTo<User, $this>
@@ -60,6 +69,17 @@ class Wallet extends Model
     {
         return $this->belongsTo(User::class, 'user_id', 'id')
             ->where('users.user_type_id', UserType::CONSUMER_ID);
+    }
+
+    /**
+     * Get the vendor that owns the wallet.
+     *
+     * @return BelongsTo<User, $this>
+     */
+    public function vendor(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'user_id', 'id')
+            ->where('users.user_type_id', UserType::VENDOR_ID);
     }
 
     /**

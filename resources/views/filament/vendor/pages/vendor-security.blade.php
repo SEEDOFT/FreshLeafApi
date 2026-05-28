@@ -5,7 +5,7 @@
 
             <div class="flex justify-end">
                 <x-filament::button type="submit">
-                    Save Changes
+                    {{ __('shared.other.save_changes') }}
                 </x-filament::button>
             </div>
         </form>

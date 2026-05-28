@@ -122,8 +122,8 @@ class AdminProfile extends Page
                         Select::make('adminProfile.locale')
                             ->label(__('admin.profile.display_language'))
                             ->options([
-                                'km' => 'Khmer (ភាសាខ្មែរ)',
-                                'en' => 'English (ភាសាអង់គ្លេស)',
+                                'km' => __('admin.profile.locale_khmer'),
+                                'en' => __('admin.profile.locale_english'),
                             ])
                             ->required(fn (string $operation): bool => $operation === 'create')
                             ->dehydrated(fn (mixed $state): bool => filled($state)),
@@ -134,11 +134,11 @@ class AdminProfile extends Page
                     ->schema([
                         TextInput::make('adminProfile.job_title')
                             ->label(__('admin.profile.job_title'))
-                            ->placeholder('e.g. Operations Manager')
+                            ->placeholder(__('admin.profile.job_title_placeholder'))
                             ->maxLength(255),
                         TextInput::make('adminProfile.department')
                             ->label(__('admin.profile.department'))
-                            ->placeholder('e.g. Logistics')
+                            ->placeholder(__('admin.profile.department_placeholder'))
                             ->maxLength(255),
                         TextInput::make('adminProfile.office_phone')
                             ->label(__('admin.profile.office_phone'))

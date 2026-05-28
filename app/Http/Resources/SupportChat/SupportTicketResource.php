@@ -7,6 +7,7 @@ namespace App\Http\Resources\SupportChat;
 use App\Models\SupportTicket;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
+use Override;
 
 /**
  * @mixin SupportTicket
@@ -14,10 +15,11 @@ use Illuminate\Http\Resources\Json\JsonResource;
 class SupportTicketResource extends JsonResource
 {
     /**
-     * Transform the resource into an array.
+     * {@inheritDoc}
      *
      * @return array<string, mixed>
      */
+    #[Override]
     public function toArray(Request $request): array
     {
         return [

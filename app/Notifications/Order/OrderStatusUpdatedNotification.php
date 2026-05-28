@@ -15,11 +15,11 @@ class OrderStatusUpdatedNotification extends PushNotification
      */
     public function __construct(public Order $order)
     {
-        $statusName = $order->status->name ?? 'updated';
+        $statusName = $order->status->name ?? __('api.order.status_updated');
 
         parent::__construct(
-            title: 'Order Status Updated',
-            body: "Your order #{$order->order_number} status has been updated to: {$statusName}.",
+            title: __('api.notifications.order_status_updated_title'),
+            body: __('api.notifications.order_status_updated_body', ['order_number' => $order->order_number, 'status' => $statusName]),
             data: [
                 'type' => 'order_status_update',
                 'order_id' => (string) $order->id,

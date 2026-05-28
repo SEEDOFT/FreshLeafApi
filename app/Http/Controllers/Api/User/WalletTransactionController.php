@@ -10,7 +10,6 @@ use App\Http\Requests\User\WalletTransaction\UpdateWalletTransactionRequest;
 use App\Http\Resources\User\WalletTransactionResource;
 use App\Models\Wallet;
 use App\Models\WalletTransaction;
-use App\Models\WalletTransactionHistory;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -73,10 +72,7 @@ class WalletTransactionController extends Controller
                     'wallet_transaction_status_id' => $validatedData['wallet_transaction_status_id'],
                 ]);
 
-                WalletTransactionHistory::create([
-                    'wallet_transaction_id' => $transaction->id,
-                    'wallet_transaction_status_id' => $transaction->wallet_transaction_status_id,
-                ]);
+                $transaction->recordHistory();
 
                 return $transaction;
             });
@@ -121,17 +117,11 @@ class WalletTransactionController extends Controller
 
         $oldStatusId = $transaction->wallet_transaction_status_id;
 
-        return DB::transaction(function () use ($request, $transaction, $user, $oldStatusId): JsonResponse {
+        return DB::transaction(function () use ($request, $transaction): JsonResponse {
             $transaction->update($request->validated());
 
-            if ($transaction->wasChanged('wallet_transaction_status_id')) {
-                WalletTransactionHistory::create([
-                    'wallet_transaction_id' => $transaction->id,
-                    'from_wallet_transaction_status_id' => $oldStatusId,
-                    'to_wallet_transaction_status_id' => $transaction->wallet_transaction_status_id,
-                    'changed_by_user_id' => $user->id,
-                    'note' => 'Status updated',
-                ]);
+            if ($transaction->wasChanged()) {
+                $transaction->recordHistory();
             }
 
             return static::successResponse(

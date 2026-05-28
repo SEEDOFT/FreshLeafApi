@@ -7,6 +7,9 @@ return [
         'business_profile' => [
             'label' => 'Business Profile',
             'description' => 'Shop Description',
+            'description_placeholder' => 'Tell customers about your farm or store...',
+            'is_open_label' => 'Now Is Open',
+            'is_closed_label' => 'Now Is Closed',
             'opening_time' => 'Opening Time',
             'closing_time' => 'Closing Time',
             'is_open' => 'Store Open',
@@ -56,5 +59,10 @@ return [
     ],
     'navigation' => [
         'exchange_rate' => 'Exchange Rate',
+    ],
+    'widgets' => [
+        'total_products_desc' => 'Total products listed',
+        'orders_today_desc' => 'New orders received today',
+        'wallet_earnings_desc' => 'Current USD earnings',
     ],
 ];

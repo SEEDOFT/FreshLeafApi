@@ -102,6 +102,12 @@ return [
         'add_to_store' => 'Add to Store',
         'adjust_stock' => 'Adjust Stock',
         'adjustment_type' => 'Adjustment Type',
+        'adjustment_type_in' => 'Stock In',
+        'adjustment_type_out' => 'Stock Out',
+        'adjustment_type_loss' => 'Loss',
+        'adjustment_type_correction' => 'Correction',
+        'stock_reduction_hint' => 'Enter a positive number to reduce stock. Use a negative number to increase stock.',
+        'adjustment_reason_placeholder' => 'e.g. Spoilage, Damaged, Restock',
         'quantity_change' => 'Quantity Change',
         'proof_photo' => 'Proof Photo',
         'proof' => 'Proof',
@@ -112,9 +118,13 @@ return [
         'visuals' => 'Visuals',
         'view_detail' => 'View Detail',
         'currency' => 'Currency',
+        'add_discount' => 'Add Discount',
+        'discount_starts_at' => 'Discount Starts At',
+        'discount_ends_at' => 'Discount Ends At',
         'notifications' => [
             'added_to_store' => 'Product added to your store inventory.',
             'stock_adjusted' => 'Stock quantity adjusted successfully.',
+            'discount_added' => 'Discount has been added successfully.',
         ],
         'farming_methods' => [
             'certified_organic' => 'Certified Organic',
@@ -152,6 +162,7 @@ return [
         'total' => 'Total Amount',
         'commission' => 'Commission',
         'product' => 'Product',
+        'total_placeholder' => '0.00',
     ],
     'payout' => [
         'label' => 'Payout',
@@ -230,5 +241,18 @@ return [
     'timestamps' => 'Time Stamps',
     'general' => [
         'not_provided' => 'Not Provided',
+    ],
+    'lightbox' => [
+        'zoom_out' => 'Zoom Out',
+        'zoom_in' => 'Zoom In',
+        'reset_zoom' => 'Reset Zoom',
+    ],
+    'mcp' => [
+        'authorize_description' => 'This application will be able to:<br/>Use available MCP functionality.',
+        'logged_in_as' => 'Logged in as:',
+        'permissions' => 'Permissions:',
+        'cancel' => 'Cancel',
+        'authorize' => 'Authorize',
+        'authorizing' => 'Authorizing...',
     ],
 ];

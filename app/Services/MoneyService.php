@@ -29,24 +29,36 @@ final class MoneyService
 
     private const int CALCULATION_SCALE = 8;
 
+    /**
+     * Format a value as money with the standard money scale.
+     */
     public static function money(
         string|int|float|null $value
     ): string {
         return self::roundDecimal(self::decimal($value), self::MONEY_SCALE);
     }
 
+    /**
+     * Format a value as an exchange rate with the standard rate scale.
+     */
     public static function rate(
         string|int|float|null $value
     ): string {
         return self::roundDecimal(self::decimal($value), self::RATE_SCALE);
     }
 
+    /**
+     * Format a value as a quantity with the standard money scale.
+     */
     public static function quantity(
         string|int|float|null $value
     ): string {
         return self::roundDecimal(self::decimal($value), self::MONEY_SCALE);
     }
 
+    /**
+     * Add two monetary values safely using bcmath.
+     */
     public static function add(
         string $left,
         string $right,
@@ -55,6 +67,9 @@ final class MoneyService
         return self::roundDecimal(bcadd($left, $right, self::CALCULATION_SCALE), $scale);
     }
 
+    /**
+     * Subtract the right monetary value from the left value safely using bcmath.
+     */
     public static function sub(
         string $left,
         string $right,
@@ -63,6 +78,9 @@ final class MoneyService
         return self::roundDecimal(bcsub($left, $right, self::CALCULATION_SCALE), $scale);
     }
 
+    /**
+     * Multiply two monetary values safely using bcmath.
+     */
     public static function mul(
         string $left,
         string $right,
@@ -71,6 +89,12 @@ final class MoneyService
         return self::roundDecimal(bcmul($left, $right, self::CALCULATION_SCALE), $scale);
     }
 
+    /**
+     * Divide the left monetary value by the right value safely using bcmath.
+     *
+     *
+     * @throws RuntimeException
+     */
     public static function div(
         string $left,
         string $right,
@@ -83,6 +107,9 @@ final class MoneyService
         return self::roundDecimal(bcdiv($left, $right, self::CALCULATION_SCALE), $scale);
     }
 
+    /**
+     * Compare two monetary values. Returns 0 if equal, 1 if left > right, -1 if left < right.
+     */
     public static function compare(
         string|int|float|null $left,
         string|int|float|null $right,
@@ -91,6 +118,9 @@ final class MoneyService
         return bccomp(self::decimal($left), self::decimal($right), $scale);
     }
 
+    /**
+     * Apply a discount percentage to a unit price and return the discounted price.
+     */
     public static function discountUnitPrice(
         string|int|float|null $price,
         string|int|float|null $discountPercentage
@@ -102,6 +132,9 @@ final class MoneyService
         return self::mul(self::money($price), $discountMultiplier);
     }
 
+    /**
+     * Convert an amount from one currency to another using the ExchangeRate system.
+     */
     public static function convert(
         string|int|float|null $amount,
         int $fromCurrencyId,
@@ -117,6 +150,8 @@ final class MoneyService
     }
 
     /**
+     * Display the total converted into both USD and KHR.
+     *
      * @return array{USD: string, KHR: string}
      */
     public static function displayTotals(
@@ -130,6 +165,8 @@ final class MoneyService
     }
 
     /**
+     * Display the total converted into both USD and KHR assuming the source is USD.
+     *
      * @return array{USD: string, KHR: string}
      */
     public static function displayTotalsFromUsd(

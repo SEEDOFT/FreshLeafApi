@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Traits;
 
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Resources\Json\ResourceCollection;
 
 use function response;
 
@@ -21,6 +22,10 @@ trait ApiResponse
         string $message = 'Success',
         int $code = 200
     ): JsonResponse {
+        if ($data instanceof ResourceCollection) {
+            $data = $data->response()->getData(true);
+        }
+
         return response()->json(
             [
                 'status' => [

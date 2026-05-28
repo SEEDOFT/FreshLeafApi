@@ -26,7 +26,10 @@ use Illuminate\Support\Carbon;
  * @property string|null $address_line_2
  * @property string $city
  * @property string $province
- * @property string $postal_code
+ * @property string|null $postal_code
+ * @property string|null $address_map
+ * @property float|null $lat
+ * @property float|null $long
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  * @property Carbon|null $deleted_at

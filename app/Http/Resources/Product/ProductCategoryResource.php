@@ -7,6 +7,7 @@ namespace App\Http\Resources\Product;
 use App\Models\ProductCategory;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
+use Illuminate\Support\Facades\App;
 use Override;
 
 /**
@@ -22,7 +23,7 @@ class ProductCategoryResource extends JsonResource
     #[Override]
     public function toArray(Request $request): array
     {
-        $locale = $request->header('Accept-Language', 'km');
+        $locale = $request->header('Accept-Language', App::getLocale());
 
         return [
             'id' => $this->id,

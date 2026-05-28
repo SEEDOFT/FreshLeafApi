@@ -116,7 +116,26 @@ return [
     | Support Chat API Messages
     |--------------------------------------------------------------------------
     */
+    'notifications' => [
+        'retrieved' => 'Notifications retrieved successfully',
+        'not_found' => 'Notification not found',
+        'marked_read' => 'Notification marked as read',
+        'all_marked_read' => 'All notifications marked as read',
+        'new_order_title' => 'New Order Received',
+        'new_order_body' => 'A new order #:order_number has been placed.',
+        'new_order_alert_body' => 'You have a new order #:order_number to prepare.',
+        'new_order_alert_template' => 'You have a new order #',
+        'order_status_updated_title' => 'Order Status Updated',
+        'order_status_updated_body' => 'Your order #:order_number status has been updated to: :status.',
+        'new_support_ticket_title' => 'New Support Ticket',
+        'new_support_ticket_body' => 'User :name has started a new support chat.',
+        'new_support_message_title' => 'New Support Message',
+    ],
+
     'support_chat' => [
+        'tickets_retrieved' => 'Support tickets retrieved successfully',
+        'no_active_ticket' => 'No active ticket found',
+        'session_retrieved' => 'Support session retrieved successfully',
         'session_created' => 'Support chat session created',
         'message_sent' => 'Message sent successfully',
         'messages_retrieved' => 'Messages retrieved successfully',
@@ -131,6 +150,14 @@ return [
     | Product API Messages
     |--------------------------------------------------------------------------
     */
+    'ai_chat' => [
+        'chat_started' => 'AI chat session started',
+        'history_retrieved' => 'Chat history retrieved successfully',
+        'response_received' => 'AI response received',
+        'session_not_found' => 'Chat session not found',
+        'service_unavailable' => 'AI service is currently unavailable',
+    ],
+
     'product' => [
         'retrieved' => 'Product retrieved successfully',
         'products_retrieved' => 'Products retrieved successfully',
@@ -147,8 +174,15 @@ return [
         'orders_retrieved' => 'Orders retrieved successfully',
         'cannot_cancel' => 'Cannot cancel this order',
         'cancelled' => 'Order cancelled successfully',
+        'payment_successful' => 'Payment successful',
         'cannot_confirm_receipt' => 'Cannot confirm receipt for this order',
         'receipt_confirmed' => 'Order receipt confirmed successfully',
+        'wallet_unauthorized' => 'Unauthorized wallet access.',
+        'already_paid' => 'Order is already paid.',
+        'insufficient_balance' => 'Insufficient wallet balance.',
+        'payment_failed' => 'Payment failed: ',
+        'not_awaiting_payment' => 'Order is not awaiting payment.',
+        'status_updated' => 'updated',
     ],
 
     /*
@@ -165,6 +199,7 @@ return [
         'empty' => 'Your cart is empty',
         'insufficient_stock' => 'Not enough stock available',
         'insufficient_stock_total' => 'Not enough stock available for the total quantity',
+        'invalid_payment_method' => 'Invalid payment method.',
     ],
 
     /*
@@ -230,5 +265,7 @@ return [
         'forbidden' => 'Forbidden',
         'server_error' => 'Server error',
         'endpoint_not_found' => 'Endpoint not found',
+        'unauthenticated' => 'Unauthenticated.',
+        'document_unauthorized' => 'Unauthorized access to document.',
     ],
 ];

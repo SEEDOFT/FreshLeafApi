@@ -16,8 +16,8 @@ class NewOrderNotification extends PushNotification
     public function __construct(public Order $order)
     {
         parent::__construct(
-            title: 'New Order Received',
-            body: "A new order #{$order->order_number} has been placed.",
+            title: __('api.notifications.new_order_title'),
+            body: __('api.notifications.new_order_body', ['order_number' => $order->order_number]),
             data: [
                 'type' => 'new_order',
                 'order_id' => (string) $order->id,

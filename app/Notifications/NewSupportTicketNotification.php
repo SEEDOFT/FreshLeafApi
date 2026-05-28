@@ -16,8 +16,8 @@ class NewSupportTicketNotification extends PushNotification
         public SupportTicket $ticket
     ) {
         parent::__construct(
-            title: 'New Support Ticket',
-            body: "User {$this->ticket->user->fullName} has started a new support chat.",
+            title: __('api.notifications.new_support_ticket_title'),
+            body: __('api.notifications.new_support_ticket_body', ['name' => $this->ticket->user->fullName]),
             data: [
                 'type' => 'support_chat',
                 'ticket_id' => (string) $this->ticket->id,

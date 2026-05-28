@@ -34,7 +34,7 @@ class OrderInfolist
                     ->schema([
                         TextEntry::make('total_amount')
                             ->label(__('admin.resources.order.total'))
-                            ->placeholder('0.00')
+                            ->placeholder(__('shared.order.total_placeholder'))
                             ->getStateUsing(function (Order $record): string {
                                 $balance = number_format((float) $record->total_amount, 2);
                                 $symbol = $record->currency?->symbol;
@@ -69,25 +69,25 @@ class OrderInfolist
                     ->columns(2)
                     ->schema([
                         TextEntry::make('place_order_date')
-                            ->label('Place Order Date')
+                            ->label(__('admin.resources.order.place_order_date'))
                             ->dateTime('d M Y, h:i A'),
                         TextEntry::make('order_pending_date')
-                            ->label('Pending Date')
+                            ->label(__('admin.resources.order.pending_date'))
                             ->dateTime('d M Y, h:i A'),
                         TextEntry::make('order_confirmed_date')
-                            ->label('Confirmed Date')
+                            ->label(__('admin.resources.order.confirmed_date'))
                             ->dateTime('d M Y, h:i A'),
                         TextEntry::make('order_preparing_date')
-                            ->label('Preparing Date')
+                            ->label(__('admin.resources.order.preparing_date'))
                             ->dateTime('d M Y, h:i A'),
                         TextEntry::make('order_delivered_date')
-                            ->label('Delivered Date')
+                            ->label(__('admin.resources.order.delivered_date'))
                             ->dateTime('d M Y, h:i A'),
                         TextEntry::make('order_cancelled_date')
-                            ->label('Cancelled Date')
+                            ->label(__('admin.resources.order.cancelled_date'))
                             ->dateTime('d M Y, h:i A'),
                         TextEntry::make('order_awaiting_payment_date')
-                            ->label('Awaiting Payment Date')
+                            ->label(__('admin.resources.order.awaiting_payment_date'))
                             ->dateTime('d M Y, h:i A'),
                         TextEntry::make('created_at')
                             ->label(__('admin.resources.created_at'))

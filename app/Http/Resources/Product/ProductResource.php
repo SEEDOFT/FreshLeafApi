@@ -4,11 +4,14 @@ declare(strict_types=1);
 
 namespace App\Http\Resources\Product;
 
+use App\Http\Resources\Shared\StatusResource;
+use App\Http\Resources\Shared\TypeResource;
 use App\Models\Product;
 use App\Models\ProductCategory;
 use App\Models\ProductStatus;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
+use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Storage;
 use Override;
 
@@ -27,7 +30,7 @@ class ProductResource extends JsonResource
     #[Override]
     public function toArray(Request $request): array
     {
-        $locale = $request->header('Accept-Language', 'km');
+        $locale = $request->header('Accept-Language', App::getLocale());
 
         return [
             'id' => $this->id,
@@ -49,24 +52,8 @@ class ProductResource extends JsonResource
                     ]
                     : null
             ),
-            'type' => $this->whenLoaded(
-                'type',
-                fn () => $this->type ? [
-                    'id' => $this->type->id,
-                    'name' => $locale === 'km'
-                        ? $this->type->name_km
-                        : $this->type->name_en,
-                ] : null
-            ),
-            'status' => $this->whenLoaded(
-                'status',
-                fn () => $this->status ? [
-                    'id' => $this->status->id,
-                    'name' => $locale === 'km'
-                        ? $this->status->name_km
-                        : $this->status->name_en,
-                ] : null
-            ),
+            'type' => new TypeResource($this->whenLoaded('type')),
+            'status' => new StatusResource($this->whenLoaded('status')),
             'created_at' => $this->created_at?->toIso8601String(),
             'updated_at' => $this->updated_at?->toIso8601String(),
         ];

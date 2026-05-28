@@ -9,6 +9,7 @@ use App\Models\OrderItem;
 use App\Services\MoneyService;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
+use Override;
 
 /**
  * @mixin OrderItem
@@ -16,10 +17,11 @@ use Illuminate\Http\Resources\Json\JsonResource;
 class OrderItemResource extends JsonResource
 {
     /**
-     * Transform the resource into an array.
+     * {@inheritDoc}
      *
      * @return array<string, mixed>
      */
+    #[Override]
     public function toArray(Request $request): array
     {
         return [
@@ -33,8 +35,8 @@ class OrderItemResource extends JsonResource
             'quantity' => $this->quantity,
             'subtotal' => MoneyService::money($this->subtotal),
             'subtotal_display' => MoneyService::displayTotalsFromUsd($this->subtotal),
-            'created_at' => $this->created_at,
-            'updated_at' => $this->updated_at,
+            'created_at' => $this->created_at?->toIso8601String(),
+            'updated_at' => $this->updated_at?->toIso8601String(),
             'vendor_inventory' => new VendorInventoryResource($this->whenLoaded('vendorInventory')),
         ];
     }

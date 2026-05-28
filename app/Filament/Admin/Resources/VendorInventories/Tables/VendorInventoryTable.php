@@ -75,7 +75,7 @@ class VendorInventoryTable
             ->actions([
                 ViewAction::make(),
                 Action::make('approve')
-                    ->label('Approve')
+                    ->label(__('admin.resources.vendor_inventory.approve'))
                     ->icon('heroicon-o-check-circle')
                     ->color('success')
                     ->visible(fn (VendorInventory $record): bool => (int) $record->inventory_status_id === VendorInventoryStatus::PENDING_REVIEW_ID)
@@ -85,9 +85,9 @@ class VendorInventoryTable
                         ]);
                     })
                     ->requiresConfirmation()
-                    ->modalHeading('Approve Inventory')
-                    ->modalDescription('Are you sure you want to approve this inventory and make it available in the store?')
-                    ->modalSubmitActionLabel('Approve'),
+                    ->modalHeading(__('admin.resources.vendor_inventory.approve_heading'))
+                    ->modalDescription(__('admin.resources.vendor_inventory.approve_description'))
+                    ->modalSubmitActionLabel(__('admin.resources.vendor_inventory.approve_submit')),
             ]);
     }
 }

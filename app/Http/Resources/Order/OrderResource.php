@@ -4,10 +4,13 @@ declare(strict_types=1);
 
 namespace App\Http\Resources\Order;
 
+use App\Http\Resources\Shared\StatusResource;
+use App\Http\Resources\Shared\TypeResource;
 use App\Models\Order;
 use App\Services\MoneyService;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
+use Override;
 
 /**
  * @mixin Order
@@ -15,10 +18,11 @@ use Illuminate\Http\Resources\Json\JsonResource;
 class OrderResource extends JsonResource
 {
     /**
-     * Transform the resource into an array.
+     * {@inheritDoc}
      *
      * @return array<string, mixed>
      */
+    #[Override]
     public function toArray(Request $request): array
     {
         return [
@@ -51,25 +55,12 @@ class OrderResource extends JsonResource
             'order_awaiting_payment_date' => $this->order_awaiting_payment_date?->toIso8601String(),
             'currency_id' => $this->currency_id,
             'payment_id' => $this->payment_id,
-            'created_at' => $this->created_at,
-            'updated_at' => $this->updated_at,
+            'created_at' => $this->created_at?->toIso8601String(),
+            'updated_at' => $this->updated_at?->toIso8601String(),
 
-            // Relationships
-            'status' => $this->whenLoaded('status', fn () => [
-                'id' => $this->status->id,
-                'name' => $this->status->name,
-                'translated_name' => $this->status->translated_name,
-            ]),
-            'payment_status' => $this->whenLoaded('paymentStatus', fn () => [
-                'id' => $this->paymentStatus->id,
-                'name' => $this->paymentStatus->name,
-                'translated_name' => $this->paymentStatus->translated_name,
-            ]),
-            'type' => $this->whenLoaded('type', fn () => [
-                'id' => $this->type->id,
-                'name' => $this->type->name,
-                'translated_name' => $this->type->translated_name,
-            ]),
+            'status' => new StatusResource($this->whenLoaded('status')),
+            'payment_status' => new StatusResource($this->whenLoaded('paymentStatus')),
+            'type' => new TypeResource($this->whenLoaded('type')),
             'items' => OrderItemResource::collection($this->whenLoaded('items')),
         ];
     }

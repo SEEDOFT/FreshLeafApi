@@ -29,12 +29,12 @@ class PaymentMethodTypeController extends Controller
     /**
      * Display the specified payment method type for users.
      */
-    public function show(string $id): JsonResponse
+    public function show(string $id, Request $request): JsonResponse
     {
-        $type = PaymentMethodType::find($id);
+        $type = PaymentMethodType::find((int) $id);
 
         if (! $type) {
-            return static::notFoundResponse(__('api.payment_method_type.not_found'));
+            abort(404, __('api.payment_method_type.not_found'));
         }
 
         return static::successResponse(

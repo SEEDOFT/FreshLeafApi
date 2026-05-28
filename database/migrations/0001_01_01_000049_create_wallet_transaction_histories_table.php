@@ -15,8 +15,8 @@ return new class extends Migration
     {
         Schema::create('wallet_transaction_histories', static function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('wallet_id');
             $table->unsignedBigInteger('wallet_transaction_id');
+            $table->unsignedBigInteger('wallet_id');
             $table->unsignedBigInteger('wallet_transaction_type_id');
             $table->unsignedBigInteger('wallet_transaction_status_id');
             $table->decimal('amount', 16, 2);
@@ -27,6 +27,10 @@ return new class extends Migration
             $table->timestamp('transaction_date')->nullable();
             $table->timestamps();
             $table->softDeletes();
+
+            $table->index('wallet_transaction_id');
+            $table->index('wallet_id');
+            $table->index('wallet_transaction_status_id');
         });
     }
 

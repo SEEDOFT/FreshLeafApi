@@ -32,7 +32,7 @@ class BusinessProfile extends Page
     protected static ?string $slug = 'business';
 
     #[Override]
-    protected static ?string $navigationLabel = 'Business Info';
+    protected static ?string $navigationLabel = 'vendor.settings.business_profile.label';
 
     #[Override]
     protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-building-office-2';
@@ -98,7 +98,7 @@ class BusinessProfile extends Page
                         Textarea::make('shop_description')
                             ->label(__('vendor.settings.business_profile.description'))
                             ->dehydrated(fn (mixed $state): bool => filled($state))
-                            ->placeholder('Describe your farm or organic vegetables...')
+                            ->placeholder(__('vendor.settings.business_profile.description_placeholder'))
                             ->columnSpanFull(),
                         Grid::make(3)
                             ->schema([

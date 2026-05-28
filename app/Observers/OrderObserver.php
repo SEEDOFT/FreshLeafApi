@@ -55,8 +55,10 @@ class OrderObserver
             $originalStatus = (int) $order->getOriginal('order_status_id');
             $newStatus = (int) $order->order_status_id;
 
-            if ($originalStatus === OrderStatus::AWAITING_PAYMENT_ID && $newStatus === OrderStatus::PENDING_ID) {
-                // Now it's fully placed
+            if (
+                $originalStatus === OrderStatus::AWAITING_PAYMENT_ID
+                && $newStatus === OrderStatus::PENDING_ID
+            ) {
                 $order->user?->notify(new NewOrderNotification($order));
                 $this->notifyVendor($order);
             } else {
@@ -65,11 +67,16 @@ class OrderObserver
         }
     }
 
+    /**
+     * Notify vendor of new order.
+     */
     private function notifyVendor(Order $order): void
     {
         $vendor = $order->items()->first()?->vendorInventory?->vendor;
         if ($vendor) {
-            broadcast(new VendorOrderUpdated($vendor->id, $order->id, $order->order_number))->toOthers();
+            broadcast(
+                new VendorOrderUpdated($vendor->id, $order->id, $order->order_number)
+            )->toOthers();
         }
     }
 }

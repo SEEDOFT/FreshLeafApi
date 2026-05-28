@@ -66,15 +66,15 @@ class VendorStatsOverview extends BaseWidget
 
         return [
             Stat::make('My Products', $productCount)
-                ->description('Total products listed')
+                ->description(__('vendor.widgets.total_products_desc'))
                 ->descriptionIcon('heroicon-m-rectangle-stack')
                 ->color('info'),
             Stat::make('Orders Today', $todayOrders)
-                ->description('New orders received today')
+                ->description(__('vendor.widgets.orders_today_desc'))
                 ->descriptionIcon('heroicon-m-shopping-bag')
                 ->color('success'),
             Stat::make('Wallet Balance', Number::currency($walletBalance, 'USD'))
-                ->description('Current USD earnings')
+                ->description(__('vendor.widgets.wallet_earnings_desc'))
                 ->descriptionIcon('heroicon-m-wallet')
                 ->color('success'),
         ];

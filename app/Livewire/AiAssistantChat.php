@@ -116,7 +116,7 @@ class AiAssistantChat extends Component
         };
 
         if (! $isAuthorized) {
-            $this->dispatch('notify-error', __('Unauthorized to access AI Assistant'));
+            $this->dispatch('notify-error', __('admin.ai.unauthorized'));
 
             return;
         }
@@ -313,10 +313,10 @@ class AiAssistantChat extends Component
     public function handleFailed(array $event): void
     {
         $this->isRealtimeConnected = false;
-        $this->realtimeStatusMessage = 'Realtime stream disconnected. Switched to fallback sync mode.';
+        $this->realtimeStatusMessage = __('admin.ai.realtime_disconnected_fallback');
         $this->updateOrAppendAssistantMessage(
             messageId: $event['message_id'],
-            content: 'Error: '.$event['error'],
+            content: __('admin.ai.error_prefix').$event['error'],
             status: self::STATUS_FAILED,
         );
         $this->finalizePendingMessage();
@@ -342,8 +342,8 @@ class AiAssistantChat extends Component
         }
 
         $this->realtimeStatusMessage = $reason
-            ? "Realtime connection is unstable ({$reason}). Waiting with fallback sync mode."
-            : 'Realtime connection is unstable. Waiting with fallback sync mode.';
+            ? __('admin.ai.realtime_unstable_reason', ['reason' => $reason])
+            : __('admin.ai.realtime_unstable');
     }
 
     /**
@@ -423,7 +423,7 @@ class AiAssistantChat extends Component
         if ($assistantMessage->status === self::STATUS_FAILED) {
             $this->updateOrAppendAssistantMessage(
                 messageId: (string) $assistantMessage->message_id,
-                content: 'Error: '.($assistantMessage->error ?: 'Unable to generate response. Please try again.'),
+                content: __('admin.ai.error_prefix').($assistantMessage->error ?: __('admin.ai.unable_generate_response')),
                 status: self::STATUS_FAILED,
             );
             $this->finalizePendingMessage();
@@ -458,19 +458,19 @@ class AiAssistantChat extends Component
         $elapsedSeconds = time() - $this->pendingSinceUnix;
 
         if ($elapsedSeconds >= self::REALTIME_FALLBACK_SECONDS && ! $this->isRealtimeConnected) {
-            $this->realtimeStatusMessage = 'Realtime stream disconnected. Waiting for queued response sync.';
+            $this->realtimeStatusMessage = __('admin.ai.realtime_disconnected_sync');
         }
 
         if ($elapsedSeconds >= self::REQUEST_TIMEOUT_SECONDS) {
             $this->updateOrAppendAssistantMessage(
                 messageId: (string) $this->pendingAssistantMessageId,
-                content: 'Request timed out while waiting for AI response. Please try sending again.',
+                content: __('admin.ai.request_timeout_retry'),
                 status: self::STATUS_FAILED,
             );
             AiChatMessage::where('message_id', $this->pendingAssistantMessageId)
                 ->update([
                     'status' => self::STATUS_FAILED,
-                    'error' => 'Request timed out while waiting for AI response.',
+                    'error' => __('admin.ai.request_timeout_error'),
                 ]);
             $this->finalizePendingMessage();
         }
@@ -490,7 +490,7 @@ class AiAssistantChat extends Component
         AiChatMessage::where('message_id', $this->pendingAssistantMessageId)
             ->update([
                 'status' => self::STATUS_FAILED,
-                'error' => 'Generation stopped by user.',
+                'error' => __('admin.ai.generation_stopped'),
             ]);
 
         $messageIndex = $this->findMessageIndexById($this->pendingAssistantMessageId);
@@ -609,7 +609,7 @@ class AiAssistantChat extends Component
     public function renderAssistantMessage(string $content): HtmlString
     {
         if (trim($content) === '') {
-            return new HtmlString('<p class="ai-message-placeholder">...</p>');
+            return new HtmlString('<p class="ai-message-placeholder">'.__('admin.ai.thinking_placeholder').'</p>');
         }
 
         return new HtmlString(Str::markdown($content, [
@@ -745,7 +745,7 @@ class AiAssistantChat extends Component
                     'id' => (int) $session->id,
                     'session_id' => (string) $session->session_id,
                     'title' => (string) ($session->title ?: __('admin.ai.new_chat')),
-                    'updated_at_human' => $activityAt?->diffForHumans() ?? 'Just now',
+                    'updated_at_human' => $activityAt?->diffForHumans() ?? __('admin.ai.just_now'),
                     'updated_at_iso' => $activityAt?->toIso8601String() ?? now()->toIso8601String(),
                 ];
             })

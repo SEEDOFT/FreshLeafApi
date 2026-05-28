@@ -43,6 +43,7 @@ class ProductController extends Controller
                 )
             )
             ->with(self::RELATIONSHIPS)
+            // Filter by Province
             ->when($request->filled('province'),
                 static function (Builder $query) use ($request) {
                     $province = strtolower($request->input('province'));
@@ -53,6 +54,7 @@ class ProductController extends Controller
                             });
                     });
                 })
+            // Filter by Category
             ->when($request->filled('category_id'),
                 static function (Builder $query) use ($request) {
                     $query->whereHas('product',
@@ -62,6 +64,7 @@ class ProductController extends Controller
                         )
                     );
                 })
+            // Filter by Search
             ->when($request->filled('search'),
                 static function (Builder $query) use ($request) {
                     $search = strtolower($request->input('search'));
@@ -74,10 +77,10 @@ class ProductController extends Controller
                     );
                 })
             ->orderByDesc('id')
-            ->simplePaginate($request->integer('per_page', 15));
+            ->paginate($request->integer('per_page', 15));
 
         return static::successResponse(
-            ['vendor_inventories' => VendorInventoryResource::collection($listings)],
+            VendorInventoryResource::collection($listings),
             __('api.product.retrieved')
         );
     }
@@ -102,7 +105,7 @@ class ProductController extends Controller
         }
 
         return static::successResponse(
-            ['vendor_inventories' => new VendorInventoryResource($listing)],
+            new VendorInventoryResource($listing),
             __('api.product.retrieved')
         );
     }

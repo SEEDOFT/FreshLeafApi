@@ -7,6 +7,7 @@ namespace App\Http\Resources\User;
 use App\Models\Address;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
+use Override;
 
 /**
  * @mixin Address
@@ -14,10 +15,11 @@ use Illuminate\Http\Resources\Json\JsonResource;
 class AddressResource extends JsonResource
 {
     /**
-     * Transform the resource into an array.
+     * {@inheritDoc}
      *
      * @return array<string, mixed>
      */
+    #[Override]
     public function toArray(Request $request): array
     {
         return [
@@ -31,8 +33,10 @@ class AddressResource extends JsonResource
             'province' => $this->province,
             'postal_code' => $this->postal_code,
             'address_map' => $this->address_map,
-            'created_at' => $this->created_at,
-            'updated_at' => $this->updated_at,
+            'lat' => $this->lat,
+            'long' => $this->long,
+            'created_at' => $this->created_at?->toIso8601String(),
+            'updated_at' => $this->updated_at?->toIso8601String(),
         ];
     }
 }

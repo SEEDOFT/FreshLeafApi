@@ -29,8 +29,8 @@ class ListVendors extends ListRecords
     public function getTabs(): array
     {
         return [
-            'all' => Tab::make('All'),
-            'pending' => Tab::make('Pending Approval')
+            'all' => Tab::make(__('admin.resources.vendor.tab_all')),
+            'pending' => Tab::make(__('admin.resources.vendor.tab_pending'))
                 ->modifyQueryUsing(
                     static fn (Builder $query) => $query->where('user_status_id', UserStatus::PENDING_ID)
                 )
@@ -42,12 +42,12 @@ class ListVendors extends ListRecords
                         ? (clone $query)->where('user_status_id', UserStatus::PENDING_ID)->count()
                         : 0;
                 }),
-            'active' => Tab::make('Active')
+            'active' => Tab::make(__('admin.resources.vendor.tab_active'))
                 ->modifyQueryUsing(
                     static fn (Builder $query) => $query->where('user_status_id', UserStatus::ACTIVE_ID)
                 )
                 ->icon('heroicon-m-check-circle'),
-            'inactive' => Tab::make('Inactive')
+            'inactive' => Tab::make(__('admin.resources.vendor.tab_inactive'))
                 ->modifyQueryUsing(
                     static fn (Builder $query) => $query->where('user_status_id', UserStatus::INACTIVE_ID)
                 )

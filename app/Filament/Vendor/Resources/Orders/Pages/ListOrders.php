@@ -22,6 +22,9 @@ class ListOrders extends ListRecords
         ];
     }
 
+    /**
+     * @return array<string, string>
+     */
     public function getListeners(): array
     {
         $vendorId = Auth::id();

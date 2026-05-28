@@ -11,7 +11,8 @@ use Illuminate\Contracts\Pagination\Paginator;
 class AddressService
 {
     /**
-     * Get user addresses.
+    /**
+     * Get paginated user addresses.
      *
      * @return Paginator<int, Address>
      */
@@ -24,7 +25,7 @@ class AddressService
     }
 
     /**
-     * Create an address.
+     * Create a new address for the user.
      *
      * @param  array<string, mixed>  $data
      */
@@ -40,7 +41,7 @@ class AddressService
     }
 
     /**
-     * Update an address.
+     * Update an existing address dynamically.
      *
      * @param  array<string, mixed>  $data
      */
@@ -62,7 +63,7 @@ class AddressService
     }
 
     /**
-     * Replace an address.
+     * Replace an entire address.
      *
      * @param  array<string, mixed>  $data
      */

@@ -14,6 +14,7 @@ use App\Services\MoneyService;
 use Illuminate\Console\Attributes\Description;
 use Illuminate\Console\Attributes\Signature;
 use Illuminate\Console\Command;
+use Illuminate\Database\Eloquent\Collection;
 
 #[Signature('app:seed-wallet {user_id} {--amount=1000} {--khr=4000000}')]
 #[Description('Seed a user wallet with test money')]
@@ -36,6 +37,9 @@ class SeedWalletMoney extends Command
             return 1;
         }
 
+        /**
+         * @var Collection<int, Wallet> $wallets
+         */
         $wallets = Wallet::where('user_id', $user->id)->get();
 
         if ($wallets->isEmpty()) {
@@ -61,11 +65,7 @@ class SeedWalletMoney extends Command
                 'wallet_transaction_status_id' => WalletTransactionStatus::COMPLETED_ID,
             ]);
 
-            $attributes = collect($transaction->getAttributes())
-                ->except(['id', 'created_at', 'updated_at', 'deleted_at'])
-                ->toArray();
-
-            $transaction->histories()->create($attributes);
+            $transaction->recordHistory();
         }
 
         $this->info("Successfully seeded wallets for user {$user->first_name}.");

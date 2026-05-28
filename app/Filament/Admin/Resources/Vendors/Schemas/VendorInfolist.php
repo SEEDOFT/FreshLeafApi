@@ -102,7 +102,7 @@ class VendorInfolist
                             ->dateTime('h:i A'),
                         TextEntry::make('is_open')
                             ->label(__('vendor.settings.business_profile.is_open'))
-                            ->formatStateUsing(fn (bool $state): string => $state ? 'Now Is Open' : 'Now Is Closed')
+                            ->formatStateUsing(fn (bool $state): string => $state ? __('vendor.settings.business_profile.is_open_label') : __('vendor.settings.business_profile.is_closed_label'))
                             ->color(fn (bool $state): string => $state ? 'success' : 'danger')
                             ->disabled(),
                         IconEntry::make('is_verified')

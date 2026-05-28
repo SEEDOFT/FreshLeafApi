@@ -22,10 +22,10 @@ class DeviceController extends Controller
 
         $device = UserDevice::updateOrCreate(
             [
+                'user_id' => $user->id,
                 'device_token_hash' => hash('sha256', $validatedData['device_token']),
             ],
             [
-                'user_id' => $user->id,
                 'device_token' => $validatedData['device_token'],
                 'device_type' => $validatedData['device_type'],
                 'is_active' => true,

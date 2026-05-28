@@ -79,7 +79,7 @@ class ProductInventoryTable
                 ViewAction::make(),
                 EditAction::make(),
                 Action::make('addDiscount')
-                    ->label('Add Discount')
+                    ->label(__('shared.product.add_discount'))
                     ->icon('heroicon-o-receipt-percent')
                     ->color('info')
                     ->form([
@@ -89,9 +89,9 @@ class ProductInventoryTable
                             ->minValue(0)
                             ->maxValue(100),
                         DateTimePicker::make('starts_at')
-                            ->label('Starts At (Optional)'),
+                            ->label(__('shared.product.discount_starts_at')),
                         DateTimePicker::make('ends_at')
-                            ->label('Ends At (Optional)'),
+                            ->label(__('shared.product.discount_ends_at')),
                     ])
                     ->action(function (VendorInventory $record, array $data): void {
                         $discount = $record->discounts()->create([
@@ -111,7 +111,7 @@ class ProductInventoryTable
 
                         Notification::make()
                             ->success()
-                            ->title('Discount added successfully')
+                            ->title(__('shared.product.notifications.discount_added'))
                             ->send();
                     }),
                 Action::make('adjustStock')

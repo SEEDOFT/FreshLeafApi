@@ -24,10 +24,11 @@ class ProfileController extends Controller
      */
     public function show(Request $request): JsonResponse
     {
-        $user = $this->authenticatedUser($request);
-
         return static::successResponse(
-            new UserResource($user->loadMissing('userProfile')),
+            new UserResource(
+                $this->authenticatedUser($request)
+                    ->loadMissing('userProfile')
+            ),
             __('api.profile.retrieved')
         );
     }
@@ -48,14 +49,16 @@ class ProfileController extends Controller
         return $this->handleProfileUpdate($request, true);
     }
 
+    /**
+     * Handle both update and replace profile logic.
+     */
     private function handleProfileUpdate(
         UpdateProfileRequest $request,
         bool $isReplace
     ): JsonResponse {
-        $user = $this->authenticatedUser($request);
 
         $updatedUser = $this->profileService->updateProfile(
-            $user,
+            $this->authenticatedUser($request),
             $request->validated(),
             $request->file('image')
         );
@@ -73,12 +76,11 @@ class ProfileController extends Controller
      */
     public function destroy(Request $request): JsonResponse
     {
-        $user = $this->authenticatedUser($request);
-
-        $user->update([
-            'user_status_id' => UserStatus::DELETED_ID,
-            'deleted_at' => Carbon::now(),
-        ]);
+        $this->authenticatedUser($request)
+            ->update([
+                'user_status_id' => UserStatus::DELETED_ID,
+                'deleted_at' => Carbon::now(),
+            ]);
 
         return static::successResponse(message: __('api.profile.deleted'));
     }

@@ -6,71 +6,75 @@ namespace App\Services;
 
 use App\Models\User;
 use App\Models\WalletTransaction;
-use App\Models\WalletTransactionHistory;
-use Illuminate\Contracts\Pagination\Paginator;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\DB;
 
 class WalletTransactionService
 {
     /**
-     * Get paginated transactions for a user.
+     * Default relationships loaded for wallet transactions.
      *
-     * @return Paginator<int, WalletTransaction>
+     * @var list<string>
      */
-    public function getUserTransactions(User $user, ?int $walletId, int $perPage): Paginator
-    {
-        $query = WalletTransaction::whereHas('wallet', static fn ($query) => $query->where('user_id', $user->id))
-            ->with(['type', 'status'])
+    private const DEFAULT_RELATIONS = ['type', 'status'];
+
+    /**
+     * Get paginated transactions for a user's wallet.
+     *
+     * @return LengthAwarePaginator<int, WalletTransaction>
+     */
+    public function getUserTransactions(
+        User $user,
+        ?int $walletId,
+        int $perPage
+    ): LengthAwarePaginator {
+        $query = WalletTransaction::query()
+            ->whereHas(
+                'wallet',
+                static fn (Builder $query): Builder => $query->where('user_id', $user->id)
+            )
+            ->with(self::DEFAULT_RELATIONS)
             ->orderByDesc('id');
 
         if ($walletId) {
             $query->where('wallet_id', $walletId);
         }
 
-        return $query->simplePaginate($perPage);
+        return $query->paginate($perPage);
     }
 
     /**
-     * Create a new transaction with history log.
+     * Create a new transaction and log history entry.
      *
      * @param  array<string, mixed>  $data
      */
     public function createTransaction(User $user, array $data): WalletTransaction
     {
-        return DB::transaction(static function () use ($user, $data) {
+        return DB::transaction(function () use ($data) {
             $transaction = WalletTransaction::create($data);
 
-            WalletTransactionHistory::create([
-                'wallet_transaction_id' => $transaction->id,
-                'from_wallet_transaction_status_id' => null,
-                'to_wallet_transaction_status_id' => $transaction->wallet_transaction_status_id,
-                'changed_by_user_id' => $user->id,
-                'note' => 'Transaction initiated',
-            ]);
+            $transaction->recordHistory();
 
             return $transaction;
         });
     }
 
     /**
-     * Update an existing transaction and log history if status changes.
+     * Update an existing transaction and log history if the status changes.
      *
      * @param  array<string, mixed>  $data
      */
-    public function updateTransaction(WalletTransaction $transaction, User $user, array $data): WalletTransaction
-    {
-        return DB::transaction(static function () use ($transaction, $user, $data) {
-            $oldStatusId = $transaction->wallet_transaction_status_id;
+    public function updateTransaction(
+        WalletTransaction $transaction,
+        User $user,
+        array $data
+    ): WalletTransaction {
+        return DB::transaction(function () use ($transaction, $data) {
             $transaction->update($data);
 
-            if ($transaction->wasChanged('wallet_transaction_status_id')) {
-                WalletTransactionHistory::create([
-                    'wallet_transaction_id' => $transaction->id,
-                    'from_wallet_transaction_status_id' => $oldStatusId,
-                    'to_wallet_transaction_status_id' => $transaction->wallet_transaction_status_id,
-                    'changed_by_user_id' => $user->id,
-                    'note' => 'Status updated',
-                ]);
+            if ($transaction->wasChanged()) {
+                $transaction->recordHistory();
             }
 
             return $transaction;

@@ -34,7 +34,7 @@ class VariantsRelationManager extends RelationManager
                     ->dehydrated(fn (mixed $state): bool => filled($state)),
                 TextInput::make('name')
                     ->label(__('admin.resources.unit.name'))
-                    ->placeholder('e.g. 500g Pack, Bulk 5kg')
+                    ->placeholder(__('admin.resources.product.variant_name_placeholder'))
                     ->required(fn (string $operation): bool => $operation === 'create')
                     ->dehydrated(fn (mixed $state): bool => filled($state)),
                 TextInput::make('quantity_in_unit')

@@ -25,7 +25,6 @@ class PaymentMethodController extends Controller
     public function index(Request $request): JsonResponse
     {
         $user = $this->authenticatedUser($request);
-
         $paymentMethods = $user->paymentMethods()
             ->active()
             ->isType(PaymentMethodType::CREDIT_DEBIT_ID)
@@ -48,10 +47,10 @@ class PaymentMethodController extends Controller
         $paymentMethod = $user->paymentMethods()
             ->active()
             ->isType(PaymentMethodType::CREDIT_DEBIT_ID)
-            ->find($id);
+            ->find((int) $id);
 
         if (! $paymentMethod) {
-            return static::notFoundResponse(__('api.payment_method.not_found'));
+            abort(404, __('api.payment_method.not_found'));
         }
 
         return static::successResponse(
@@ -95,7 +94,7 @@ class PaymentMethodController extends Controller
             'billing_zip_code' => $data['billing_zip_code'],
         ]);
 
-        return $this->successResponse(
+        return static::successResponse(
             new PaymentMethodResource($paymentMethod),
             __('api.payment_method.created'),
             201
@@ -108,23 +107,24 @@ class PaymentMethodController extends Controller
     public function update(string $id, UpdatePaymentMethodRequest $request): JsonResponse
     {
         $user = $this->authenticatedUser($request);
-        $paymentMethod = $user->paymentMethods()->active()->find($id);
+        $validatedData = $request->validated();
+        $paymentMethod = $user->paymentMethods()->active()->find((int) $id);
 
         if (! $paymentMethod) {
-            return $this->notFoundResponse(__('api.payment_method.not_found'));
+            abort(404, __('api.payment_method.not_found'));
         }
 
-        $data = $request->validated();
-
-        if ($data['is_default'] ?? false) {
+        if ($validatedData['is_default'] ?? false) {
             $user->paymentMethods()
                 ->where('id', '!=', $paymentMethod->id)
-                ->update(['is_default' => false]);
+                ->update([
+                    'is_default' => false,
+                ]);
         }
 
-        $paymentMethod->update($data);
+        $paymentMethod->update($validatedData);
 
-        return $this->successResponse(
+        return static::successResponse(
             new PaymentMethodResource($paymentMethod),
             __('api.payment_method.updated')
         );
@@ -136,23 +136,24 @@ class PaymentMethodController extends Controller
     public function replace(string $id, ReplacePaymentMethodRequest $request): JsonResponse
     {
         $user = $this->authenticatedUser($request);
-        $paymentMethod = $user->paymentMethods()->active()->find($id);
+        $validatedData = $request->validated();
+        $paymentMethod = $user->paymentMethods()->active()->find((int) $id);
 
         if (! $paymentMethod) {
-            return $this->notFoundResponse(__('api.payment_method.not_found'));
+            abort(404, __('api.payment_method.not_found'));
         }
-
-        $validatedData = $request->validated();
 
         if ($validatedData['is_default'] ?? false) {
             $user->paymentMethods()
                 ->where('id', '!=', $paymentMethod->id)
-                ->update(['is_default' => false]);
+                ->update([
+                    'is_default' => false,
+                ]);
         }
 
         $paymentMethod->update($validatedData);
 
-        return $this->successResponse(
+        return static::successResponse(
             new PaymentMethodResource($paymentMethod),
             __('api.payment_method.replaced')
         );
@@ -167,7 +168,7 @@ class PaymentMethodController extends Controller
         $paymentMethod = $user->paymentMethods()->active()->find($id);
 
         if (! $paymentMethod) {
-            return $this->notFoundResponse(__('api.payment_method.not_found'));
+            abort(404, __('api.payment_method.not_found'));
         }
 
         $paymentMethod->update([
@@ -176,6 +177,6 @@ class PaymentMethodController extends Controller
             'deleted_at' => Carbon::now(),
         ]);
 
-        return $this->successResponse(message: __('api.payment_method.deleted'));
+        return static::successResponse(message: __('api.payment_method.deleted'));
     }
 }

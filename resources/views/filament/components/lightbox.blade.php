@@ -106,7 +106,7 @@
             x-on:click="zoomOut()"
             :disabled="scale <= 1"
             class="p-1.5 rounded-full hover:bg-white/20 hover:text-white transition disabled:opacity-40 disabled:hover:bg-transparent"
-            title="Zoom Out"
+            title="{{ __('shared.lightbox.zoom_out') }}"
         >
             <x-heroicon-m-magnifying-glass-minus class="w-5 h-5" />
         </button>
@@ -120,7 +120,7 @@
             x-on:click="zoomIn()"
             :disabled="scale >= 5"
             class="p-1.5 rounded-full hover:bg-white/20 hover:text-white transition disabled:opacity-40 disabled:hover:bg-transparent"
-            title="Zoom In"
+            title="{{ __('shared.lightbox.zoom_in') }}"
         >
             <x-heroicon-m-magnifying-glass-plus class="w-5 h-5" />
         </button>
@@ -134,7 +134,7 @@
             x-on:click="resetZoom()"
             :disabled="scale === 1 && offsetX === 0 && offsetY === 0"
             class="p-1.5 rounded-full hover:bg-white/20 hover:text-white transition disabled:opacity-40 disabled:hover:bg-transparent"
-            title="Reset Zoom"
+            title="{{ __('shared.lightbox.reset_zoom') }}"
         >
             <x-heroicon-m-arrow-path class="w-5 h-5" />
         </button>

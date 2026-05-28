@@ -5,21 +5,28 @@ declare(strict_types=1);
 namespace App\Http\Resources\Cart;
 
 use App\Http\Resources\Product\VendorInventoryResource;
+use App\Http\Resources\Shared\StatusResource;
 use App\Models\Cart;
+use App\Models\CartStatus;
 use App\Models\Currency;
 use App\Models\VendorInventory;
 use App\Services\MoneyService;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
+use Override;
 
 /**
  * @mixin Cart
+ * @mixin CartStatus
  */
 class CartResource extends JsonResource
 {
     /**
+     * {@inheritDoc}
+     *
      * @return array<string, mixed>
      */
+    #[Override]
     public function toArray(Request $request): array
     {
         $inventory = $this->relationLoaded('vendorInventory') ? $this->vendorInventory : null;
@@ -42,17 +49,12 @@ class CartResource extends JsonResource
             'discounted_unit_price_display' => MoneyService::displayTotals($discountedPrice, $currencyId),
             'subtotal' => $subtotal,
             'subtotal_display' => MoneyService::displayTotals($subtotal, $currencyId),
-            'status' => $this->whenLoaded('status', fn () => [
-                'id' => $this->cart_status_id,
-                'code' => $this->status->code,
-                'name_en' => $this->status->name_en,
-                'name_km' => $this->status->name_km,
-            ]),
+            'status' => new StatusResource($this->whenLoaded('status')),
             'vendor_inventory' => $inventory instanceof VendorInventory
                 ? new VendorInventoryResource($inventory)
                 : null,
-            'created_at' => \optional($this->created_at)->toIso8601String(),
-            'updated_at' => \optional($this->updated_at)->toIso8601String(),
+            'created_at' => $this->created_at?->toIso8601String(),
+            'updated_at' => $this->updated_at?->toIso8601String(),
         ];
     }
 }

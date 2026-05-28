@@ -4,9 +4,11 @@ declare(strict_types=1);
 
 namespace App\Http\Resources\User;
 
+use App\Http\Resources\Shared\CurrencyResource;
 use App\Models\WalletHistory;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
+use Override;
 
 /**
  * @mixin WalletHistory
@@ -14,22 +16,21 @@ use Illuminate\Http\Resources\Json\JsonResource;
 class WalletHistoryResource extends JsonResource
 {
     /**
-     * Transform the resource into an array.
+     * {@inheritDoc}
      *
      * @return array<string, mixed>
      */
+    #[Override]
     public function toArray(Request $request): array
     {
         return [
             'id' => $this->id,
             'wallet_id' => $this->wallet_id,
             'user_id' => $this->user_id,
-            'currency_id' => $this->currency_id,
-            'balance' => $this->balance,
-            'currency' => $this->relationLoaded('currency')
-                ? new CurrencyResource($this->currency) : null,
-            'created_at' => $this->created_at,
-            'updated_at' => $this->updated_at,
+            'balance' => (float) $this->balance,
+            'created_at' => $this->created_at?->toIso8601String(),
+            'updated_at' => $this->updated_at?->toIso8601String(),
+            'currency' => new CurrencyResource($this->whenLoaded('currency')),
         ];
     }
 }

@@ -7,6 +7,9 @@ return [
         'business_profile' => [
             'label' => 'ព័ត៌មានអាជីវកម្ម',
             'description' => 'ការពិពណ៌នាហាង',
+            'description_placeholder' => 'ប្រាប់អតិថិជនអំពីកសិដ្ឋាន ឬហាងរបស់អ្នក...',
+            'is_open_label' => 'កំពុងបើកដំណើរការ',
+            'is_closed_label' => 'កំពុងបិទដំណើរការ',
             'opening_time' => 'ម៉ោងបើក',
             'closing_time' => 'ម៉ោងបិទ',
             'is_open' => 'ហាងបើកដំណើរការ',
@@ -21,7 +24,7 @@ return [
             'account_number' => 'លេខគណនី',
             'qr_code' => 'កូដ QR ធនាគារ',
             'success_notification' => 'បានធ្វើបច្ចុប្បន្នភាពព័ត៌មានហិរញ្ញវត្ថុដោយជោគជ័យ។',
-            'description' => '',
+            'description' => 'ព័ត៌មានលម្អិតផ្នែកហិរញ្ញវត្ថុអំពីអាជីវកម្មរបស់អ្នក។',
         ],
         'vendor_security' => [
             'label' => 'សុវត្ថិភាព',
@@ -56,5 +59,10 @@ return [
     ],
     'navigation' => [
         'exchange_rate' => 'អត្រាប្តូរប្រាក់',
+    ],
+    'widgets' => [
+        'total_products_desc' => 'ផលិតផលសរុបដែលបានចុះបញ្ជី',
+        'orders_today_desc' => 'ការបញ្ជាទិញថ្មីដែលទទួលបានថ្ងៃនេះ',
+        'wallet_earnings_desc' => 'ប្រាក់ចំណូល USD បច្ចុប្បន្ន',
     ],
 ];

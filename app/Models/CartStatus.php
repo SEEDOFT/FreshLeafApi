@@ -17,8 +17,8 @@ use Illuminate\Support\Carbon;
 
 /**
  * @property int $id
- * @property string $code
- * @property string $name
+ * @property string $name_en
+ * @property string $name_km
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  * @property-read Collection<int, Cart> $carts
@@ -31,9 +31,7 @@ use Illuminate\Support\Carbon;
 class CartStatus extends Model
 {
     /** @use HasFactory<CartStatusFactory> */
-    use HasFactory;
-
-    use SoftDeletes;
+    use HasFactory, SoftDeletes;
 
     public const int ACTIVE_ID = 1;
 
@@ -49,8 +47,7 @@ class CartStatus extends Model
 
     /**
      * Get the carts for the status.
-     */
-    /**
+     *
      * @return HasMany<Cart, $this>
      */
     public function carts(): HasMany

@@ -123,4 +123,16 @@ class WalletTransaction extends Model
             'id'
         );
     }
+
+    /**
+     * Record a history entry by snapshotting the transaction's current state.
+     */
+    public function recordHistory(): void
+    {
+        $attributes = collect($this->getAttributes())
+            ->except(['id', 'created_at', 'updated_at', 'deleted_at'])
+            ->toArray();
+
+        $this->histories()->create($attributes);
+    }
 }

@@ -27,7 +27,8 @@ class CartController extends Controller
     public function index(Request $request): JsonResponse
     {
         $user = $this->authenticatedUser($request);
-        $cartRows = $this->cartService->getActiveCarts($user, $request->integer('per_page', 10));
+        $cartRows = $this->cartService
+            ->getActiveCarts($user, $request->integer('per_page', 10));
 
         try {
             $total = $this->cartService->cartTotal($cartRows->items());

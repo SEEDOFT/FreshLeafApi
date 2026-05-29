@@ -14,6 +14,7 @@ return [
         'my_profile' => 'ប្រវត្តិរូបខ្ញុំ',
         'settings' => 'ការកំណត់',
         'app_control' => 'ការគ្រប់គ្រងកម្មវិធី',
+        'commission_fee' => 'កម្រៃជើងសារ',
     ],
     'settings' => [
         'app_settings' => [
@@ -142,10 +143,19 @@ return [
         'exchange_rate' => [
             'label' => 'អត្រាប្តូរប្រាក់',
             'plural_label' => 'អត្រាប្តូរប្រាក់',
+            'page_title' => 'អត្រាប្តូរប្រាក់',
+            'form_section' => 'អត្រាប្តូរប្រាក់',
+            'form_section_desc' => 'ធ្វើបច្ចុប្បន្នភាពអត្រាទិញ/លក់សម្រាប់ការបម្លែង USD ↔ KHR',
             'base_currency' => 'រូបិយប័ណ្ណមូលដ្ឋាន',
             'target_currency' => 'រូបិយប័ណ្ណគោលដៅ',
             'rate' => 'អត្រាប្តូរ',
             'rate_helper' => 'ឧ: 1 USD = 4100 KHR',
+            'usd_to_khr_label' => 'USD → KHR (អត្រាទិញ)',
+            'khr_to_usd_label' => 'KHR → USD (អត្រាលក់)',
+            'update_button' => 'ធ្វើបច្ចុប្បន្នភាពអត្រា',
+            'update_success' => 'អត្រាប្តូរប្រាក់ត្រូវបានធ្វើបច្ចុប្បន្នភាពដោយជោគជ័យ។',
+            'update_history' => 'ប្រវត្តិធ្វើបច្ចុប្បន្នភាព',
+            'filter_currency_pair' => 'គូរូបិយប័ណ្ណ',
         ],
         'order' => [
             'label' => 'ការបញ្ជាទិញ',
@@ -469,6 +479,20 @@ return [
         'download_attachment' => 'ទាញយកឯកសារភ្ជាប់',
         'admin_label' => 'អ្នកគ្រប់គ្រង',
     ],
+    'commission_fee' => [
+        'navigation_label' => 'កម្រៃជើងសារ',
+        'model_label' => 'កម្រៃជើងសារ',
+        'page_title' => 'កម្រៃជើងសារ',
+        'form_section' => 'កម្រៃជើងសារ',
+        'form_section_desc' => 'ធ្វើបច្ចុប្បន្នភាពកម្រៃជើងសារវេទិកា។ ប្រវត្តិការកែប្រែនឹងត្រូវបានរក្សាទុកដោយស្វ័យប្រវត្តិ។',
+        'rate_label' => 'អត្រា (%)',
+        'description_label' => 'ការពិពណ៌នា / មូលហេតុនៃការកែប្រែ',
+        'update_button' => 'ធ្វើបច្ចុប្បន្នភាពកម្រៃជើងសារ',
+        'updated_at_column' => 'បានធ្វើបច្ចុប្បន្នភាពនៅ',
+        'notification_updated_title' => 'កម្រៃជើងសារត្រូវបានធ្វើបច្ចុប្បន្នភាព',
+        'notification_updated_body' => 'កម្រៃជើងសារវេទិកាត្រូវបានធ្វើបច្ចុប្បន្នភាពទៅ :rate%។',
+        'update_success' => 'កម្រៃជើងសារត្រូវបានធ្វើបច្ចុប្បន្នភាពដោយជោគជ័យ។',
+    ],
     'widgets' => [
         'commission' => [
             'platform_commission' => 'កម្រៃជើងសារវេទិកាសរុប',
@@ -480,5 +504,13 @@ return [
             'heading' => 'និន្នាការចំណូល (៣០ ថ្ងៃ)',
             'dataset_label' => 'ចំណូលប្រចាំថ្ងៃ (USD)',
         ],
+        'platform_fee_label' => 'កម្រៃជើងសារវេទិកា',
+        'platform_fee_desc' => 'កម្រៃជើងសារវេទិកាស្តង់ដារ',
+        'usd_to_khr_label' => 'USD → KHR',
+        'khr_to_usd_label' => 'KHR → USD',
+        'usd_to_khr' => ':rate KHR',
+        'khr_to_usd' => ':rate USD',
+        'usd_to_khr_desc' => '១ USD ក្នុង KHR',
+        'khr_to_usd_desc' => '១ KHR ក្នុង USD',
     ],
 ];

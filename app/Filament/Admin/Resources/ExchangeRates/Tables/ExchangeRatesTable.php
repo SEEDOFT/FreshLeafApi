@@ -4,11 +4,9 @@ declare(strict_types=1);
 
 namespace App\Filament\Admin\Resources\ExchangeRates\Tables;
 
-use Filament\Actions\BulkActionGroup;
-use Filament\Actions\DeleteBulkAction;
-use Filament\Actions\EditAction;
-use Filament\Actions\ViewAction;
+use App\Models\Currency;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 
 class ExchangeRatesTable
@@ -16,7 +14,6 @@ class ExchangeRatesTable
     public static function configure(Table $table): Table
     {
         return $table
-            ->recordAction('view')
             ->columns([
                 TextColumn::make('fromCurrency.translated_currency')
                     ->label(__('admin.resources.exchange_rate.base_currency'))
@@ -26,7 +23,7 @@ class ExchangeRatesTable
                     ->searchable(),
                 TextColumn::make('rate')
                     ->label(__('admin.resources.exchange_rate.rate'))
-                    ->numeric()
+                    ->numeric(8)
                     ->sortable(),
                 TextColumn::make('created_at')
                     ->label(__('admin.resources.created_at'))
@@ -37,17 +34,16 @@ class ExchangeRatesTable
                     ->dateTime('d M Y, h:i A')
                     ->sortable(),
             ])
+            ->defaultSort('created_at', 'desc')
             ->filters([
-                //
+                SelectFilter::make('from_currency_id')
+                    ->label(__('admin.resources.exchange_rate.filter_currency_pair'))
+                    ->options(
+                        Currency::all()
+                            ->pluck('translated_currency', 'id')
+                    ),
             ])
-            ->recordActions([
-                ViewAction::make(),
-                EditAction::make(),
-            ])
-            ->toolbarActions([
-                BulkActionGroup::make([
-                    DeleteBulkAction::make(),
-                ]),
-            ]);
+            ->recordActions([])
+            ->toolbarActions([]);
     }
 }

@@ -14,6 +14,7 @@ return [
         'my_profile' => 'My Profile',
         'settings' => 'Settings',
         'app_control' => 'Application Control',
+        'commission_fee' => 'Commission Fee',
     ],
     'settings' => [
         'app_settings' => [
@@ -382,10 +383,19 @@ return [
         'exchange_rate' => [
             'label' => 'Exchange Rate',
             'plural_label' => 'Exchange Rates',
+            'page_title' => 'Exchange Rates',
+            'form_section' => 'Exchange Rates',
+            'form_section_desc' => 'Update the buy/sell rates for USD ↔ KHR conversion.',
             'base_currency' => 'Base Currency',
             'target_currency' => 'Target Currency',
             'rate' => 'Conversion Rate',
             'rate_helper' => 'e.g. 1 USD = 4100 KHR',
+            'usd_to_khr_label' => 'USD → KHR (Buy Rate)',
+            'khr_to_usd_label' => 'KHR → USD (Sell Rate)',
+            'update_button' => 'Update Rates',
+            'update_success' => 'Exchange rates updated successfully.',
+            'update_history' => 'Update History',
+            'filter_currency_pair' => 'Currency Pair',
         ],
         'general' => [
             'not_provided' => 'Not Provided',
@@ -469,6 +479,20 @@ return [
         'download_attachment' => 'Download Attachment',
         'admin_label' => 'Admin',
     ],
+    'commission_fee' => [
+        'navigation_label' => 'Commission Fee',
+        'model_label' => 'Commission Fee',
+        'page_title' => 'Commission Fee',
+        'form_section' => 'Commission Fee',
+        'form_section_desc' => 'Update the platform commission fee. A history record will be saved automatically.',
+        'rate_label' => 'Rate (%)',
+        'description_label' => 'Description / Reason for update',
+        'update_button' => 'Update Commission Fee',
+        'updated_at_column' => 'Updated At',
+        'notification_updated_title' => 'Commission Fee Updated',
+        'notification_updated_body' => 'The platform commission fee has been updated to :rate%.',
+        'update_success' => 'Commission fee updated successfully.',
+    ],
     'widgets' => [
         'commission' => [
             'platform_commission' => 'Total Platform Commission',
@@ -480,5 +504,13 @@ return [
             'heading' => 'Revenue Trend (30 Days)',
             'dataset_label' => 'Daily Revenue (USD)',
         ],
+        'platform_fee_label' => 'Platform Commission Fee',
+        'platform_fee_desc' => 'Standard platform commission fee',
+        'usd_to_khr_label' => 'USD → KHR',
+        'khr_to_usd_label' => 'KHR → USD',
+        'usd_to_khr' => ':rate KHR',
+        'khr_to_usd' => ':rate USD',
+        'usd_to_khr_desc' => '1 USD in KHR',
+        'khr_to_usd_desc' => '1 KHR in USD',
     ],
 ];

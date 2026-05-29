@@ -32,6 +32,13 @@ class VendorsTable
         return $table
             ->stackedOnMobile()
             ->recordAction('view')
+            ->recordClasses(fn (User $record) => match ($record->user_status_id) {
+                UserStatus::PENDING_ID => 'bg-warning-50 dark:bg-warning-500/10 border-l-4 border-warning-500',
+                UserStatus::ACTIVE_ID => 'bg-green-50 dark:bg-green-900/50 border-l-4 border-green-400',
+                UserStatus::REJECTED_ID, UserStatus::INACTIVE_ID => 'bg-danger-50 dark:bg-danger-500/10 border-l-4 border-danger-500',
+                UserStatus::DELETED_ID => 'opacity-50 bg-red-50 dark:bg-red-900/50 border-l-4 border-red-400',
+                default => null,
+            })
             ->columns([
                 TextColumn::make('vendorProfile.business_name')
 

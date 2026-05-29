@@ -96,10 +96,10 @@ class CartController extends Controller
         $user = $this->authenticatedUser($request);
         $validatedData = $request->validated();
 
-        $order = $this->cartService->checkout($user, $validatedData);
+        $orders = $this->cartService->checkout($user, $validatedData);
 
         return static::successResponse(
-            OrderResource::make($order),
+            OrderResource::collection($orders),
             __('api.cart.checked_out')
         );
     }

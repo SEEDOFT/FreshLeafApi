@@ -150,6 +150,7 @@ Route::prefix('v1')->name('v1.')->group(static function () {
                 ->name('orders.')
                 ->controller(OrderController::class)
                 ->group(static function () {
+                    Route::post('batch-pay', 'batchPay')->name('batchPay');
                     Route::get('/', 'index')->name('index');
                     Route::get('{id}', 'show')->name('show');
                     Route::post('{id}/pay', 'pay')->name('pay');

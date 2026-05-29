@@ -46,9 +46,7 @@ use Illuminate\Support\Carbon;
 class OrderItem extends Model
 {
     /** @use HasFactory<OrderItemFactory> */
-    use HasFactory;
-
-    use SoftDeletes;
+    use HasFactory, SoftDeletes;
 
     /**
      * The "booted" method of the model.
@@ -56,7 +54,11 @@ class OrderItem extends Model
     protected static function booted(): void
     {
         static::saving(static function (OrderItem $item): void {
-            $rate = MoneyService::money(Setting::get('commission_rate_percentage', '10.00'));
+            if ($item->order_id && $item->order && $item->order->commissionFeeHistory) {
+                $rate = MoneyService::money($item->order->commissionFeeHistory->rate);
+            } else {
+                $rate = MoneyService::money(CommissionFee::current()->rate);
+            }
             $subtotal = MoneyService::money($item->subtotal ?? '0.00');
             $commissionRate = MoneyService::div($rate, '100', 8);
             $commissionAmount = MoneyService::mul($subtotal, $commissionRate);
@@ -71,7 +73,13 @@ class OrderItem extends Model
      * Get the current commission percentage from settings.
      */
     public public(set) string $activeCommissionRate {
-        get => MoneyService::money(Setting::get('commission_rate_percentage', '10.00'));
+        get {
+            if ($this->order_id && $this->order && $this->order->commissionFeeHistory) {
+                return MoneyService::money($this->order->commissionFeeHistory->rate);
+            }
+
+            return MoneyService::money(CommissionFee::current()->rate);
+        }
     }
 
     /**

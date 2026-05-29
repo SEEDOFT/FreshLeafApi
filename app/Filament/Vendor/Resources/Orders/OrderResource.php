@@ -98,10 +98,7 @@ class OrderResource extends Resource
 
         return parent::getEloquentQuery()
             ->where('order_status_id', '!=', OrderStatus::AWAITING_PAYMENT_ID)
-            ->whereHas(
-                'items.vendorInventory',
-                static fn (Builder $query) => $query->where('vendor_id', $vendor->id)
-            )
+            ->where('vendor_id', $vendor->id)
             ->orderBy('created_at', 'desc');
     }
 

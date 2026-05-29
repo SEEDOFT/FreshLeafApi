@@ -4,6 +4,11 @@ declare(strict_types=1);
 
 namespace App\Filament\Admin\Resources\Orders\Schemas;
 
+use App\Models\CommissionFee;
+use App\Models\Order;
+use App\Models\OrderStatus;
+use App\Models\PaymentStatus;
+use Filament\Infolists\Components\ImageEntry;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
@@ -22,10 +27,19 @@ class OrderInfolist
                             ->copyable(),
                         TextEntry::make('status.name')
                             ->label(__('admin.resources.order.status'))
-                            ->badge(),
-                        TextEntry::make('user.first_name')
+                            ->badge()
+                            ->color(fn (Order $record): string => match ($record->status->id) {
+                                OrderStatus::PENDING_ID => 'gray',
+                                OrderStatus::CONFIRMED_ID => 'info',
+                                OrderStatus::PREPARING_ID => 'warning',
+                                OrderStatus::OUT_FOR_DELIVERY_ID => 'fuchsia',
+                                OrderStatus::DELIVERED_ID => 'success',
+                                OrderStatus::CANCELLED_ID => 'danger',
+                                default => 'primary',
+                            }),
+                        TextEntry::make('user.fullName')
                             ->label(__('admin.resources.order.customer')),
-                        TextEntry::make('vendor.business_name')
+                        TextEntry::make('vendor.fullName')
                             ->label(__('admin.resources.order.vendor')),
                     ]),
 
@@ -37,10 +51,24 @@ class OrderInfolist
                             ->money('USD'),
                         TextEntry::make('commission_amount')
                             ->label(__('admin.resources.order.commission'))
+                            ->state(fn ($record) => $record->items->sum('commission_amount'))
                             ->money('USD'),
+                        TextEntry::make('commissionFeeHistory.rate')
+                            ->label(__('admin.resources.order.commission_rate_used'))
+                            ->suffix('%')
+                            ->default(fn () => CommissionFee::current()->rate)
+                            ->badge()
+                            ->color('info'),
                         TextEntry::make('payment_status.name')
                             ->label(__('admin.resources.order.payment_status'))
-                            ->badge(),
+                            ->badge()
+                            ->color(fn (Order $record): string => match ($record->paymentStatus->id) {
+                                PaymentStatus::PENDING_ID => 'info',
+                                PaymentStatus::COMPLETED_ID => 'success',
+                                PaymentStatus::FAILED_ID => 'danger',
+                                PaymentStatus::REFUNDED_ID => 'warning',
+                                default => 'gray',
+                            }),
                         TextEntry::make('payment_method.name')
                             ->label(__('admin.resources.order.payment_method')),
                     ]),
@@ -62,31 +90,47 @@ class OrderInfolist
                     ->schema([
                         TextEntry::make('place_order_date')
                             ->label(__('admin.resources.order.place_order_date'))
-                            ->dateTime(),
+                            ->dateTime('d M Y, h:i A'),
                         TextEntry::make('order_pending_date')
                             ->label(__('admin.resources.order.pending_date'))
-                            ->dateTime(),
+                            ->dateTime('d M Y, h:i A'),
                         TextEntry::make('order_confirmed_date')
                             ->label(__('admin.resources.order.confirmed_date'))
-                            ->dateTime(),
+                            ->dateTime('d M Y, h:i A'),
                         TextEntry::make('order_preparing_date')
                             ->label(__('admin.resources.order.preparing_date'))
-                            ->dateTime(),
+                            ->dateTime('d M Y, h:i A'),
                         TextEntry::make('order_delivered_date')
                             ->label(__('admin.resources.order.delivered_date'))
-                            ->dateTime(),
+                            ->dateTime('d M Y, h:i A'),
                         TextEntry::make('order_cancelled_date')
                             ->label(__('admin.resources.order.cancelled_date'))
-                            ->dateTime(),
+                            ->dateTime('d M Y, h:i A'),
                         TextEntry::make('order_awaiting_payment_date')
                             ->label(__('admin.resources.order.awaiting_payment_date'))
-                            ->dateTime(),
+                            ->dateTime('d M Y, h:i A'),
+                        TextEntry::make('order_out_for_delivery_date')
+                            ->label('Out for Delivery Date')
+                            ->dateTime('d M Y, h:i A'),
                         TextEntry::make('created_at')
                             ->label(__('admin.resources.created_at'))
-                            ->dateTime(),
+                            ->dateTime('d M Y, h:i A'),
                         TextEntry::make('updated_at')
                             ->label(__('admin.resources.updated_at'))
-                            ->dateTime(),
+                            ->dateTime('d M Y, h:i A'),
+                    ]),
+
+                Section::make('Dispatch Information')
+                    ->visible(fn (Order $record) => $record->order_out_for_delivery_date !== null)
+                    ->columns(2)
+                    ->schema([
+                        ImageEntry::make('preparation_proof_photo')
+                            ->label('Proof of Preparation')
+                            ->columnSpanFull(),
+                        TextEntry::make('delivery_company_name')
+                            ->label('Delivery Company'),
+                        TextEntry::make('delivery_tracking_info')
+                            ->label('Tracking Info'),
                     ]),
             ]);
     }

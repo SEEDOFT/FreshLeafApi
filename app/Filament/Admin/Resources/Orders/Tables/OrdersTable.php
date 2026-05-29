@@ -20,6 +20,15 @@ class OrdersTable
     {
         return $table
             ->stackedOnMobile()
+            ->recordClasses(fn (Order $record) => match ($record->status->id) {
+                OrderStatus::PENDING_ID => 'bg-gray-50 dark:bg-gray-900/50 border-l-4 border-gray-400',
+                OrderStatus::CONFIRMED_ID => 'bg-blue-50 dark:bg-blue-900/50 border-l-4 border-blue-400',
+                OrderStatus::PREPARING_ID => 'bg-yellow-50 dark:bg-yellow-900/50 border-l-4 border-yellow-400',
+                OrderStatus::OUT_FOR_DELIVERY_ID => 'bg-fuchsia-50 dark:bg-fuchsia-900/50 border-l-4 border-fuchsia-400',
+                OrderStatus::DELIVERED_ID => 'bg-green-50 dark:bg-green-900/50 border-l-4 border-green-400',
+                OrderStatus::CANCELLED_ID => 'bg-red-50 dark:bg-red-900/50 border-l-4 border-red-400',
+                default => null,
+            })
             ->recordAction('view')
             ->columns([
                 TextColumn::make('order_number')
@@ -35,12 +44,13 @@ class OrdersTable
                     ->label(__('admin.resources.order.status'))
                     ->badge()
                     ->color(fn (Order $record): string => match ($record->status->id) {
-                        OrderStatus::PENDING_ID => 'info',
-                        OrderStatus::CONFIRMED_ID => 'warning',
+                        OrderStatus::PENDING_ID => 'gray',
+                        OrderStatus::CONFIRMED_ID => 'info',
                         OrderStatus::PREPARING_ID => 'warning',
+                        OrderStatus::OUT_FOR_DELIVERY_ID => 'fuchsia',
                         OrderStatus::DELIVERED_ID => 'success',
                         OrderStatus::CANCELLED_ID => 'danger',
-                        default => 'gray',
+                        default => 'primary',
                     })
                     ->sortable(),
                 TextColumn::make('paymentStatus.translated_name')

@@ -71,6 +71,8 @@ class VendorPanelProvider extends PanelProvider
                 PanelsRenderHook::BODY_END,
                 fn (): string => view('filament.components.lightbox')->render(),
             )
+            ->databaseNotifications()
+            ->databaseNotificationsPolling('30s')
             ->colors(ThemeColors::getPalette())
             ->navigationGroups([
                 NavigationGroup::make()

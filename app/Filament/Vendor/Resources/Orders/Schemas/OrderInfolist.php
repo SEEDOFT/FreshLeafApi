@@ -6,9 +6,13 @@ namespace App\Filament\Vendor\Resources\Orders\Schemas;
 
 use App\Models\Currency;
 use App\Models\Order;
+use App\Models\OrderStatus;
+use App\Models\PaymentStatus;
+use Filament\Infolists\Components\ImageEntry;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
+use Illuminate\Support\Facades\Auth;
 
 class OrderInfolist
 {
@@ -24,7 +28,16 @@ class OrderInfolist
                             ->copyable(),
                         TextEntry::make('status.translated_name')
                             ->label(__('admin.resources.order.status'))
-                            ->badge(),
+                            ->badge()
+                            ->color(fn (Order $record): string => match ($record->status->id) {
+                                OrderStatus::PENDING_ID => 'gray',
+                                OrderStatus::CONFIRMED_ID => 'info',
+                                OrderStatus::PREPARING_ID => 'warning',
+                                OrderStatus::OUT_FOR_DELIVERY_ID => 'fuchsia',
+                                OrderStatus::DELIVERED_ID => 'success',
+                                OrderStatus::CANCELLED_ID => 'danger',
+                                default => 'primary',
+                            }),
                         TextEntry::make('user.fullName')
                             ->label(__('admin.resources.order.customer')),
                     ]),
@@ -45,10 +58,18 @@ class OrderInfolist
                             }),
                         TextEntry::make('commission_amount')
                             ->label(__('admin.resources.order.commission'))
+                            ->state(fn ($record) => $record->items->filter(fn ($item) => $item->vendorInventory->vendor_id === Auth::id())->sum('commission_amount'))
                             ->badge(),
                         TextEntry::make('payment_status.name')
                             ->label(__('admin.resources.order.payment_status'))
-                            ->badge(),
+                            ->badge()
+                            ->color(fn (Order $record): string => match ($record->paymentStatus->id) {
+                                PaymentStatus::PENDING_ID => 'info',
+                                PaymentStatus::COMPLETED_ID => 'success',
+                                PaymentStatus::FAILED_ID => 'danger',
+                                PaymentStatus::REFUNDED_ID => 'warning',
+                                default => 'gray',
+                            }),
                         TextEntry::make('payment_method.name')
                             ->label(__('admin.resources.order.payment_method')),
                     ]),
@@ -85,16 +106,32 @@ class OrderInfolist
                             ->dateTime('d M Y, h:i A'),
                         TextEntry::make('order_cancelled_date')
                             ->label(__('admin.resources.order.cancelled_date'))
-                            ->dateTime('d M Y, h:i A'),
+                            ->dateTime(),
                         TextEntry::make('order_awaiting_payment_date')
                             ->label(__('admin.resources.order.awaiting_payment_date'))
-                            ->dateTime('d M Y, h:i A'),
+                            ->dateTime(),
+                        TextEntry::make('order_out_for_delivery_date')
+                            ->label('Out for Delivery Date')
+                            ->dateTime(),
                         TextEntry::make('created_at')
                             ->label(__('admin.resources.created_at'))
-                            ->dateTime('d M Y, h:i A'),
+                            ->dateTime(),
                         TextEntry::make('updated_at')
                             ->label(__('admin.resources.updated_at'))
-                            ->dateTime('d M Y, h:i A'),
+                            ->dateTime(),
+                    ]),
+
+                Section::make('Dispatch Information')
+                    ->visible(fn (Order $record) => $record->order_out_for_delivery_date !== null)
+                    ->columns(2)
+                    ->schema([
+                        ImageEntry::make('preparation_proof_photo')
+                            ->label('Proof of Preparation')
+                            ->columnSpanFull(),
+                        TextEntry::make('delivery_company_name')
+                            ->label('Delivery Company'),
+                        TextEntry::make('delivery_tracking_info')
+                            ->label('Tracking Info'),
                     ]),
             ]);
     }

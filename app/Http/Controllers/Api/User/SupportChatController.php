@@ -8,6 +8,7 @@ use App\Constants\StorageDirectory;
 use App\Events\NewSupportTicket;
 use App\Events\SupportMessageSent;
 use App\Events\SupportTyping;
+use App\Filament\Admin\Pages\SupportChat;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\SupportChat\SupportTicketResource;
 use App\Http\Resources\User\SupportMessageResource;
@@ -18,9 +19,11 @@ use App\Models\UserStatus;
 use App\Models\UserType;
 use App\Notifications\NewSupportMessageNotification;
 use App\Notifications\NewSupportTicketNotification;
+use Filament\Actions\Action;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Notification;
+use Illuminate\Support\Str;
 
 use function broadcast;
 
@@ -87,6 +90,21 @@ class SupportChatController extends Controller
                 ->get();
 
             Notification::send($admins, new NewSupportTicketNotification($ticket));
+
+            if ($admins->isNotEmpty()) {
+                \Filament\Notifications\Notification::make()
+                    ->title(__('api.notifications.new_support_ticket_title'))
+                    ->body(__('api.notifications.new_support_ticket_body'))
+                    ->icon('heroicon-o-ticket')
+                    ->success()
+                    ->actions([
+                        Action::make('view')
+                            ->label(__('api.support_chat.view_chat'))
+                            ->button()
+                            ->url(SupportChat::getUrl()),
+                    ])
+                    ->sendToDatabase($admins);
+            }
         }
 
         return static::successResponse(
@@ -159,6 +177,21 @@ class SupportChatController extends Controller
             ->get();
 
         Notification::send($admins, new NewSupportMessageNotification($message));
+
+        if ($admins->isNotEmpty()) {
+            \Filament\Notifications\Notification::make()
+                ->title(__('api.notifications.new_support_message_title'))
+                ->body(Str::limit($message->message, 50))
+                ->icon('heroicon-o-chat-bubble-left-ellipsis')
+                ->success()
+                ->actions([
+                    Action::make('view')
+                        ->label(__('api.support_chat.view_chat'))
+                        ->button()
+                        ->url(SupportChat::getUrl()),
+                ])
+                ->sendToDatabase($admins);
+        }
 
         return static::successResponse(
             new SupportMessageResource($message),

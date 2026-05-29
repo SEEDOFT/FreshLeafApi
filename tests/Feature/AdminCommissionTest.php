@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Tests\Feature;
 
+use App\Models\CommissionFee;
 use App\Models\OrderItem;
-use App\Models\Setting;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -15,10 +15,10 @@ class AdminCommissionTest extends TestCase
 
     public function test_order_item_calculates_commission_logic(): void
     {
-        // 1. Setup Setting (15% commission)
-        Setting::updateOrCreate(
-            ['key' => 'commission_rate_percentage'],
-            ['value' => '15.00', 'type' => 'decimal']
+        // 1. Setup CommissionFee (15% commission)
+        CommissionFee::updateOrCreate(
+            ['id' => CommissionFee::ID],
+            ['rate' => 15.00, 'description' => 'Test fee']
         );
 
         // 2. Create Order Item instance WITHOUT saving to DB
@@ -28,7 +28,7 @@ class AdminCommissionTest extends TestCase
         ]);
 
         // Manually trigger the calculation logic for testing since DB save is blocked by FKs
-        $rate = (float) Setting::get('commission_rate_percentage', 10.00);
+        $rate = (float) CommissionFee::current()->rate;
         $item->commission_amount = $item->subtotal * ($rate / 100);
         $item->vendor_net_amount = $item->subtotal - $item->commission_amount;
 

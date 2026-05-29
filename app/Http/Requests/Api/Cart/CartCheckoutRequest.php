@@ -29,6 +29,7 @@ class CartCheckoutRequest extends FormRequest
         return [
             'address_id' => ['required', 'integer', 'exists:addresses,id'],
             'payment_method_type_id' => ['required', 'integer', 'exists:payment_method_types,id'],
+            'payment_currency_id' => ['nullable', 'integer', 'exists:currencies,id'],
             'order_type_id' => ['required', 'integer'],
             'delivery_date' => ['nullable', 'date'],
             'delivery_slot' => ['nullable', 'string', 'max:255'],

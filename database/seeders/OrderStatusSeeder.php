@@ -28,7 +28,12 @@ class OrderStatusSeeder extends Seeder
             [
                 'id' => OrderStatus::PREPARING_ID,
                 'name_en' => 'Preparing',
-                'name_km' => 'ត្រៀមដឹកជញ្ជូន',
+                'name_km' => 'កំពុងរៀបចំ',
+            ],
+            [
+                'id' => OrderStatus::OUT_FOR_DELIVERY_ID,
+                'name_en' => 'Out for Delivery',
+                'name_km' => 'កំពុងដឹកជញ្ជូន',
             ],
             [
                 'id' => OrderStatus::DELIVERED_ID,
@@ -39,6 +44,11 @@ class OrderStatusSeeder extends Seeder
                 'id' => OrderStatus::CANCELLED_ID,
                 'name_en' => 'Cancelled',
                 'name_km' => 'លុបចោល',
+            ],
+            [
+                'id' => OrderStatus::AWAITING_PAYMENT_ID,
+                'name_en' => 'Awaiting Payment',
+                'name_km' => 'រង់ចាំការទូទាត់ប្រាក់',
             ],
         ];
 

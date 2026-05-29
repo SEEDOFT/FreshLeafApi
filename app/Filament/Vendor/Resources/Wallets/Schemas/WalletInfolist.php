@@ -24,11 +24,11 @@ class WalletInfolist
                         TextEntry::make('first_name')
                             ->placeholder($notProvided)
                             ->label(__('admin.resources.user.first_name'))
-                            ->getStateUsing(fn (Wallet $record) => $record->vendor->first_name),
+                            ->getStateUsing(fn (Wallet $record) => $record->vendor?->first_name),
                         TextEntry::make('last_name')
                             ->placeholder($notProvided)
                             ->label(__('admin.resources.user.last_name'))
-                            ->getStateUsing(fn (Wallet $record) => $record->vendor->last_name),
+                            ->getStateUsing(fn (Wallet $record) => $record->vendor?->last_name),
                         TextEntry::make('currency.code')
                             ->placeholder($notProvided)
                             ->label(__('admin.resources.wallet.currency'))

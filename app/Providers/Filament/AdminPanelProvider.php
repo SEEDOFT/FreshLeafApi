@@ -7,6 +7,7 @@ namespace App\Providers\Filament;
 use App\Filament\Admin\Clusters\Settings\Pages\AdminProfile;
 use App\Filament\Admin\Clusters\Settings\Pages\ApplicationSettings;
 use App\Filament\Admin\Pages\Auth\Login;
+use App\Filament\Admin\Pages\Dashboard;
 use App\Filament\Admin\Widgets\AdminRevenueChart;
 use App\Filament\Admin\Widgets\AdminStatsOverview;
 use App\Filament\ThemeColors;
@@ -19,7 +20,6 @@ use Filament\Http\Middleware\AuthenticateSession;
 use Filament\Http\Middleware\DisableBladeIconComponents;
 use Filament\Http\Middleware\DispatchServingFilamentEvent;
 use Filament\Navigation\NavigationGroup;
-use Filament\Pages\Dashboard;
 use Filament\Panel;
 use Filament\PanelProvider;
 use Filament\Support\Enums\Width;
@@ -70,6 +70,8 @@ class AdminPanelProvider extends PanelProvider
                 PanelsRenderHook::BODY_END,
                 fn (): string => view('filament.components.lightbox')->render(),
             )
+            ->databaseNotifications()
+            ->databaseNotificationsPolling('30s')
             ->colors(ThemeColors::getPalette())
             ->navigationGroups([
                 NavigationGroup::make()
@@ -86,8 +88,6 @@ class AdminPanelProvider extends PanelProvider
                     ->label(fn (): string => __('admin.navigation.financial')),
                 NavigationGroup::make()
                     ->label(fn (): string => __('admin.navigation.settings')),
-                // NavigationGroup::make()
-                //     ->label(fn (): string => __('admin.navigation.app_control')),
             ])
             ->discoverResources(in: app_path('Filament/Admin/Resources'), for: 'App\Filament\Admin\Resources')
             ->discoverPages(in: app_path('Filament/Admin/Pages'), for: 'App\Filament\Admin\Pages')

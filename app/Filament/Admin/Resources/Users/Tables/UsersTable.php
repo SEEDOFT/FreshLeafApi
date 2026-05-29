@@ -24,6 +24,13 @@ class UsersTable
         $notProvided = __('admin.resources.general.not_provided');
 
         return $table
+            ->recordClasses(fn (User $record) => match ($record->user_status_id) {
+                UserStatus::PENDING_ID => 'bg-yellow-50 dark:bg-yellow-900/50 border-l-4 border-yellow-400',
+                UserStatus::ACTIVE_ID => 'bg-green-50 dark:bg-green-900/50 border-l-4 border-green-400',
+                UserStatus::INACTIVE_ID => 'bg-gray-50 dark:bg-gray-900/50 border-l-4 border-gray-400',
+                UserStatus::REJECTED_ID, UserStatus::DELETED_ID => 'bg-red-50 dark:bg-red-900/50 border-l-4 border-red-400',
+                default => null,
+            })
             ->stackedOnMobile()
             ->recordAction('view')
             ->columns([
@@ -51,7 +58,7 @@ class UsersTable
                     ->color(fn (User $record): string => match ($record->status->id) {
                         UserStatus::ACTIVE_ID => 'success',
                         UserStatus::PENDING_ID => 'warning',
-                        UserStatus::INACTIVE_ID, UserStatus::DELETED_ID => 'danger',
+                        UserStatus::INACTIVE_ID, UserStatus::REJECTED_ID, UserStatus::DELETED_ID => 'danger',
                         default => 'secondary',
                     })
                     ->placeholder($notProvided),

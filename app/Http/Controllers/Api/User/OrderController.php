@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Http\Controllers\Api\User;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Api\Order\OrderBatchPayRequest;
 use App\Http\Requests\Api\Order\OrderPayRequest;
 use App\Http\Resources\Order\OrderResource;
 use App\Models\Order;
@@ -162,6 +163,33 @@ class OrderController extends Controller
 
         return static::successResponse(
             new OrderResource($order->fresh(self::INDEX_RELATIONS)),
+            __('api.order.payment_successful', ['default' => 'Payment successful'])
+        );
+    }
+
+    /**
+     * Pay for multiple orders using Wallet.
+     */
+    public function batchPay(OrderBatchPayRequest $request, OrderService $orderService): JsonResponse
+    {
+        $user = $this->authenticatedUser($request);
+        $validated = $request->validated();
+
+        $orders = Order::with(['payments'])
+            ->where('user_id', $user->id)
+            ->whereIn('id', $validated['order_ids'])
+            ->get();
+
+        if ($orders->count() !== count($validated['order_ids'])) {
+            abort(404, __('api.general.not_found'));
+        }
+
+        $wallet = Wallet::where('id', $validated['wallet_id'])->firstOrFail();
+
+        $orderService->batchPayWithWallet($user, $orders, $wallet);
+
+        return static::successResponse(
+            OrderResource::collection($orders->fresh(self::INDEX_RELATIONS)),
             __('api.order.payment_successful', ['default' => 'Payment successful'])
         );
     }

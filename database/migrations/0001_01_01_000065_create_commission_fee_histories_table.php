@@ -13,12 +13,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('settings', static function (Blueprint $table) {
+        Schema::create('commission_fee_histories', static function (Blueprint $table) {
             $table->id();
-            $table->string('key')->unique();
-            $table->text('value')->nullable();
-            $table->string('group')->default('general');
-            $table->string('type')->default('string');
+            $table->unsignedBigInteger('commission_fee_id');
+            $table->decimal('rate', 5, 2);
+            $table->text('description')->nullable();
             $table->timestamps();
             $table->softDeletes();
         });
@@ -29,6 +28,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('settings');
+        Schema::dropIfExists('commission_fee_histories');
     }
 };

@@ -45,7 +45,7 @@ class MergeDuplicateOrderItems extends Command
                 $item->delete();
             }
 
-            $primary->save();
+            $primary->saveQuietly();
         }
 
         $this->info('Duplicate order items merged successfully.');

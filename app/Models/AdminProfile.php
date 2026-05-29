@@ -45,9 +45,7 @@ use Override;
 class AdminProfile extends Model
 {
     /** @use HasFactory<AdminProfileFactory> */
-    use HasFactory;
-
-    use SoftDeletes;
+    use HasFactory, SoftDeletes;
 
     /**
      * {@inheritDoc}

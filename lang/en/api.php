@@ -137,6 +137,7 @@ return [
         'no_active_ticket' => 'No active ticket found',
         'session_retrieved' => 'Support session retrieved successfully',
         'session_created' => 'Support chat session created',
+        'view_chat' => 'View Chat',
         'message_sent' => 'Message sent successfully',
         'messages_retrieved' => 'Messages retrieved successfully',
         'typing' => 'Typing indicator sent',

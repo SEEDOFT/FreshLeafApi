@@ -44,6 +44,8 @@ class OrderStatus extends Model
 
     public const int PREPARING_ID = 3;
 
+    public const int OUT_FOR_DELIVERY_ID = 7;
+
     public const int DELIVERED_ID = 4;
 
     public const int CANCELLED_ID = 5;
@@ -55,6 +57,8 @@ class OrderStatus extends Model
     public const string CONFIRMED = 'CONFIRMED';
 
     public const string PREPARING = 'PREPARING';
+
+    public const string OUT_FOR_DELIVERY = 'OUT_FOR_DELIVERY';
 
     public const string DELIVERED = 'DELIVERED';
 

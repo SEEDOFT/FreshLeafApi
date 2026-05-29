@@ -18,7 +18,6 @@ use Illuminate\Support\Facades\App;
 
 /**
  * @property int $id
- * @property string $code
  * @property string $name_en
  * @property string $name_km
  * @property string|null $translated_name
@@ -33,9 +32,7 @@ use Illuminate\Support\Facades\App;
 class UserStatus extends Model
 {
     /** @use HasFactory<UserStatusFactory> */
-    use HasFactory;
-
-    use SoftDeletes;
+    use HasFactory, SoftDeletes;
 
     public const int PENDING_ID = 1;
 

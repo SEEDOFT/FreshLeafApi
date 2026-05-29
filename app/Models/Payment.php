@@ -22,6 +22,8 @@ use Override;
  * @property int $order_id
  * @property int $type_id
  * @property int $status_id
+ * @property int|null $currency_id
+ * @property int|null $exchange_rate_history_id
  * @property string $payment_number
  * @property numeric $amount
  * @property string|null $transaction_reference
@@ -31,6 +33,8 @@ use Override;
  * @property-read Order $order
  * @property-read PaymentStatus $status
  * @property-read PaymentType $type
+ * @property-read Currency|null $currency
+ * @property-read ExchangeRateHistory|null $exchangeRateHistory
  * @property-read Collection<int, PaymentHistory> $histories
  * @property-read int|null $histories_count
  * @property Carbon|null $deleted_at
@@ -42,6 +46,8 @@ use Override;
     'payment_number',
     'type_id',
     'status_id',
+    'currency_id',
+    'exchange_rate_history_id',
     'amount',
     'transaction_id',
     'paid_at',
@@ -73,6 +79,14 @@ class Payment extends Model
         static::creating(function (self $payment): void {
             if (empty($payment->payment_number)) {
                 $payment->payment_number = self::generatePaymentNumber();
+            }
+        });
+
+        static::saving(function (self $payment): void {
+            if ($payment->isDirty('status_id') && $payment->status_id === PaymentStatus::COMPLETED_ID) {
+                if (empty($payment->paid_at)) {
+                    $payment->paid_at = Carbon::now();
+                }
             }
         });
     }
@@ -148,5 +162,25 @@ class Payment extends Model
     public function paymentMethod(): BelongsTo
     {
         return $this->belongsTo(PaymentMethod::class, 'payment_method_id', 'id');
+    }
+
+    /**
+     * Get the currency used for this payment.
+     *
+     * @return BelongsTo<Currency, $this>
+     */
+    public function currency(): BelongsTo
+    {
+        return $this->belongsTo(Currency::class, 'currency_id', 'id');
+    }
+
+    /**
+     * Get the exchange rate history that was used for this payment.
+     *
+     * @return BelongsTo<ExchangeRateHistory, $this>
+     */
+    public function exchangeRateHistory(): BelongsTo
+    {
+        return $this->belongsTo(ExchangeRateHistory::class, 'exchange_rate_history_id', 'id');
     }
 }

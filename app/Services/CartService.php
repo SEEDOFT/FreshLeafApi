@@ -4,10 +4,14 @@ declare(strict_types=1);
 
 namespace App\Services;
 
+use App\Filament\Vendor\Resources\Orders\OrderResource;
 use App\Jobs\CancelUnpaidOrderJob;
 use App\Models\Cart;
 use App\Models\CartStatus;
+use App\Models\CommissionFee;
+use App\Models\CommissionFeeHistory;
 use App\Models\Currency;
+use App\Models\ExchangeRateHistory;
 use App\Models\Order;
 use App\Models\OrderStatus;
 use App\Models\PaymentMethodType;
@@ -18,7 +22,10 @@ use App\Models\VendorInventory;
 use App\Models\WalletTransaction;
 use App\Models\WalletTransactionStatus;
 use App\Models\WalletTransactionType;
+use Filament\Actions\Action;
+use Filament\Notifications\Notification;
 use Illuminate\Contracts\Pagination\Paginator;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use RuntimeException;
@@ -205,15 +212,16 @@ class CartService
      * Process checkout for the user's active cart.
      *
      * @param  array<string, mixed>  $validatedData
+     * @return Collection<int, Order>
      *
      * @throws HttpException
      * @throws RuntimeException
      */
-    public function checkout(User $user, array $validatedData): Order
+    public function checkout(User $user, array $validatedData): Collection
     {
         try {
-            $order = DB::transaction(
-                function () use ($user, $validatedData): Order {
+            $createdOrders = DB::transaction(
+                function () use ($user, $validatedData) {
                     $cartRows = Cart::active()
                         ->where('user_id', $user->id)
                         ->with(self::CHECKOUT_RELATIONS)
@@ -235,45 +243,6 @@ class CartService
                         }
                     }
 
-                    $subtotal = '0.00';
-                    $discountAmount = '0.00';
-                    $lineItems = [];
-
-                    foreach ($cartRows as $cartRow) {
-                        $inventory = $cartRow->vendorInventory;
-                        $currencyId = $this->inventoryCurrencyId($inventory);
-                        $originalUnitUsd = MoneyService::convert(
-                            $inventory->price,
-                            $currencyId,
-                            Currency::USD_ID
-                        );
-                        $discountedUnitUsd = MoneyService::discountUnitPrice(
-                            $originalUnitUsd,
-                            $inventory->discount_percentage
-                        );
-                        $originalItemTotal = MoneyService::mul(
-                            (string) $cartRow->quantity,
-                            $originalUnitUsd
-                        );
-                        $discountedItemTotal = MoneyService::mul(
-                            (string) $cartRow->quantity,
-                            $discountedUnitUsd
-                        );
-                        $lineDiscount = MoneyService::sub(
-                            $originalItemTotal,
-                            $discountedItemTotal
-                        );
-
-                        $subtotal = MoneyService::add($subtotal, $originalItemTotal);
-                        $discountAmount = MoneyService::add($discountAmount, $lineDiscount);
-                        $lineItems[$cartRow->id] = [
-                            'unit_price' => $discountedUnitUsd,
-                            'subtotal' => $discountedItemTotal,
-                        ];
-                    }
-
-                    $total = MoneyService::sub($subtotal, $discountAmount);
-
                     $typeId = $validatedData['payment_method_type_id'];
 
                     $paymentMethod = $user->paymentMethods()
@@ -286,17 +255,7 @@ class CartService
 
                     $isCod = $typeId === PaymentMethodType::COD_ID;
                     $isWallet = $typeId === PaymentMethodType::WALLET_ID;
-                    $wallet = null;
-
-                    if ($isWallet) {
-                        $wallet = $user->wallets()->where('currency_id', Currency::USD_ID)->first();
-                        if (! $wallet) {
-                            abort(422, __('api.wallet.not_found'));
-                        }
-                        if (MoneyService::compare($wallet->balance, $total) < 0) {
-                            abort(422, __('api.wallet.insufficient_balance'));
-                        }
-                    }
+                    $paymentCurrencyId = $validatedData['payment_currency_id'] ?? Currency::USD_ID;
 
                     $initialOrderStatus = ($isCod || $isWallet)
                         ? OrderStatus::PENDING_ID
@@ -306,99 +265,200 @@ class CartService
                         ? PaymentStatus::COMPLETED_ID
                         : PaymentStatus::PENDING_ID;
 
-                    $order = Order::query()->create([
-                        'user_id' => $user->id,
-                        'address_id' => $validatedData['address_id'],
-                        'order_type_id' => $validatedData['order_type_id'],
-                        'order_status_id' => $initialOrderStatus,
-                        'payment_status_id' => $initialPaymentStatus,
-                        'currency_id' => Currency::USD_ID, // Normalized to USD
-                        'place_order_date' => Carbon::now(),
-                        'delivery_date' => $validatedData['delivery_date'] ?? Carbon::now()->toDateString(),
-                        'delivery_slot' => $validatedData['delivery_slot'] ?? 'Standard',
-                        'subtotal' => $subtotal,
-                        'discount_amount' => $discountAmount,
-                        'delivery_fee' => '0.00',
-                        'tax_amount' => '0.00',
-                        'total_amount' => $total,
-                        'notes' => $validatedData['notes'] ?? null,
-                    ]);
+                    $commissionFeeHistory = CommissionFeeHistory::where('commission_fee_id', CommissionFee::ID)->latest()->first();
 
-                    $order->histories()->create([
-                        'order_status_id' => $initialOrderStatus,
-                        'notes' => 'Order placed successfully.',
-                    ]);
+                    // If paying in a different currency, capture the exact rate used for that conversion
+                    $exchangeRateHistory = ExchangeRateHistory::query()
+                        ->where('from_currency_id', $paymentCurrencyId === Currency::KHR_ID ? Currency::USD_ID : Currency::KHR_ID)
+                        ->where('to_currency_id', $paymentCurrencyId === Currency::KHR_ID ? Currency::KHR_ID : Currency::USD_ID)
+                        ->latest()
+                        ->first();
 
-                    $payment = $order->payments()->create([
-                        'type_id' => PaymentType::ORDER_ID,
-                        'status_id' => $initialPaymentStatus,
-                        'payment_method_id' => $paymentMethod->id,
-                        'amount' => $total,
-                    ]);
+                    $vendorGroups = $cartRows->groupBy(fn ($cartRow) => $cartRow->vendorInventory->vendor_id);
+                    $orders = new Collection;
 
+                    // Calculate grand total to check wallet balance
+                    $grandTotalUsd = '0.00';
+                    $vendorTotals = [];
+
+                    foreach ($vendorGroups as $vendorId => $vendorCartRows) {
+                        $subtotal = '0.00';
+                        $discountAmount = '0.00';
+                        $lineItems = [];
+
+                        foreach ($vendorCartRows as $cartRow) {
+                            $inventory = $cartRow->vendorInventory;
+                            $currencyId = $this->inventoryCurrencyId($inventory);
+                            $originalUnitUsd = MoneyService::convert(
+                                $inventory->price,
+                                $currencyId,
+                                Currency::USD_ID
+                            );
+                            $discountedUnitUsd = MoneyService::discountUnitPrice(
+                                $originalUnitUsd,
+                                $inventory->discount_percentage
+                            );
+                            $originalItemTotal = MoneyService::mul(
+                                (string) $cartRow->quantity,
+                                $originalUnitUsd
+                            );
+                            $discountedItemTotal = MoneyService::mul(
+                                (string) $cartRow->quantity,
+                                $discountedUnitUsd
+                            );
+                            $lineDiscount = MoneyService::sub(
+                                $originalItemTotal,
+                                $discountedItemTotal
+                            );
+
+                            $subtotal = MoneyService::add($subtotal, $originalItemTotal);
+                            $discountAmount = MoneyService::add($discountAmount, $lineDiscount);
+
+                            $lineItems[$cartRow->id] = [
+                                'unit_price' => $discountedUnitUsd,
+                                'subtotal' => $discountedItemTotal,
+                            ];
+                        }
+
+                        $vendorTotal = MoneyService::sub($subtotal, $discountAmount);
+                        $grandTotalUsd = MoneyService::add($grandTotalUsd, $vendorTotal);
+                        $vendorTotals[$vendorId] = [
+                            'subtotal' => $subtotal,
+                            'discountAmount' => $discountAmount,
+                            'total' => $vendorTotal,
+                            'lineItems' => $lineItems,
+                        ];
+                    }
+
+                    $grandPaymentAmount = $grandTotalUsd;
+                    if ($paymentCurrencyId !== Currency::USD_ID) {
+                        $grandPaymentAmount = MoneyService::convert($grandTotalUsd, Currency::USD_ID, $paymentCurrencyId);
+                    }
+
+                    $wallet = null;
+                    if ($isWallet) {
+                        $wallet = $user->wallets()->where('currency_id', $paymentCurrencyId)->first();
+                        if (! $wallet) {
+                            abort(422, __('api.wallet.not_found'));
+                        }
+                        if (MoneyService::compare($wallet->balance, $grandPaymentAmount) < 0) {
+                            abort(422, __('api.wallet.insufficient_balance'));
+                        }
+                    }
+
+                    // Process Wallet transaction ONCE for the entire grand total
                     if ($isWallet && $wallet) {
-                        $payment->histories()->create([
-                            'payment_status_id' => PaymentStatus::COMPLETED_ID,
-                            'notes' => 'Paid via wallet balance.',
-                        ]);
-
-                        $transaction = WalletTransaction::create([
-                            'wallet_id' => $wallet->id,
-                            'wallet_transaction_type_id' => WalletTransactionType::PAYMENT_ID,
-                            'wallet_transaction_status_id' => WalletTransactionStatus::COMPLETED_ID,
-                            'amount' => $total,
-                            'payment_method_id' => $paymentMethod->id,
-                            'reference_id' => $payment->id,
-                            'reference_type' => get_class($payment),
-                            'description' => 'Payment for order #'.$order->order_number,
-                            'transaction_date' => Carbon::now(),
-                        ]);
-                        $transaction->recordHistory();
-
-                        $newBalance = MoneyService::sub((string) $wallet->balance, $total);
+                        $newBalance = MoneyService::sub((string) $wallet->balance, $grandPaymentAmount);
                         $wallet->update(['balance' => $newBalance]);
                         $wallet->histories()->create([
                             'user_id' => $wallet->user_id,
                             'currency_id' => $wallet->currency_id,
                             'balance' => $newBalance,
                         ]);
-                    } else {
-                        $payment->histories()->create([
-                            'payment_status_id' => PaymentStatus::PENDING_ID,
-                            'notes' => 'Payment pending upon order creation.',
+
+                        $transaction = WalletTransaction::create([
+                            'wallet_id' => $wallet->id,
+                            'wallet_transaction_type_id' => WalletTransactionType::PAYMENT_ID,
+                            'wallet_transaction_status_id' => WalletTransactionStatus::COMPLETED_ID,
+                            'amount' => $grandPaymentAmount,
+                            'payment_method_id' => $paymentMethod->id,
+                            'reference_id' => 0, // Cannot link to a single order
+                            'reference_type' => 'App\\Models\\Order', // Generic reference
+                            'description' => 'Payment for '.count($vendorGroups).' orders',
+                            'transaction_date' => Carbon::now(),
                         ]);
+                        $transaction->recordHistory();
                     }
 
-                    $order->update(['payment_id' => $payment->id]);
+                    foreach ($vendorGroups as $vendorId => $vendorCartRows) {
+                        $totals = $vendorTotals[$vendorId];
 
-                    foreach ($cartRows as $cartRow) {
-                        $inventory = $cartRow->vendorInventory;
-                        $lineItem = $lineItems[$cartRow->id];
-
-                        $orderItem = $order->items()->create([
-                            'vendor_inventory_id' => $inventory->id,
-                            'product_name_snapshot' => $inventory->product->name_en,
-                            'unit_snapshot' => $inventory->unit->symbol,
-                            'unit_price_snapshot' => $lineItem['unit_price'],
-                            'quantity' => $cartRow->quantity,
-                            'subtotal' => $lineItem['subtotal'],
+                        $order = Order::query()->create([
+                            'user_id' => $user->id,
+                            'vendor_id' => $vendorId,
+                            'address_id' => $validatedData['address_id'],
+                            'order_type_id' => $validatedData['order_type_id'],
+                            'order_status_id' => $initialOrderStatus,
+                            'payment_status_id' => $initialPaymentStatus,
+                            'commission_fee_history_id' => $commissionFeeHistory?->id,
+                            'exchange_rate_history_id' => $exchangeRateHistory?->id,
+                            'currency_id' => Currency::USD_ID, // Normalized to USD
+                            'place_order_date' => Carbon::now(),
+                            'delivery_date' => $validatedData['delivery_date'] ?? Carbon::now()->toDateString(),
+                            'delivery_slot' => $validatedData['delivery_slot'] ?? 'Standard',
+                            'subtotal' => $totals['subtotal'],
+                            'discount_amount' => $totals['discountAmount'],
+                            'delivery_fee' => '0.00',
+                            'tax_amount' => '0.00',
+                            'total_amount' => $totals['total'],
+                            'notes' => $validatedData['notes'] ?? null,
                         ]);
 
-                        $deduction = MoneyService::quantity($cartRow->quantity);
-                        $newQuantity = MoneyService::sub($inventory->stock_quantity, $deduction);
-
-                        $inventory->update([
-                            'stock_quantity' => $newQuantity,
+                        $order->histories()->create([
+                            'order_status_id' => $initialOrderStatus,
+                            'notes' => 'Order placed successfully.',
                         ]);
 
-                        $inventory->histories()->create([
-                            'quantity_change' => '-'.$deduction,
-                            'new_quantity' => $newQuantity,
-                            'reference_type' => get_class($orderItem),
-                            'reference_id' => $orderItem->id,
-                            'reason' => 'Order Placement',
+                        $paymentAmount = $totals['total'];
+                        if ($paymentCurrencyId !== Currency::USD_ID) {
+                            $paymentAmount = MoneyService::convert($paymentAmount, Currency::USD_ID, $paymentCurrencyId);
+                        }
+
+                        $payment = $order->payments()->create([
+                            'type_id' => PaymentType::ORDER_ID,
+                            'status_id' => $initialPaymentStatus,
+                            'currency_id' => $paymentCurrencyId,
+                            'exchange_rate_history_id' => $exchangeRateHistory?->id,
+                            'payment_method_id' => $paymentMethod->id,
+                            'amount' => $paymentAmount,
                         ]);
-                    }
+
+                        if ($isWallet && $wallet) {
+                            $payment->histories()->create([
+                                'payment_status_id' => PaymentStatus::COMPLETED_ID,
+                                'notes' => 'Paid via wallet balance.',
+                            ]);
+                        } else {
+                            $payment->histories()->create([
+                                'payment_status_id' => PaymentStatus::PENDING_ID,
+                                'notes' => 'Payment pending upon order creation.',
+                            ]);
+                        }
+
+                        $order->update(['payment_id' => $payment->id]);
+
+                        foreach ($vendorCartRows as $cartRow) {
+                            $inventory = $cartRow->vendorInventory;
+                            $lineItem = $totals['lineItems'][$cartRow->id];
+
+                            $orderItem = $order->items()->create([
+                                'vendor_inventory_id' => $inventory->id,
+                                'product_name_snapshot' => $inventory->product->name_en,
+                                'unit_snapshot' => $inventory->unit->symbol,
+                                'unit_price_snapshot' => $lineItem['unit_price'],
+                                'quantity' => $cartRow->quantity,
+                                'subtotal' => $lineItem['subtotal'],
+                            ]);
+
+                            $deduction = MoneyService::quantity($cartRow->quantity);
+                            $newQuantity = MoneyService::sub($inventory->stock_quantity, $deduction);
+
+                            $inventory->update([
+                                'stock_quantity' => $newQuantity,
+                            ]);
+
+                            $inventory->histories()->create([
+                                'quantity_change' => '-'.$deduction,
+                                'new_quantity' => $newQuantity,
+                                'reference_type' => get_class($orderItem),
+                                'reference_id' => $orderItem->id,
+                                'reason' => 'Order Placement',
+                            ]);
+                        }
+
+                        $orders->push($order);
+
+                    } // end vendor loop
 
                     Cart::whereIn('id', $cartRows->pluck('id'))
                         ->update([
@@ -406,15 +466,37 @@ class CartService
                             'deleted_at' => Carbon::now(),
                         ]);
 
-                    return $order->load(self::CHECKOUT_RETURN_RELATIONS);
+                    return $orders;
                 });
 
-            if ($order->order_status_id === OrderStatus::AWAITING_PAYMENT_ID) {
-                CancelUnpaidOrderJob::dispatch($order->id)
-                    ->delay(Carbon::now()->addMinutes(5));
-            }
+            // Post transaction processing
+            $createdOrders->each(function ($order) {
+                $order->load(self::CHECKOUT_RETURN_RELATIONS);
 
-            return $order;
+                if ($order->order_status_id === OrderStatus::AWAITING_PAYMENT_ID) {
+                    CancelUnpaidOrderJob::dispatch($order->id)
+                        ->delay(Carbon::now()->addMinutes(5));
+                }
+
+                $vendor = $order->items->first()->vendorInventory->vendor;
+                $url = OrderResource::getUrl('view', ['record' => $order], panel: 'vendor');
+
+                Notification::make()
+                    ->title(__('api.notifications.new_order_title'))
+                    ->body(__('api.notifications.new_order_body', ['order_number' => $order->order_number]))
+                    ->icon('heroicon-o-shopping-bag')
+                    ->success()
+                    ->actions([
+                        Action::make('view')
+                            ->label('View Order')
+                            ->url($url)
+                            ->button(),
+                    ])
+                    ->sendToDatabase($vendor)
+                    ->broadcast($vendor);
+            });
+
+            return $createdOrders;
         } catch (HttpException $e) {
             throw $e;
         } catch (RuntimeException $e) {
@@ -422,12 +504,6 @@ class CartService
         }
     }
 
-    /**
-     * Calculate total price of a list of cart rows in USD and KHR.
-     *
-     * @param  iterable<Cart>  $cartRows
-     * @return array{USD: string, KHR: string}
-     */
     public function cartTotal(iterable $cartRows): array
     {
         $totalUsd = '0.00';

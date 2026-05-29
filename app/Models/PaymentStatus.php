@@ -36,9 +36,7 @@ use Illuminate\Support\Facades\App;
 class PaymentStatus extends Model
 {
     /** @use HasFactory<PaymentStatusFactory> */
-    use HasFactory;
-
-    use SoftDeletes;
+    use HasFactory, SoftDeletes;
 
     public const int PENDING_ID = 1;
 

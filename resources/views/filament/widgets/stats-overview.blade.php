@@ -1,41 +1,41 @@
-<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1.5rem;">
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
     @foreach ($this->getStats() as $stat)
-        <div style="
-                background: #18181b;
-                border: 1px solid #27272a;
-                border-radius: 1rem;
-                padding: 1.5rem;
-                transition: all 0.3s ease;
-            ">
-            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 0.5rem;">
+        <div class="bg-white dark:bg-[#18181b] border border-gray-200 dark:border-[#27272a] rounded-2xl p-6 transition-all duration-300 ease-in-out shadow-sm hover:shadow-md">
+            <div class="flex justify-between items-start mb-2">
                 <div>
-                    <p style="margin: 0; font-size: 0.875rem; color: #a1a1aa; font-weight: 500;">
+                    <p class="text-sm font-medium text-gray-500 dark:text-[#a1a1aa] m-0">
                         {{ $stat->getLabel() }}
                     </p>
-                    <p style="margin: 0.5rem 0 0 0; font-size: 2rem; font-weight: 700; color: #ffffff;">
+                    <p class="text-3xl font-bold text-gray-900 dark:text-white mt-2 mb-0">
                         {{ $stat->getValue() }}
                     </p>
                 </div>
                 @if ($icon = $stat->getDescriptionIcon())
-                        <div style="color: {{ match ($stat->getColor()) {
-                        'success' => '#10b981',
-                        'info' => '#3b82f6',
-                        'warning' => '#f59e0b',
-                        'danger' => '#ef4444',
-                        default => '#6b7280',
-                    } }}; font-size: 1.5rem;">
-                            @svg($icon, 'w-6 h-6')
-                        </div>
+                    @php
+                        $colorClass = match ($stat->getColor()) {
+                            'success' => 'text-emerald-500',
+                            'info' => 'text-blue-500',
+                            'warning' => 'text-amber-500',
+                            'danger' => 'text-red-500',
+                            default => 'text-gray-500',
+                        };
+                    @endphp
+                    <div class="{{ $colorClass }}">
+                        @svg($icon, 'w-8 h-8')
+                    </div>
                 @endif
             </div>
             @if ($description = $stat->getDescription())
-                <p style="margin: 0.5rem 0 0 0; font-size: 0.875rem; color: {{ match ($stat->getColor()) {
-                    'success' => '#10b981',
-                    'info' => '#3b82f6',
-                    'warning' => '#f59e0b',
-                    'danger' => '#ef4444',
-                    default => '#6b7280',
-                } }};">
+                @php
+                    $descColorClass = match ($stat->getColor()) {
+                        'success' => 'text-emerald-500',
+                        'info' => 'text-blue-500',
+                        'warning' => 'text-amber-500',
+                        'danger' => 'text-red-500',
+                        default => 'text-gray-500 dark:text-gray-400',
+                    };
+                @endphp
+                <p class="text-sm mt-2 mb-0 {{ $descColorClass }}">
                     {{ $description }}
                 </p>
             @endif

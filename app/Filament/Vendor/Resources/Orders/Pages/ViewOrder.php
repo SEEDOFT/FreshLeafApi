@@ -24,10 +24,11 @@ class ViewOrder extends ViewRecord
     protected function getHeaderActions(): array
     {
         return [
-            OrderActions::accept(),
-            OrderActions::prepare(),
-            OrderActions::deliver(),
-            OrderActions::cancel(),
+            OrderActions::accept('page'),
+            OrderActions::prepare('page'),
+            OrderActions::outForDelivery('page'),
+            OrderActions::deliver('page'),
+            OrderActions::cancel('page'),
         ];
     }
 }

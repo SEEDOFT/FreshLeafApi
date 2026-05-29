@@ -20,6 +20,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -282,6 +283,16 @@ class User extends Authenticatable implements FilamentUser, HasAvatar, HasName
     public function receivesBroadcastNotificationsOn(): string
     {
         return 'App.Models.User.'.$this->id;
+    }
+
+    /**
+     * Get the entity's notifications.
+     *
+     * @return MorphMany<FilamentNotification, $this>
+     */
+    public function notifications(): MorphMany
+    {
+        return $this->morphMany(FilamentNotification::class, 'notifiable')->latest();
     }
 
     /**

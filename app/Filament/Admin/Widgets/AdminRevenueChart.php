@@ -25,6 +25,7 @@ class AdminRevenueChart extends ChartWidget
 
     protected ?string $chartColor = 'success';
 
+    #[Override]
     protected int|string|array $columnSpan = 1;
 
     protected function getData(): array
@@ -32,7 +33,7 @@ class AdminRevenueChart extends ChartWidget
         $data = Order::query()
             ->whereHas(
                 'paymentStatus',
-                static fn (Builder $query) => $query->where('id', PaymentStatus::COMPLETED_ID)
+                static fn (Builder $query): Builder => $query->where('id', PaymentStatus::COMPLETED_ID)
             )
             ->where('created_at', '>=', Carbon::now()->subDays(30))
             ->select(

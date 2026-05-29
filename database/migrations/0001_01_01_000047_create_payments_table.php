@@ -19,6 +19,8 @@ return new class extends Migration
             $table->unsignedBigInteger('order_id');
             $table->unsignedBigInteger('payment_method_id');
             $table->unsignedBigInteger('status_id');
+            $table->unsignedBigInteger('currency_id')->nullable();
+            $table->unsignedBigInteger('exchange_rate_history_id')->nullable();
             $table->unsignedBigInteger('type_id');
             $table->decimal('amount', 16, 2);
             $table->string('transaction_id')->nullable();

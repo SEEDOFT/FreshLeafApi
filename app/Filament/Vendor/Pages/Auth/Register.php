@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Filament\Vendor\Pages\Auth;
 
 use App\Constants\StorageDirectory;
+use App\Filament\Admin\Resources\Vendors\VendorResource;
 use App\Filament\Forms\Components\PasswordInput;
 use App\Filament\Forms\Components\PhoneNumberInput;
 use App\Models\PaymentMethodStatus;
@@ -14,6 +15,7 @@ use App\Models\UserStatus;
 use App\Models\UserType;
 use Closure;
 use DanHarrin\LivewireRateLimiting\Exceptions\TooManyRequestsException;
+use Filament\Actions\Action;
 use Filament\Auth\Http\Responses\Contracts\RegistrationResponse;
 use Filament\Auth\Pages\Register as BaseRegister;
 use Filament\Forms\Components\FileUpload;
@@ -400,7 +402,8 @@ class Register extends BaseRegister
             return null;
         }
 
-        $this->wrapInDatabaseTransaction(function (): void {
+        $user = null;
+        $this->wrapInDatabaseTransaction(function () use (&$user): void {
             $this->callHook('beforeValidate');
 
             $data = $this->form->getState();
@@ -411,7 +414,7 @@ class Register extends BaseRegister
 
             $this->callHook('beforeRegister');
 
-            $this->handleRegistration($data);
+            $user = $this->handleRegistration($data);
 
             $this->callHook('afterRegister');
         });
@@ -423,6 +426,27 @@ class Register extends BaseRegister
             ->body(__('shared.auth.register.pending_message'))
             ->success()
             ->send();
+
+        $admins = User::active()
+            ->ofType(UserType::ADMIN_ID)
+            ->get();
+
+        $notification = Notification::make()
+            ->title('Vendor Registration')
+            ->body('New vendor has been register. Please check the submission')
+            ->icon('heroicon-o-user-plus')
+            ->success();
+
+        if ($user) {
+            $notification->actions([
+                Action::make('view')
+                    ->label('View Vendor')
+                    ->url(VendorResource::getUrl('view', ['record' => $user]))
+                    ->button(),
+            ]);
+        }
+
+        $notification->sendToDatabase($admins)->broadcast($admins);
 
         $this->redirect(route('filament.vendor.auth.login'));
 

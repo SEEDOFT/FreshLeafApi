@@ -2,10 +2,11 @@
 
 declare(strict_types=1);
 
-namespace App\Filament\Vendor\Pages;
+namespace App\Filament\Admin\Pages;
 
-use App\Filament\Vendor\Widgets\VendorEarningsChart;
-use App\Filament\Vendor\Widgets\VendorStatsOverview;
+use App\Filament\Admin\Widgets\AdminCommissionWidget;
+use App\Filament\Admin\Widgets\AdminRevenueChart;
+use App\Filament\Admin\Widgets\AdminStatsOverview;
 use App\Filament\Widgets\CustomAccountWidget;
 use Filament\Pages\Dashboard as BaseDashboard;
 use Override;
@@ -20,8 +21,9 @@ class Dashboard extends BaseDashboard
     {
         return [
             CustomAccountWidget::class,
-            VendorStatsOverview::class,
-            VendorEarningsChart::class,
+            AdminCommissionWidget::class,
+            AdminStatsOverview::class,
+            AdminRevenueChart::class,
         ];
     }
 
@@ -33,12 +35,6 @@ class Dashboard extends BaseDashboard
     {
         return 1;
     }
-
-    // #[Override]
-    // public static function getNavigationGroup(): ?string
-    // {
-    //     return __('admin.navigation.dashboard');
-    // }
 
     #[Override]
     public static function getNavigationLabel(): string

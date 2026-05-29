@@ -8,7 +8,11 @@ use App\Models\Order;
 use App\Models\OrderStatus;
 use App\Models\PaymentMethodType;
 use App\Models\PaymentStatus;
+use Filament\Actions\Action;
 use Filament\Actions\Action as PageAction;
+use Filament\Forms\Components\FileUpload;
+use Filament\Forms\Components\Textarea;
+use Filament\Forms\Components\TextInput;
 use Filament\Notifications\Notification;
 use Filament\Support\Icons\Heroicon;
 use Illuminate\Support\Carbon;
@@ -62,18 +66,58 @@ class OrderActions
     }
 
     /**
+     * Get the 'Mark as Out for Delivery' action.
+     */
+    public static function outForDelivery(string $type = 'table'): Action
+    {
+        $actionClass = Action::class;
+
+        return $actionClass::make('outForDelivery')
+            ->label('Out for Delivery')
+            ->icon(Heroicon::OutlinedTruck)
+            ->color('fuchsia')
+            ->visible(fn (Order $record) => $record->order_status_id === OrderStatus::PREPARING_ID)
+            ->form([
+                FileUpload::make('preparation_proof_photo')
+                    ->label('Proof of Preparation')
+                    ->image()
+                    ->required()
+                    ->directory('order-proofs'),
+                TextInput::make('delivery_company_name')
+                    ->label('Delivery Company Name')
+                    ->required(),
+                Textarea::make('delivery_tracking_info')
+                    ->label('Tracking Info (Optional)'),
+            ])
+            ->action(function (Order $record, array $data): void {
+                $record->update([
+                    'order_status_id' => OrderStatus::OUT_FOR_DELIVERY_ID,
+                    'order_out_for_delivery_date' => now(),
+                    'preparation_proof_photo' => $data['preparation_proof_photo'],
+                    'delivery_company_name' => $data['delivery_company_name'],
+                    'delivery_tracking_info' => $data['delivery_tracking_info'] ?? null,
+                ]);
+
+                Notification::make()
+                    ->title('Order marked as Out for Delivery')
+                    ->success()
+                    ->send();
+            });
+    }
+
+    /**
      * Get the 'Mark as Delivered' action.
      */
-    public static function deliver(string $type = 'table'): PageAction
+    public static function deliver(string $type = 'table'): Action
     {
-        $actionClass = PageAction::class;
+        $actionClass = Action::class;
 
         return $actionClass::make('deliver')
             ->label(__('admin.resources.order.actions.deliver'))
-            ->icon(Heroicon::OutlinedTruck)
+            ->icon(Heroicon::OutlinedCheckBadge)
             ->color('success')
             ->requiresConfirmation()
-            ->visible(fn (Order $record) => $record->order_status_id === OrderStatus::PREPARING_ID)
+            ->visible(fn (Order $record) => $record->order_status_id === OrderStatus::OUT_FOR_DELIVERY_ID)
             ->action(function (Order $record): void {
                 $record->update(['order_status_id' => OrderStatus::DELIVERED_ID]);
 

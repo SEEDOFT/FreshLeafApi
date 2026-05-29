@@ -49,7 +49,6 @@ class ApplicationSettings extends Page
             'timezone' => app_setting('timezone', 'Asia/Phnom_Penh'),
             'enable_ai_assistant_admin' => app_setting('enable_ai_assistant_admin', true),
             'enable_ai_assistant_vendor' => app_setting('enable_ai_assistant_vendor', true),
-            'commission_percentage' => app_setting('commission_percentage', 10.00),
         ];
     }
 
@@ -57,19 +56,6 @@ class ApplicationSettings extends Page
     {
         return $schema
             ->components([
-                Section::make(__('admin.settings.app_settings.revenue_model'))
-                    ->description(__('admin.settings.app_settings.revenue_model_desc'))
-                    ->schema([
-                        TextInput::make('commission_percentage')
-                            ->label(__('admin.settings.app_settings.commission_fee'))
-                            ->numeric()
-                            ->minValue(0)
-                            ->suffix('%')
-                            ->helperText(__('admin.settings.app_settings.commission_fee_helper'))
-                            ->required(fn (string $operation): bool => $operation === 'create')
-                            ->dehydrated(fn (mixed $state): bool => filled($state)),
-                    ]),
-
                 Section::make(__('admin.settings.app_settings.localization'))
                     ->description(__('admin.settings.app_settings.localization_desc'))
                     ->schema([

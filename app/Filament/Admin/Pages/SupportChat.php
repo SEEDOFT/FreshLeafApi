@@ -36,12 +36,6 @@ class SupportChat extends Page
         return __('admin.support.nav_label');
     }
 
-    // #[Override]
-    // public static function getNavigationGroup(): ?string
-    // {
-    //     return __('admin.navigation.app_control');
-    // }
-
     #[Override]
     public static function getNavigationBadge(): ?string
     {

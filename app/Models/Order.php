@@ -15,6 +15,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Carbon;
+use Override;
 
 use function str_pad;
 use function strlen;
@@ -38,6 +39,8 @@ use function substr;
  * @property string|null $notes
  * @property int|null $currency_id
  * @property int|null $payment_id
+ * @property int|null $commission_fee_history_id
+ * @property int|null $exchange_rate_history_id
  * @property Carbon|null $place_order_date
  * @property Carbon|null $order_pending_date
  * @property Carbon|null $order_confirmed_date
@@ -58,15 +61,22 @@ use function substr;
  * @property-read int|null $histories_count
  * @property-read OrderType $type
  * @property-read User|null $user
+ * @property-read Currency|null $currency
+ * @property-read Payment|null $payment
+ * @property-read CommissionFeeHistory|null $commissionFeeHistory
+ * @property-read ExchangeRateHistory|null $exchangeRateHistory
  * @property Carbon|null $deleted_at
  */
 #[Table('orders', key: 'id')]
 #[Fillable([
     'user_id',
+    'vendor_id',
     'address_id',
     'order_type_id',
     'order_status_id',
     'payment_status_id',
+    'commission_fee_history_id',
+    'exchange_rate_history_id',
     'currency_id',
     'payment_id',
     'place_order_date',
@@ -76,6 +86,10 @@ use function substr;
     'order_delivered_date',
     'order_cancelled_date',
     'order_awaiting_payment_date',
+    'order_out_for_delivery_date',
+    'preparation_proof_photo',
+    'delivery_company_name',
+    'delivery_tracking_info',
     'order_number',
     'delivery_date',
     'delivery_slot',
@@ -93,13 +107,27 @@ class Order extends Model
     use HasFactory, SoftDeletes;
 
     /**
-     * Boot the model.
+     * {@inheritDoc}
      */
     protected static function booted(): void
     {
         static::creating(function (Order $order) {
             if (empty($order->order_number)) {
                 $order->order_number = self::generateOrderNumber();
+            }
+        });
+
+        static::created(function (Order $order) {
+            $order->histories()->create([
+                'order_status_id' => $order->order_status_id,
+            ]);
+        });
+
+        static::updated(function (Order $order) {
+            if ($order->wasChanged('order_status_id')) {
+                $order->histories()->create([
+                    'order_status_id' => $order->order_status_id,
+                ]);
             }
         });
     }
@@ -132,6 +160,7 @@ class Order extends Model
      *
      * @return array<string, string>
      */
+    #[Override]
     protected function casts(): array
     {
         return [
@@ -158,13 +187,23 @@ class Order extends Model
     }
 
     /**
+     * Get the vendor that owns the order.
+     *
+     * @return BelongsTo<User, $this>
+     */
+    public function vendor(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'vendor_id', 'id');
+    }
+
+    /**
      * Get the address for the order.
      *
      * @return BelongsTo<Address, $this>
      */
     public function address(): BelongsTo
     {
-        return $this->belongsTo(Address::class, 'address_id', 'id');
+        return $this->belongsTo(Address::class, 'address_id', 'id')->withTrashed();
     }
 
     /**
@@ -245,5 +284,25 @@ class Order extends Model
     public function payment(): BelongsTo
     {
         return $this->belongsTo(Payment::class, 'payment_id', 'id');
+    }
+
+    /**
+     * Get the commission fee history that was used to calculate this order.
+     *
+     * @return BelongsTo<CommissionFeeHistory, $this>
+     */
+    public function commissionFeeHistory(): BelongsTo
+    {
+        return $this->belongsTo(CommissionFeeHistory::class, 'commission_fee_history_id', 'id');
+    }
+
+    /**
+     * Get the exchange rate history that was used to calculate this order.
+     *
+     * @return BelongsTo<ExchangeRateHistory, $this>
+     */
+    public function exchangeRateHistory(): BelongsTo
+    {
+        return $this->belongsTo(ExchangeRateHistory::class, 'exchange_rate_history_id', 'id');
     }
 }

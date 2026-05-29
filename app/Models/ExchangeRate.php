@@ -131,4 +131,20 @@ class ExchangeRate extends Model
     {
         return $this->hasMany(ExchangeRateHistory::class, 'exchange_rate_id', 'id');
     }
+
+    /**
+     * Record a snapshot of the current exchange rate.
+     */
+    public function recordHistory(): ExchangeRateHistory
+    {
+        /** @var ExchangeRateHistory $history */
+        $history = $this->histories()->create([
+            'from_currency_id' => $this->from_currency_id,
+            'to_currency_id' => $this->to_currency_id,
+            'rate' => $this->rate,
+            'changed_by_user_id' => auth()->id(),
+        ]);
+
+        return $history;
+    }
 }

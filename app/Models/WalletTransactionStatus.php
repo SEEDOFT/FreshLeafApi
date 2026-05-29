@@ -32,9 +32,7 @@ use Illuminate\Support\Facades\App;
 class WalletTransactionStatus extends Model
 {
     /** @use HasFactory<WalletTransactionStatusFactory> */
-    use HasFactory;
-
-    use SoftDeletes;
+    use HasFactory, SoftDeletes;
 
     public const int PENDING_ID = 1;
 

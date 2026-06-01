@@ -20,7 +20,7 @@ class UserSeeder extends Seeder
     public function run(): void
     {
         $password = Hash::make('password');
-        
+
         $users = [
             [
                 'first_name' => 'System',
@@ -52,7 +52,7 @@ class UserSeeder extends Seeder
             $user = User::firstOrCreate(
                 [
                     'phone_number' => $userData['phone_number'],
-                    'user_type_id' => $userData['user_type_id']
+                    'user_type_id' => $userData['user_type_id'],
                 ],
                 $userData
             );
@@ -82,7 +82,7 @@ class UserSeeder extends Seeder
                         'id_card_back' => 'default.png',
                         'store_front_image' => 'default.png',
                     ]);
-        
+
                     $user->vendorFinancialDetails()->create([
                         'payment_method_type_id' => PaymentMethodType::ABA_ID ?? 1,
                         'payment_method_status_id' => PaymentMethodStatus::ACTIVE_ID,
@@ -91,7 +91,7 @@ class UserSeeder extends Seeder
                         'account_number' => '123456789',
                         'qr_code' => 'default.png',
                     ]);
-        
+
                     $user->ensureDefaultWallets();
                 } elseif ($user->user_type_id === UserType::CONSUMER_ID) {
                     $user->userProfile()->create([

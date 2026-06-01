@@ -8,6 +8,7 @@ use App\Events\ChatMessageSent;
 use App\Http\Controllers\Controller;
 use App\Models\Conversation;
 use App\Models\Message;
+use App\Notifications\NewChatMessage;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -80,7 +81,7 @@ class MessageController extends Controller
         $otherParticipants = $conversation->participants()->where('user_id', '!=', $user->id)->with('user')->get();
         foreach ($otherParticipants as $participant) {
             if ($participant->user) {
-                $participant->user->notify(new \App\Notifications\NewChatMessage($message));
+                $participant->user->notify(new NewChatMessage($message));
             }
         }
 

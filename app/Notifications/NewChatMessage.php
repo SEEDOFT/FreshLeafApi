@@ -4,17 +4,14 @@ declare(strict_types=1);
 
 namespace App\Notifications;
 
-use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldQueue;
-use Illuminate\Notifications\Messages\MailMessage;
-use Illuminate\Notifications\Notification;
+use App\Models\Message;
 
 class NewChatMessage extends PushNotification
 {
-    public function __construct(\App\Models\Message $message)
+    public function __construct(Message $message)
     {
         $senderName = $message->sender->name ?? 'User';
-        
+
         $body = $message->content;
         if (! $body && $message->file_path) {
             $body = 'Sent an attachment';

@@ -7,7 +7,9 @@ namespace App\Livewire;
 use App\Events\ChatMessageSent;
 use App\Events\ChatTyping;
 use App\Models\Conversation;
+use App\Models\ConversationStatus;
 use App\Models\Message;
+use App\Notifications\NewChatMessage;
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
@@ -110,7 +112,7 @@ class ChatInbox extends Component
         $otherParticipants = $conversation->participants()->where('user_id', '!=', Auth::id())->with('user')->get();
         foreach ($otherParticipants as $participant) {
             if ($participant->user) {
-                $participant->user->notify(new \App\Notifications\NewChatMessage($msg));
+                $participant->user->notify(new NewChatMessage($msg));
             }
         }
 
@@ -197,7 +199,7 @@ class ChatInbox extends Component
     public function resolveConversation(int $id): void
     {
         Conversation::where('id', $id)
-            ->update(['conversation_status_id' => \App\Models\ConversationStatus::CLOSED_ID]);
+            ->update(['conversation_status_id' => ConversationStatus::CLOSED_ID]);
         if ($this->activeConversationId === $id) {
             $this->activeConversationId = null;
         }

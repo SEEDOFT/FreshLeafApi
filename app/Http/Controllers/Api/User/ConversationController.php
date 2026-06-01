@@ -8,13 +8,14 @@ use App\Events\ChatTyping;
 use App\Http\Controllers\Controller;
 use App\Models\Conversation;
 use App\Models\ConversationParticipant;
+use App\Models\ConversationStatus;
+use App\Models\ConversationType;
 use App\Models\Message;
 use App\Models\User;
 use App\Models\UserStatus;
 use App\Models\UserType;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Notification;
 
 class ConversationController extends Controller
 {
@@ -57,8 +58,8 @@ class ConversationController extends Controller
 
         if ($type === 'support') {
             // Check for existing open support conversation
-            $conversation = Conversation::where('conversation_type_id', \App\Models\ConversationType::SUPPORT_ID)
-                ->where('conversation_status_id', \App\Models\ConversationStatus::OPEN_ID)
+            $conversation = Conversation::where('conversation_type_id', ConversationType::SUPPORT_ID)
+                ->where('conversation_status_id', ConversationStatus::OPEN_ID)
                 ->whereHas('participants', function ($query) use ($user) {
                     $query->where('user_id', $user->id);
                 })
@@ -66,8 +67,8 @@ class ConversationController extends Controller
 
             if (! $conversation) {
                 $conversation = Conversation::create([
-                    'conversation_type_id' => \App\Models\ConversationType::SUPPORT_ID,
-                    'conversation_status_id' => \App\Models\ConversationStatus::OPEN_ID,
+                    'conversation_type_id' => ConversationType::SUPPORT_ID,
+                    'conversation_status_id' => ConversationStatus::OPEN_ID,
                 ]);
 
                 $participants = [
@@ -76,13 +77,13 @@ class ConversationController extends Controller
                         'user_id' => $user->id,
                         'created_at' => now(),
                         'updated_at' => now(),
-                    ]
+                    ],
                 ];
 
                 $admins = User::where('user_type_id', UserType::ADMIN_ID)
                     ->where('user_status_id', UserStatus::ACTIVE_ID)
                     ->get();
-                
+
                 foreach ($admins as $admin) {
                     $participants[] = [
                         'conversation_id' => $conversation->id,
@@ -104,7 +105,7 @@ class ConversationController extends Controller
 
             // Find conversation where exactly these two users are participants
             // For simplicity, we just look for a direct conversation that has both.
-            $conversation = Conversation::where('conversation_type_id', \App\Models\ConversationType::DIRECT_ID)
+            $conversation = Conversation::where('conversation_type_id', ConversationType::DIRECT_ID)
                 ->whereHas('participants', function ($query) use ($user) {
                     $query->where('user_id', $user->id);
                 })
@@ -115,8 +116,8 @@ class ConversationController extends Controller
 
             if (! $conversation) {
                 $conversation = Conversation::create([
-                    'conversation_type_id' => \App\Models\ConversationType::DIRECT_ID,
-                    'conversation_status_id' => \App\Models\ConversationStatus::OPEN_ID,
+                    'conversation_type_id' => ConversationType::DIRECT_ID,
+                    'conversation_status_id' => ConversationStatus::OPEN_ID,
                 ]);
 
                 ConversationParticipant::insert([

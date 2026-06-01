@@ -183,7 +183,7 @@ class VendorInfolist
                                 ImageEntry::make('qr_code')
                                     ->placeholder($notProvided)
                                     ->label(__('admin.resources.vendor.qr_code'))
-                                    ->getStateUsing(fn (PaymentMethod $record) => $record->qr_code
+                                    ->getStateUsing(fn (?PaymentMethod $record) => $record?->qr_code
                                         ? route('admin.documents.show', ['path' => $record->qr_code]) : null
                                     )
                                     ->disk(null)

@@ -68,11 +68,16 @@ class UserSeeder extends Seeder
                 } elseif ($user->user_type_id === UserType::VENDOR_ID) {
                     $user->vendorProfile()->create([
                         'business_name' => 'Test Vendor',
+                        'shop_description' => 'Test Vendor Description',
                         'contact_phone' => '+85581968185',
                         'village' => 'Test Village',
                         'commune' => 'Test Commune',
                         'district' => 'Test District',
                         'province' => 'Phnom Penh',
+                        'opening_time' => '08:00:00',
+                        'closing_time' => '17:00:00',
+                        'is_open' => true,
+                        'is_verified' => true,
                         'id_card_front' => 'default.png',
                         'id_card_back' => 'default.png',
                         'store_front_image' => 'default.png',

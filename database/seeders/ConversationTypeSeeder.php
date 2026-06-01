@@ -6,6 +6,7 @@ namespace Database\Seeders;
 
 use App\Models\ConversationType;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\DB;
 
 class ConversationTypeSeeder extends Seeder
 {
@@ -14,9 +15,11 @@ class ConversationTypeSeeder extends Seeder
      */
     public function run(): void
     {
-        ConversationType::insert([
-            ['id' => 1, 'name' => 'direct', 'created_at' => now(), 'updated_at' => now()],
-            ['id' => 2, 'name' => 'support', 'created_at' => now(), 'updated_at' => now()],
-        ]);
+        DB::transaction(static function () {
+            ConversationType::insert([
+                ['id' => 1, 'name' => 'direct', 'created_at' => now(), 'updated_at' => now()],
+                ['id' => 2, 'name' => 'support', 'created_at' => now(), 'updated_at' => now()],
+            ]);
+        });
     }
 }

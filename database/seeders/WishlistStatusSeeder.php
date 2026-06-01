@@ -6,6 +6,7 @@ namespace Database\Seeders;
 
 use App\Models\WishlistStatus;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\DB;
 
 class WishlistStatusSeeder extends Seeder
 {
@@ -14,21 +15,23 @@ class WishlistStatusSeeder extends Seeder
      */
     public function run(): void
     {
-        $types = [
-            [
-                'id' => WishlistStatus::ACTIVE_ID,
-                'name_en' => 'Active',
-                'name_km' => 'សកម្ម',
-            ],
-            [
-                'id' => WishlistStatus::DELETED_ID,
-                'name_en' => 'Deleted',
-                'name_km' => 'បានលុប',
-            ],
-        ];
+        DB::transaction(static function () {
+            $types = [
+                [
+                    'id' => WishlistStatus::ACTIVE_ID,
+                    'name_en' => 'Active',
+                    'name_km' => 'សកម្ម',
+                ],
+                [
+                    'id' => WishlistStatus::DELETED_ID,
+                    'name_en' => 'Deleted',
+                    'name_km' => 'បានលុប',
+                ],
+            ];
 
-        foreach ($types as $type) {
-            WishlistStatus::create($type);
-        }
+            foreach ($types as $type) {
+                WishlistStatus::create($type);
+            }
+        });
     }
 }

@@ -6,6 +6,7 @@ namespace Database\Seeders;
 
 use App\Models\OrderType;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\DB;
 
 class OrderTypeSeeder extends Seeder
 {
@@ -14,16 +15,18 @@ class OrderTypeSeeder extends Seeder
      */
     public function run(): void
     {
-        $types = [
-            [
-                'id' => OrderType::STANDARD_ID,
-                'name_en' => 'Standard',
-                'name_km' => 'ស្តង់ដារ',
-            ],
-        ];
+        DB::transaction(static function () {
+            $types = [
+                [
+                    'id' => OrderType::STANDARD_ID,
+                    'name_en' => 'Standard',
+                    'name_km' => 'ស្តង់ដារ',
+                ],
+            ];
 
-        foreach ($types as $type) {
-            OrderType::create($type);
-        }
+            foreach ($types as $type) {
+                OrderType::create($type);
+            }
+        });
     }
 }

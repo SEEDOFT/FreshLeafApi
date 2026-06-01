@@ -6,6 +6,7 @@ namespace Database\Seeders;
 
 use App\Models\VendorInventoryStatus;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\DB;
 
 class VendorInventoryStatusSeeder extends Seeder
 {
@@ -14,31 +15,33 @@ class VendorInventoryStatusSeeder extends Seeder
      */
     public function run(): void
     {
-        $types = [
-            [
-                'id' => VendorInventoryStatus::AVAILABLE_ID,
-                'name_en' => 'Available',
-                'name_km' => 'មានលក់',
-            ],
-            [
-                'id' => VendorInventoryStatus::OUT_OF_STOCK_ID,
-                'name_en' => 'Out of Stock',
-                'name_km' => 'អស់ពីស្តុក',
-            ],
-            [
-                'id' => VendorInventoryStatus::HIDDEN_ID,
-                'name_en' => 'Hidden',
-                'name_km' => 'លាក់',
-            ],
-            [
-                'id' => VendorInventoryStatus::PENDING_REVIEW_ID,
-                'name_en' => 'Pending Review',
-                'name_km' => 'រង់ចាំការពិនិត្យ',
-            ],
-        ];
+        DB::transaction(static function () {
+            $types = [
+                [
+                    'id' => VendorInventoryStatus::AVAILABLE_ID,
+                    'name_en' => 'Available',
+                    'name_km' => 'មានលក់',
+                ],
+                [
+                    'id' => VendorInventoryStatus::OUT_OF_STOCK_ID,
+                    'name_en' => 'Out of Stock',
+                    'name_km' => 'អស់ពីស្តុក',
+                ],
+                [
+                    'id' => VendorInventoryStatus::HIDDEN_ID,
+                    'name_en' => 'Hidden',
+                    'name_km' => 'លាក់',
+                ],
+                [
+                    'id' => VendorInventoryStatus::PENDING_REVIEW_ID,
+                    'name_en' => 'Pending Review',
+                    'name_km' => 'រង់ចាំការពិនិត្យ',
+                ],
+            ];
 
-        foreach ($types as $type) {
-            VendorInventoryStatus::updateOrCreate(['id' => $type['id']], $type);
-        }
+            foreach ($types as $type) {
+                VendorInventoryStatus::updateOrCreate(['id' => $type['id']], $type);
+            }
+        });
     }
 }

@@ -6,6 +6,7 @@ namespace Database\Seeders;
 
 use App\Models\ProductCategoryStatus;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\DB;
 
 class ProductCategoryStatusSeeder extends Seeder
 {
@@ -14,21 +15,23 @@ class ProductCategoryStatusSeeder extends Seeder
      */
     public function run(): void
     {
-        $statuses = [
-            [
-                'id' => 1,
-                'name_en' => 'Enabled',
-                'name_km' => 'បានបើក',
-            ],
-            [
-                'id' => 2,
-                'name_en' => 'Disabled',
-                'name_km' => 'បានបិទ',
-            ],
-        ];
+        DB::transaction(static function () {
+            $statuses = [
+                [
+                    'id' => 1,
+                    'name_en' => 'Enabled',
+                    'name_km' => 'បានបើក',
+                ],
+                [
+                    'id' => 2,
+                    'name_en' => 'Disabled',
+                    'name_km' => 'បានបិទ',
+                ],
+            ];
 
-        foreach ($statuses as $status) {
-            ProductCategoryStatus::create($status);
-        }
+            foreach ($statuses as $status) {
+                ProductCategoryStatus::create($status);
+            }
+        });
     }
 }

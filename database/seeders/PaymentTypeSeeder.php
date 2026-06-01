@@ -6,6 +6,7 @@ namespace Database\Seeders;
 
 use App\Models\PaymentType;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\DB;
 
 class PaymentTypeSeeder extends Seeder
 {
@@ -14,16 +15,18 @@ class PaymentTypeSeeder extends Seeder
      */
     public function run(): void
     {
-        $types = [
-            [
-                'id' => PaymentType::ORDER_ID,
-                'name_en' => 'Order',
-                'name_km' => 'ការទូទាត់ការបញ្ជាទិញ',
-            ],
-        ];
+        DB::transaction(static function () {
+            $types = [
+                [
+                    'id' => PaymentType::ORDER_ID,
+                    'name_en' => 'Order',
+                    'name_km' => 'ការទូទាត់ការបញ្ជាទិញ',
+                ],
+            ];
 
-        foreach ($types as $type) {
-            PaymentType::create($type);
-        }
+            foreach ($types as $type) {
+                PaymentType::create($type);
+            }
+        });
     }
 }

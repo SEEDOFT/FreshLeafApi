@@ -6,6 +6,7 @@ namespace Database\Seeders;
 
 use App\Models\NotificationType;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\DB;
 
 class NotificationTypeSeeder extends Seeder
 {
@@ -14,26 +15,28 @@ class NotificationTypeSeeder extends Seeder
      */
     public function run(): void
     {
-        $types = [
-            [
-                'id' => NotificationType::ORDER_UPDATE_ID,
-                'name_en' => 'Order Update',
-                'name_km' => 'ការបញ្ជាទិញ',
-            ],
-            [
-                'id' => NotificationType::PROMOTION_ID,
-                'name_en' => 'Promotion',
-                'name_km' => 'ប្រូម៉ូសិន',
-            ],
-            [
-                'id' => NotificationType::SYSTEM_ID,
-                'name_en' => 'System',
-                'name_km' => 'ប្រព័ន្ធ',
-            ],
-        ];
+        DB::transaction(static function () {
+            $types = [
+                [
+                    'id' => NotificationType::ORDER_UPDATE_ID,
+                    'name_en' => 'Order Update',
+                    'name_km' => 'ការបញ្ជាទិញ',
+                ],
+                [
+                    'id' => NotificationType::PROMOTION_ID,
+                    'name_en' => 'Promotion',
+                    'name_km' => 'ប្រូម៉ូសិន',
+                ],
+                [
+                    'id' => NotificationType::SYSTEM_ID,
+                    'name_en' => 'System',
+                    'name_km' => 'ប្រព័ន្ធ',
+                ],
+            ];
 
-        foreach ($types as $type) {
-            NotificationType::create($type);
-        }
+            foreach ($types as $type) {
+                NotificationType::create($type);
+            }
+        });
     }
 }

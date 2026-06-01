@@ -25,6 +25,7 @@ class DatabaseSeeder extends Seeder
 
             // Finance
             CurrencySeeder::class,
+            ExchangeRateSeeder::class,
             PaymentStatusSeeder::class,
             PaymentTypeSeeder::class,
             PaymentMethodStatusSeeder::class,

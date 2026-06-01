@@ -25,34 +25,28 @@ class ProductSeeder extends Seeder
 
         $catalog = [
             'leafy-vegetables' => [
-                ['name_en' => 'Morning Glory', 'name_km' => 'ត្រកួន', 'unit' => 'KG', 'type' => 'Fresh Produce', 'detail_en' => 'Popular stir-fry leafy vegetable in Cambodia', 'detail_km' => 'បន្លែស្លឹកដែលពេញនិយមនៅកម្ពុជា'],
-                ['name_en' => 'Bok Choy', 'name_km' => 'ស្ពៃតឿ', 'unit' => 'KG', 'type' => 'Fresh Produce', 'detail_en' => 'Crunchy leafy vegetable for soups and stir-fry', 'detail_km' => 'ស្ពៃសម្រាប់ស្លនិងឆា'],
-                ['name_en' => 'Chinese Kale', 'name_km' => 'ខាត់ណា', 'unit' => 'KG', 'type' => 'Fresh Produce', 'detail_en' => 'Firm leaves and stems, common in local markets', 'detail_km' => 'ខាត់ណាស្រស់'],
-                ['name_en' => 'Lettuce', 'name_km' => 'សាលាដ', 'unit' => 'KG', 'type' => 'Fresh Produce', 'detail_en' => 'Fresh lettuce for salads', 'detail_km' => 'សាលាដស្រស់សម្រាប់ញ៉ាំឆៅ'],
+                ['name_en' => 'Morning Glory', 'name_km' => 'ត្រកួន', 'unit' => 'KG', 'type' => 'Fresh Produce', 'detail_en' => 'The most popular leafy green in Cambodia, often stir-fried with garlic.', 'detail_km' => 'បន្លែស្លឹកដែលពេញនិយមនៅកម្ពុជា', 'image_url' => 'images/products/morning_glory.png'],
+                ['name_en' => 'Bok Choy', 'name_km' => 'ស្ពៃចង្កឹះ', 'unit' => 'KG', 'type' => 'Fresh Produce', 'detail_en' => 'A crisp and sweet leafy vegetable widely used in soups and stir-fries.', 'detail_km' => 'ស្ពៃសម្រាប់ស្លនិងឆា', 'image_url' => 'images/products/bok_choy.png'],
             ],
             'fruit-vegetables' => [
-                ['name_en' => 'Tomato', 'name_km' => 'ប៉េងប៉ោះ', 'unit' => 'KG', 'type' => 'Fresh Produce', 'detail_en' => 'Core ingredient for sauces and soups', 'detail_km' => 'ប៉េងប៉ោះស្រស់'],
-                ['name_en' => 'Cucumber', 'name_km' => 'ត្រសក់', 'unit' => 'KG', 'type' => 'Fresh Produce', 'detail_en' => 'Fresh salad vegetable, high daily demand', 'detail_km' => 'ត្រសក់ស្រស់'],
-                ['name_en' => 'Eggplant', 'name_km' => 'ត្រប់', 'unit' => 'KG', 'type' => 'Fresh Produce', 'detail_en' => 'Used in soups and grilled dishes', 'detail_km' => 'ត្រប់វែងស្រស់'],
-                ['name_en' => 'Bitter Melon', 'name_km' => 'ម្រះ', 'unit' => 'KG', 'type' => 'Fresh Produce', 'detail_en' => 'Traditional bitter flavor vegetable', 'detail_km' => 'ម្រះស្រស់'],
+                ['name_en' => 'Eggplant', 'name_km' => 'ត្រប់', 'unit' => 'KG', 'type' => 'Fresh Produce', 'detail_en' => 'Commonly used in Cambodian stews (Samlor) or grilled.', 'detail_km' => 'ត្រប់វែងស្រស់', 'image_url' => 'images/products/eggplant.png'],
+                ['name_en' => 'Bitter Gourd', 'name_km' => 'ម្រះ', 'unit' => 'KG', 'type' => 'Fresh Produce', 'detail_en' => 'Used in soups, often stuffed with minced pork.', 'detail_km' => 'ម្រះស្រស់', 'image_url' => 'images/products/bitter_gourd.png'],
             ],
             'root-and-tuber-vegetables' => [
-                ['name_en' => 'Carrot', 'name_km' => 'ការ៉ុត', 'unit' => 'KG', 'type' => 'Fresh Produce', 'detail_en' => 'Used in stir-fry, soup, and salad', 'detail_km' => 'ការ៉ុតស្រស់'],
-                ['name_en' => 'White Radish', 'name_km' => 'ឆៃថាវ', 'unit' => 'KG', 'type' => 'Fresh Produce', 'detail_en' => 'Popular in soups and pickled dishes', 'detail_km' => 'ឆៃថាវស្រស់'],
-                ['name_en' => 'Sweet Potato', 'name_km' => 'ដំឡូងជ្វា', 'unit' => 'KG', 'type' => 'Fresh Produce', 'detail_en' => 'Root crop with stable demand', 'detail_km' => 'ដំឡូងជ្វាស្រស់'],
+                ['name_en' => 'Sweet Potato', 'name_km' => 'ដំឡូងជ្វា', 'unit' => 'KG', 'type' => 'Fresh Produce', 'detail_en' => 'A sweet root vegetable used in desserts or eaten boiled.', 'detail_km' => 'ដំឡូងជ្វាស្រស់', 'image_url' => 'images/products/sweet_potato.png'],
+                ['name_en' => 'Taro', 'name_km' => 'ត្រាវ', 'unit' => 'KG', 'type' => 'Fresh Produce', 'detail_en' => 'A starchy tuber used in savory dishes and traditional Khmer desserts.', 'detail_km' => 'ត្រាវ', 'image_url' => 'images/products/taro.png'],
             ],
             'bulb-and-stem-vegetables' => [
-                ['name_en' => 'Onion', 'name_km' => 'ខ្ទឹមបារាំង', 'unit' => 'KG', 'type' => 'Fresh Produce', 'detail_en' => 'Essential bulb vegetable for cooking', 'detail_km' => 'ខ្ទឹមបារាំងស្រស់'],
-                ['name_en' => 'Garlic', 'name_km' => 'ខ្ទឹមស', 'unit' => 'KG', 'type' => 'Fresh Produce', 'detail_en' => 'Aromatic bulb used in mostly all dishes', 'detail_km' => 'ខ្ទឹមស'],
-                ['name_en' => 'Celery', 'name_km' => 'ស៊ែលឺរី', 'unit' => 'KG', 'type' => 'Fresh Produce', 'detail_en' => 'Crunchy stem vegetable', 'detail_km' => 'ស៊ែលឺរីស្រស់'],
+                ['name_en' => 'Lemongrass', 'name_km' => 'ស្លឹកគ្រៃ', 'unit' => 'KG', 'type' => 'Fresh Produce', 'detail_en' => 'The foundational aromatic stem used in Kroeung (Khmer curry paste).', 'detail_km' => 'ស្លឹកគ្រៃ', 'image_url' => 'images/products/lemongrass.png'],
+                ['name_en' => 'Lotus Stem', 'name_km' => 'ព្រលិត', 'unit' => 'KG', 'type' => 'Fresh Produce', 'detail_en' => 'Crunchy stems often used in sour soups (Samlor Machou).', 'detail_km' => 'ព្រលិតស្រស់', 'image_url' => 'images/products/lotus_stem.png'],
             ],
             'legume-vegetables' => [
-                ['name_en' => 'Long Bean', 'name_km' => 'សណ្តែកកួរ', 'unit' => 'KG', 'type' => 'Fresh Produce', 'detail_en' => 'Main legume in Cambodian stir-fry dishes', 'detail_km' => 'សណ្តែកកួរស្រស់'],
-                ['name_en' => 'Snow Pea', 'name_km' => 'សណ្តែកបារាំង', 'unit' => 'KG', 'type' => 'Fresh Produce', 'detail_en' => 'Crisp legume for premium menu items', 'detail_km' => 'សណ្តែកបារាំងស្រស់'],
+                ['name_en' => 'Long Bean', 'name_km' => 'សណ្តែកកួរ', 'unit' => 'KG', 'type' => 'Fresh Produce', 'detail_en' => 'Long, crisp beans used in Somlor or eaten raw with Prahok.', 'detail_km' => 'សណ្តែកកួរស្រស់', 'image_url' => 'images/products/long_bean.png'],
+                ['name_en' => 'Winged Bean', 'name_km' => 'ប្រពាយ', 'unit' => 'KG', 'type' => 'Fresh Produce', 'detail_en' => 'A unique jagged-edge bean with a crunchy texture.', 'detail_km' => 'ប្រពាយ', 'image_url' => 'images/products/winged_bean.png'],
             ],
             'indigenous-and-wild-vegetables' => [
-                ['name_en' => 'Water Lily', 'name_km' => 'ព្រលិត', 'unit' => 'KG', 'type' => 'Fresh Produce', 'detail_en' => 'Edible stems of water lily', 'detail_km' => 'ព្រលិតស្រស់'],
-                ['name_en' => 'Bamboo Shoot', 'name_km' => 'ទំពាំង', 'unit' => 'KG', 'type' => 'Fresh Produce', 'detail_en' => 'Edible shoots of bamboo species', 'detail_km' => 'ទំពាំងស្រស់'],
+                ['name_en' => 'Moringa Leaves', 'name_km' => 'ម្រុំ', 'unit' => 'KG', 'type' => 'Fresh Produce', 'detail_en' => 'Highly nutritious indigenous leaves often cooked in healthy soups.', 'detail_km' => 'ម្រុំ', 'image_url' => 'images/products/moringa_leaves.png'],
+                ['name_en' => 'Water Mimosa', 'name_km' => 'កញ្ឆែត', 'unit' => 'KG', 'type' => 'Fresh Produce', 'detail_en' => 'An aquatic plant with a spongy stem, popular in stir-fries.', 'detail_km' => 'កញ្ឆែត', 'image_url' => 'images/products/water_mimosa.png'],
             ],
         ];
 
@@ -86,6 +80,7 @@ class ProductSeeder extends Seeder
                     'name_km' => $item['name_km'],
                     'description_en' => $item['detail_en'],
                     'description_km' => $item['detail_km'],
+                    'image_url' => $item['image_url'] ?? null,
                     'nutrition_data' => [
                         'source' => 'seed',
                         'market' => 'cambodia',

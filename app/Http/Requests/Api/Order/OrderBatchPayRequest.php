@@ -14,7 +14,7 @@ class OrderBatchPayRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return true;
+        return auth()->check();
     }
 
     /**
@@ -26,8 +26,8 @@ class OrderBatchPayRequest extends FormRequest
     {
         return [
             'order_ids' => ['required', 'array', 'min:1'],
-            'order_ids.*' => ['required', 'integer', 'exists:orders,id'],
-            'wallet_id' => ['required', 'integer', 'exists:wallets,id'],
+            'order_ids.*' => ['required', 'integer'],
+            'wallet_id' => ['required', 'integer'],
         ];
     }
 }

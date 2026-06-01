@@ -30,13 +30,13 @@ class Login extends BaseLogin
     #[Override]
     public function getHeading(): string|Htmlable
     {
-        return __('admin.auth.login.title');
+        return __('shared.auth.login.title');
     }
 
     #[Override]
     public function getSubHeading(): string|Htmlable|null
     {
-        return __('admin.auth.login.subheading');
+        return __('shared.auth.login.subheading');
     }
 
     #[Override]
@@ -46,7 +46,7 @@ class Login extends BaseLogin
             ->components([
                 $this->getPhoneNumberFormComponent(),
                 PasswordInput::make('password')
-                    ->label(__('admin.auth.login.password'))
+                    ->label(__('shared.auth.login.password'))
                     ->required()
                     ->revealable(),
                 $this->getRememberFormComponent(),
@@ -59,7 +59,7 @@ class Login extends BaseLogin
         return Grid::make(5)
             ->schema([
                 PhoneNumberInput::make('phone_number')
-                    ->label(__('admin.auth.login.phone'))
+                    ->label(__('shared.auth.login.phone'))
                     ->required()
                     ->columnSpanFull(),
             ]);
@@ -74,7 +74,7 @@ class Login extends BaseLogin
 
         if ($user && $user->user_status_id === UserStatus::PENDING_ID) {
             throw ValidationException::withMessages([
-                'data.phone_number' => __('admin.auth.login.pending'),
+                'data.phone_number' => __('shared.auth.login.pending'),
             ]);
         }
 
@@ -90,7 +90,7 @@ class Login extends BaseLogin
     protected function throwFailureValidationException(): never
     {
         throw ValidationException::withMessages([
-            'data.phone_number' => __('admin.auth.login.failed'),
+            'data.phone_number' => __('shared.auth.login.failed'),
         ]);
     }
 

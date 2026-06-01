@@ -88,16 +88,15 @@ class OrderResource extends Resource
     {
         $vendor = Auth::user();
 
-        if (
-            ! $vendor instanceof User ||
-            $vendor->user_type_id !== UserType::VENDOR_ID ||
-            $vendor->vendorProfile === null
-        ) {
+        if (! $vendor) {
+            throw new AuthenticationException;
+        }
+
+        if ($vendor->user_type_id !== UserType::VENDOR_ID) {
             throw new AuthenticationException;
         }
 
         return parent::getEloquentQuery()
-            ->where('order_status_id', '!=', OrderStatus::AWAITING_PAYMENT_ID)
             ->where('vendor_id', $vendor->id)
             ->orderBy('created_at', 'desc');
     }

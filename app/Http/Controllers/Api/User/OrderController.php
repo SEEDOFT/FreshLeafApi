@@ -12,11 +12,19 @@ use App\Models\Order;
 use App\Models\OrderStatus;
 use App\Models\PaymentStatus;
 use App\Models\Wallet;
+use App\Services\InvoicePdfService;
 use App\Services\OrderService;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\URL;
 use RuntimeException;
+use Symfony\Component\HttpFoundation\StreamedResponse;
+
+use function abort;
+use function count;
+use function in_array;
 
 class OrderController extends Controller
 {
@@ -117,16 +125,22 @@ class OrderController extends Controller
     /**
      * Confirm receipt of an order.
      */
-    public function confirmReceipt(Request $request, int $id): JsonResponse
+    public function confirmReceipt(string $id, Request $request): JsonResponse
     {
         $user = $this->authenticatedUser($request);
-        $order = Order::where('user_id', $user->id)->find($id);
+        $order = Order::where('user_id', $user->id)->find((int) $id);
 
         if (! $order) {
             abort(404, __('api.general.not_found'));
         }
 
-        if (! in_array($order->order_status_id, [OrderStatus::DELIVERED_ID, OrderStatus::PREPARING_ID], true)) {
+        if (
+            ! in_array(
+                $order->order_status_id,
+                [OrderStatus::DELIVERED_ID, OrderStatus::PREPARING_ID],
+                true
+            )
+        ) {
             abort(422, __('api.order.cannot_confirm_receipt'));
         }
 
@@ -147,17 +161,24 @@ class OrderController extends Controller
     /**
      * Pay for an order using Wallet.
      */
-    public function pay(OrderPayRequest $request, int $id, OrderService $orderService): JsonResponse
+    public function pay(string $id, OrderPayRequest $request, OrderService $orderService): JsonResponse
     {
+        $validatedData = $request->validated();
         $user = $this->authenticatedUser($request);
-        $order = Order::with(['payments'])->where('user_id', $user->id)->find($id);
+        $order = Order::with(['payments'])
+            ->where('user_id', $user->id)
+            ->find((int) $id);
 
         if (! $order) {
             abort(404, __('api.general.not_found'));
         }
+        $wallet = $user->wallets()
+            ->where('id', $validatedData['wallet_id'])
+            ->first();
 
-        $validated = $request->validated();
-        $wallet = Wallet::where('id', $validated['wallet_id'])->firstOrFail();
+        if (! $wallet) {
+            abort(404, __('api.wallet.not_found'));
+        }
 
         $orderService->payWithWallet($user, $order, $wallet);
 
@@ -172,19 +193,26 @@ class OrderController extends Controller
      */
     public function batchPay(OrderBatchPayRequest $request, OrderService $orderService): JsonResponse
     {
+        $validatedData = $request->validated();
         $user = $this->authenticatedUser($request);
-        $validated = $request->validated();
 
+        /** @var Collection<int, Order> $orders */
         $orders = Order::with(['payments'])
             ->where('user_id', $user->id)
-            ->whereIn('id', $validated['order_ids'])
+            ->whereIn('id', $validatedData['order_ids'])
             ->get();
 
-        if ($orders->count() !== count($validated['order_ids'])) {
+        if ($orders->count() !== count($validatedData['order_ids'])) {
             abort(404, __('api.general.not_found'));
         }
 
-        $wallet = Wallet::where('id', $validated['wallet_id'])->firstOrFail();
+        $wallet = $user->wallets()
+            ->where('id', $validatedData['wallet_id'])
+            ->first();
+
+        if (! $wallet) {
+            abort(404, __('api.wallet.not_found'));
+        }
 
         $orderService->batchPayWithWallet($user, $orders, $wallet);
 
@@ -200,7 +228,9 @@ class OrderController extends Controller
     public function simulateExternalPayment(string $id, Request $request): JsonResponse
     {
         $user = $this->authenticatedUser($request);
-        $order = Order::with(['payments'])->where('user_id', $user->id)->find((int) $id);
+        $order = Order::with(['payments'])
+            ->where('user_id', $user->id)
+            ->find((int) $id);
 
         if (! $order) {
             abort(404, __('api.general.not_found'));
@@ -235,6 +265,60 @@ class OrderController extends Controller
         return static::successResponse(
             new OrderResource($order->fresh(self::INDEX_RELATIONS)),
             __('api.order.payment_successful', ['default' => 'Payment successful'])
+        );
+    }
+
+    /**
+     * Get a signed URL to download the invoice.
+     */
+    public function getInvoiceUrl(Request $request, int $id): JsonResponse
+    {
+        $user = $this->authenticatedUser($request);
+        $order = Order::where('user_id', $user->id)->find($id);
+
+        if (! $order) {
+            abort(404, __('api.general.not_found'));
+        }
+
+        $url = URL::temporarySignedRoute(
+            'v1.orders.invoice.download',
+            now()->addMinutes(30),
+            ['id' => $id]
+        );
+
+        return static::successResponse(
+            ['url' => $url],
+            __('api.general.success')
+        );
+    }
+
+    /**
+     * Stream the invoice PDF.
+     */
+    public function downloadInvoice(string $id, Request $request): StreamedResponse
+    {
+        $order = Order::find((int) $id);
+
+        if (! $order) {
+            abort(404, __('api.general.not_found'));
+        }
+
+        $pdfContent = InvoicePdfService::generate($order);
+
+        if ($request->boolean('inline')) {
+            return response()->stream(
+                fn () => print $pdfContent,
+                200,
+                [
+                    'Content-Type' => 'application/pdf',
+                    'Content-Disposition' => 'inline; filename="invoice-'.$order->order_number.'.pdf"',
+                ]
+            );
+        }
+
+        return response()->streamDownload(
+            fn () => print $pdfContent,
+            "invoice-{$order->order_number}.pdf"
         );
     }
 }

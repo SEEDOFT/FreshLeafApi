@@ -504,6 +504,10 @@ class CartService
         }
     }
 
+    /**
+     * @param  iterable<Cart>  $cartRows
+     * @return array<string, string>
+     */
     public function cartTotal(iterable $cartRows): array
     {
         $totalUsd = '0.00';

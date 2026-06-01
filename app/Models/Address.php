@@ -78,4 +78,17 @@ class Address extends Model
     {
         $query->whereNull('deleted_at');
     }
+
+    /**
+     * Get the full address of the address.
+     */
+    public public(set) string $address {
+        get => implode(', ', array_filter([
+            $this->address_line_1,
+            $this->address_line_2,
+            $this->city,
+            $this->province,
+            $this->postal_code,
+        ]));
+    }
 }

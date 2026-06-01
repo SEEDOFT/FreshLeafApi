@@ -26,9 +26,6 @@ return [
             'success_notification' => 'បានធ្វើបច្ចុប្បន្នភាពព័ត៌មានហិរញ្ញវត្ថុដោយជោគជ័យ។',
             'description' => 'ព័ត៌មានលម្អិតផ្នែកហិរញ្ញវត្ថុអំពីអាជីវកម្មរបស់អ្នក។',
         ],
-        'vendor_security' => [
-            'label' => 'សុវត្ថិភាព',
-        ],
         'verification_docs' => [
             'label' => 'ការបញ្ជាក់សញ្ញាណ',
             'section_title' => 'ការបញ្ជាក់អត្តសញ្ញាណ និងហាង',
@@ -57,20 +54,10 @@ return [
             'success_notification' => 'បានធ្វើបច្ចុប្បន្នភាពប្រវត្តិរូបដោយជោគជ័យ។',
         ],
     ],
-    'navigation' => [
-        'exchange_rate' => 'អត្រាប្តូរប្រាក់',
-    ],
     'widgets' => [
         'my_products' => 'ផលិតផលរបស់ខ្ញុំ',
         'orders_today' => 'ការបញ្ជាទិញថ្ងៃនេះ',
         'wallet_balance' => 'សមតុល្យកាបូប',
-        'exchange_rate' => 'អត្រាប្តូរប្រាក់',
-        'usd_to_khr_label' => 'USD → KHR',
-        'khr_to_usd_label' => 'KHR → USD',
-        'usd_to_khr' => ':rate KHR',
-        'khr_to_usd' => ':rate USD',
-        'usd_to_khr_desc' => '១ USD ក្នុង KHR',
-        'khr_to_usd_desc' => '១ KHR ក្នុង USD',
         'total_products_desc' => 'ផលិតផលសរុបដែលបានចុះបញ្ជី',
         'orders_today_desc' => 'ការបញ្ជាទិញថ្មីដែលទទួលបានថ្ងៃនេះ',
         'wallet_earnings_desc' => 'ប្រាក់ចំណូល USD បច្ចុប្បន្ន',
@@ -78,5 +65,7 @@ return [
         'commission_fee_desc' => 'កម្រៃជើងសារវេទិកាស្តង់ដារ',
         'platform_commission' => 'កម្រៃជើងសារវេទិកា',
         'not_available' => 'N/A',
+        'earnings_chart_heading' => 'និន្នាការចំណូល (៣០ ថ្ងៃ)',
+        'earnings_chart_label' => 'ចំណូល (USD)',
     ],
 ];

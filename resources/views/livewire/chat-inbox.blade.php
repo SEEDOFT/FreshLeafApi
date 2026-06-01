@@ -2,7 +2,7 @@
     x-on:message-sent.window="resetComposer($refs.supportComposerTextarea); setTimeout(() => scrollToBottom(), 50); if (isPhone) { closeDrawer(); }"
     x-on:message-received.window="isUserTyping = false; setTimeout(() => scrollToBottom(), 50)"
     x-on:user-typing.window="isUserTyping = true; clearTimeout(this.typingTimeout); this.typingTimeout = setTimeout(() => { isUserTyping = false; }, 3000); setTimeout(() => scrollToBottom(), 50)"
-    x-on:ticket-selected.window="isUserTyping = false; setTimeout(() => scrollToBottom(), 50); listenToTicket($wire.activeTicketId)"
+    x-on:conversation-selected.window="isUserTyping = false; setTimeout(() => scrollToBottom(), 50); listenToConversation($wire.activeConversationId)"
     x-bind:class="{ 'is-history-hidden': !$wire.showHistory }"
     x-bind:data-drawer-open="drawerOpen"
 >
@@ -12,32 +12,46 @@
 
     <aside class="fl-support-sidebar">
         <div class="fl-support-sidebar-header">
-            <h3 class="fl-support-sidebar-title">{{ __('admin.support.active_tickets') }}</h3>
+            <h3 class="fl-support-sidebar-title">{{ __('admin.chat.active_conversations', [], 'en') }}</h3>
         </div>
 
         <div class="fl-support-ticket-list">
-            @forelse($this->getTickets() as $ticket)
-                @php $latestMessage = $ticket->latestMessage; @endphp
-                <button wire:click="selectTicket({{ $ticket->id }})"
-                    class="fl-support-ticket-item {{ $activeTicketId === $ticket->id ? 'fl-support-ticket-item--active' : '' }}"
+            @forelse($this->getConversations() as $conversation)
+                @php 
+                    $latestMessage = $conversation->messages->first(); 
+                    $otherParticipant = $conversation->participants->where('user_id', '!=', auth()->id())->first();
+                    $title = $otherParticipant ? $otherParticipant->user->fullName : __('admin.chat.unknown_user', [], 'en');
+                    if ($conversation->type === 'support') {
+                        $title = __('admin.chat.support', [], 'en') . ' - ' . $title;
+                    }
+                @endphp
+                <button wire:click="selectConversation({{ $conversation->id }})"
+                    class="fl-support-ticket-item {{ $activeConversationId === $conversation->id ? 'fl-support-ticket-item--active' : '' }}"
                     x-on:click="if (isPhone) { closeDrawer(); }">
                     <div class="flex justify-between items-start mb-1">
-                        <span class="fl-support-ticket-user">{{ $ticket->user->fullName }}</span>
-                        <span class="fl-support-ticket-date">{{ $ticket->updated_at->diffForHumans(short: true) }}</span>
+                        <span class="fl-support-ticket-user">{{ $title }}</span>
+                        <span class="fl-support-ticket-date">{{ $conversation->updated_at->diffForHumans(short: true) }}</span>
                     </div>
                     <p class="fl-support-ticket-excerpt">
-                        {{ $latestMessage?->message ?: ($latestMessage?->file_path ? __('admin.support.file_attached') : __('admin.support.no_messages_yet')) }}
+                        {{ $latestMessage?->content ?: ($latestMessage?->file_path ? __('admin.chat.file_attached', [], 'en') : __('admin.chat.no_messages_yet', [], 'en')) }}
                     </p>
                 </button>
             @empty
-                <div class="fl-support-sidebar-empty">{{ __('admin.support.no_tickets') }}</div>
+                <div class="fl-support-sidebar-empty">{{ __('admin.chat.no_conversations', [], 'en') }}</div>
             @endforelse
         </div>
     </aside>
 
     <main class="fl-support-main">
-        @if($activeTicketId)
-            @php $activeTicket = \App\Models\SupportTicket::find($activeTicketId); @endphp
+        @if($activeConversationId)
+            @php 
+                $activeConversation = \App\Models\Conversation::find($activeConversationId); 
+                $otherParticipant = $activeConversation->participants->where('user_id', '!=', auth()->id())->first();
+                $title = $otherParticipant ? $otherParticipant->user->fullName : __('admin.chat.unknown_user', [], 'en');
+                if ($activeConversation->type === 'support') {
+                    $title = __('admin.chat.support', [], 'en') . ' - ' . $title;
+                }
+            @endphp
             <header class="fl-support-header">
                 <div class="fl-support-header-user">
                     <button type="button" class="md:hidden" x-on:click="toggleDrawer()">
@@ -47,31 +61,35 @@
                         <x-filament::icon icon="heroicon-o-bars-3-bottom-left" class="h-5 w-5" />
                     </button>
                     <div class="fl-support-header-avatar">
-                        {{ substr($activeTicket->user->first_name, 0, 1) }}{{ substr($activeTicket->user->last_name, 0, 1) }}
+                        @if($otherParticipant)
+                            {{ mb_substr($otherParticipant->user->first_name, 0, 1) }}{{ mb_substr($otherParticipant->user->last_name, 0, 1) }}
+                        @else
+                            ?
+                        @endif
                     </div>
                     <div>
-                        <h2 class="fl-support-header-name">{{ $activeTicket->user->fullName }}</h2>
-                        <p class="fl-support-header-status">{{ __('admin.support.last_active') }}: {{ $activeTicket->updated_at->diffForHumans() }}</p>
+                        <h2 class="fl-support-header-name">{{ $title }}</h2>
+                        <p class="fl-support-header-status">{{ __('admin.chat.last_active', [], 'en') }}: {{ $activeConversation->updated_at->diffForHumans() }}</p>
                     </div>
                 </div>
 
                 <x-filament::button color="success" size="sm" icon="heroicon-o-check-circle"
-                    wire:click="resolveTicket({{ $activeTicketId }})" wire:confirm="{{ __('admin.support.confirm_resolve') }}">
-                    {{ __('admin.support.resolve') }}
+                    wire:click="resolveConversation({{ $activeConversationId }})" wire:confirm="{{ __('admin.chat.confirm_resolve', [], 'en') }}">
+                    {{ __('admin.chat.resolve', [], 'en') }}
                 </x-filament::button>
             </header>
 
             <div class="fl-support-thread" id="support-thread">
                 @foreach($this->getActiveMessages() as $msg)
-                    <div class="fl-support-message-row {{ $msg->sender_type === 'admin' ? 'fl-support-message-row--admin' : '' }}">
+                    <div class="fl-support-message-row {{ $msg->sender_id === auth()->id() ? 'fl-support-message-row--admin' : '' }}">
                         <div class="fl-support-message-content">
                             <div class="fl-support-message-info">
                                 <span class="fl-support-message-author">
-                                    {{ $msg->sender_type === 'admin' ? __('admin.support.admin_label') : $activeTicket->user->fullName }}
+                                    {{ $msg->sender_id === auth()->id() ? __('admin.chat.you', [], 'en') : $msg->sender->fullName }}
                                 </span>
                                 <span class="fl-support-message-time">{{ $msg->created_at->format('H:i') }}</span>
                             </div>
-                            <div class="fl-chat-bubble {{ $msg->sender_type === 'admin' ? 'fl-chat-bubble--admin' : 'fl-chat-bubble--user' }}">
+                            <div class="fl-chat-bubble {{ $msg->sender_id === auth()->id() ? 'fl-chat-bubble--admin' : 'fl-chat-bubble--user' }}">
                                 @if($msg->file_path)
                                     @if(preg_match('/\.(jpg|jpeg|png)$/i', $msg->file_path))
                                         <a href="{{ Storage::url($msg->file_path) }}" target="_blank">
@@ -80,12 +98,12 @@
                                     @else
                                     <a href="{{ Storage::url($msg->file_path) }}" target="_blank" class="fl-chat-attachment">
                                             <x-filament::icon icon="heroicon-o-document" class="fl-chat-attachment__icon" />
-                                            <span class="fl-chat-attachment__text">{{ __('admin.support.download_attachment') }}</span>
+                                            <span class="fl-chat-attachment__text">{{ __('admin.chat.download_attachment', [], 'en') }}</span>
                                         </a>
                                     @endif
                                 @endif
-                                @if($msg->message)
-                                    <p class="text-sm leading-relaxed">{{ $msg->message }}</p>
+                                @if($msg->content)
+                                    <p class="text-sm leading-relaxed">{{ $msg->content }}</p>
                                 @endif
                             </div>
                         </div>
@@ -95,7 +113,7 @@
                 <div x-show="isUserTyping" style="display: none;" class="fl-support-message-row">
                     <div class="fl-support-message-content">
                         <div class="fl-support-message-info">
-                            <span class="fl-support-message-author">{{ $activeTicket->user->fullName }}</span>
+                            <span class="fl-support-message-author">{{ $title }}</span>
                         </div>
                         <div class="fl-chat-bubble fl-chat-bubble--user">
                             <div class="flex items-center gap-1.5 h-5">
@@ -143,7 +161,7 @@
                             x-on:input="resizeTextarea($el); queueTyping()"
                             x-on:keydown.enter="if (!$event.shiftKey) { $event.preventDefault(); submitComposer($el, @js((bool) $file)); }"
                             x-bind:style="{ height: composerTextareaHeight, overflowY: composerTextareaOverflowY }"
-                            placeholder="{{ __('admin.support.type_reply') }}"
+                            placeholder="{{ __('admin.chat.type_reply', [], 'en') }}"
                             class="fl-support-composer-textarea" rows="1"
                             autofocus></textarea>
                     </div>
@@ -165,8 +183,8 @@
                 <div class="fl-support-empty-icon-wrapper">
                     <x-filament::icon icon="heroicon-o-chat-bubble-left-right" class="w-12 h-12" />
                 </div>
-                <h3 class="fl-support-empty-title">{{ __('admin.support.no_ticket_selected_title') }}</h3>
-                <p class="fl-support-empty-desc">{{ __('admin.support.no_ticket_selected_desc') }}</p>
+                <h3 class="fl-support-empty-title">{{ __('admin.chat.no_conversation_selected_title', [], 'en') }}</h3>
+                <p class="fl-support-empty-desc">{{ __('admin.chat.no_conversation_selected_desc', [], 'en') }}</p>
             </div>
         @endif
     </main>

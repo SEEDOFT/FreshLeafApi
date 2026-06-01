@@ -73,12 +73,12 @@ All models are built using PHP 8.3 features, including Attributes for property d
 - **PushNotification:** Base notification class implementing `FcmChannel` to send rich push notifications to Android and APNS (iOS) devices.
 - **User Model Integration:** Includes `routeNotificationForFcm()` to dynamically route notifications to all active user devices.
 
-### 6. Real-Time Customer Support Chat
-- **Models:** `SupportTicket` and `SupportMessage` with file attachment capabilities (`file_path`).
-- **Real-Time Sync:** Native Reverb integration with `SupportMessageSent`, `SupportTyping`, and `NewSupportTicket` events.
-- **Admin Dashboard:** Custom Filament Livewire page with a dual-pane layout, auto-refreshing ticket list, active thread syncing, and dynamic unread notification badge.
-- **Mobile Experience:** Telegram-style UI, bidirectional typing indicators, and file attachments via `multipart/form-data`.
-- **Push Notifications:** FCM integration for `NewSupportMessageNotification` alerting mobile users of admin replies even when the app is backgrounded.
+### 6. Omni-Channel Real-Time Chat (Consumer ↔ Vendor ↔ Admin)
+- **Models:** `Conversation`, `Message`, `ConversationType`, and `ConversationStatus`. Supports file attachment capabilities (`file_path`).
+- **Real-Time Sync:** Native Reverb integration with `ChatMessageSent` and `ChatTyping` events over `private-chat.conversation.{id}`.
+- **Admin/Vendor Dashboard:** Custom Livewire page (`ChatInbox`) with a dual-pane layout, auto-refreshing conversation list, active thread syncing, and unread notification badge.
+- **Mobile Experience:** Telegram-style UI, bidirectional typing indicators, and file attachments via `multipart/form-data`. Consumers can chat with Support (Admin) or directly with Vendors via the Vendor Profile.
+- **Push Notifications:** FCM integration for `NewChatMessage` alerting mobile users of replies even when the app is backgrounded.
 
 ### 7. Database Seeders
 - **PaymentMethodTypeSeeder:** Seeds 4 core payment method types (Wallet, Credit/Debit, ABA, ACLEDA).

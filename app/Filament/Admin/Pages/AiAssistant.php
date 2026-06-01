@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Filament\Admin\Pages;
 
+use App\Models\AiChatMessage;
 use App\Models\UserType;
 use App\Services\Auth\UserSessionSecurity;
 use BackedEnum;
@@ -41,6 +42,37 @@ class AiAssistant extends Page
     public static function canAccess(): bool
     {
         return UserSessionSecurity::isAuthorizedAs(UserType::ADMIN_ID);
+    }
+
+    public function mount(): void
+    {
+        $userId = auth()->id();
+        if ($userId) {
+            AiChatMessage::whereHas('session', function ($q) use ($userId) {
+                $q->where('user_id', $userId);
+            })
+                ->where('role', 'assistant')
+                ->where('is_read', false)
+                ->update(['is_read' => true]);
+        }
+    }
+
+    #[Override]
+    public static function getNavigationBadge(): ?string
+    {
+        $userId = auth()->id();
+        if (! $userId) {
+            return null;
+        }
+
+        $unreadCount = AiChatMessage::whereHas('session', function ($q) use ($userId) {
+            $q->where('user_id', $userId);
+        })
+            ->where('role', 'assistant')
+            ->where('is_read', false)
+            ->count();
+
+        return $unreadCount > 0 ? (string) $unreadCount : null;
     }
 
     #[Override]

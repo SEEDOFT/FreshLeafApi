@@ -75,17 +75,17 @@ class AdminStatsOverview extends BaseWidget
                 ->descriptionIcon('heroicon-o-receipt-percent')
                 ->color('info'),
             Stat::make(
-                __('admin.widgets.usd_to_khr_label'),
-                __('admin.widgets.usd_to_khr', ['rate' => number_format($usdToKhr, 0)]),
+                __('shared.widgets.usd_to_khr_label'),
+                __('shared.widgets.usd_to_khr', ['rate' => number_format($usdToKhr, 0)]),
             )
-                ->description(__('admin.widgets.usd_to_khr_desc'))
+                ->description(__('shared.widgets.usd_to_khr_desc'))
                 ->descriptionIcon('heroicon-m-arrow-trending-up')
                 ->color('warning'),
             Stat::make(
-                __('admin.widgets.khr_to_usd_label'),
-                __('admin.widgets.khr_to_usd', ['rate' => number_format($khrToUsd, 4)]),
+                __('shared.widgets.khr_to_usd_label'),
+                __('shared.widgets.khr_to_usd', ['rate' => number_format($khrToUsd, 4)]),
             )
-                ->description(__('admin.widgets.khr_to_usd_desc'))
+                ->description(__('shared.widgets.khr_to_usd_desc'))
                 ->descriptionIcon('heroicon-m-arrow-trending-down')
                 ->color('info'),
         ];

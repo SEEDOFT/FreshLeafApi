@@ -9,13 +9,14 @@ use App\Http\Controllers\Api\Product\ProductController;
 use App\Http\Controllers\Api\User\AddressController;
 use App\Http\Controllers\Api\User\AuthController;
 use App\Http\Controllers\Api\User\CartController;
+use App\Http\Controllers\Api\User\ConversationController;
 use App\Http\Controllers\Api\User\DeviceController;
+use App\Http\Controllers\Api\User\MessageController;
 use App\Http\Controllers\Api\User\NotificationController;
 use App\Http\Controllers\Api\User\OrderController;
 use App\Http\Controllers\Api\User\PaymentMethodController;
 use App\Http\Controllers\Api\User\PaymentMethodTypeController;
 use App\Http\Controllers\Api\User\ProfileController;
-use App\Http\Controllers\Api\User\SupportChatController;
 use App\Http\Controllers\Api\User\UserPinController;
 use App\Http\Controllers\Api\User\VendorProfileController;
 use App\Http\Controllers\Api\User\WalletController;
@@ -39,6 +40,11 @@ Route::prefix('v1')->name('v1.')->group(static function () {
             Route::get('/', 'index')->name('index');
             Route::get('{category:slug}', 'show')->name('show');
         });
+
+    // Signed Routes
+    Route::get('orders/{id}/invoice/download', [OrderController::class, 'downloadInvoice'])
+        ->middleware('signed')
+        ->name('orders.invoice.download');
 
     // Unified Auth (Login/Register remain type-specific for clarity, but Logout is shared)
     Route::prefix('auth')->name('auth.')->group(static function () {
@@ -157,6 +163,7 @@ Route::prefix('v1')->name('v1.')->group(static function () {
                     Route::post('{id}/cancel', 'cancel')->name('cancel');
                     Route::post('{id}/confirm-receipt', 'confirmReceipt')->name('confirmReceipt');
                     Route::post('{id}/simulate-external-payment', 'simulateExternalPayment')->name('simulate-external-payment');
+                    Route::get('{id}/invoice/url', 'getInvoiceUrl')->name('invoice.url');
                 });
 
             Route::prefix('wishlist')
@@ -198,15 +205,23 @@ Route::prefix('v1')->name('v1.')->group(static function () {
             Route::get('ai/status', [AiStatusController::class, 'check'])
                 ->name('ai.status');
 
-            Route::prefix('support')
-                ->name('support.')
-                ->controller(SupportChatController::class)
+            Route::prefix('conversations')
+                ->name('conversations.')
+                ->controller(ConversationController::class)
                 ->group(static function () {
-                    Route::get('ticket', 'getActiveTicket')->name('ticket.active');
-                    Route::get('unread-count', 'getUnreadCount')->name('unread.count');
-                    Route::post('messages', 'sendMessage')->name('messages.store');
-                    Route::get('messages', 'getMessages')->name('messages.index');
+                    Route::get('/', 'index')->name('index');
+                    Route::post('/', 'store')->name('store');
+                    Route::get('unread-count', 'getUnreadCount')->name('unread-count');
+                    Route::get('{id}', 'show')->name('show');
                     Route::post('typing', 'sendTyping')->name('typing');
+                });
+
+            Route::prefix('conversations/{conversation}/messages')
+                ->name('conversations.messages.')
+                ->controller(MessageController::class)
+                ->group(static function () {
+                    Route::get('/', 'index')->name('index');
+                    Route::post('/', 'store')->name('store');
                 });
         });
 
@@ -244,18 +259,6 @@ Route::prefix('v1')->name('v1.')->group(static function () {
                     Route::patch('{id}', 'update')->name('addresses.update');
                     Route::put('{id}', 'replace')->name('addresses.replace');
                     Route::delete('{id}', 'destroy')->name('addresses.destroy');
-                });
-
-            Route::controller(SupportChatController::class)
-                ->prefix('support')
-                ->group(static function () {
-                    Route::get('tickets', 'getTickets')->name('support.tickets');
-                    Route::get('ticket', 'getActiveTicket')->name('support.ticket');
-                    Route::post('ticket', 'createTicket')->name('support.ticket.create');
-                    Route::post('typing', 'sendTyping')->name('support.typing');
-                    Route::post('message', 'sendMessage')->name('support.message');
-                    Route::get('messages', 'getMessages')->name('support.messages');
-                    Route::get('unread-count', 'getUnreadCount')->name('support.unread-count');
                 });
 
             Route::controller(DeviceController::class)->prefix('devices')

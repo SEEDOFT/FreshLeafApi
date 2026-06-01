@@ -72,4 +72,12 @@ class WalletResource extends Resource
             'view' => ViewWallet::route('/{record}'),
         ];
     }
+
+    #[Override]
+    public static function getNavigationBadge(): ?string
+    {
+        $count = static::getEloquentQuery()->count();
+
+        return $count > 0 ? (string) $count : null;
+    }
 }

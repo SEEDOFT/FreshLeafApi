@@ -87,7 +87,7 @@
                     <div class="fl-auth-submit-wrapper">
                         <x-filament::button type="submit" size="lg" class="fl-auth-submit-btn fi-btn-modern group/btn" color="primary">
                             <span class="fl-auth-submit-content">
-                                {{ __('admin.auth.login.submit') }}
+                                {{ __('shared.auth.login.submit') }}
                                 <svg class="fl-auth-submit-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
                                     <path stroke-linecap="round" stroke-linejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3" />
                                 </svg>

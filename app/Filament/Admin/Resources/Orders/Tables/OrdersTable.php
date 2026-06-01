@@ -13,6 +13,8 @@ use Filament\Actions\ViewAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Facades\App;
 
 class OrdersTable
 {
@@ -52,7 +54,12 @@ class OrdersTable
                         OrderStatus::CANCELLED_ID => 'danger',
                         default => 'primary',
                     })
-                    ->sortable(),
+                    ->sortable(query: fn (Builder $query, string $direction) => $query->orderBy(
+                        OrderStatus::select('name_'.App::getLocale())
+                            ->whereColumn('order_statuses.id', 'orders.order_status_id')
+                            ->limit(1),
+                        strtolower($direction) === 'desc' ? 'desc' : 'asc',
+                    )),
                 TextColumn::make('paymentStatus.translated_name')
                     ->label(__('admin.resources.order.payment_status'))
                     ->badge()
@@ -63,7 +70,12 @@ class OrdersTable
                         PaymentStatus::REFUNDED_ID => 'warning',
                         default => 'gray',
                     })
-                    ->sortable(),
+                    ->sortable(query: fn (Builder $query, string $direction) => $query->orderBy(
+                        PaymentStatus::select('name_'.App::getLocale())
+                            ->whereColumn('payment_statuses.id', 'orders.payment_status_id')
+                            ->limit(1),
+                        strtolower($direction) === 'desc' ? 'desc' : 'asc',
+                    )),
                 TextColumn::make('total_amount')
                     ->label(__('admin.resources.order.total'))
                     ->money('USD')

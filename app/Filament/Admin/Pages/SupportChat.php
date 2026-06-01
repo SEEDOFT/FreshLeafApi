@@ -4,7 +4,8 @@ declare(strict_types=1);
 
 namespace App\Filament\Admin\Pages;
 
-use App\Models\SupportMessage;
+use App\Models\Message;
+use App\Models\UserType;
 use BackedEnum;
 use Filament\Pages\Page;
 use Filament\Support\Enums\Width;
@@ -39,8 +40,13 @@ class SupportChat extends Page
     #[Override]
     public static function getNavigationBadge(): ?string
     {
-        $unreadCount = SupportMessage::where('sender_type', SupportMessage::USER)
-            ->where('is_read', false)
+        $unreadCount = Message::where('is_read', false)
+            ->whereHas('conversation', function ($query) {
+                $query->where('type', 'support');
+            })
+            ->whereHas('sender', function ($query) {
+                $query->where('user_type_id', '!=', UserType::ADMIN_ID);
+            })
             ->count();
 
         return $unreadCount > 0 ? (string) $unreadCount : null;

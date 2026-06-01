@@ -75,9 +75,7 @@ use Illuminate\Support\Carbon;
 class VendorProfile extends Model
 {
     /** @use HasFactory<VendorProfileFactory> */
-    use HasFactory;
-
-    use SoftDeletes;
+    use HasFactory, SoftDeletes;
 
     /**
      * {@inheritDoc}

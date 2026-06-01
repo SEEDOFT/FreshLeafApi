@@ -47,4 +47,12 @@ class CommissionFeeResource extends Resource
             'index' => ManageCommissionFee::route('/'),
         ];
     }
+
+    #[Override]
+    public static function getNavigationBadge(): ?string
+    {
+        $count = static::getEloquentQuery()->count();
+
+        return $count > 0 ? (string) $count : null;
+    }
 }

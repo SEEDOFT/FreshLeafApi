@@ -130,6 +130,15 @@ The system is pre-configured in `config/ai.php` to connect to `http://127.0.0.1:
 | GET | `/api/v1/payment-methods` | List saved payment methods |
 | POST | `/api/v1/payment-methods` | Save new payment method |
 
+### Omni-Channel Chat (require auth)
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/api/v1/conversations` | List active conversations |
+| POST | `/api/v1/conversations` | Create or open conversation |
+| GET | `/api/v1/conversations/{id}/messages` | Load chat history |
+| POST | `/api/v1/conversations/{id}/messages` | Send message (w/ attachments) |
+| POST | `/api/v1/conversations/{id}/typing` | Dispatch typing indicator |
+
 ### AI Chat (require auth)
 | Method | Endpoint | Description |
 |--------|----------|-------------|

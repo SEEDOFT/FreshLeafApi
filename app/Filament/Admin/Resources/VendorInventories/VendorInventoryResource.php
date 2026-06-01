@@ -71,4 +71,12 @@ class VendorInventoryResource extends Resource
             'view' => ViewVendorInventory::route('/{record}'),
         ];
     }
+
+    #[Override]
+    public static function getNavigationBadge(): ?string
+    {
+        $count = static::getEloquentQuery()->count();
+
+        return $count > 0 ? (string) $count : null;
+    }
 }

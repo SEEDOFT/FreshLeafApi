@@ -16,6 +16,9 @@ use App\Notifications\Order\NewOrderNotification;
 use App\Notifications\Order\OrderStatusUpdatedNotification;
 use App\Services\MoneyService;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\DB;
+
+use function get_class;
 
 class OrderObserver
 {
@@ -88,68 +91,79 @@ class OrderObserver
     {
         $order->loadMissing(['payment', 'items.vendorInventory', 'user']);
 
-        // 1. Handle Payment and Refund
-        if ($payment = $order->payment) {
-            if ($payment->status_id === PaymentStatus::COMPLETED_ID) {
-                $payment->update(['status_id' => PaymentStatus::REFUNDED_ID]);
-                $payment->histories()->create([
-                    'payment_status_id' => PaymentStatus::REFUNDED_ID,
-                    'notes' => 'Refund processed due to order cancellation.',
-                ]);
-
-                if ($order->user_id && $payment->currency_id) {
-                    $wallet = Wallet::firstOrCreate(
-                        ['user_id' => $order->user_id, 'currency_id' => $payment->currency_id],
-                        ['balance' => '0.00']
-                    );
-
-                    $amount = (string) $payment->amount;
-                    $newBalance = MoneyService::add((string) $wallet->balance, $amount);
-                    $wallet->update(['balance' => $newBalance]);
-
-                    $wallet->histories()->create([
-                        'user_id' => $wallet->user_id,
-                        'currency_id' => $wallet->currency_id,
-                        'balance' => $newBalance,
+        DB::transaction(function () use ($order) {
+            // 1. Handle Payment and Refund
+            if ($payment = $order->payment) {
+                if ($payment->status_id === PaymentStatus::COMPLETED_ID) {
+                    $payment->update([
+                        'status_id' => PaymentStatus::REFUNDED_ID,
+                    ]);
+                    $payment->histories()->create([
+                        'payment_status_id' => PaymentStatus::REFUNDED_ID,
+                        'notes' => 'Refund processed due to order cancellation.',
                     ]);
 
-                    $transaction = WalletTransaction::create([
-                        'wallet_id' => $wallet->id,
-                        'wallet_transaction_type_id' => WalletTransactionType::REFUND_ID,
-                        'wallet_transaction_status_id' => WalletTransactionStatus::COMPLETED_ID,
-                        'amount' => $amount,
-                        'payment_method_id' => $payment->payment_method_id,
-                        'reference_id' => $order->id,
-                        'reference_type' => get_class($order),
-                        'description' => 'Refund for cancelled order #'.$order->order_number,
-                        'transaction_date' => Carbon::now(),
+                    if ($order->user_id && $payment->currency_id) {
+                        $wallet = Wallet::where('user_id', $order->user_id)
+                            ->where('currency_id', $payment->currency_id)
+                            ->first();
+
+                        if (! $wallet) {
+                            return;
+                        }
+
+                        $amount = (string) $payment->amount;
+                        $newBalance = MoneyService::add((string) $wallet->balance, $amount);
+                        $wallet->update(['balance' => $newBalance]);
+
+                        $wallet->histories()->create([
+                            'user_id' => $wallet->user_id,
+                            'currency_id' => $wallet->currency_id,
+                            'balance' => $newBalance,
+                        ]);
+
+                        $transaction = WalletTransaction::create([
+                            'wallet_id' => $wallet->id,
+                            'wallet_transaction_type_id' => WalletTransactionType::REFUND_ID,
+                            'wallet_transaction_status_id' => WalletTransactionStatus::COMPLETED_ID,
+                            'amount' => $amount,
+                            'payment_method_id' => $payment->payment_method_id,
+                            'reference_id' => $order->id,
+                            'reference_type' => get_class($order),
+                            'description' => 'Refund for cancelled order #'.$order->order_number,
+                            'transaction_date' => Carbon::now(),
+                        ]);
+
+                        $transaction->recordHistory();
+                    }
+                } elseif ($payment->status_id === PaymentStatus::PENDING_ID) {
+                    $payment->update(['status_id' => PaymentStatus::FAILED_ID]);
+                    $payment->histories()->create([
+                        'payment_status_id' => PaymentStatus::FAILED_ID,
+                        'notes' => 'Payment failed because the order was cancelled.',
                     ]);
-                    $transaction->recordHistory();
                 }
-            } elseif ($payment->status_id === PaymentStatus::PENDING_ID) {
-                $payment->update(['status_id' => PaymentStatus::FAILED_ID]);
-                $payment->histories()->create([
-                    'payment_status_id' => PaymentStatus::FAILED_ID,
-                    'notes' => 'Payment failed because the order was cancelled.',
-                ]);
             }
-        }
 
-        // 2. Handle Stock Return
-        foreach ($order->items as $item) {
-            if ($inventory = $item->vendorInventory) {
-                $newQuantity = MoneyService::add((string) $inventory->stock_quantity, (string) $item->quantity);
-                $inventory->update(['stock_quantity' => $newQuantity]);
+            // 2. Handle Stock Return
+            foreach ($order->items as $item) {
+                if ($inventory = $item->vendorInventory) {
+                    $newQuantity = MoneyService::add(
+                        (string) $inventory->stock_quantity,
+                        (string) $item->quantity
+                    );
+                    $inventory->update(['stock_quantity' => $newQuantity]);
 
-                $inventory->histories()->create([
-                    'quantity_change' => '+'.MoneyService::quantity($item->quantity),
-                    'new_quantity' => $newQuantity,
-                    'reference_type' => get_class($item),
-                    'reference_id' => $item->id,
-                    'reason' => 'Order Cancellation Return',
-                ]);
+                    $inventory->histories()->create([
+                        'quantity_change' => '+'.MoneyService::quantity($item->quantity),
+                        'new_quantity' => $newQuantity,
+                        'reference_type' => get_class($item),
+                        'reference_id' => $item->id,
+                        'reason' => 'Order Cancellation Return',
+                    ]);
+                }
             }
-        }
+        });
     }
 
     /**
@@ -158,9 +172,14 @@ class OrderObserver
     private function notifyVendor(Order $order): void
     {
         $vendor = $order->items()->first()?->vendorInventory?->vendor;
+
         if ($vendor) {
             broadcast(
-                new VendorOrderUpdated($vendor->id, $order->id, $order->order_number)
+                new VendorOrderUpdated(
+                    $vendor->id,
+                    $order->id,
+                    $order->order_number,
+                )
             )->toOthers();
         }
     }

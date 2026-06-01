@@ -81,4 +81,12 @@ class ProductCategoryResource extends Resource
             'edit' => EditProductCategory::route('/{record}/edit'),
         ];
     }
+
+    #[Override]
+    public static function getNavigationBadge(): ?string
+    {
+        $count = static::getEloquentQuery()->count();
+
+        return $count > 0 ? (string) $count : null;
+    }
 }

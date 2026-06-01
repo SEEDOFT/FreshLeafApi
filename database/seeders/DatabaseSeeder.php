@@ -47,6 +47,10 @@ class DatabaseSeeder extends Seeder
             // Notifications & System
             NotificationStatusSeeder::class,
             NotificationTypeSeeder::class,
+
+            // Chat
+            ConversationTypeSeeder::class,
+            ConversationStatusSeeder::class,
         ]);
     }
 }

@@ -4,14 +4,14 @@
 
         <div class="mt-6">
             <x-filament::button type="submit">
-                Update Commission Fee
+                {{ __('admin.resources.commission_fee.update_button') }}
             </x-filament::button>
         </div>
     </form>
 
     <div class="mt-8">
         <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-4">
-            Update History
+            {{ __('admin.resources.commission_fee.update_history_label') }}
         </h3>
         {{ $this->table }}
     </div>

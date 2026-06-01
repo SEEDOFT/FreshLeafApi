@@ -13,11 +13,15 @@ use App\Filament\Admin\Resources\Orders\Schemas\OrderForm;
 use App\Filament\Admin\Resources\Orders\Schemas\OrderInfolist;
 use App\Filament\Admin\Resources\Orders\Tables\OrdersTable;
 use App\Models\Order;
+use App\Models\UserType;
 use BackedEnum;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
+use Illuminate\Auth\AuthenticationException;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Facades\Auth;
 use Override;
 
 class OrderResource extends Resource
@@ -44,6 +48,23 @@ class OrderResource extends Resource
     public static function getPluralModelLabel(): string
     {
         return __('admin.resources.order.plural_label');
+    }
+
+    #[Override]
+    public static function getEloquentQuery(): Builder
+    {
+        $admin = Auth::user();
+
+        if (! $admin) {
+            throw new AuthenticationException;
+        }
+
+        if ($admin->user_type_id !== UserType::ADMIN_ID) {
+            throw new AuthenticationException;
+        }
+
+        return parent::getEloquentQuery()
+            ->orderBy('created_at', 'desc');
     }
 
     #[Override]
@@ -81,5 +102,13 @@ class OrderResource extends Resource
             'view' => ViewOrder::route('/{record}'),
             'edit' => EditOrder::route('/{record}/edit'),
         ];
+    }
+
+    #[Override]
+    public static function getNavigationBadge(): ?string
+    {
+        $count = static::getEloquentQuery()->count();
+
+        return $count > 0 ? (string) $count : null;
     }
 }

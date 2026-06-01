@@ -26,9 +26,6 @@ return [
             'success_notification' => 'Financial details updated.',
             'description' => 'Financial details about your business.',
         ],
-        'vendor_security' => [
-            'label' => 'Security',
-        ],
         'verification_docs' => [
             'label' => 'Verification',
             'section_title' => 'Identity & Store Verification',
@@ -57,22 +54,18 @@ return [
             'success_notification' => 'Profile updated successfully.',
         ],
     ],
-    'navigation' => [
-        'exchange_rate' => 'Exchange Rate',
-    ],
     'widgets' => [
         'my_products' => 'My Products',
         'orders_today' => 'Orders Today',
         'wallet_balance' => 'Wallet Balance',
-        'exchange_rate' => 'Exchange Rate',
-        'usd_to_khr_label' => 'USD → KHR',
-        'khr_to_usd_label' => 'KHR → USD',
-        'usd_to_khr' => ':rate KHR',
-        'khr_to_usd' => ':rate USD',
-        'usd_to_khr_desc' => '1 USD in KHR',
-        'khr_to_usd_desc' => '1 KHR in USD',
+        'total_products_desc' => 'Total listed products',
+        'orders_today_desc' => 'New orders received today',
+        'wallet_earnings_desc' => 'Current USD earnings',
+        'exchange_rate_desc' => 'Current USD to KHR rate',
         'commission_fee_desc' => 'Standard platform commission fee',
         'platform_commission' => 'Platform Commission Fee',
         'not_available' => 'N/A',
+        'earnings_chart_heading' => 'Earnings Trend (30 Days)',
+        'earnings_chart_label' => 'Earnings (USD)',
     ],
 ];

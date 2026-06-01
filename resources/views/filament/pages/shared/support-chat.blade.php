@@ -1,3 +1,3 @@
 <x-filament-panels::page>
-    @livewire('support-chat')
+    @livewire('chat-inbox')
 </x-filament-panels::page>

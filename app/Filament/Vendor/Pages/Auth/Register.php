@@ -432,15 +432,15 @@ class Register extends BaseRegister
             ->get();
 
         $notification = Notification::make()
-            ->title('Vendor Registration')
-            ->body('New vendor has been register. Please check the submission')
+            ->title(__('shared.auth.register.notification_title'))
+            ->body(__('shared.auth.register.notification_body'))
             ->icon('heroicon-o-user-plus')
             ->success();
 
         if ($user) {
             $notification->actions([
                 Action::make('view')
-                    ->label('View Vendor')
+                    ->label(__('shared.auth.register.view_vendor'))
                     ->url(VendorResource::getUrl('view', ['record' => $user]))
                     ->button(),
             ]);

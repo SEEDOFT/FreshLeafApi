@@ -141,7 +141,7 @@ return Application::configure(basePath: dirname(__DIR__))
                     'exception' => get_class($exception),
                     'file' => $exception->getFile(),
                     'line' => $exception->getLine(),
-                    'trace' => $exception->getTrace(),
+                    'trace' => $exception->getTraceAsString(),
                 ] : [];
 
                 return response()->json(
@@ -231,7 +231,7 @@ return Application::configure(basePath: dirname(__DIR__))
                     'exception' => get_class($exception),
                     'file' => $exception->getFile(),
                     'line' => $exception->getLine(),
-                    'trace' => $exception->getTrace(),
+                    'trace' => $exception->getTraceAsString(),
                 ] : [];
 
                 return response()->json(

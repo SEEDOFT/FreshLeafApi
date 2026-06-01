@@ -73,21 +73,21 @@ class OrderActions
         $actionClass = Action::class;
 
         return $actionClass::make('outForDelivery')
-            ->label('Out for Delivery')
+            ->label(__('admin.resources.order.actions.out_for_delivery'))
             ->icon(Heroicon::OutlinedTruck)
             ->color('fuchsia')
             ->visible(fn (Order $record) => $record->order_status_id === OrderStatus::PREPARING_ID)
             ->form([
                 FileUpload::make('preparation_proof_photo')
-                    ->label('Proof of Preparation')
+                    ->label(__('admin.resources.order.proof_of_preparation'))
                     ->image()
                     ->required()
                     ->directory('order-proofs'),
                 TextInput::make('delivery_company_name')
-                    ->label('Delivery Company Name')
+                    ->label(__('admin.resources.order.delivery_company_name'))
                     ->required(),
                 Textarea::make('delivery_tracking_info')
-                    ->label('Tracking Info (Optional)'),
+                    ->label(__('admin.resources.order.tracking_info_optional')),
             ])
             ->action(function (Order $record, array $data): void {
                 $record->update([
@@ -99,7 +99,7 @@ class OrderActions
                 ]);
 
                 Notification::make()
-                    ->title('Order marked as Out for Delivery')
+                    ->title(__('admin.resources.order.actions.out_for_delivery_success'))
                     ->success()
                     ->send();
             });

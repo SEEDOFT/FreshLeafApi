@@ -15,7 +15,10 @@ use Override;
 class VendorEarningsChart extends ChartWidget
 {
     #[Override]
-    protected ?string $heading = 'Earnings Trend (30 Days)';
+    public function getHeading(): ?string
+    {
+        return __('vendor.widgets.earnings_chart_heading');
+    }
 
     #[Override]
     protected int|string|array $columnSpan = 1;
@@ -60,7 +63,7 @@ class VendorEarningsChart extends ChartWidget
         return [
             'datasets' => [
                 [
-                    'label' => 'Earnings (USD)',
+                    'label' => __('vendor.widgets.earnings_chart_label'),
                     'data' => $values,
                     'backgroundColor' => 'rgba(74, 222, 128, 0.1)',
                     'borderColor' => '#22c55e',

@@ -40,7 +40,7 @@ class OrderService
                     if ($order->payment_status_id === PaymentStatus::COMPLETED_ID) {
                         abort(422, __('api.order.already_paid'));
                     }
-                    $grandTotal = MoneyService::add($grandTotal, $order->total_amount);
+                    $grandTotal = MoneyService::add($grandTotal, (string) $order->total_amount);
                 }
 
                 if (MoneyService::compare((string) $wallet->balance, $grandTotal) < 0) {

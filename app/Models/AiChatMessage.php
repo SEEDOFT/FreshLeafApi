@@ -21,6 +21,7 @@ use Illuminate\Support\Carbon;
  * @property string|null $status
  * @property int|null $sequence
  * @property string|null $error
+ * @property bool $is_read
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  * @property-read AiChatSession $session
@@ -37,10 +38,23 @@ use Illuminate\Support\Carbon;
     'status',
     'sequence',
     'error',
+    'is_read',
 ])]
 class AiChatMessage extends Model
 {
     use SoftDeletes;
+
+    /**
+     * Get the attributes that should be cast.
+     *
+     * @return array<string, string>
+     */
+    protected function casts(): array
+    {
+        return [
+            'is_read' => 'boolean',
+        ];
+    }
 
     /**
      * Get the session that owns the AI chat message.

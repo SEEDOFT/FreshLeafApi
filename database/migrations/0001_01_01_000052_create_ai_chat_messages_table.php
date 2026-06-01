@@ -23,6 +23,7 @@ return new class extends Migration
             $table->string('status')->default('pending');
             $table->unsignedInteger('sequence')->default(0);
             $table->text('error')->nullable();
+            $table->boolean('is_read')->default(false);
             $table->timestamps();
 
             $table->index(['ai_chat_session_id', 'created_at']);

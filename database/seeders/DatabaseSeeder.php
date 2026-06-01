@@ -21,6 +21,7 @@ class DatabaseSeeder extends Seeder
             // User & Auth
             UserStatusSeeder::class,
             UserTypeSeeder::class,
+            UserSeeder::class,
 
             // Finance
             CurrencySeeder::class,

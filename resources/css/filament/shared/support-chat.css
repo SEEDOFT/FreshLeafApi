@@ -7,6 +7,7 @@
     background: transparent;
     border-radius: 1rem;
     margin-top: 1rem;
+    @apply border border-gray-200 dark:border-[var(--color-border-tertiary)] shadow-sm;
 }
 
 .dark .fl-support-container {
@@ -23,20 +24,19 @@
 .fl-support-sidebar {
     width: 320px;
     flex-shrink: 0;
-    border-right: 1px solid #27272a;
+    @apply border-r border-gray-200 dark:border-[var(--color-border-tertiary)] bg-white dark:bg-[var(--color-background-primary)];
     display: flex;
     flex-direction: column;
-    background: #18181b;
 }
 
 .fl-support-sidebar-header {
     padding: 1.5rem;
-    border-bottom: 1px solid #27272a;
-    background: #18181b;
+    @apply border-b border-gray-200 dark:border-[var(--color-border-tertiary)] bg-white dark:bg-[var(--color-background-primary)];
 }
 
 .fl-support-sidebar-title {
-    @apply font-bold text-xs uppercase tracking-widest text-gray-500 dark:text-gray-400;
+    @apply font-bold text-xs uppercase tracking-widest;
+    color: var(--color-text-tertiary);
 }
 
 .fl-support-ticket-list {
@@ -44,32 +44,34 @@
 }
 
 .fl-support-ticket-item {
-    @apply w-full text-left p-5 hover:bg-[#27272a] transition-all duration-200 border-b border-[#27272a] border-l-[3px] border-l-transparent;
+    @apply w-full text-left p-5 hover:bg-gray-50 dark:hover:bg-[var(--color-background-secondary)] transition-all duration-200 border-b border-gray-100 dark:border-[var(--color-border-tertiary)] border-l-[3px] border-l-transparent;
 }
 
 .fl-support-ticket-item--active {
-    @apply bg-[#eefdf4] border-l-[#16a34a];
+    @apply border-l-[3px];
+    background: var(--brand-50);
+    border-left-color: var(--brand-500);
 }
 
 .fl-support-ticket-user {
-    @apply font-bold text-[#e4e4e7];
+    @apply font-bold text-gray-900 dark:text-[var(--color-text-primary)];
 }
 
 .fl-support-ticket-item--active .fl-support-ticket-user {
-    @apply text-[#16a34a];
+    color: var(--brand-500);
 }
 
 .fl-support-ticket-date {
-    @apply text-[10px] text-[#a1a1aa];
+    @apply text-[10px] text-[var(--color-text-tertiary)];
 }
 
 .fl-support-ticket-item--active .fl-support-ticket-date,
 .fl-support-ticket-item--active .fl-support-ticket-excerpt {
-    @apply text-[#15803d];
+    color: var(--brand-700);
 }
 
 .fl-support-ticket-excerpt {
-    @apply text-xs text-[#a1a1aa] truncate mt-1;
+    @apply text-xs text-[var(--color-text-tertiary)] truncate mt-1;
 }
 
 /* Main Content */
@@ -102,15 +104,15 @@
 }
 
 .fl-support-header-name {
-    @apply font-bold text-white;
+    @apply font-bold text-gray-900 dark:text-white;
 }
 
 .fl-support-header-status {
-    @apply text-xs text-gray-400;
+    @apply text-xs text-gray-500 dark:text-gray-400;
 }
 
 .fl-support-thread {
-    @apply flex-1 overflow-y-auto p-8 space-y-8 bg-[#18181b];
+    @apply flex-1 overflow-y-auto p-8 space-y-8 bg-gray-50 dark:bg-[var(--color-background-primary)];
 }
 
 .fl-support-message-row {
@@ -146,11 +148,12 @@
 }
 
 .fl-chat-bubble--admin {
-    @apply bg-[#16a34a] text-white rounded-tr-sm;
+    @apply text-white rounded-tr-sm;
+    background: var(--brand-500);
 }
 
 .fl-chat-bubble--user {
-    @apply bg-[#27272a] text-white rounded-tl-sm;
+    @apply bg-white dark:bg-[var(--color-background-secondary)] text-gray-800 dark:text-[var(--color-text-primary)] border border-gray-200 dark:border-transparent rounded-tl-sm;
 }
 
 .fl-chat-attachment {
@@ -186,7 +189,7 @@
 }
 
 .fl-chat-attachment-preview {
-    @apply mb-3 p-3 bg-[#27272a] rounded-lg flex justify-between items-center text-sm border border-[#3f3f46] text-white;
+    @apply mb-3 p-3 bg-gray-100 dark:bg-[var(--color-background-secondary)] rounded-lg flex justify-between items-center text-sm border border-gray-200 dark:border-[var(--color-border-tertiary)] text-gray-800 dark:text-[var(--color-text-primary)];
 }
 
 .fl-chat-attachment-name {
@@ -199,11 +202,11 @@
 
 /* Footer / Composer */
 .fl-support-footer {
-    @apply shrink-0 p-5 border-t border-[#27272a];
+    @apply shrink-0 p-5 border-t border-gray-200 dark:border-[var(--color-border-tertiary)] bg-gray-50 dark:bg-transparent;
 }
 
 .fl-support-composer {
-    @apply min-h-[3.75rem] max-w-4xl mx-auto flex items-end gap-3 bg-[#18181b] p-2 rounded-xl border border-[#3f3f46] focus-within:border-[#52525b] transition-colors;
+    @apply min-h-[3.75rem] max-w-4xl mx-auto flex items-end gap-3 bg-white dark:bg-[var(--color-background-primary)] p-2 rounded-xl border border-gray-300 dark:border-[var(--color-border-tertiary)] focus-within:border-gray-400 dark:focus-within:border-[var(--color-text-secondary)] transition-colors shadow-sm;
 }
 
 .fl-support-composer-file-label {
@@ -215,27 +218,48 @@
 }
 
 .fl-support-composer-textarea {
-    @apply w-full bg-transparent border-none focus:ring-0 py-2.5 px-3 text-[14px] resize-none max-h-48 leading-normal text-white placeholder-gray-400 outline-none;
+    @apply w-full bg-transparent border-none focus:ring-0 py-2.5 px-3 text-[14px] resize-none max-h-48 leading-normal text-gray-900 dark:text-[var(--color-text-primary)] placeholder-gray-400 outline-none;
 }
 
 .fl-support-send-btn {
-    @apply w-10 h-10 self-end mb-0.5 mr-0.5 flex items-center justify-center bg-[#27272a] hover:bg-[#3f3f46] text-white rounded-lg transition-colors flex-shrink-0 disabled:opacity-50 disabled:grayscale;
+    @apply w-10 h-10 self-end mb-0.5 mr-0.5 flex items-center justify-center bg-gray-100 dark:bg-[var(--color-background-secondary)] hover:bg-gray-200 dark:hover:bg-[var(--color-border-tertiary)] text-gray-600 dark:text-[var(--color-text-primary)] rounded-lg transition-colors flex-shrink-0 disabled:opacity-50 disabled:grayscale;
 }
 
 .fl-support-empty-state {
-    @apply flex-1 flex flex-col items-center justify-center bg-[#18181b] p-12 relative text-[#a1a1aa];
+    @apply flex-1 flex flex-col items-center justify-center bg-gray-50 dark:bg-[var(--color-background-primary)] p-12 relative text-gray-500 dark:text-[var(--color-text-tertiary)];
 }
 
 .fl-support-empty-icon-wrapper {
-    @apply p-6 bg-[#27272a] text-[#16a34a] rounded-full mb-4;
+    @apply p-6 rounded-full mb-4;
+    background: var(--brand-50);
+    color: var(--brand-500);
+}
+.dark .fl-support-empty-icon-wrapper {
+    background: var(--color-background-secondary);
+    color: var(--brand-500);
 }
 
 .fl-support-empty-title {
-    @apply font-bold text-lg mb-1 text-white;
+    @apply font-bold text-lg mb-1 text-gray-900 dark:text-[var(--color-text-primary)];
 }
 
 .fl-support-empty-desc {
-    @apply text-sm text-center max-w-xs text-gray-400;
+    @apply text-sm text-center max-w-xs text-gray-500 dark:text-[var(--color-text-tertiary)];
+}
+
+/* Thin scrollbar for filter bars in chat sidebar */
+.fl-support-sidebar .overflow-x-auto {
+    scrollbar-width: thin;
+}
+.fl-support-sidebar .overflow-x-auto::-webkit-scrollbar {
+    height: 4px;
+}
+.fl-support-sidebar .overflow-x-auto::-webkit-scrollbar-thumb {
+    background: var(--color-border-tertiary);
+    border-radius: 4px;
+}
+.fl-support-sidebar .overflow-x-auto::-webkit-scrollbar-track {
+    background: transparent;
 }
 
 /* ── Filter / Tab Buttons ── */
@@ -244,11 +268,13 @@
 }
 
 .fl-filter-btn--active {
-    @apply bg-[#16a34a] text-white shadow-sm;
+    @apply text-white shadow-sm;
+    background: var(--brand-500);
 }
 
 .fl-filter-btn--inactive {
-    @apply text-[#a1a1aa] hover:text-[#e4e4e7] hover:bg-[#27272a];
+    color: var(--color-text-tertiary);
+    @apply hover:text-gray-900 dark:hover:text-[var(--color-text-primary)] hover:bg-gray-200 dark:hover:bg-[var(--color-background-secondary)];
 }
 
 /* ── Status / Type Badges ── */
@@ -257,7 +283,13 @@
 }
 
 .fl-badge--open {
-    @apply bg-emerald-100 text-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-400;
+    @apply px-1.5 py-0.5 rounded text-[10px] font-semibold;
+    background: var(--brand-50);
+    color: var(--brand-700);
+}
+.dark .fl-badge--open {
+    background: rgba(59, 130, 48, 0.2);
+    color: var(--brand-300);
 }
 
 .fl-badge--resolved {
@@ -278,7 +310,11 @@
 
 /* ── Primary CTA Button ── */
 .fl-cta-btn {
-    @apply bg-[#16a34a] text-white hover:bg-[#15803d] transition-colors font-semibold;
+    @apply text-white transition-colors font-semibold;
+    background: var(--brand-500);
+}
+.fl-cta-btn:hover {
+    background: var(--brand-700);
 }
 
 .fl-cta-btn--sm {
@@ -323,7 +359,7 @@
     }
 
     .fl-support-sidebar {
-        @apply fixed left-0 top-0 bottom-0 z-50 transform -translate-x-full transition-transform duration-300 border-none bg-white dark:bg-zinc-900 shadow-2xl;
+        @apply fixed left-0 top-0 bottom-0 z-50 transform -translate-x-full transition-transform duration-300 border-none bg-white dark:bg-[var(--color-background-primary)] shadow-2xl;
         width: min(320px, 85vw);
     }
 

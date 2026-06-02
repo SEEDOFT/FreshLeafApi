@@ -49,7 +49,7 @@ class AdminExchangeRates extends BaseWidget
                 ->description('1 USD')
                 ->descriptionIcon('heroicon-m-arrow-trending-up')
                 ->color('warning'),
-            Stat::make('KHR → USD', number_format($khrToUsd, 4).' USD')
+            Stat::make('KHR → USD', number_format($khrToUsd, 6).' USD')
                 ->description('1 KHR')
                 ->descriptionIcon('heroicon-m-arrow-trending-down')
                 ->color('info'),

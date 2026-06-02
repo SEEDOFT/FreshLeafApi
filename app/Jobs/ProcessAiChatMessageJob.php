@@ -136,7 +136,7 @@ class ProcessAiChatMessageJob implements ShouldQueue
                 'products.name_km',
                 'vendor_inventories.price',
                 'vendor_inventories.stock_quantity',
-                'units.name as unit_name',
+                'units.name_en as unit_name',
                 'vendor_inventories.farm_location',
             ])
             ->limit(5)
@@ -632,6 +632,13 @@ class ProcessAiChatMessageJob implements ShouldQueue
      */
     private function shouldPerformLiveSearch(string $prompt): bool
     {
-        return true;
+        $keywords = (array) config('ai.web_search.live_query_keywords', []);
+        foreach ($keywords as $keyword) {
+            if (stripos($prompt, $keyword) !== false) {
+                return true;
+            }
+        }
+
+        return false;
     }
 }

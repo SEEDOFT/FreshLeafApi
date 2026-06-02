@@ -26,6 +26,12 @@ class WalletTransactionForm
                             ->searchable()
                             ->required(fn (string $operation): bool => $operation === 'create')
                             ->dehydrated(fn (mixed $state): bool => filled($state)),
+                        Select::make('currency_id')
+                            ->label(__('admin.resources.order.currency'))
+                            ->relationship('currency', 'name')
+                            ->searchable()
+                            ->required(fn (string $operation): bool => $operation === 'create')
+                            ->dehydrated(fn (mixed $state): bool => filled($state)),
                         Select::make('wallet_transaction_type_id')
                             ->label(__('admin.resources.wallet_transaction.type'))
                             ->relationship('type', 'name')
@@ -40,8 +46,7 @@ class WalletTransactionForm
                             ->label(__('admin.resources.wallet_transaction.amount'))
                             ->numeric()
                             ->required(fn (string $operation): bool => $operation === 'create')
-                            ->dehydrated(fn (mixed $state): bool => filled($state))
-                            ->prefix('$'),
+                            ->dehydrated(fn (mixed $state): bool => filled($state)),
                         TextInput::make('reference_type')
                             ->label(__('admin.resources.wallet_transaction.ref_type')),
                         TextInput::make('reference_id')

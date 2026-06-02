@@ -60,17 +60,7 @@ class WalletTransactionController extends Controller
             static function () use ($request): WalletTransaction {
                 $validatedData = $request->validated();
 
-                $transaction = WalletTransaction::create([
-                    'wallet_id' => $validatedData['wallet_id'],
-                    'wallet_transaction_type_id' => $validatedData['wallet_transaction_type_id'],
-                    'amount' => $validatedData['amount'],
-                    'currency' => $validatedData['currency'],
-                    'description' => $validatedData['description'],
-                    'payment_method_id' => $validatedData['payment_method_id'],
-                    'reference_number' => $validatedData['reference_number'],
-                    'transaction_date' => $validatedData['transaction_date'],
-                    'wallet_transaction_status_id' => $validatedData['wallet_transaction_status_id'],
-                ]);
+                $transaction = WalletTransaction::create($validatedData);
 
                 $transaction->recordHistory();
 

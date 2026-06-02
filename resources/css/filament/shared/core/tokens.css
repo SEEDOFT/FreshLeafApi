@@ -5,22 +5,22 @@
     --bp-desktop-min: 1024px;
     --bp-wide-min: 1280px;
 
-    --brand-50: #fbf8f2;
-    --brand-100: #f3efe9;
-    --brand-300: #3f6d2e;
-    --brand-500: #2e5321;
-    --brand-700: #1a3314;
+    --brand-50: #eff6ed;
+    --brand-100: #e2efe0;
+    --brand-300: #4a8c3a;
+    --brand-500: #3b8230;
+    --brand-700: #24601e;
 
     --accent-500: #9e6844;
     --accent-600: #924a26;
 
     --neutral-0: #ffffff;
-    --neutral-50: #fcf9f5;
-    --neutral-100: #e5e5e5;
-    --neutral-300: #bdbdbd;
-    --neutral-500: #6b7260;
-    --neutral-700: #334038;
-    --neutral-900: #1a1a1a;
+    --neutral-50: #f7f9f5;
+    --neutral-100: #e5ebe4;
+    --neutral-300: #d0d8ce;
+    --neutral-500: #6b8268;
+    --neutral-700: #33483a;
+    --neutral-900: #1a1f18;
 
     --success: #3f7d2c;
     --warning: #f6b93b;

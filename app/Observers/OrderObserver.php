@@ -124,6 +124,7 @@ class OrderObserver
 
                         $transaction = WalletTransaction::create([
                             'wallet_id' => $wallet->id,
+                            'currency_id' => $wallet->currency_id,
                             'wallet_transaction_type_id' => WalletTransactionType::REFUND_ID,
                             'wallet_transaction_status_id' => WalletTransactionStatus::COMPLETED_ID,
                             'amount' => $amount,

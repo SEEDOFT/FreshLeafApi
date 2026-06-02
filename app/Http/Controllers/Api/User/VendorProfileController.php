@@ -64,9 +64,11 @@ class VendorProfileController extends Controller
             ->with(self::PRODUCT_RELATIONS)
             ->paginate($request->integer('per_page', 10));
 
+        $paginatedProducts = VendorInventoryResource::collection($products)->response()->getData(true);
+
         return static::successResponse([
             'vendor' => new VendorProfileResource($vendor),
-            'products' => VendorInventoryResource::collection($products),
+            'products' => $paginatedProducts,
         ], __('api.product.retrieved'));
     }
 }

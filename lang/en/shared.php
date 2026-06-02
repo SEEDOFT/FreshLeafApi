@@ -11,6 +11,7 @@ return [
             'password' => 'Password',
             'failed' => 'These credentials do not match our records.',
             'pending' => 'Your account is pending approval. Please wait for an administrator to review your application.',
+            'submit' => 'Sign In',
             'not_having_account' => "Don't have an account?",
             'register_here' => 'Register here',
         ],
@@ -159,6 +160,7 @@ return [
             'address' => 'Address',
         ],
         'add_product' => 'Add Product',
+        'save_changes' => 'Save Changes',
     ],
     'vendor' => [
         'business_name' => 'Business name',

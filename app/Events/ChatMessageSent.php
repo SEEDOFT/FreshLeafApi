@@ -10,6 +10,7 @@ use Illuminate\Broadcasting\PrivateChannel;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcastNow;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\Storage;
 
 class ChatMessageSent implements ShouldBroadcastNow
 {
@@ -54,6 +55,9 @@ class ChatMessageSent implements ShouldBroadcastNow
                 'sender_name' => $this->message->sender->fullName ?? 'User',
                 'content' => $this->message->content,
                 'file_path' => $this->message->file_path,
+                'file_url' => $this->message->file_path
+                    ? Storage::disk('public')->url($this->message->file_path)
+                    : null,
                 'has_attachment' => $this->message->file_path !== null,
                 'created_at' => $this->message->created_at?->toIso8601String(),
             ],

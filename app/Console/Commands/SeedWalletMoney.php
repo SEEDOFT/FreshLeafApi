@@ -56,13 +56,12 @@ class SeedWalletMoney extends Command
 
             $transaction = WalletTransaction::create([
                 'wallet_id' => $wallet->id,
+                'currency_id' => $wallet->currency_id,
                 'wallet_transaction_type_id' => WalletTransactionType::DEPOSIT_ID,
-                'amount' => $amount,
-                'currency' => $wallet->currency_id === Currency::USD_ID ? 'USD' : 'KHR',
-                'description' => 'Sandbox Money Seed',
-                'reference_number' => 'SEED'.strtoupper(uniqid()),
-                'transaction_date' => now(),
                 'wallet_transaction_status_id' => WalletTransactionStatus::COMPLETED_ID,
+                'amount' => $amount,
+                'description' => 'Sandbox Money Seed',
+                'transaction_date' => now(),
             ]);
 
             $transaction->recordHistory();

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Filament\Admin\Widgets;
 
 use App\Models\Order;
+use App\Models\OrderStatus;
 use App\Models\PaymentStatus;
 use Filament\Widgets\ChartWidget;
 use Illuminate\Database\Eloquent\Builder;
@@ -33,9 +34,12 @@ class AdminRevenueChart extends ChartWidget
     protected function getData(): array
     {
         $data = Order::query()
+            ->where('order_status_id', OrderStatus::DELIVERED_ID)
             ->whereHas(
                 'paymentStatus',
-                static fn (Builder $query): Builder => $query->where('id', PaymentStatus::COMPLETED_ID)
+                static function (Builder $query): void {
+                    $query->where('id', PaymentStatus::COMPLETED_ID);
+                }
             )
             ->where('created_at', '>=', Carbon::now()->subDays(30))
             ->select(
@@ -51,8 +55,8 @@ class AdminRevenueChart extends ChartWidget
         $values = [];
 
         for ($i = 29; $i >= 0; $i--) {
-            $date = now()->subDays($i)->format('Y-m-d');
-            $labels[] = now()->subDays($i)->format('M d');
+            $date = Carbon::now()->subDays($i)->format('Y-m-d');
+            $labels[] = Carbon::now()->subDays($i)->format('M d');
             $values[] = $data[$date] ?? 0;
         }
 

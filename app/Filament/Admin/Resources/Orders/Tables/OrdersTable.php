@@ -78,8 +78,8 @@ class OrdersTable
                     )),
                 TextColumn::make('total_amount')
                     ->label(__('admin.resources.order.total'))
-                    ->money('USD')
-                    ->sortable(),
+                    ->sortable()
+                    ->formatStateUsing(fn (Order $record): string => Order::formatMoney($record->total_amount, $record->currency)),
                 TextColumn::make('delivery_date')
                     ->label(__('admin.resources.order.delivery_date'))
                     ->date()

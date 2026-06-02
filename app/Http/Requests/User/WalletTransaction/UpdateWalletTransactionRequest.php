@@ -27,6 +27,11 @@ class UpdateWalletTransactionRequest extends FormRequest
     public function rules(): array
     {
         return [
+            'currency_id' => [
+                'sometimes',
+                'integer',
+                'exists:currencies,id',
+            ],
             'wallet_transaction_type_id' => [
                 'sometimes',
                 'integer',
@@ -55,6 +60,10 @@ class UpdateWalletTransactionRequest extends FormRequest
                 'nullable',
                 'string',
                 'max:1000',
+            ],
+            'transaction_date' => [
+                'nullable',
+                'date',
             ],
         ];
     }

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Filament\Vendor\Resources\Wallets\RelationManagers;
 
+use App\Models\Order;
 use App\Models\WalletTransaction;
 use App\Models\WalletTransactionStatus;
 use Filament\Actions\ViewAction;
@@ -37,12 +38,7 @@ class TransactionsRelationManager extends RelationManager
                     ->disabled()
                     ->dehydrated(false)
                     ->placeholder($notProvided)
-                    ->formatStateUsing(function (?string $state, WalletTransaction $record): string {
-                        $symbol = $record->wallet->currency->symbol ?? '';
-                        $amount = number_format((float) ($record->amount ?? 0), 2);
-
-                        return "{$symbol} {$amount}";
-                    }),
+                    ->formatStateUsing(fn (?string $state, WalletTransaction $record): string => Order::formatMoney($record->amount, $record->currency)),
                 TextInput::make('status.translated_name')
                     ->label(__('admin.resources.wallet_transaction.status'))
                     ->disabled()
@@ -83,12 +79,7 @@ class TransactionsRelationManager extends RelationManager
                 TextColumn::make('amount')
                     ->label(__('admin.resources.wallet_transaction.amount'))
                     ->placeholder($notProvided)
-                    ->getStateUsing(function (WalletTransaction $record): string {
-                        $symbol = $record->wallet->currency->symbol ?? '';
-                        $amount = number_format((float) $record->amount, 2);
-
-                        return "{$symbol} {$amount}";
-                    })
+                    ->formatStateUsing(fn (WalletTransaction $record): string => Order::formatMoney($record->amount, $record->currency))
                     ->sortable(),
                 TextColumn::make('status.translated_name')
                     ->label(__('admin.resources.wallet_transaction.status'))

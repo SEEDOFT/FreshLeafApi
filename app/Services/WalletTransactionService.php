@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Services;
 
 use App\Models\User;
+use App\Models\Wallet;
 use App\Models\WalletTransaction;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Pagination\LengthAwarePaginator;
@@ -52,6 +53,14 @@ class WalletTransactionService
     public function createTransaction(User $user, array $data): WalletTransaction
     {
         return DB::transaction(function () use ($data) {
+            // Auto-fill currency_id from the wallet if not explicitly provided
+            if (! isset($data['currency_id']) && isset($data['wallet_id'])) {
+                $wallet = Wallet::find($data['wallet_id']);
+                if ($wallet) {
+                    $data['currency_id'] = $wallet->currency_id;
+                }
+            }
+
             $transaction = WalletTransaction::create($data);
 
             $transaction->recordHistory();

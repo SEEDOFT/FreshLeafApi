@@ -42,11 +42,13 @@ php artisan migrate
 # Optional: Setup Offline AI (llama.cpp)
 php ai/setup-ai.php
 
-# Start development (all services)
+# Start development (all services: Laravel, Queue, Vite, Reverb)
 composer run dev
 
-# Or with custom Laravel server host/port
-composer run dev -- --host=192.168.0.108 --port=8000
+# IMPORTANT: If you are testing with the mobile app (Flutter),
+# you MUST bind the server to your local network IP (0.0.0.0)
+# so your emulator/phone can reach the backend.
+composer run dev -- --host=0.0.0.0 --port=8000
 ```
 
 ## AI Chat Flow (Flutter)

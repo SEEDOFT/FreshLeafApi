@@ -67,5 +67,6 @@ return [
         'not_available' => 'N/A',
         'earnings_chart_heading' => 'Earnings Trend (30 Days)',
         'earnings_chart_label' => 'Earnings (USD)',
+        'earnings_chart_period' => 'Last 30 days',
     ],
 ];

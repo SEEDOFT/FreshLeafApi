@@ -67,5 +67,6 @@ return [
         'not_available' => 'N/A',
         'earnings_chart_heading' => 'និន្នាការចំណូល (៣០ ថ្ងៃ)',
         'earnings_chart_label' => 'ចំណូល (USD)',
+        'earnings_chart_period' => '៣០ ថ្ងៃចុងក្រោយ',
     ],
 ];

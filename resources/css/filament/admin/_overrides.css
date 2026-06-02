@@ -111,14 +111,24 @@
     display: none !important;
 }
 
-/* Make Sidebar Resizable */
-.fi-sidebar {
-    resize: horizontal !important;
-    overflow-x: hidden !important;
-    overflow-y: auto !important;
-    max-width: 50vw !important;
-    min-width: 16rem !important;
-    height: 100vh !important;
+/* Sidebar Resize Handle — fixed-position element outside Livewire tree */
+.fi-sidebar-fixed-handle {
+    position: fixed;
+    z-index: 9999;
+    cursor: ew-resize;
+    background: transparent;
+}
+.fi-sidebar-fixed-handle:hover,
+body.fi-sidebar-resizing .fi-sidebar-fixed-handle {
+    background: transparent;
+    box-shadow: -1px 0 0 0 color-mix(in srgb, var(--primary-500, #3b8230) 20%, transparent);
+}
+
+/* Disable CSS transitions on sidebar during drag for smooth resizing */
+body.fi-sidebar-resizing .fi-sidebar,
+body.fi-sidebar-resizing .fi-sidebar * {
+    transition-duration: 0s !important;
+    transition-delay: 0s !important;
 }
 
 /* Ensure dashboard expands to fill height */

@@ -13,7 +13,7 @@
 }
 
 .dark .ai-chat-shell {
-    background: #18181b; /* main shell dark background */
+    background: var(--color-background-primary);
 }
 
 @media (min-width: 768px) {
@@ -28,22 +28,22 @@
 
 /* Sidebar Conversations */
 .ai-chat-sidebar {
-    background: #18181b;
-    border-right: 1px solid #27272a;
+    background: var(--color-background-primary);
+    border-right: 1px solid var(--color-border-tertiary);
     display: flex;
     flex-direction: column;
 }
 
 .dark .ai-chat-sidebar {
-    background: #18181b;
-    border-right-color: #27272a;
+    background: var(--color-background-primary);
+    border-right-color: var(--color-border-tertiary);
 }
 
 .ai-new-chat-btn {
     padding: 0.35rem 0.8rem;
     background: transparent;
-    border: 1px solid #3f3f46;
-    color: white;
+    border: 1px solid var(--color-border-tertiary);
+    color: var(--color-text-primary);
     border-radius: 0.5rem;
     font-size: 0.85rem;
     font-weight: 500;
@@ -55,7 +55,7 @@
 }
 
 .ai-new-chat-btn:hover {
-    background: #27272a;
+    background: var(--color-background-secondary);
 }
 
 .ai-session-list {
@@ -77,60 +77,60 @@
     display: flex;
     flex-direction: column;
     gap: 0.25rem;
-    border-bottom: 1px solid #27272a;
+    border-bottom: 1px solid var(--color-border-tertiary);
     border-left: 3px solid transparent;
 }
 
 .ai-session-item:hover {
-    background: #27272a;
+    background: var(--color-background-secondary);
 }
 
 .ai-session-item.is-active {
-    background: #eefdf4; /* light green from mockup */
-    border-left: 3px solid #16a34a;
+    background: var(--brand-50);
+    border-left: 3px solid var(--brand-500);
 }
 
 .dark .ai-session-item.is-active {
-    background: #eefdf4; 
+    background: rgba(59, 130, 48, 0.15);
 }
 
 .ai-session-title {
     font-weight: 700;
-    color: #e4e4e7;
+    color: var(--color-text-primary);
     font-size: 0.95rem;
 }
 
 .ai-session-item.is-active .ai-session-title {
-    color: #16a34a; /* green text */
+    color: var(--brand-500);
 }
 
 .ai-session-meta {
     font-size: 0.75rem;
-    color: #a1a1aa;
+    color: var(--color-text-tertiary);
 }
 
 .ai-session-item.is-active .ai-session-meta {
-    color: #15803d;
+    color: var(--brand-700);
 }
 
 /* Main Chat Area */
 .ai-chat-main {
     display: flex;
     flex-direction: column;
-    background: #18181b;
+    background: var(--color-background-primary);
     min-width: 0;
     min-height: 0;
     overflow: hidden;
 }
 
 .dark .ai-chat-main {
-    background: #18181b;
+    background: var(--color-background-primary);
 }
 
 .ai-chat-header {
     flex-shrink: 0;
     padding: 1rem 1.5rem;
-    border-bottom: 1px solid #27272a;
+    border-bottom: 1px solid var(--color-border-tertiary);
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -200,8 +200,8 @@
 }
 
 .ai-status-pill.is-connected {
-    background: rgba(16, 185, 129, 0.1);
-    color: #059669;
+    background: color-mix(in srgb, var(--brand-500) 10%, transparent);
+    color: var(--brand-500);
 }
 
 /* Thread & Bubbles */

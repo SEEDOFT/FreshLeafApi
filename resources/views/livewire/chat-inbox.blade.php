@@ -16,7 +16,7 @@
                 <h3 class="fl-support-sidebar-title">{{ __('admin.chat.active_conversations', [], 'en') }}</h3>
                 @if($this->canCreateSupportTicket())
                     <button type="button" wire:click="createSupportTicket"
-                        class="px-3 py-1.5 bg-transparent border border-[#3f3f46] hover:bg-[#27272a] text-white rounded-lg text-[13px] font-medium transition-all duration-200">
+                        class="px-3 py-1.5 bg-transparent border border-gray-300 dark:border-[#3f3f46] hover:bg-gray-100 dark:hover:bg-[#27272a] text-gray-700 dark:text-white rounded-lg text-[13px] font-medium transition-all duration-200">
                         <span class="flex items-center gap-1.5">
                             <x-filament::icon icon="heroicon-o-plus" class="w-4 h-4" />
                             {{ __('admin.chat.new_ticket', [], 'en') }}
@@ -26,7 +26,7 @@
             </div>
         </div>
 
-        <div class="flex border-b border-[#27272a] px-4 py-2 gap-1 bg-[#18181b] overflow-x-auto">
+        <div class="flex border-b border-gray-200 dark:border-[#27272a] px-4 py-2 gap-1 bg-gray-50 dark:bg-[#18181b] overflow-x-auto">
             <button wire:click="$set('conversationFilter', 'all')"
                 class="fl-filter-btn {{ $conversationFilter === 'all' ? 'fl-filter-btn--active' : 'fl-filter-btn--inactive' }}">
                 {{ __('admin.chat.filter_all', [], 'en') }}
@@ -46,7 +46,7 @@
         </div>
 
         @if(in_array(auth()->user()?->user_type_id, [\App\Models\UserType::ADMIN_ID, \App\Models\UserType::VENDOR_ID], true))
-            <div class="flex border-b border-[#27272a] px-4 py-2 gap-1 bg-[#18181b]">
+            <div class="flex border-b border-gray-200 dark:border-[#27272a] px-4 py-2 gap-1 bg-gray-50 dark:bg-[#18181b]">
                 <button wire:click="$set('activeTab', 'all')"
                     class="fl-filter-btn {{ $activeTab === 'all' ? 'fl-filter-btn--active' : 'fl-filter-btn--inactive' }}">
                     All
@@ -138,12 +138,12 @@
                     $title = __('admin.chat.support', [], 'en') . ' - ' . $title;
                 }
             @endphp
-            <header class="border-b border-[#27272a] px-6 py-4 flex items-center justify-between bg-[#18181b]">
+            <header class="border-b border-gray-200 dark:border-[#27272a] px-6 py-4 flex items-center justify-between bg-white dark:bg-[#18181b]">
                 <div class="flex items-center gap-3">
-                    <button type="button" class="md:hidden text-gray-400 hover:text-white" x-on:click="toggleDrawer()">
-                        <x-filament::icon icon="heroicon-o-bars-3" class="h-5 w-5" />
+                    <button type="button" class="md:hidden p-2 -ml-2 rounded-lg text-gray-500 hover:text-gray-900 hover:bg-gray-100 dark:text-gray-400 dark:hover:text-white dark:hover:bg-white/10 transition-colors" x-on:click="toggleDrawer()">
+                        <x-filament::icon icon="heroicon-o-bars-3" class="h-6 w-6" />
                     </button>
-                    <div class="h-10 w-10 rounded-full bg-[#dcfce7] flex items-center justify-center text-[#16a34a] font-bold text-sm">
+                    <div class="h-10 w-10 rounded-full bg-emerald-100 dark:bg-[#dcfce7] flex items-center justify-center text-emerald-600 dark:text-[#16a34a] font-bold text-sm">
                         @if($otherParticipant)
                             {{ mb_substr($otherParticipant->user->first_name, 0, 1) }}{{ mb_substr($otherParticipant->user->last_name, 0, 1) }}
                         @else
@@ -152,7 +152,7 @@
                     </div>
                     <div class="flex flex-col">
                         <div class="flex items-center gap-2">
-                            <h2 class="text-base font-bold text-white leading-tight">{{ $title }}</h2>
+                            <h2 class="text-base font-bold text-gray-900 dark:text-white leading-tight">{{ $title }}</h2>
                             @if($isSupport)
                                 <span class="fl-badge {{ $isResolved ? 'fl-badge--resolved' : 'fl-badge--open' }}">
                                     {{ $isResolved ? __('admin.chat.resolved', [], 'en') : __('admin.chat.open', [], 'en') }}
@@ -189,12 +189,12 @@
                         <div class="flex flex-col items-end gap-1 mb-6">
                             <div class="flex items-center justify-end gap-2 mb-1 w-full pr-12">
                                 <span class="text-[10px] text-gray-500">{{ $msg->created_at->format('H:i') }}</span>
-                                <span class="text-[10px] font-bold text-gray-400 uppercase">{{ __('admin.chat.you', [], 'en') }}</span>
-                                <div class="w-7 h-7 rounded-full bg-[#27272a] border border-[#3f3f46] flex items-center justify-center text-[10px] font-bold text-gray-300">
+                                <span class="text-[10px] font-bold text-gray-500 dark:text-gray-400 uppercase">{{ __('admin.chat.you', [], 'en') }}</span>
+                                <div class="w-7 h-7 rounded-full bg-gray-200 dark:bg-[#27272a] border border-gray-300 dark:border-[#3f3f46] flex items-center justify-center text-[10px] font-bold text-gray-600 dark:text-gray-300">
                                     {{ substr(auth()->user()?->name ?? 'U', 0, 2) }}
                                 </div>
                             </div>
-                            <div class="w-fit bg-[#16a34a] text-white px-5 py-3 rounded-xl rounded-tr-sm max-w-[75%] mr-[3.25rem] text-[15px] font-medium leading-relaxed break-words shadow-sm">
+                            <div class="w-fit bg-emerald-600 dark:bg-[#16a34a] text-white px-5 py-3 rounded-xl rounded-tr-sm max-w-[75%] mr-[3.25rem] text-[15px] font-medium leading-relaxed break-words shadow-sm">
                                 @if($msg->file_path)
                                     @if(preg_match('/\.(jpg|jpeg|png|gif|webp)$/i', $msg->file_path))
                                         <div x-data="{ isZoomed: false }">
@@ -244,15 +244,15 @@
                     @else
                         {{-- User (Other) message, aligned left --}}
                         <div class="flex items-start gap-3 mb-6">
-                            <div class="w-8 h-8 rounded-full bg-[#dcfce7] flex items-center justify-center text-[#16a34a] font-bold text-xs flex-shrink-0 mt-1">
+                            <div class="w-8 h-8 rounded-full bg-emerald-100 dark:bg-[#dcfce7] flex items-center justify-center text-emerald-600 dark:text-[#16a34a] font-bold text-xs flex-shrink-0 mt-1">
                                 {{ mb_substr($msg->sender->first_name ?? 'U', 0, 1) }}{{ mb_substr($msg->sender->last_name ?? '', 0, 1) }}
                             </div>
                             <div class="flex flex-col gap-1 w-full items-start">
                                 <div class="flex items-center gap-2">
-                                    <span class="text-[10px] font-bold text-gray-400 uppercase tracking-wider">{{ $msg->sender->fullName }}</span>
+                                    <span class="text-[10px] font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">{{ $msg->sender->fullName }}</span>
                                     <span class="text-[10px] text-gray-500">{{ $msg->created_at->format('H:i') }}</span>
                                 </div>
-                                <div class="w-fit bg-[#27272a] text-white px-5 py-4 rounded-xl rounded-tl-sm max-w-[85%] text-[15px] leading-relaxed shadow-sm border border-[#3f3f46] break-words">
+                                <div class="w-fit bg-white dark:bg-[#27272a] text-gray-800 dark:text-white px-5 py-4 rounded-xl rounded-tl-sm max-w-[85%] text-[15px] leading-relaxed shadow-sm border border-gray-200 dark:border-[#3f3f46] break-words">
                                     @if($msg->file_path)
                                         @if(preg_match('/\.(jpg|jpeg|png|gif|webp)$/i', $msg->file_path))
                                             <div x-data="{ isZoomed: false }">
@@ -288,7 +288,7 @@
                                                 </template>
                                             </div>
                                         @else
-                                            <a href="{{ Storage::url($msg->file_path) }}" target="_blank" class="flex items-center gap-2 p-2 mb-2 rounded bg-white/5 hover:bg-white/10 transition-colors text-white">
+                                            <a href="{{ Storage::url($msg->file_path) }}" target="_blank" class="flex items-center gap-2 p-2 mb-2 rounded bg-black/5 dark:bg-white/5 hover:bg-black/10 dark:hover:bg-white/10 transition-colors text-gray-800 dark:text-white">
                                                 <x-filament::icon icon="heroicon-o-document" class="w-5 h-5 opacity-70" />
                                                 <span>{{ __('admin.chat.download_attachment', [], 'en') }}</span>
                                             </a>
@@ -304,12 +304,12 @@
                 @endforeach
 
                 <div x-show="isUserTyping" style="display: none;" class="flex items-start gap-3 mb-6">
-                    <div class="w-8 h-8 rounded-full bg-[#dcfce7] flex items-center justify-center text-[#16a34a] font-bold text-xs flex-shrink-0 mt-1 animate-pulse">
+                    <div class="w-8 h-8 rounded-full bg-emerald-100 dark:bg-[#dcfce7] flex items-center justify-center text-emerald-600 dark:text-[#16a34a] font-bold text-xs flex-shrink-0 mt-1 animate-pulse">
                         {{ mb_substr($otherParticipant?->user?->first_name ?? 'U', 0, 1) }}{{ mb_substr($otherParticipant?->user?->last_name ?? '', 0, 1) }}
                     </div>
                     <div class="flex flex-col gap-1 w-full items-start">
-                        <span class="text-[10px] font-bold text-gray-400 uppercase tracking-wider">{{ $title }}</span>
-                        <div class="w-fit bg-[#27272a] text-white px-5 py-3 rounded-xl rounded-tl-sm max-w-[75%] text-[15px] border border-[#3f3f46]">
+                        <span class="text-[10px] font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">{{ $title }}</span>
+                        <div class="w-fit bg-white dark:bg-[#27272a] text-gray-800 dark:text-white px-5 py-3 rounded-xl rounded-tl-sm max-w-[75%] text-[15px] border border-gray-200 dark:border-[#3f3f46] shadow-sm">
                             <div class="flex items-center gap-1.5 h-5">
                                 <span class="fl-typing-dot"></span>
                                 <span class="fl-typing-dot" style="animation-delay: 0.2s"></span>
@@ -357,10 +357,10 @@
                             x-on:keydown.enter="if (!$event.shiftKey) { $event.preventDefault(); submitComposer($el, @js((bool) $file)); }"
                             x-bind:style="{ height: composerTextareaHeight, overflowY: composerTextareaOverflowY }"
                             placeholder="{{ __('admin.chat.type_reply', [], 'en') }}"
-                            class="flex-1 bg-transparent border-none focus:ring-0 text-white text-[14px] resize-none px-3 py-2 outline-none" rows="1"
+                            class="flex-1 bg-transparent border-none focus:ring-0 text-gray-900 dark:text-white text-[14px] resize-none px-3 py-2 outline-none" rows="1"
                             autofocus></textarea>
                     </div>
-                    <button type="submit" class="w-10 h-10 self-end mb-0.5 mr-0.5 flex items-center justify-center bg-[#27272a] hover:bg-[#3f3f46] text-white rounded-lg transition-colors flex-shrink-0 disabled:opacity-50 disabled:grayscale" wire:loading.attr="disabled" wire:target="sendMessage, file">
+                    <button type="submit" class="w-10 h-10 self-end mb-0.5 mr-0.5 flex items-center justify-center bg-gray-100 dark:bg-[#27272a] hover:bg-gray-200 dark:hover:bg-[#3f3f46] text-gray-600 dark:text-white rounded-lg transition-colors flex-shrink-0 disabled:opacity-50 disabled:grayscale" wire:loading.attr="disabled" wire:target="sendMessage, file">
                         <x-filament::icon icon="heroicon-o-paper-airplane" class="h-5 w-5" />
                     </button>
                 </form>
@@ -374,12 +374,12 @@
             @endif
         @else
             <div class="fl-support-empty-state">
-                <header class="fl-support-header absolute top-0 left-0 right-0 border-b-0 bg-transparent">
-                    <button type="button" class="md:hidden" x-on:click="toggleDrawer()">
-                        <x-filament::icon icon="heroicon-o-bars-3" class="h-5 w-5" />
+                <header class="fl-support-header absolute top-0 left-0 right-0 border-b-0 bg-transparent flex justify-start pt-4 pl-4">
+                    <button type="button" class="md:hidden p-2 rounded-lg text-gray-500 hover:text-gray-900 hover:bg-gray-100 dark:text-gray-400 dark:hover:text-white dark:hover:bg-white/10 transition-colors" x-on:click="toggleDrawer()">
+                        <x-filament::icon icon="heroicon-o-bars-3" class="h-6 w-6" />
                     </button>
-                    <button type="button" class="hidden md:block" x-on:click="toggleDrawer()">
-                        <x-filament::icon icon="heroicon-o-bars-3-bottom-left" class="h-5 w-5" />
+                    <button type="button" class="hidden md:block p-2 rounded-lg text-gray-500 hover:text-gray-900 hover:bg-gray-100 dark:text-gray-400 dark:hover:text-white dark:hover:bg-white/10 transition-colors" x-on:click="toggleDrawer()">
+                        <x-filament::icon icon="heroicon-o-bars-3-bottom-left" class="h-6 w-6" />
                     </button>
                 </header>
                 <div class="fl-support-empty-icon-wrapper">

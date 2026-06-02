@@ -31,7 +31,12 @@ class StoreWalletTransactionRequest extends FormRequest
             'wallet_id' => [
                 'required',
                 'integer',
-                'exists:wallet,id',
+                'exists:wallets,id',
+            ],
+            'currency_id' => [
+                'required',
+                'integer',
+                'exists:currencies,id',
             ],
             'wallet_transaction_type_id' => [
                 'required',
@@ -61,6 +66,10 @@ class StoreWalletTransactionRequest extends FormRequest
                 'nullable',
                 'string',
                 'max:1000',
+            ],
+            'transaction_date' => [
+                'nullable',
+                'date',
             ],
         ];
     }

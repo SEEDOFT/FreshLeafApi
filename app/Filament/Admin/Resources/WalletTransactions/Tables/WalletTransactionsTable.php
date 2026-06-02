@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Filament\Admin\Resources\WalletTransactions\Tables;
 
+use App\Models\Order;
 use App\Models\WalletTransaction;
 use App\Models\WalletTransactionStatus;
 use App\Models\WalletTransactionType;
@@ -40,9 +41,13 @@ class WalletTransactionsTable
                         default => 'gray',
                     })
                     ->sortable(),
+                TextColumn::make('currency.code')
+                    ->label(__('admin.resources.order.currency'))
+                    ->badge()
+                    ->color('gray'),
                 TextColumn::make('amount')
                     ->label(__('admin.resources.wallet_transaction.amount'))
-                    ->money(fn (WalletTransaction $record) => $record->wallet->currency->code ?? 'USD')
+                    ->formatStateUsing(fn (WalletTransaction $record): string => Order::formatMoney($record->amount, $record->currency))
                     ->sortable(),
                 TextColumn::make('created_at')
                     ->label(__('admin.resources.created_at'))

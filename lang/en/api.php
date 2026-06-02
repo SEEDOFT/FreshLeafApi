@@ -156,6 +156,7 @@ return [
         'messages_retrieved' => 'Messages retrieved successfully',
         'message_sent' => 'Message sent successfully',
         'conversation_resolved' => 'This support ticket is resolved. Open a new ticket to continue chatting with support.',
+        'conversation_not_found' => 'Conversation not found',
     ],
 
     /*

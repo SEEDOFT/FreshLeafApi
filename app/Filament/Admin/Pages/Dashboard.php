@@ -36,7 +36,7 @@ class Dashboard extends Page
 
     public function getSubheading(): string
     {
-        return Carbon::now()->format('l, F j, Y');
+        return Carbon::now()->format('l j F, Y');
     }
 
     #[Override]

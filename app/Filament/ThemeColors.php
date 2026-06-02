@@ -17,12 +17,12 @@ final class ThemeColors
     public static function getPalette(): array
     {
         return [
-            'primary' => '#2e5321', // Deep leaf green
+            'primary' => '#3b8230', // Fresh leaf green
             'success' => '#3f7d2c',
             'warning' => '#f6b93b',
             'danger' => '#dc4c3f',
             'info' => '#1e88e5',
-            'gray' => Color::Zinc, // Clean Zinc Grays
+            'gray' => Color::Stone, // Warm neutral grays
         ];
     }
 
@@ -32,11 +32,11 @@ final class ThemeColors
      * @return array<string, string>
      */
     public const array BRAND = [
-        '50' => '#fbf8f2',
-        '100' => '#f3efe9',
-        '300' => '#3f6d2e',
-        '500' => '#2e5321',
-        '700' => '#1a3314',
+        '50' => '#eff6ed',
+        '100' => '#e2efe0',
+        '300' => '#4a8c3a',
+        '500' => '#3b8230',
+        '700' => '#24601e',
     ];
 
     /**
@@ -57,11 +57,11 @@ final class ThemeColors
      * @return array<string, string>
      */
     public const array NEUTRAL = [
-        '50' => '#fcf9f5',
-        '100' => '#e5e5e5',
-        '300' => '#bdbdbd',
-        '500' => '#6b7260',
-        '900' => '#1a1a1a',
+        '50' => '#f7f9f5',
+        '100' => '#e5ebe4',
+        '300' => '#d0d8ce',
+        '500' => '#6b8268',
+        '900' => '#1a1f18',
     ];
 
     /**

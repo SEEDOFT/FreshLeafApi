@@ -7,6 +7,7 @@ namespace App\Filament\Admin\Widgets;
 use App\Models\CommissionFee;
 use App\Models\Order;
 use App\Models\OrderItem;
+use App\Models\OrderStatus;
 use App\Models\PaymentStatus;
 use Filament\Widgets\StatsOverviewWidget as BaseWidget;
 use Filament\Widgets\StatsOverviewWidget\Stat;
@@ -44,13 +45,42 @@ class AdminFinancialOverview extends BaseWidget
     #[Override]
     protected function getStats(): array
     {
-        $totalCommission = (float) OrderItem::sum('commission_amount');
-        $vendorNetTotal = (float) OrderItem::sum('vendor_net_amount');
+        $totalCommission = (float) OrderItem::query()
+            ->whereHas(
+                'order',
+                static function (Builder $query): void {
+                    $query->where('order_status_id', OrderStatus::DELIVERED_ID)
+                        ->whereHas(
+                            'paymentStatus',
+                            static function (Builder $query): void {
+                                $query->where('id', PaymentStatus::COMPLETED_ID);
+                            }
+                        );
+                }
+            )
+            ->sum('commission_amount');
+        $vendorNetTotal = (float) OrderItem::query()
+            ->whereHas(
+                'order',
+                static function (Builder $query): void {
+                    $query->where('order_status_id', OrderStatus::DELIVERED_ID)
+                        ->where('is_vendor_paid', false)
+                        ->whereHas(
+                            'paymentStatus',
+                            static function (Builder $query): void {
+                                $query->where('id', PaymentStatus::COMPLETED_ID);
+                            }
+                        );
+                }
+            )
+            ->sum('vendor_net_amount');
 
         $totalRevenue = (float) Order::query()
             ->whereHas(
                 'paymentStatus',
-                static fn (Builder $query): Builder => $query->where('id', PaymentStatus::COMPLETED_ID)
+                static function (Builder $query): void {
+                    $query->where('id', PaymentStatus::COMPLETED_ID);
+                }
             )
             ->sum('total_amount');
 

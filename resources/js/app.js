@@ -1,4 +1,5 @@
 import './bootstrap';
+import './filament/sidebar-resizer';
 import aiAssistantChat from './livewire/ai-assistant-chat';
 import supportChat from './livewire/support-chat';
 

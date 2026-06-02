@@ -62,12 +62,17 @@ class MessageController extends Controller
         $user = $this->authenticatedUser($request);
 
         $validatedData = $request->validate([
-            'message' => ['required', 'string', 'max:1200'],
+            'message' => ['nullable', 'string', 'max:1200'],
             'attachment' => ['nullable', 'file', 'max:5120', 'mimes:png,jpg,jpeg,pdf'],
         ]);
 
         $conversation = Conversation::where('id', $conversationId)
-            ->whereHas('participants', static fn (Builder $query) => $query->where('user_id', $user->id))
+            ->whereHas(
+                'participants',
+                static function (Builder $query) use ($user): void {
+                    $query->where('user_id', $user->id);
+                }
+            )
             ->first();
 
         if (! $conversation) {
@@ -89,7 +94,7 @@ class MessageController extends Controller
         $message = Message::create([
             'conversation_id' => $conversation->id,
             'sender_id' => $user->id,
-            'content' => $validatedData['message'],
+            'content' => $validatedData['message'] ?? '',
             'file_path' => $filePath,
         ]);
 

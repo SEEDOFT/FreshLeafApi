@@ -27,13 +27,9 @@
     $itemsBeforeThemeSwitcher = $itemsBeforeAndAfterThemeSwitcher[true] ?? collect();
     $itemsAfterThemeSwitcher = $itemsBeforeAndAfterThemeSwitcher[false] ?? collect();
 
-    $hasProfileHeader = $itemsBeforeThemeSwitcher->has('profile') &&
-        blank(($item = Arr::first($itemsBeforeThemeSwitcher))->getUrl()) &&
-        (!$item->hasAction());
-
-    if ($itemsBeforeThemeSwitcher->has('profile')) {
-        $itemsBeforeThemeSwitcher = $itemsBeforeThemeSwitcher->prepend($itemsBeforeThemeSwitcher->pull('profile'), 'profile');
-    }
+    $itemsBeforeThemeSwitcher = $itemsBeforeThemeSwitcher->filter(fn ($item, $key) => $key !== 'profile');
+    $itemsAfterThemeSwitcher = $itemsAfterThemeSwitcher->filter(fn ($item, $key) => $key !== 'profile');
+    $hasProfileHeader = false;
 
     $position ??= filament()->getUserMenuPosition();
 
@@ -58,7 +54,7 @@
                 class="fi-user-menu-trigger flex items-center gap-2 px-1.5 py-1.5 pr-3 rounded-full border border-gray-200/50 dark:border-white/10 bg-white/60 dark:bg-[#18181b]/80 backdrop-blur-md shadow-sm transition duration-200 hover:bg-white dark:hover:bg-white/5"
             >
                 <x-filament-panels::avatar.user :user="$user" loading="lazy" class="w-7 h-7 rounded-full" />
-                <span class="text-sm font-bold text-gray-700 dark:text-gray-200 hidden sm:block">
+                <span class="text-sm font-bold text-gray-700 dark:text-gray-200">
                     {{ filament()->getUserName($user) }}
                 </span>
                 @svg('heroicon-m-chevron-down', 'w-4 h-4 text-gray-500 dark:text-gray-400')

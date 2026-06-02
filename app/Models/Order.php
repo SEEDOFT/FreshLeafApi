@@ -179,6 +179,24 @@ class Order extends Model
     }
 
     /**
+     * Format a monetary amount with the order's currency symbol.
+     * USD: "$ 1,234.56", KHR/other: "1,234.56 ៛".
+     */
+    public static function formatMoney(
+        string|int|float $amount,
+        ?Currency $currency,
+    ): string {
+        $formatted = number_format((float) $amount, 2);
+        if ($currency === null) {
+            return "\${$formatted}";
+        }
+
+        return $currency->id === Currency::USD_ID
+            ? "{$currency->symbol} {$formatted}"
+            : "{$formatted} {$currency->symbol}";
+    }
+
+    /**
      * Get the user that owns the order.
      *
      * @return BelongsTo<User, $this>
@@ -206,7 +224,10 @@ class Order extends Model
      */
     public function address(): BelongsTo
     {
-        return $this->belongsTo(Address::class, 'address_id', 'id')->withTrashed();
+        /** @var BelongsTo<Address, $this> $relation */
+        $relation = $this->belongsTo(Address::class, 'address_id', 'id')->withTrashed();
+
+        return $relation;
     }
 
     /**

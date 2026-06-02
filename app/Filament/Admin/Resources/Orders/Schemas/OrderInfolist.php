@@ -9,6 +9,7 @@ use App\Models\Currency;
 use App\Models\Order;
 use App\Models\OrderItem;
 use App\Models\OrderStatus;
+use App\Models\PaymentMethodType;
 use App\Models\PaymentStatus;
 use Filament\Infolists\Components\ImageEntry;
 use Filament\Infolists\Components\RepeatableEntry;
@@ -42,7 +43,7 @@ class OrderInfolist
                                 OrderStatus::AWAITING_PAYMENT_ID => 'warning',
                                 default => 'primary',
                             }),
-                        TextEntry::make('type.name')
+                        TextEntry::make('type.translated_name')
                             ->label(__('admin.resources.order.order_type'))
                             ->badge()
                             ->color('gray'),
@@ -52,13 +53,12 @@ class OrderInfolist
                         TextEntry::make('vendor.fullName')
                             ->label(__('admin.resources.order.vendor'))
                             ->icon('heroicon-o-building-storefront'),
-                        TextEntry::make('currency.name')
+                        TextEntry::make('currency.translated_currency')
                             ->label(__('admin.resources.order.currency'))
                             ->badge()
                             ->color('gray'),
                         TextEntry::make('notes')
                             ->label(__('admin.resources.order.notes'))
-                            ->placeholder('—')
                             ->columnSpanFull(),
                     ]),
 
@@ -67,43 +67,53 @@ class OrderInfolist
                     ->schema([
                         TextEntry::make('subtotal')
                             ->label(__('admin.resources.order.subtotal'))
-                            ->money('USD'),
+                            ->formatStateUsing(fn (Order $record): string => Order::formatMoney($record->subtotal, $record->currency)),
                         TextEntry::make('discount_amount')
                             ->label(__('admin.resources.order.discount'))
-                            ->money('USD'),
+                            ->formatStateUsing(fn (Order $record): string => Order::formatMoney($record->discount_amount, $record->currency)),
                         TextEntry::make('delivery_fee')
                             ->label(__('admin.resources.order.delivery_fee'))
-                            ->money('USD'),
+                            ->formatStateUsing(fn (Order $record): string => Order::formatMoney($record->delivery_fee, $record->currency)),
                         TextEntry::make('tax_amount')
                             ->label(__('admin.resources.order.tax'))
-                            ->money('USD'),
+                            ->formatStateUsing(fn (Order $record): string => Order::formatMoney($record->tax_amount, $record->currency)),
                         TextEntry::make('total_amount')
                             ->label(__('admin.resources.order.total'))
-                            ->money('USD')
+                            ->formatStateUsing(fn (Order $record): string => Order::formatMoney($record->total_amount, $record->currency))
                             ->weight('bold'),
                         TextEntry::make('commission_amount')
                             ->label(__('admin.resources.order.commission'))
-                            ->state(fn ($record) => $record->items->sum('commission_amount'))
-                            ->money('USD'),
+                            ->state(fn (Order $record): float => $record->items->sum('commission_amount'))
+                            ->formatStateUsing(fn (float $state, Order $record): string => Order::formatMoney($state, $record->currency)),
                         TextEntry::make('commissionFeeHistory.rate')
                             ->label(__('admin.resources.order.commission_rate_used'))
                             ->suffix('%')
                             ->default(fn () => CommissionFee::current()->rate)
                             ->badge()
                             ->color('info'),
-                        TextEntry::make('payment_status.name')
+                        TextEntry::make('paymentStatus.translated_name')
                             ->label(__('admin.resources.order.payment_status'))
                             ->badge()
-                            ->color(fn (Order $record): string => match ($record->paymentStatus->id) {
+                            ->placeholder('—')
+                            ->color(fn (Order $record): string => match ($record->paymentStatus?->id) {
                                 PaymentStatus::PENDING_ID => 'info',
                                 PaymentStatus::COMPLETED_ID => 'success',
                                 PaymentStatus::FAILED_ID => 'danger',
                                 PaymentStatus::REFUNDED_ID => 'warning',
                                 default => 'gray',
                             }),
-                        TextEntry::make('payment.paymentMethod.name')
+                        TextEntry::make('payment.paymentMethod.type.translated_name')
                             ->label(__('admin.resources.order.payment_method'))
-                            ->placeholder('—'),
+                            ->badge()
+                            ->placeholder('—')
+                            ->color(fn (Order $record): string => match ($record->payment?->paymentMethod?->payment_method_type_id) {
+                                PaymentMethodType::WALLET_ID => 'primary',
+                                PaymentMethodType::CREDIT_DEBIT_ID => 'info',
+                                PaymentMethodType::ABA_ID => 'success',
+                                PaymentMethodType::ACLEDA_ID => 'warning',
+                                PaymentMethodType::COD_ID => 'gray',
+                                default => 'gray',
+                            }),
                     ]),
 
                 Section::make(__('admin.resources.order.payment_details'))
@@ -129,18 +139,29 @@ class OrderInfolist
                                     ? "$amount $symbol"
                                     : "$symbol $amount";
                             }),
-                        TextEntry::make('payment.currency.name')
+                        TextEntry::make('payment.currency.translated_currency')
                             ->label(__('admin.resources.order.payment_currency'))
                             ->badge()
                             ->color('gray'),
                         TextEntry::make('payment.paid_at')
                             ->label(__('admin.resources.order.paid_at'))
-                            ->dateTime('d M Y, h:i A')
-                            ->placeholder('—'),
-                        TextEntry::make('exchangeRateHistory.rate')
+                            ->dateTime('d M Y, h:i A'),
+                        TextEntry::make('exchange_rate_used')
                             ->label(__('admin.resources.order.exchange_rate_used'))
-                            ->prefix('$1 = ')
-                            ->suffix(' KHR')
+                            ->getStateUsing(function (Order $record): ?string {
+                                $history = $record->exchangeRateHistory;
+                                if (! $history) {
+                                    return null;
+                                }
+
+                                $rateValue = (float) $history->rate;
+                                $decimals = $rateValue < 1 ? 8 : 2;
+                                $rate = number_format($rateValue, $decimals);
+                                $fromCode = $history->fromCurrency?->code ?? 'USD';
+                                $toCode = $history->toCurrency?->code ?? 'KHR';
+
+                                return "{$fromCode}1 = {$rate} {$toCode}";
+                            })
                             ->badge()
                             ->color('info')
                             ->visible(fn (Order $record) => $record->exchange_rate_history_id !== null),
@@ -151,8 +172,7 @@ class OrderInfolist
                     ->schema([
                         TextEntry::make('address.label')
                             ->label(__('admin.resources.order.address_label'))
-                            ->icon('heroicon-o-map-pin')
-                            ->placeholder('—'),
+                            ->icon('heroicon-o-map-pin'),
                         TextEntry::make('delivery_date')
                             ->label(__('admin.resources.order.delivery_date'))
                             ->date('d M Y'),
@@ -193,11 +213,14 @@ class OrderInfolist
                                     ->label(__('admin.resources.order.qty'))
                                     ->suffix(fn (OrderItem $record) => ' '.$record->unit_snapshot),
                                 TextEntry::make('unit_price_snapshot')
-                                    ->label(__('admin.resources.order.unit_price')),
+                                    ->label(__('admin.resources.order.unit_price'))
+                                    ->formatStateUsing(fn (OrderItem $record): string => Order::formatMoney($record->unit_price_snapshot, $record->order->currency)),
                                 TextEntry::make('subtotal')
-                                    ->label(__('admin.resources.order.subtotal')),
+                                    ->label(__('admin.resources.order.subtotal'))
+                                    ->formatStateUsing(fn (OrderItem $record): string => Order::formatMoney($record->subtotal, $record->order->currency)),
                                 TextEntry::make('commission_amount')
-                                    ->label(__('admin.resources.order.commission')),
+                                    ->label(__('admin.resources.order.commission'))
+                                    ->formatStateUsing(fn (OrderItem $record): string => Order::formatMoney($record->commission_amount, $record->order->currency)),
                             ]),
                     ]),
 
@@ -210,12 +233,10 @@ class OrderInfolist
                             ->columnSpanFull(),
                         TextEntry::make('delivery_company_name')
                             ->label(__('admin.resources.order.delivery_company'))
-                            ->icon('heroicon-o-truck')
-                            ->placeholder('—'),
+                            ->icon('heroicon-o-truck'),
                         TextEntry::make('delivery_tracking_info')
                             ->label(__('admin.resources.order.tracking_info'))
-                            ->icon('heroicon-o-map')
-                            ->placeholder('—'),
+                            ->icon('heroicon-o-map'),
                     ]),
 
                 Section::make(__('admin.resources.timestamps'))
@@ -224,36 +245,28 @@ class OrderInfolist
                     ->schema([
                         TextEntry::make('place_order_date')
                             ->label(__('admin.resources.order.place_order_date'))
-                            ->dateTime('d M Y, h:i A')
-                            ->placeholder('—'),
+                            ->dateTime('d M Y, h:i A'),
                         TextEntry::make('order_pending_date')
                             ->label(__('admin.resources.order.pending_date'))
-                            ->dateTime('d M Y, h:i A')
-                            ->placeholder('—'),
+                            ->dateTime('d M Y, h:i A'),
                         TextEntry::make('order_confirmed_date')
                             ->label(__('admin.resources.order.confirmed_date'))
-                            ->dateTime('d M Y, h:i A')
-                            ->placeholder('—'),
+                            ->dateTime('d M Y, h:i A'),
                         TextEntry::make('order_preparing_date')
                             ->label(__('admin.resources.order.preparing_date'))
-                            ->dateTime('d M Y, h:i A')
-                            ->placeholder('—'),
+                            ->dateTime('d M Y, h:i A'),
                         TextEntry::make('order_out_for_delivery_date')
                             ->label(__('admin.resources.order.out_for_delivery_date'))
-                            ->dateTime('d M Y, h:i A')
-                            ->placeholder('—'),
+                            ->dateTime('d M Y, h:i A'),
                         TextEntry::make('order_delivered_date')
                             ->label(__('admin.resources.order.delivered_date'))
-                            ->dateTime('d M Y, h:i A')
-                            ->placeholder('—'),
+                            ->dateTime('d M Y, h:i A'),
                         TextEntry::make('order_cancelled_date')
                             ->label(__('admin.resources.order.cancelled_date'))
-                            ->dateTime('d M Y, h:i A')
-                            ->placeholder('—'),
+                            ->dateTime('d M Y, h:i A'),
                         TextEntry::make('order_awaiting_payment_date')
                             ->label(__('admin.resources.order.awaiting_payment_date'))
-                            ->dateTime('d M Y, h:i A')
-                            ->placeholder('—'),
+                            ->dateTime('d M Y, h:i A'),
                         TextEntry::make('created_at')
                             ->label(__('admin.resources.created_at'))
                             ->dateTime('d M Y, h:i A'),

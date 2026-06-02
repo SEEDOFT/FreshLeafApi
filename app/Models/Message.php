@@ -12,15 +12,15 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Carbon;
 
 /**
- * @property int $id
- * @property int $conversation_id
- * @property int $sender_id
- * @property string $content
- * @property string|null $file_path
- * @property bool $is_read
- * @property Carbon|null $created_at
- * @property Carbon|null $updated_at
- * @property Carbon|null $deleted_at
+ * @property-read int $id
+ * @property-read int $conversation_id
+ * @property-read int $sender_id
+ * @property-read string $content
+ * @property-read string|null $file_path
+ * @property-read bool $is_read
+ * @property-read Carbon|null $created_at
+ * @property-read Carbon|null $updated_at
+ * @property-read Carbon|null $deleted_at
  */
 #[Table('messages', key: 'id', keyType: 'int')]
 #[Fillable(['conversation_id', 'sender_id', 'content', 'file_path', 'is_read'])]
@@ -28,13 +28,21 @@ class Message extends Model
 {
     use SoftDeletes;
 
-    /** @return BelongsTo<Conversation, $this> */
+    /**
+     * Get conversation of a message.
+     *
+     * @return BelongsTo<Conversation, $this>
+     */
     public function conversation(): BelongsTo
     {
         return $this->belongsTo(Conversation::class, 'conversation_id', 'id');
     }
 
-    /** @return BelongsTo<User, $this> */
+    /**
+     * Get sender
+     *
+     * @return BelongsTo<User, $this>
+     */
     public function sender(): BelongsTo
     {
         return $this->belongsTo(User::class, 'sender_id', 'id');

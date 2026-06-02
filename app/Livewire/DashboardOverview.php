@@ -9,6 +9,7 @@ use App\Models\Currency;
 use App\Models\ExchangeRate;
 use App\Models\Order;
 use App\Models\OrderItem;
+use App\Models\OrderStatus;
 use App\Models\PaymentStatus;
 use App\Models\User;
 use App\Models\UserStatus;
@@ -74,8 +75,36 @@ class DashboardOverview extends Component
             )
             ->sum('total_amount');
 
-        $totalCommission = (float) OrderItem::sum('commission_amount');
-        $pendingPayouts = (float) OrderItem::sum('vendor_net_amount');
+        $totalCommission = (float) OrderItem::query()
+            ->whereHas(
+                'order',
+                static function (Builder $query): void {
+                    $query->where('order_status_id', OrderStatus::DELIVERED_ID)
+                        ->whereHas(
+                            'paymentStatus',
+                            static function (Builder $query): void {
+                                $query->where('id', PaymentStatus::COMPLETED_ID);
+                            }
+                        );
+                }
+            )
+            ->sum('commission_amount');
+
+        $pendingPayouts = (float) OrderItem::query()
+            ->whereHas(
+                'order',
+                static function (Builder $query): void {
+                    $query->where('order_status_id', OrderStatus::DELIVERED_ID)
+                        ->where('is_vendor_paid', false)
+                        ->whereHas(
+                            'paymentStatus',
+                            static function (Builder $query): void {
+                                $query->where('id', PaymentStatus::COMPLETED_ID);
+                            }
+                        );
+                }
+            )
+            ->sum('vendor_net_amount');
         $commission = CommissionFee::latest()->first();
 
         $consumerCount = User::where('user_type_id', UserType::CONSUMER_ID)

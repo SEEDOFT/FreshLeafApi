@@ -148,6 +148,7 @@ return [
             'net' => 'សុទ្ធ',
             'inspect_invoice' => 'មើលវិក័យប័ត្រ',
             'download_invoice' => 'ទាញយកវិក័យប័ត្រ',
+            'address_label' => 'អាសយដ្ឋានដឹកជញ្ជូន',
             'delivery_company_name' => 'ឈ្មោះក្រុមហ៊ុនដឹកជញ្ជូន',
             'tracking_info_optional' => 'ព័ត៌មានតាមដាន (មិនចាំបាច់)',
             'actions' => [
@@ -283,6 +284,7 @@ return [
             'name_en' => 'ឈ្មោះ (អង់គ្លេស)',
             'name_km' => 'ឈ្មោះ (ខ្មែរ)',
             'symbol' => 'និមិត្តសញ្ញា',
+            'name' => 'ឈ្មោះខ្នាត',
             'conversion' => 'ការប្តូរទៅខ្នាតមូលដ្ឋាន',
         ],
         'product' => [
@@ -338,6 +340,7 @@ return [
             'adjustment_detail' => 'ព័ត៌មានលម្អិតនៃការកែតម្រូវ',
             'reason' => 'មូលហេតុ',
             'image' => 'រូបភាព',
+            'visuals' => 'រូបភាពបង្ហាញ',
         ],
         'created_at' => 'ថ្ងៃបង្កើតគណនី',
         'updated_at' => 'ថ្ងៃធ្វើបច្ចុប្បន្នភាពចុងក្រោយ',
@@ -403,6 +406,12 @@ return [
         'thinking_placeholder' => '...',
         'just_now' => 'ទើបតែឥឡូវនេះ',
     ],
+    'dashboard' => [
+        'financial_overview' => 'ទិដ្ឋភាពហិរញ្ញវត្ថុ',
+        'platform_activity' => 'សកម្មភាពវេទិកា',
+        'exchange_rates' => 'អត្រាប្តូរប្រាក់',
+        'awaiting_disbursement' => 'កំពុងរង់ចាំការបើកប្រាក់',
+    ],
     'chat' => [
         'active_conversations' => 'ការសន្ទនាសកម្ម',
         'filter_all' => 'ទាំងអស់',
@@ -461,6 +470,12 @@ return [
         'update_history_label' => 'ប្រវត្តិនៃការធ្វើបច្ចុប្បន្នភាព',
     ],
     'widgets' => [
+        'products_listed' => 'ផលិតផលដែលបានដាក់តាំង',
+        'products_listed_desc' => 'ចំនួនផលិតផលសរុបដែលកំពុងសកម្មនៅក្នុងហាង',
+        'products_stock_value' => 'តម្លៃស្តុកផលិតផល',
+        'products_stock_value_desc' => 'តម្លៃសរុបនៃសារពើភ័ណ្ឌបច្ចុប្បន្ន',
+        'products_out_of_stock' => 'អស់ស្តុក',
+        'products_out_of_stock_desc' => 'ផលិតផលដែលមានស្តុកសូន្យ',
         'commission' => [
             'platform_commission' => 'កម្រៃជើងសារវេទិកាសរុប',
             'platform_commission_desc' => 'ថ្លៃសេវាសរុបដែលទទួលបានពីការលក់របស់អ្នកផ្គត់ផ្គង់',
@@ -470,6 +485,7 @@ return [
         'revenue_chart' => [
             'heading' => 'និន្នាការចំណូល (៣០ ថ្ងៃ)',
             'dataset_label' => 'ចំណូលប្រចាំថ្ងៃ (USD)',
+            'period' => '៣០ ថ្ងៃចុងក្រោយ',
         ],
         'platform_fee_label' => 'កម្រៃជើងសារវេទិកា',
         'platform_fee_desc' => 'កម្រៃជើងសារវេទិកាស្តង់ដារ',

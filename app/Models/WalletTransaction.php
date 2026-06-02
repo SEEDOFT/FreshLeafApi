@@ -19,6 +19,7 @@ use Illuminate\Support\Carbon;
 /**
  * @property int $id
  * @property int $wallet_id
+ * @property int $currency_id
  * @property int $wallet_transaction_type_id
  * @property int $wallet_transaction_status_id
  * @property float $amount
@@ -30,6 +31,7 @@ use Illuminate\Support\Carbon;
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  * @property-read Wallet $wallet
+ * @property-read Currency $currency
  * @property-read WalletTransactionType $type
  * @property-read WalletTransactionStatus $status
  * @property-read Collection<int, WalletTransactionHistory> $histories
@@ -38,6 +40,7 @@ use Illuminate\Support\Carbon;
 #[Table('wallet_transactions', key: 'id', keyType: 'int')]
 #[Fillable([
     'wallet_id',
+    'currency_id',
     'wallet_transaction_type_id',
     'wallet_transaction_status_id',
     'amount',
@@ -51,9 +54,7 @@ use Illuminate\Support\Carbon;
 class WalletTransaction extends Model
 {
     /** @use HasFactory<WalletTransactionFactory> */
-    use HasFactory;
-
-    use SoftDeletes;
+    use HasFactory, SoftDeletes;
 
     /**
      * {@inheritDoc}
@@ -65,6 +66,7 @@ class WalletTransaction extends Model
         return [
             'amount' => 'decimal:2',
             'wallet_id' => 'integer',
+            'currency_id' => 'integer',
             'wallet_transaction_type_id' => 'integer',
             'wallet_transaction_status_id' => 'integer',
             'transaction_date' => 'datetime',
@@ -80,6 +82,16 @@ class WalletTransaction extends Model
     public function wallet(): BelongsTo
     {
         return $this->belongsTo(Wallet::class, 'wallet_id', 'id');
+    }
+
+    /**
+     * Get the currency associated with the transaction.
+     *
+     * @return BelongsTo<Currency, $this>
+     */
+    public function currency(): BelongsTo
+    {
+        return $this->belongsTo(Currency::class, 'currency_id', 'id');
     }
 
     /**

@@ -17,6 +17,7 @@ use Illuminate\Support\Carbon;
 /**
  * @property int $id
  * @property int $wallet_id
+ * @property int $currency_id
  * @property int $wallet_transaction_type_id
  * @property int $wallet_transaction_status_id
  * @property float $amount
@@ -27,12 +28,14 @@ use Illuminate\Support\Carbon;
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  * @property-read WalletTransaction $transaction
+ * @property-read Currency $currency
  * @property Carbon|null $deleted_at
  */
 #[Table('wallet_transaction_histories', key: 'id', keyType: 'int')]
 #[Fillable([
     'wallet_transaction_id',
     'wallet_id',
+    'currency_id',
     'wallet_transaction_type_id',
     'wallet_transaction_status_id',
     'amount',
@@ -62,5 +65,15 @@ class WalletTransactionHistory extends Model
             'wallet_transaction_id',
             'id'
         );
+    }
+
+    /**
+     * Get the currency associated with the history entry.
+     *
+     * @return BelongsTo<Currency, $this>
+     */
+    public function currency(): BelongsTo
+    {
+        return $this->belongsTo(Currency::class, 'currency_id', 'id');
     }
 }

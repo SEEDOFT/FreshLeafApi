@@ -79,7 +79,8 @@ class OrdersTable
                     )),
                 TextColumn::make('total_amount')
                     ->label(__('shared.order.total'))
-                    ->sortable(),
+                    ->sortable()
+                    ->formatStateUsing(fn (Order $record): string => Order::formatMoney($record->total_amount, $record->currency)),
                 TextColumn::make('delivery_date')
                     ->label(__('shared.order.delivery_date'))
                     ->dateTime('d M Y, h:i A')

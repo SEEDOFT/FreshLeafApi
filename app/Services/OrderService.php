@@ -54,6 +54,7 @@ class OrderService
 
                 // Create transaction
                 $transaction = $wallet->transactions()->create([
+                    'currency_id' => $wallet->currency_id,
                     'wallet_transaction_type_id' => WalletTransactionType::PAYMENT_ID,
                     'wallet_transaction_status_id' => WalletTransactionStatus::COMPLETED_ID,
                     'amount' => $grandTotal,
@@ -136,6 +137,7 @@ class OrderService
 
                 // Create transaction
                 $transaction = $wallet->transactions()->create([
+                    'currency_id' => $wallet->currency_id,
                     'wallet_transaction_type_id' => WalletTransactionType::PAYMENT_ID,
                     'wallet_transaction_status_id' => WalletTransactionStatus::COMPLETED_ID,
                     'amount' => $orderTotal,

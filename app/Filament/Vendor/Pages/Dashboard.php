@@ -7,6 +7,7 @@ namespace App\Filament\Vendor\Pages;
 use BackedEnum;
 use Filament\Pages\Page;
 use Filament\Panel;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Override;
 
@@ -35,7 +36,7 @@ class Dashboard extends Page
 
     public function getSubheading(): string
     {
-        return now()->format('l, F j, Y');
+        return Carbon::now()->format('l j F, Y');
     }
 
     #[Override]
@@ -47,7 +48,7 @@ class Dashboard extends Page
     #[Override]
     public static function shouldRegisterNavigation(): bool
     {
-        return false;
+        return true;
     }
 
     public function getModule(): string
@@ -57,7 +58,7 @@ class Dashboard extends Page
 
     public function getGreeting(): string
     {
-        $hour = now()->hour;
+        $hour = Carbon::now()->hour;
 
         return match (true) {
             $hour < 12 => 'morning',

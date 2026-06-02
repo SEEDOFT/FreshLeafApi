@@ -342,7 +342,7 @@ class CartService
                             'payment_status_id' => $initialPaymentStatus,
                             'commission_fee_history_id' => $commissionFeeHistory?->id,
                             'exchange_rate_history_id' => $exchangeRateHistory?->id,
-                            'currency_id' => Currency::USD_ID, // Normalized to USD
+                            'currency_id' => Currency::USD_ID,
                             'place_order_date' => Carbon::now(),
                             'delivery_date' => $validatedData['delivery_date'] ?? Carbon::now()->toDateString(),
                             'delivery_slot' => $validatedData['delivery_slot'] ?? 'Standard',

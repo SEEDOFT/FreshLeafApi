@@ -1,7 +1,7 @@
 <div class="content-wrapper-redesign">
     @if(count($financialStats) > 0)
         <div>
-            <div class="section-label">Financial overview</div>
+            <div class="section-label">{{ __('admin.dashboard.financial_overview') }}</div>
             <div class="stat-grid">
                 @foreach($financialStats as $stat)
                     <div class="stat-card">
@@ -24,7 +24,7 @@
                                         <line x1="12" y1="9" x2="12" y2="13"/>
                                         <line x1="12" y1="17" x2="12.01" y2="17"/>
                                     </svg>
-                                    Awaiting disbursement
+                                    {{ __('admin.dashboard.awaiting_disbursement') }}
                                 </span>
                             </div>
                         @endif
@@ -36,7 +36,7 @@
 
     @if(count($platformStats) > 0)
         <div>
-            <div class="section-label">Platform activity</div>
+            <div class="section-label">{{ __('admin.dashboard.platform_activity') }}</div>
             <div class="stat-grid-3">
                 @foreach($platformStats as $stat)
                     <div class="stat-card">
@@ -58,7 +58,7 @@
 
     @if(count($exchangeRates) > 0)
         <div>
-            <div class="section-label">Exchange rates</div>
+            <div class="section-label">{{ __('admin.dashboard.exchange_rates') }}</div>
             <div class="stat-grid">
                 @foreach($exchangeRates as $rate)
                     <div class="exchange-card">
@@ -94,7 +94,7 @@
             <div class="trend-card">
                 <div class="trend-header">
                     <span class="trend-title">{{ $chartData['title'] }}</span>
-                    <span class="trend-period">{{ $chartData['period'] ?? 'Last 30 days' }}</span>
+                    <span class="trend-period">{{ $chartData['period'] ?? __('admin.widgets.revenue_chart.period') }}</span>
                 </div>
                 <div class="chart-area">
                     @foreach($chartData['bars'] as $bar)

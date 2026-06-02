@@ -122,6 +122,7 @@ return [
             'net' => 'Net',
             'inspect_invoice' => 'Inspect Invoice',
             'download_invoice' => 'Download Invoice',
+            'address_label' => 'Delivery Address',
             'delivery_company_name' => 'Delivery Company Name',
             'tracking_info_optional' => 'Tracking Info (Optional)',
             'actions' => [
@@ -257,6 +258,7 @@ return [
             'name_en' => 'Name (English)',
             'name_km' => 'Name (Khmer)',
             'symbol' => 'Symbol',
+            'name' => 'Unit Name',
             'conversion' => 'Conversion to Base',
         ],
         'product' => [
@@ -312,6 +314,7 @@ return [
             'adjustment_detail' => 'Adjustment Detail',
             'reason' => 'Reason',
             'image' => 'Image',
+            'visuals' => 'Visuals',
         ],
         'vendor_inventory' => [
             'label' => 'Vendor Inventory',
@@ -403,6 +406,12 @@ return [
         'thinking_placeholder' => '...',
         'just_now' => 'Just now',
     ],
+    'dashboard' => [
+        'financial_overview' => 'Financial overview',
+        'platform_activity' => 'Platform activity',
+        'exchange_rates' => 'Exchange rates',
+        'awaiting_disbursement' => 'Awaiting disbursement',
+    ],
     'chat' => [
         'active_conversations' => 'Active Conversations',
         'filter_all' => 'All',
@@ -461,6 +470,12 @@ return [
         'update_history_label' => 'Update History',
     ],
     'widgets' => [
+        'products_listed' => 'Products Listed',
+        'products_listed_desc' => 'Total products currently active in the store',
+        'products_stock_value' => 'Products Stock Value',
+        'products_stock_value_desc' => 'Total value of current inventory',
+        'products_out_of_stock' => 'Out of Stock',
+        'products_out_of_stock_desc' => 'Products with zero available stock',
         'commission' => [
             'platform_commission' => 'Total Platform Commission',
             'platform_commission_desc' => 'Total fees earned from vendor sales',
@@ -470,6 +485,7 @@ return [
         'revenue_chart' => [
             'heading' => 'Revenue Trend (30 Days)',
             'dataset_label' => 'Daily Revenue (USD)',
+            'period' => 'Last 30 days',
         ],
         'platform_fee_label' => 'Platform Commission Fee',
         'platform_fee_desc' => 'Standard platform commission fee',

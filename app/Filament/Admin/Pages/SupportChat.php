@@ -4,11 +4,13 @@ declare(strict_types=1);
 
 namespace App\Filament\Admin\Pages;
 
+use App\Models\ConversationType;
 use App\Models\Message;
 use App\Models\UserType;
 use BackedEnum;
 use Filament\Pages\Page;
 use Filament\Support\Enums\Width;
+use Illuminate\Database\Eloquent\Builder;
 use Override;
 
 class SupportChat extends Page
@@ -41,14 +43,20 @@ class SupportChat extends Page
     public static function getNavigationBadge(): ?string
     {
         $unreadCount = Message::where('is_read', false)
-            ->whereHas('conversation', function ($query) {
-                $query->where('type', 'support');
+            ->whereHas('conversation', static function (Builder $query): void {
+                $query->where('conversation_type_id', ConversationType::SUPPORT_ID);
             })
-            ->whereHas('sender', function ($query) {
+            ->whereHas('sender', static function (Builder $query): void {
                 $query->where('user_type_id', '!=', UserType::ADMIN_ID);
             })
             ->count();
 
         return $unreadCount > 0 ? (string) $unreadCount : null;
+    }
+
+    #[Override]
+    public static function getNavigationBadgeColor(): string|array|null
+    {
+        return 'danger';
     }
 }

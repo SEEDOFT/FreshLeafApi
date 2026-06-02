@@ -5,27 +5,27 @@
     --bp-desktop-min: 1024px;
     --bp-wide-min: 1280px;
 
-    --brand-50: #effaf2;
-    --brand-100: #d9f2df;
-    --brand-300: #7ccb8e;
-    --brand-500: #2e9f58;
-    --brand-700: #1f6e3b;
+    --brand-50: #fbf8f2;
+    --brand-100: #f3efe9;
+    --brand-300: #3f6d2e;
+    --brand-500: #2e5321;
+    --brand-700: #1a3314;
 
-    --accent-500: #f4b400;
-    --accent-600: #d89b00;
+    --accent-500: #9e6844;
+    --accent-600: #924a26;
 
     --neutral-0: #ffffff;
-    --neutral-50: #f8faf8;
-    --neutral-100: #eef2ef;
-    --neutral-300: #c5cfc7;
-    --neutral-500: #6b756d;
+    --neutral-50: #fcf9f5;
+    --neutral-100: #e5e5e5;
+    --neutral-300: #bdbdbd;
+    --neutral-500: #6b7260;
     --neutral-700: #334038;
-    --neutral-900: #162018;
+    --neutral-900: #1a1a1a;
 
-    --success: #1fa971;
-    --warning: #e6a23c;
-    --error: #d64545;
-    --info: #2f80ed;
+    --success: #3f7d2c;
+    --warning: #f6b93b;
+    --error: #dc4c3f;
+    --info: #1e88e5;
 
     --bg-page: var(--neutral-50);
     --bg-surface: var(--neutral-0);
@@ -61,6 +61,9 @@
     --radius-16: 16px;
     --radius-24: 24px;
 
+    --border-radius-md: var(--radius-8);
+    --border-radius-lg: var(--radius-12);
+
     --container-max: 1280px;
     --container-pad-inline: clamp(16px, 2.5vw, 32px);
     --touch-target-min: 44px;
@@ -79,9 +82,16 @@
     --type-h3: 1.05rem;
     --type-body: 0.95rem;
     --type-caption: 0.82rem;
+
+    --color-background-primary: var(--bg-surface);
+    --color-background-secondary: var(--bg-page);
+    --color-text-primary: var(--text-primary);
+    --color-text-secondary: var(--text-secondary);
+    --color-text-tertiary: var(--text-muted);
+    --color-border-tertiary: var(--border-default);
 }
 
-[data-theme='dark'] {
+.dark {
     --bg-page: #101612;
     --bg-surface: #162018;
     --bg-surface-subtle: #1e2a22;
@@ -94,6 +104,13 @@
     --border-strong: #c5cfc7;
     --ring-focus: #2f80ed;
     --overlay: rgba(16, 22, 18, 0.64);
+
+    --color-background-primary: var(--bg-surface);
+    --color-background-secondary: var(--bg-page);
+    --color-text-primary: var(--text-primary);
+    --color-text-secondary: var(--text-secondary);
+    --color-text-tertiary: var(--text-muted);
+    --color-border-tertiary: var(--border-default);
 }
 
 @media (max-width: 1279px) {

@@ -14,6 +14,8 @@ use Override;
 
 class VendorEarningsChart extends ChartWidget
 {
+    protected static ?int $sort = 4;
+
     #[Override]
     public function getHeading(): ?string
     {
@@ -78,7 +80,14 @@ class VendorEarningsChart extends ChartWidget
     #[Override]
     protected function getType(): string
     {
-        return 'line';
+        return 'bar';
+    }
+
+    protected function getFilters(): ?array
+    {
+        return [
+            '30' => 'Last 30 days',
+        ];
     }
 
     #[Override]

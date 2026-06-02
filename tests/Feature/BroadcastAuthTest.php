@@ -5,6 +5,10 @@ declare(strict_types=1);
 namespace Tests\Feature;
 
 use App\Models\AiChatSession;
+use App\Models\Conversation;
+use App\Models\ConversationParticipant;
+use App\Models\ConversationStatus;
+use App\Models\ConversationType;
 use App\Models\User;
 use App\Models\UserStatus;
 use App\Models\UserType;
@@ -32,6 +36,16 @@ class BroadcastAuthTest extends TestCase
             ['id' => UserType::VENDOR_ID, 'name_en' => 'Vendor', 'name_km' => 'អ្នកលក់'],
             ['id' => UserType::ADMIN_ID, 'name_en' => 'Admin', 'name_km' => 'អ្នកគ្រប់គ្រង'],
         ], ['id'], ['name_en', 'name_km']);
+
+        ConversationType::upsert([
+            ['id' => ConversationType::DIRECT_ID, 'name' => 'direct'],
+            ['id' => ConversationType::SUPPORT_ID, 'name' => 'support'],
+        ], ['id'], ['name']);
+
+        ConversationStatus::upsert([
+            ['id' => ConversationStatus::OPEN_ID, 'name' => 'open'],
+            ['id' => ConversationStatus::CLOSED_ID, 'name' => 'closed'],
+        ], ['id'], ['name']);
 
         config()->set('broadcasting.default', 'reverb');
         config()->set('broadcasting.connections.reverb.key', 'test-key');
@@ -66,37 +80,58 @@ class BroadcastAuthTest extends TestCase
         $response->assertOk();
     }
 
-    public function test_support_admin_broadcast_auth_succeeds_for_admin(): void
-    {
-        $admin = User::factory()->create([
-            'user_status_id' => UserStatus::ACTIVE_ID,
-            'user_type_id' => UserType::ADMIN_ID,
-        ]);
-
-        Sanctum::actingAs($admin);
-
-        $response = $this->postJson('/api/v1/broadcasting/auth', [
-            'socket_id' => '999.999',
-            'channel_name' => 'private-support.admin',
-        ]);
-
-        $response->assertOk();
-    }
-
-    public function test_support_admin_broadcast_auth_rejects_normal_user(): void
+    public function test_chat_conversation_broadcast_auth_succeeds_for_participant(): void
     {
         $user = User::factory()->create([
             'user_status_id' => UserStatus::ACTIVE_ID,
-            'user_type_id' => UserType::CONSUMER_ID,
+            'user_type_id' => UserType::VENDOR_ID,
         ]);
+        $conversation = $this->createConversation($user);
 
         Sanctum::actingAs($user);
 
         $response = $this->postJson('/api/v1/broadcasting/auth', [
             'socket_id' => '999.999',
-            'channel_name' => 'private-support.admin',
+            'channel_name' => 'private-chat.conversation.'.$conversation->id,
+        ]);
+
+        $response->assertOk();
+    }
+
+    public function test_chat_conversation_broadcast_auth_rejects_non_participant(): void
+    {
+        $user = User::factory()->create([
+            'user_status_id' => UserStatus::ACTIVE_ID,
+            'user_type_id' => UserType::CONSUMER_ID,
+        ]);
+        $participant = User::factory()->create([
+            'user_status_id' => UserStatus::ACTIVE_ID,
+            'user_type_id' => UserType::VENDOR_ID,
+        ]);
+        $conversation = $this->createConversation($participant);
+
+        Sanctum::actingAs($user);
+
+        $response = $this->postJson('/api/v1/broadcasting/auth', [
+            'socket_id' => '999.999',
+            'channel_name' => 'private-chat.conversation.'.$conversation->id,
         ]);
 
         $response->assertForbidden();
+    }
+
+    private function createConversation(User $participant): Conversation
+    {
+        $conversation = Conversation::query()->create([
+            'conversation_type_id' => ConversationType::SUPPORT_ID,
+            'conversation_status_id' => ConversationStatus::OPEN_ID,
+        ]);
+
+        ConversationParticipant::query()->create([
+            'conversation_id' => $conversation->id,
+            'user_id' => $participant->id,
+        ]);
+
+        return $conversation;
     }
 }

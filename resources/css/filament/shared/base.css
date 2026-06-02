@@ -30,84 +30,234 @@
     font-display: swap;
 }
 
-/**
- * Modern UI Redesign: Glassmorphism & Premium SaaS Look (Dark Mode Compatible)
- */
+/* ═══════════════════════════════════════════════
+   Sidebar — Compact Redesign
+   ═══════════════════════════════════════════════ */
 
-:root {
-    --font-family: 'Noto Sans Khmer', 'Plus Jakarta Sans', sans-serif;
-    --freshleaf-brand-50: #effaf2;
-    --freshleaf-brand-100: #d9f2df;
-    --freshleaf-brand-300: #7ccb8e;
-    --freshleaf-brand-500: #10b981;
-    --freshleaf-brand-700: #047857;
-    --freshleaf-accent-500: #f59e0b;
-    --freshleaf-accent-600: #d97706;
-    --freshleaf-neutral-50: #f9fafb;
-    --freshleaf-neutral-100: #f3f4f6;
-    --freshleaf-neutral-300: #d1d5db;
-    --freshleaf-neutral-500: #6b7280;
-    --freshleaf-neutral-900: #111827;
+.fi-sidebar {
+    width: 210px !important;
+    background: var(--color-background-secondary) !important;
+    border-right: 0.5px solid var(--color-border-tertiary) !important;
 }
 
-/* Modern App Body Background */
-.fi-body {
-    font-family: var(--font-family);
-    line-height: 1.6;
-    background-color: var(--freshleaf-neutral-50);
-    background-image:
-        radial-gradient(at 0% 0%, rgba(16, 185, 129, 0.05) 0px, transparent 50%),
-        radial-gradient(at 100% 0%, rgba(59, 130, 246, 0.05) 0px, transparent 50%);
+/* Leaf logo, brand text, and role label */
+.fi-sidebar-header {
+    padding: 14px 16px !important;
+    border-bottom: 0.5px solid var(--color-border-tertiary) !important;
+    display: flex !important;
+    align-items: center !important;
+    gap: 8px !important;
+    position: relative !important;
+    min-height: 50px !important;
 }
 
-.dark .fi-body {
-    background-color: #09090b;
-    /* Zinc 950 */
-    background-image:
-        radial-gradient(at 0% 0%, rgba(16, 185, 129, 0.1) 0px, transparent 40%),
-        radial-gradient(at 100% 0%, rgba(30, 41, 59, 0.2) 0px, transparent 40%);
+.fi-topbar-start .fi-logo::before {
+    content: '';
+    display: inline-block;
+    width: 22px;
+    height: 22px;
+    background: var(--brand-500);
+    border-radius: 50% 50% 50% 0;
+    transform: rotate(-45deg);
+    flex-shrink: 0;
+    margin-right: 8px;
+    vertical-align: middle;
 }
 
-/* Floating Glassmorphism Sidebar */
-@media (min-width: 1024px) {
-    .fi-sidebar {
-        margin: 1rem;
-        height: calc(100vh - 2rem) !important;
-        border-radius: 1.5rem !important;
-        border: 1px solid rgba(255, 255, 255, 0.5) !important;
-        background: rgba(255, 255, 255, 0.7) !important;
-        backdrop-filter: blur(12px) !important;
-        box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1) !important;
-    }
-
-    .dark .fi-sidebar {
-        border-color: rgba(255, 255, 255, 0.05) !important;
-        background: rgba(24, 24, 27, 0.6) !important;
-        /* Zinc 900 */
-        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5) !important;
-    }
+.fi-sidebar-header-logo-ctn {
+    display: flex !important;
+    align-items: center !important;
 }
 
-/* Glassmorphism Topbar */
+.fi-sidebar-header-logo-ctn a {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 0 !important;
+    font-size: 14px !important;
+    font-weight: 600 !important;
+    color: var(--color-text-primary) !important;
+    line-height: 1.3 !important;
+    text-decoration: none !important;
+}
+
+.fi-sidebar-header-logo-ctn a .fi-logo {
+    font-size: 14px !important;
+    font-weight: 600 !important;
+    color: var(--color-text-primary) !important;
+    line-height: 1.3 !important;
+    height: auto !important;
+}
+
+/* Hide default Filament logo image/SVG */
+.fi-sidebar-header img,
+.fi-sidebar-header svg:not(.fi-sidebar-header-icon) {
+    display: none !important;
+}
+
+/* Navigation group headers */
+.fi-sidebar-group-btn {
+    padding: 12px 12px 3px !important;
+    font-size: 10px !important;
+    font-weight: 500 !important;
+    color: var(--color-text-tertiary) !important;
+    letter-spacing: 0.07em !important;
+    text-transform: uppercase !important;
+    background: transparent !important;
+    border: none !important;
+    display: flex !important;
+    align-items: center !important;
+    gap: 4px !important;
+}
+
+.fi-sidebar-group-btn svg {
+    width: 12px !important;
+    height: 12px !important;
+}
+
+.fi-sidebar-group-label {
+    font-size: 10px !important;
+    font-weight: 500 !important;
+    color: var(--color-text-tertiary) !important;
+    letter-spacing: 0.07em !important;
+    text-transform: uppercase !important;
+}
+
+/* Nav items — compact */
+.fi-sidebar-item-btn {
+    padding: 6px 10px !important;
+    margin: 1px 6px !important;
+    border-radius: var(--border-radius-md) !important;
+    font-size: 12px !important;
+    color: var(--color-text-secondary) !important;
+    gap: 8px !important;
+    transition: background 0.12s !important;
+}
+
+.fi-sidebar-item-btn:hover {
+    background: var(--color-background-primary) !important;
+    color: var(--color-text-primary) !important;
+}
+
+.fi-sidebar-item.fi-active .fi-sidebar-item-btn {
+    background: var(--brand-100) !important;
+    color: var(--brand-700) !important;
+    font-weight: 500 !important;
+}
+
+.fi-sidebar-item.fi-active .fi-sidebar-item-icon {
+    color: var(--brand-500) !important;
+}
+
+/* Nav item icons */
+.fi-sidebar-item-icon {
+    width: 15px !important;
+    height: 15px !important;
+}
+
+/* Nav item label */
+.fi-sidebar-item-label {
+    font-size: 12px !important;
+}
+
+/* Badges in sidebar */
+.fi-sidebar-item-badge-ctn {
+    font-size: 10px !important;
+    font-weight: 500 !important;
+}
+
+.fi-sidebar-item-badge-ctn .fi-badge {
+    padding: 1px 5px !important;
+    border-radius: 99px !important;
+    background: var(--color-background-primary) !important;
+    color: var(--color-text-secondary) !important;
+    border: 0.5px solid var(--color-border-tertiary) !important;
+    font-size: 10px !important;
+}
+
+.fi-sidebar-item.fi-active .fi-sidebar-item-badge-ctn .fi-badge {
+    background: var(--brand-300) !important;
+    color: var(--brand-700) !important;
+    border-color: transparent !important;
+}
+
+/* ═══════════════════════════════════════════════
+   Topbar — Compact Redesign
+   ═══════════════════════════════════════════════ */
+
 .fi-topbar {
-    margin: 1rem 1rem 0 1rem;
-    border-radius: 1rem !important;
-    background: rgba(255, 255, 255, 0.7) !important;
-    backdrop-filter: blur(8px) !important;
-    border: 1px solid rgba(255, 255, 255, 0.5) !important;
-    box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.05) !important;
+    padding: 10px 20px !important;
+    border-bottom: 0.5px solid var(--color-border-tertiary) !important;
+    background: var(--color-background-primary) !important;
+    min-height: 48px !important;
 }
 
-.dark .fi-topbar {
-    background: rgba(24, 24, 27, 0.6) !important;
-    border-color: rgba(255, 255, 255, 0.05) !important;
+/* Compact user menu trigger */
+.fi-topbar .fi-dropdown-trigger button {
+    padding: 5px 10px !important;
+    border-radius: var(--border-radius-md) !important;
+    border: 0.5px solid var(--color-border-tertiary) !important;
+    gap: 6px !important;
+    font-size: 12px !important;
+    font-weight: 500 !important;
 }
 
-/* Modern Card Styling (Sections & Tables) */
+.fi-topbar .fi-avatar {
+    width: 26px !important;
+    height: 26px !important;
+}
+
+/* ═══════════════════════════════════════════════
+   Page Content — via custom fl-* classes
+   ═══════════════════════════════════════════════ */
+
+.fl-page-wrap {
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+}
+
+.fl-page-head {
+    padding: 0;
+    margin-bottom: 18px;
+    flex-shrink: 0;
+}
+
+.fl-page-heading {
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--color-text-primary);
+    margin: 0;
+    line-height: 1.3;
+}
+
+.fl-page-subheading {
+    font-size: 13px;
+    color: var(--color-text-secondary);
+    margin: 4px 0 0;
+}
+
+.fl-page-main {
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+}
+
+.fl-page-main>div {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+}
+
+/* ═══════════════════════════════════════════════
+   Cards, Sections & Tables — Clean
+   ═══════════════════════════════════════════════ */
+
 .fi-section,
 .fi-ta-ctn {
     border: none !important;
-    background: white !important;
+    background: var(--color-background-primary) !important;
     box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.05), 0 4px 6px -4px rgb(0 0 0 / 0.05) !important;
     border-radius: 1.25rem !important;
 }
@@ -115,25 +265,10 @@
 .dark .fi-section,
 .dark .fi-ta-ctn {
     background: #18181b !important;
-    /* Zinc 900 */
     box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.2) !important;
 }
 
-/* Navigation Item Refinement */
-.fi-sidebar-item-button {
-    border-radius: 0.75rem !important;
-    margin: 0.125rem 0.5rem !important;
-}
-
-.fi-sidebar-item-active {
-    background: linear-gradient(to right, rgba(16, 185, 129, 0.1), rgba(16, 185, 129, 0.02)) !important;
-}
-
-.dark .fi-sidebar-item-active {
-    background: linear-gradient(to right, rgba(16, 185, 129, 0.2), transparent) !important;
-}
-
-/* Table Header Refinement */
+/* Table Header */
 .fi-ta-header-cell {
     background: #f8fafc !important;
     text-transform: uppercase !important;
@@ -145,12 +280,14 @@
 
 .dark .fi-ta-header-cell {
     background: #27272a !important;
-    /* Zinc 800 */
     color: #a1a1aa !important;
     border-bottom-color: #3f3f46 !important;
 }
 
-/* Custom Modern Scrollbar */
+/* ═══════════════════════════════════════════════
+   Scrollbar
+   ═══════════════════════════════════════════════ */
+
 ::-webkit-scrollbar {
     width: 6px;
 }
@@ -164,18 +301,15 @@
     background: #3f3f46;
 }
 
-/* Modern Dropdown Redesign */
-.fi-dropdown-panel {
-    border: 1px solid rgba(255, 255, 255, 0.5) !important;
-    background: rgba(255, 255, 255, 0.8) !important;
-    backdrop-filter: blur(16px) !important;
-    border-radius: 1rem !important;
-    box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1) !important;
-}
+/* ═══════════════════════════════════════════════
+   Dropdown panels
+   ═══════════════════════════════════════════════ */
 
-.dark .fi-dropdown-panel {
-    border-color: rgba(255, 255, 255, 0.05) !important;
-    background: rgba(24, 24, 27, 0.8) !important;
+.fi-dropdown-panel {
+    border: 0.5px solid var(--color-border-tertiary) !important;
+    background: var(--color-background-primary) !important;
+    border-radius: var(--border-radius-lg) !important;
+    box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1) !important;
 }
 
 .fi-dropdown-list-item {
@@ -185,11 +319,14 @@
 }
 
 .fi-dropdown-list-item:hover {
-    background: rgba(16, 185, 129, 0.1) !important;
-    color: #10b981 !important;
+    background: var(--brand-50) !important;
+    color: var(--brand-500) !important;
 }
 
-/* Pagination Refinement */
+/* ═══════════════════════════════════════════════
+   Pagination
+   ═══════════════════════════════════════════════ */
+
 .fi-ta-pagination {
     margin-top: auto !important;
     padding: 1.25rem !important;
@@ -202,12 +339,7 @@
     background: rgba(24, 24, 27, 0.4) !important;
 }
 
-.fi-pagination-item {
-    border-radius: 0.5rem !important;
-    transition: all 0.2s ease !important;
-}
-
-/* Ensure Table Container is flex for pagination anchoring */
+/* Table container flex for pagination anchoring */
 .fi-ta-ctn {
     display: flex !important;
     flex-direction: column !important;
@@ -221,35 +353,10 @@
     overflow-y: visible !important;
 }
 
-/* ============================================
- * Stats Overview Widget - Remove Borders
- * ============================================ */
+/* ═══════════════════════════════════════════════
+   Country Select
+   ═══════════════════════════════════════════════ */
 
-/* Target stat containers */
-.fi-wi-stats-overview [role="region"]>div {
-    border: none !important;
-    box-shadow: none !important;
-}
-
-/* Target individual stat cards */
-[class*="fi-stats-overview"]>* {
-    border: 0 !important;
-    outline: none !important;
-    box-shadow: none !important;
-}
-
-/* Filament v3 stat card selectors */
-.fi-stats-overview-stat {
-    border: none !important;
-    box-shadow: none !important;
-}
-
-/* Generic stat card without border */
-div[class*="stat"] {
-    border: none !important;
-}
-
-/* Country select labels: dropdown shows name, selected value shows flag + code only. */
 .freshleaf-country-option {
     display: flex;
     align-items: center;
@@ -291,6 +398,10 @@ div[class*="stat"] {
     font-size: inherit;
 }
 
+/* ═══════════════════════════════════════════════
+   Support Toast
+   ═══════════════════════════════════════════════ */
+
 .freshleaf-support-toast {
     position: fixed;
     right: 1rem;
@@ -300,7 +411,7 @@ div[class*="stat"] {
     width: min(24rem, calc(100vw - 2rem));
     align-items: flex-start;
     gap: 0.75rem;
-    border: 1px solid rgba(16, 185, 129, 0.22);
+    border: 1px solid rgba(46, 83, 33, 0.2);
     border-radius: 1rem;
     background: rgba(255, 255, 255, 0.96);
     padding: 1rem;
@@ -313,7 +424,7 @@ div[class*="stat"] {
 }
 
 .dark .freshleaf-support-toast {
-    border-color: rgba(52, 211, 153, 0.22);
+    border-color: rgba(26, 51, 20, 0.2);
     background: rgba(24, 24, 27, 0.96);
     color: #f9fafb;
     box-shadow: 0 20px 35px -18px rgba(0, 0, 0, 0.75);
@@ -331,8 +442,8 @@ div[class*="stat"] {
     flex-shrink: 0;
     place-items: center;
     border-radius: 999px;
-    background: rgba(16, 185, 129, 0.12);
-    color: #059669;
+    background: var(--brand-100);
+    color: var(--brand-500);
 }
 
 .freshleaf-support-toast__icon svg {
@@ -365,4 +476,23 @@ div[class*="stat"] {
 
 .dark .freshleaf-support-toast__body {
     color: #a1a1aa;
+}
+
+/* ═══════════════════════════════════════════════
+   Chart widget — constrain height on small screens
+   ═══════════════════════════════════════════════ */
+
+@media (max-width: 767px) {
+    .fi-wi-chart {
+        max-height: 260px;
+    }
+}
+
+/* ═══════════════════════════════════════════════
+   Mobile sidebar backdrop
+   ═══════════════════════════════════════════════ */
+
+.fi-sidebar-close-overlay {
+    background: rgba(0, 0, 0, 0.3) !important;
+    backdrop-filter: blur(4px) !important;
 }

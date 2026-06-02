@@ -69,4 +69,11 @@ final class StorageDirectory
      * @var string
      */
     public const string PRODUCT_BATCHES = 'product_batches';
+
+    /**
+     * The directory for storing chat attachments.
+     *
+     * @var string
+     */
+    public const string CHAT_ATTACHMENTS = 'chat_attachments';
 }

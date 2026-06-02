@@ -19,9 +19,6 @@ use App\Models\PaymentStatus;
 use App\Models\PaymentType;
 use App\Models\User;
 use App\Models\VendorInventory;
-use App\Models\WalletTransaction;
-use App\Models\WalletTransactionStatus;
-use App\Models\WalletTransactionType;
 use Filament\Actions\Action;
 use Filament\Notifications\Notification;
 use Illuminate\Contracts\Pagination\Paginator;
@@ -257,13 +254,11 @@ class CartService
                     $isWallet = $typeId === PaymentMethodType::WALLET_ID;
                     $paymentCurrencyId = $validatedData['payment_currency_id'] ?? Currency::USD_ID;
 
-                    $initialOrderStatus = ($isCod || $isWallet)
+                    $initialOrderStatus = $isCod
                         ? OrderStatus::PENDING_ID
                         : OrderStatus::AWAITING_PAYMENT_ID;
 
-                    $initialPaymentStatus = $isWallet
-                        ? PaymentStatus::COMPLETED_ID
-                        : PaymentStatus::PENDING_ID;
+                    $initialPaymentStatus = PaymentStatus::PENDING_ID;
 
                     $commissionFeeHistory = CommissionFeeHistory::where('commission_fee_id', CommissionFee::ID)->latest()->first();
 
@@ -335,41 +330,6 @@ class CartService
                         $grandPaymentAmount = MoneyService::convert($grandTotalUsd, Currency::USD_ID, $paymentCurrencyId);
                     }
 
-                    $wallet = null;
-                    if ($isWallet) {
-                        $wallet = $user->wallets()->where('currency_id', $paymentCurrencyId)->first();
-                        if (! $wallet) {
-                            abort(422, __('api.wallet.not_found'));
-                        }
-                        if (MoneyService::compare($wallet->balance, $grandPaymentAmount) < 0) {
-                            abort(422, __('api.wallet.insufficient_balance'));
-                        }
-                    }
-
-                    // Process Wallet transaction ONCE for the entire grand total
-                    if ($isWallet && $wallet) {
-                        $newBalance = MoneyService::sub((string) $wallet->balance, $grandPaymentAmount);
-                        $wallet->update(['balance' => $newBalance]);
-                        $wallet->histories()->create([
-                            'user_id' => $wallet->user_id,
-                            'currency_id' => $wallet->currency_id,
-                            'balance' => $newBalance,
-                        ]);
-
-                        $transaction = WalletTransaction::create([
-                            'wallet_id' => $wallet->id,
-                            'wallet_transaction_type_id' => WalletTransactionType::PAYMENT_ID,
-                            'wallet_transaction_status_id' => WalletTransactionStatus::COMPLETED_ID,
-                            'amount' => $grandPaymentAmount,
-                            'payment_method_id' => $paymentMethod->id,
-                            'reference_id' => 0, // Cannot link to a single order
-                            'reference_type' => 'App\\Models\\Order', // Generic reference
-                            'description' => 'Payment for '.count($vendorGroups).' orders',
-                            'transaction_date' => Carbon::now(),
-                        ]);
-                        $transaction->recordHistory();
-                    }
-
                     foreach ($vendorGroups as $vendorId => $vendorCartRows) {
                         $totals = $vendorTotals[$vendorId];
 
@@ -413,17 +373,10 @@ class CartService
                             'amount' => $paymentAmount,
                         ]);
 
-                        if ($isWallet && $wallet) {
-                            $payment->histories()->create([
-                                'payment_status_id' => PaymentStatus::COMPLETED_ID,
-                                'notes' => 'Paid via wallet balance.',
-                            ]);
-                        } else {
-                            $payment->histories()->create([
-                                'payment_status_id' => PaymentStatus::PENDING_ID,
-                                'notes' => 'Payment pending upon order creation.',
-                            ]);
-                        }
+                        $payment->histories()->create([
+                            'payment_status_id' => PaymentStatus::PENDING_ID,
+                            'notes' => 'Payment pending upon order creation.',
+                        ]);
 
                         $order->update(['payment_id' => $payment->id]);
 

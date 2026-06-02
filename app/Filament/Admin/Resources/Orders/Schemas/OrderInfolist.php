@@ -7,6 +7,7 @@ namespace App\Filament\Admin\Resources\Orders\Schemas;
 use App\Models\CommissionFee;
 use App\Models\Currency;
 use App\Models\Order;
+use App\Models\OrderItem;
 use App\Models\OrderStatus;
 use App\Models\PaymentStatus;
 use Filament\Infolists\Components\ImageEntry;
@@ -190,16 +191,13 @@ class OrderInfolist
                                     ->label(__('admin.resources.order.product')),
                                 TextEntry::make('quantity')
                                     ->label(__('admin.resources.order.qty'))
-                                    ->suffix(fn ($record) => ' '.$record->unit_snapshot),
+                                    ->suffix(fn (OrderItem $record) => ' '.$record->unit_snapshot),
                                 TextEntry::make('unit_price_snapshot')
-                                    ->label(__('admin.resources.order.unit_price'))
-                                    ->money('USD'),
+                                    ->label(__('admin.resources.order.unit_price')),
                                 TextEntry::make('subtotal')
-                                    ->label(__('admin.resources.order.subtotal'))
-                                    ->money('USD'),
+                                    ->label(__('admin.resources.order.subtotal')),
                                 TextEntry::make('commission_amount')
-                                    ->label(__('admin.resources.order.commission'))
-                                    ->money('USD'),
+                                    ->label(__('admin.resources.order.commission')),
                             ]),
                     ]),
 

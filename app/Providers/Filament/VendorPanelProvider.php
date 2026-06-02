@@ -11,7 +11,9 @@ use App\Filament\Vendor\Pages\Auth\Login;
 use App\Filament\Vendor\Pages\Auth\Register;
 use App\Filament\Vendor\Pages\Dashboard;
 use App\Filament\Vendor\Widgets\VendorEarningsChart;
-use App\Filament\Vendor\Widgets\VendorStatsOverview;
+use App\Filament\Vendor\Widgets\VendorExchangeRates;
+use App\Filament\Vendor\Widgets\VendorFinancialOverview;
+use App\Filament\Vendor\Widgets\VendorPlatformActivity;
 use App\Filament\Widgets\CustomAccountWidget;
 use App\Http\Middleware\SetLocaleFromAcceptLanguage;
 use Filament\Actions\Action;
@@ -52,7 +54,7 @@ class VendorPanelProvider extends PanelProvider
             ->viteTheme('resources/css/filament/shared/theme.css')
             ->maxContentWidth(Width::Full)
             ->defaultThemeMode(ThemeMode::System)
-            ->sidebarCollapsibleOnDesktop()
+            ->sidebarFullyCollapsibleOnDesktop()
             ->userMenuItems([
                 'my-account' => Action::make('my-account')
                     ->label(fn (): string => __('admin.navigation.my_profile'))
@@ -94,7 +96,9 @@ class VendorPanelProvider extends PanelProvider
             ])
             ->discoverWidgets(in: app_path('Filament/Vendor/Widgets'), for: 'App\Filament\Vendor\Widgets')
             ->widgets([
-                VendorStatsOverview::class,
+                VendorFinancialOverview::class,
+                VendorPlatformActivity::class,
+                VendorExchangeRates::class,
                 VendorEarningsChart::class,
                 CustomAccountWidget::class,
             ])

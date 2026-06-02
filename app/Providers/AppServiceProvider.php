@@ -8,6 +8,7 @@ use App\Models\Order;
 use App\Models\UserDevice;
 use App\Observers\OrderObserver;
 use Filament\Infolists\Components\TextEntry;
+use Filament\Support\Facades\FilamentIcon;
 use Filament\Tables\Columns\TextColumn;
 use Illuminate\Notifications\Events\NotificationFailed;
 use Illuminate\Support\Facades\Event;
@@ -33,6 +34,11 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        FilamentIcon::register([
+            'panels::sidebar.collapse-button' => 'heroicon-o-bars-3',
+            'panels::sidebar.expand-button' => 'heroicon-o-bars-3',
+        ]);
+
         Order::observe(OrderObserver::class);
 
         TextColumn::configureUsing(function (TextColumn $column): void {

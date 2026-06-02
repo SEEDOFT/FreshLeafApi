@@ -1,0 +1,125 @@
+body {
+    font-family: 'battambang', sans-serif;
+    font-size: 12px;
+    color: #333;
+    line-height: 1.5;
+}
+
+.header {
+    width: 100%;
+    margin-bottom: 20px;
+    border-bottom: 1px solid #ddd;
+    padding-bottom: 10px;
+}
+
+.header td {
+    vertical-align: top;
+}
+
+.title {
+    font-size: 24px;
+    font-weight: bold;
+    color: #2c3e50;
+}
+
+.company-name {
+    font-size: 18px;
+    font-weight: bold;
+    color: #2c3e50;
+}
+
+.subtitle {
+    font-size: 16px;
+    color: #7f8c8d;
+}
+
+.company-info {
+    text-align: right;
+}
+
+.logo {
+    max-width: 150px;
+    max-height: 60px;
+    margin-bottom: 5px;
+}
+
+.details-container {
+    width: 100%;
+    margin-bottom: 20px;
+}
+
+.details-container td {
+    vertical-align: top;
+    width: 50%;
+}
+
+.section-title {
+    font-weight: bold;
+    font-size: 14px;
+    margin-bottom: 5px;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 3px;
+}
+
+.items-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 20px;
+}
+
+.items-table th {
+    background-color: #f8f9fa;
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: left;
+    font-weight: bold;
+}
+
+.items-table td {
+    border: 1px solid #ddd;
+    padding: 8px;
+}
+
+.totals-table {
+    width: 50%;
+    float: right;
+    border-collapse: collapse;
+}
+
+.totals-table td {
+    padding: 5px 8px;
+    border-bottom: 1px solid #eee;
+}
+
+.totals-table .total-row {
+    font-weight: bold;
+    font-size: 14px;
+    border-bottom: none;
+    border-top: 2px solid #ddd;
+}
+
+.footer {
+    margin-top: 50px;
+    text-align: center;
+    color: #7f8c8d;
+    font-size: 10px;
+    border-top: 1px solid #ddd;
+    padding-top: 10px;
+}
+
+.text-right {
+    text-align: right;
+}
+
+.currency-note {
+    font-size: 11px;
+    color: #7f8c8d;
+}
+
+.currency-amount {
+    vertical-align: top;
+}
+
+.clearfix {
+    clear: both;
+}

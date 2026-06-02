@@ -14,9 +14,11 @@ use App\Models\PaymentStatus;
 use App\Models\Wallet;
 use App\Services\InvoicePdfService;
 use App\Services\OrderService;
+use App\Services\VendorPayoutService;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\URL;
 use RuntimeException;
@@ -125,7 +127,7 @@ class OrderController extends Controller
     /**
      * Confirm receipt of an order.
      */
-    public function confirmReceipt(string $id, Request $request): JsonResponse
+    public function confirmReceipt(string $id, Request $request, VendorPayoutService $payoutService): JsonResponse
     {
         $user = $this->authenticatedUser($request);
         $order = Order::where('user_id', $user->id)->find((int) $id);
@@ -137,7 +139,7 @@ class OrderController extends Controller
         if (
             ! in_array(
                 $order->order_status_id,
-                [OrderStatus::DELIVERED_ID, OrderStatus::PREPARING_ID],
+                [OrderStatus::DELIVERED_ID, OrderStatus::PREPARING_ID, OrderStatus::OUT_FOR_DELIVERY_ID],
                 true
             )
         ) {
@@ -146,7 +148,11 @@ class OrderController extends Controller
 
         $order->update([
             'order_status_id' => OrderStatus::DELIVERED_ID,
+            'consumer_confirmed_date' => Carbon::now(),
         ]);
+
+        // Trigger payout
+        $payoutService->payoutOrder($order);
 
         try {
             return static::successResponse(
@@ -178,6 +184,11 @@ class OrderController extends Controller
 
         if (! $wallet) {
             abort(404, __('api.wallet.not_found'));
+        }
+
+        $profile = $user->userProfile;
+        if (! $profile || ! $profile->hasPin() || ! $profile->verifyPin($validatedData['pin'])) {
+            abort(401, __('api.pin.invalid_pin'));
         }
 
         $orderService->payWithWallet($user, $order, $wallet);
@@ -212,6 +223,11 @@ class OrderController extends Controller
 
         if (! $wallet) {
             abort(404, __('api.wallet.not_found'));
+        }
+
+        $profile = $user->userProfile;
+        if (! $profile || ! $profile->hasPin() || ! $profile->verifyPin($validatedData['pin'])) {
+            abort(401, __('api.pin.invalid_pin'));
         }
 
         $orderService->batchPayWithWallet($user, $orders, $wallet);

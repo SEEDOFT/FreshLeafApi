@@ -12,7 +12,7 @@
     color: var(--fl-auth-text-dark) !important;
 }
 
-[data-auth-page="freshleaf-admin"] .fi-fo-field-wrp > div > div {
+[data-auth-page="freshleaf-admin"] .fi-fo-field-wrp>div>div {
     overflow: hidden !important;
     border: 1px solid rgba(15, 35, 26, 0.1) !important;
     border-radius: var(--fl-auth-radius-control) !important;
@@ -24,18 +24,18 @@
         box-shadow 180ms ease !important;
 }
 
-.dark [data-auth-page="freshleaf-admin"] .fi-fo-field-wrp > div > div {
+.dark [data-auth-page="freshleaf-admin"] .fi-fo-field-wrp>div>div {
     border-color: rgba(255, 255, 255, 0.1) !important;
     background: rgba(255, 255, 255, 0.06) !important;
 }
 
-[data-auth-page="freshleaf-admin"] .fi-fo-field-wrp > div > div:focus-within {
+[data-auth-page="freshleaf-admin"] .fi-fo-field-wrp>div>div:focus-within {
     border-color: var(--fl-auth-primary) !important;
     background: #ffffff !important;
     box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.1) !important;
 }
 
-.dark [data-auth-page="freshleaf-admin"] .fi-fo-field-wrp > div > div:focus-within {
+.dark [data-auth-page="freshleaf-admin"] .fi-fo-field-wrp>div>div:focus-within {
     background: rgba(255, 255, 255, 0.09) !important;
 }
 
@@ -74,10 +74,66 @@
 }
 
 /* Make sections stretch to fill the full height of their grid cell */
-.fi-sc-component > .fi-sc-section {
+.fi-sc-component>.fi-sc-section {
     height: 100%;
 }
 
-.fi-sc-section > .fi-section {
+.fi-sc-section>.fi-section {
     height: 100%;
+}
+
+/* Notification Bell Styling inside topbar */
+.fi-topbar-end .fi-icon-btn {
+    border: 1px solid rgba(229, 231, 235, 0.5) !important;
+    background-color: rgba(255, 255, 255, 0.6) !important;
+    backdrop-filter: blur(12px) !important;
+    border-radius: 9999px !important;
+    padding: 0.5rem !important;
+    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05) !important;
+    transition: all 0.2s ease !important;
+}
+
+.fi-topbar-end .fi-icon-btn:hover {
+    background-color: rgba(243, 244, 246, 0.9) !important;
+}
+
+.dark .fi-topbar-end .fi-icon-btn {
+    border-color: rgba(255, 255, 255, 0.1) !important;
+    background-color: rgba(24, 24, 27, 0.8) !important;
+}
+
+.dark .fi-topbar-end .fi-icon-btn:hover {
+    background-color: rgba(255, 255, 255, 0.05) !important;
+}
+
+/* Hide empty sidebar header to remove space */
+.fi-sidebar-header {
+    display: none !important;
+}
+
+/* Make Sidebar Resizable */
+.fi-sidebar {
+    resize: horizontal !important;
+    overflow-x: hidden !important;
+    overflow-y: auto !important;
+    max-width: 50vw !important;
+    min-width: 16rem !important;
+    height: 100vh !important;
+}
+
+/* Ensure dashboard expands to fill height */
+@media (min-width: 1024px) {
+    .fi-main {
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .fi-page,
+    .fi-page-content,
+    .fi-page-content>div {
+        flex-grow: 1;
+        display: flex;
+        flex-direction: column;
+    }
 }

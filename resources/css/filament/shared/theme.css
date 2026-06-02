@@ -5,6 +5,7 @@
 @import '../admin/_auth.css';
 @import '../shared/support-chat.css';
 @import '../shared/ai-assistant.css';
+@import '../shared/dashboard.css';
 @import './_overrides.css';
 
 @source '../../../../app/Filament/**/*';

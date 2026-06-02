@@ -107,6 +107,7 @@ class ProcessAiChatMessageJob implements ShouldQueue
             'buy',
             'vegetable',
             'fruit',
+            'order',
         ];
         foreach ($keywords as $keyword) {
             if (stripos($prompt, $keyword) !== false) {
@@ -120,8 +121,10 @@ class ProcessAiChatMessageJob implements ShouldQueue
     /**
      * Fetch Product Context from Vendor Inventory
      */
-    private function fetchConsumerContext(string $prompt): string
+    private function fetchConsumerContext(string $prompt, int $userId): string
     {
+        $parts = [];
+
         $inventoryItems = VendorInventory::active()
             ->join('products', 'vendor_inventories.product_id', '=', 'products.id')
             ->join('units', 'vendor_inventories.unit_id', '=', 'units.id')
@@ -139,19 +142,24 @@ class ProcessAiChatMessageJob implements ShouldQueue
             ->limit(5)
             ->get();
 
-        if ($inventoryItems->isEmpty()) {
-            return '';
+        if ($inventoryItems->isNotEmpty()) {
+            $parts[] = $inventoryItems->map(static fn (Model $item) => sprintf(
+                'Product: %s (%s) - Price: $%s, Stock: %s %s, Location: %s',
+                $item->getAttribute('name_en'),
+                $item->getAttribute('name_km'),
+                $item->getAttribute('price'),
+                $item->getAttribute('stock_quantity'),
+                $item->getAttribute('unit_name'),
+                $item->getAttribute('farm_location')
+            ))->implode("\n");
         }
 
-        return $inventoryItems->map(static fn (Model $item) => sprintf(
-            'Product: %s (%s) - Price: $%s, Stock: %s %s, Location: %s',
-            $item->getAttribute('name_en'),
-            $item->getAttribute('name_km'),
-            $item->getAttribute('price'),
-            $item->getAttribute('stock_quantity'),
-            $item->getAttribute('unit_name'),
-            $item->getAttribute('farm_location')
-        ))->implode("\n");
+        $orderCount = Order::where('user_id', $userId)->count();
+        if ($orderCount > 0 || stripos($prompt, 'order') !== false) {
+            $parts[] = sprintf('Your Orders: %s', $orderCount);
+        }
+
+        return implode("\n\n", $parts);
     }
 
     private function needsVendorContext(string $prompt): bool
@@ -273,7 +281,7 @@ class ProcessAiChatMessageJob implements ShouldQueue
                 }
             } else {
                 if ($this->needsConsumerContext($this->prompt)) {
-                    $context = $this->fetchConsumerContext($this->prompt);
+                    $context = $this->fetchConsumerContext($this->prompt, $userId);
                     if ($context !== '') {
                         $this->broadcastChunk(
                             $assistantMessage,
@@ -298,7 +306,7 @@ class ProcessAiChatMessageJob implements ShouldQueue
 
             // 2. Determine if initial search is needed
             $searchQuery = $this->extractSearchQuery($this->prompt);
-            $context = '';
+            $webContext = '';
 
             if ($searchQuery !== '' && (bool) config('ai.web_search.enabled', true)) {
                 $this->broadcastChunk(
@@ -307,7 +315,7 @@ class ProcessAiChatMessageJob implements ShouldQueue
                     $sessionId,
                     " [Accessing internet to search for: {$searchQuery}] \n\n", ++$sequence
                 );
-                $context = $webSearchService->search($searchQuery);
+                $webContext = $webSearchService->search($searchQuery);
             } elseif ($this->shouldPerformLiveSearch($this->prompt)) {
                 $this->broadcastChunk(
                     $assistantMessage,
@@ -315,12 +323,20 @@ class ProcessAiChatMessageJob implements ShouldQueue
                     $sessionId,
                     " [Performing live search] \n\n", ++$sequence
                 );
-                $context = $webSearchService->search($this->prompt);
+                $webContext = $webSearchService->search($this->prompt);
             }
 
-            $finalPrompt = $this->prompt;
-            if ($context !== '') {
-                $finalPrompt = "Context from web search:\n\n{$context}\n\nUser Question: {$this->prompt}";
+            if ($context !== '' || $webContext !== '') {
+                $parts = [];
+                if ($context !== '') {
+                    $parts[] = "Live Data:\n\n{$context}";
+                }
+                if ($webContext !== '') {
+                    $parts[] = "Context from web search:\n\n{$webContext}";
+                }
+                $finalPrompt = implode("\n\n", $parts)."\n\nUser Question: {$this->prompt}";
+            } else {
+                $finalPrompt = $this->prompt;
             }
 
             // 3. Get Response

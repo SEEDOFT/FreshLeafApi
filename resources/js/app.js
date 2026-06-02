@@ -7,29 +7,50 @@ document.addEventListener('alpine:init', () => {
     Alpine.data('supportChat', supportChat);
 });
 
-const supportPanelPath = '/admin/support-chat';
+const getSupportPanelPath = () => (
+    window.location.pathname.startsWith('/vendor')
+        ? '/vendor/support-chat'
+        : '/admin/support-chat'
+);
 
-const isAdminPanelPath = () => window.location.pathname.startsWith('/admin');
-const isSupportPanelPath = () => window.location.pathname === supportPanelPath;
+const isPanelPath = () => window.location.pathname.startsWith('/admin') || window.location.pathname.startsWith('/vendor');
+const isSupportPanelPath = () => window.location.pathname === getSupportPanelPath();
+const activeSupportConversationId = () => {
+    if (!isSupportPanelPath()) {
+        return null;
+    }
 
-const buildSupportPanelUrl = (ticketId = null) => {
-    const url = new URL(supportPanelPath, window.location.origin);
+    return window.App?.activeSupportConversationId ?? new URLSearchParams(window.location.search).get('activeConversationId');
+};
 
-    if (ticketId) {
-        url.searchParams.set('activeTicketId', ticketId);
+const buildSupportPanelUrl = (conversationId = null) => {
+    const url = new URL(getSupportPanelPath(), window.location.origin);
+
+    if (conversationId) {
+        url.searchParams.set('activeConversationId', conversationId);
     }
 
     return url.toString();
 };
 
-const getSupportMessageBody = (event) => {
-    const senderName = event.ticket_user_name ?? event.sender_name ?? 'Customer';
-    const preview = event.message_preview ?? event.message ?? 'Sent an attachment';
+const getChatNotificationData = (event) => {
+    const data = event?.data?.data ?? event?.data ?? event ?? {};
+
+    if (data.type !== 'chat_message') {
+        return null;
+    }
+
+    return data;
+};
+
+const getSupportMessageBody = (data) => {
+    const senderName = data.sender_name ?? 'User';
+    const preview = data.message_preview ?? data.message ?? data.body ?? 'Sent an attachment';
 
     return `${senderName}: ${preview}`;
 };
 
-const showSupportToast = ({ title, body, ticketId }) => {
+const showSupportToast = ({ title, body, conversationId }) => {
     const existingToast = document.querySelector('[data-support-notification-toast]');
 
     if (existingToast) {
@@ -55,7 +76,7 @@ const showSupportToast = ({ title, body, ticketId }) => {
     toast.querySelector('.freshleaf-support-toast__title').textContent = title;
     toast.querySelector('.freshleaf-support-toast__body').textContent = body;
     toast.addEventListener('click', () => {
-        window.location.href = buildSupportPanelUrl(ticketId);
+        window.location.href = buildSupportPanelUrl(conversationId);
     });
 
     document.body.appendChild(toast);
@@ -70,71 +91,141 @@ const showSupportToast = ({ title, body, ticketId }) => {
     }, 6200);
 };
 
-const showBrowserSupportNotification = ({ title, body, ticketId }) => {
+const showBrowserSupportNotification = ({ title, body, conversationId }) => {
     if (!('Notification' in window) || Notification.permission !== 'granted') {
         return false;
     }
 
     const notification = new Notification(title, {
         body,
-        tag: `freshleaf-support-${ticketId ?? 'new'}`,
+        tag: `freshleaf-chat-${conversationId ?? 'new'}`,
         icon: '/favicon.ico',
     });
 
     notification.onclick = () => {
         window.focus();
-        window.location.href = buildSupportPanelUrl(ticketId);
+        window.location.href = buildSupportPanelUrl(conversationId);
         notification.close();
     };
 
     return true;
 };
 
-const notifyAdminAboutSupport = ({ title, body, ticketId }) => {
-    if (!isAdminPanelPath() || isSupportPanelPath()) {
+const notifyAboutChat = ({ title, body, conversationId }) => {
+    if (!isPanelPath()) {
         return;
     }
 
-    const shownInBrowser = showBrowserSupportNotification({ title, body, ticketId });
+    if (isSupportPanelPath() && String(conversationId) === String(activeSupportConversationId())) {
+        return;
+    }
+
+    const shownInBrowser = showBrowserSupportNotification({ title, body, conversationId });
 
     if (!shownInBrowser) {
-        showSupportToast({ title, body, ticketId });
+        showSupportToast({ title, body, conversationId });
     }
 };
 
-const bootAdminSupportNotifier = () => {
-    if (!isAdminPanelPath() || window.App?.adminSupportNotifierBooted) {
+const updateHamburgerBadge = () => {
+    const hamburgerBtn = document.querySelector('.fi-layout-sidebar-toggle-btn');
+    if (!hamburgerBtn) return;
+
+    const supportLink = document.querySelector('a[href$="/support-chat"]');
+    let count = 0;
+    
+    if (supportLink) {
+        const badge = supportLink.querySelector('.fi-badge');
+        if (badge) {
+            count = parseInt(badge.textContent.trim(), 10) || 0;
+        }
+    }
+
+    let existingBadge = hamburgerBtn.querySelector('.custom-hamburger-badge');
+    
+    if (count > 0) {
+        if (!existingBadge) {
+            existingBadge = document.createElement('span');
+            existingBadge.className = 'custom-hamburger-badge fi-badge fi-color-custom fi-color-danger fi-size-xs';
+            existingBadge.style.position = 'absolute';
+            existingBadge.style.top = '-2px';
+            existingBadge.style.right = '-2px';
+            existingBadge.style.borderRadius = '9999px';
+            existingBadge.style.padding = '2px 4px';
+            existingBadge.style.fontSize = '0.65rem';
+            existingBadge.style.lineHeight = '1';
+            existingBadge.style.backgroundColor = 'var(--danger-600)';
+            existingBadge.style.color = '#fff';
+            existingBadge.style.display = 'flex';
+            existingBadge.style.alignItems = 'center';
+            existingBadge.style.justifyContent = 'center';
+            existingBadge.style.minWidth = '1.25rem';
+            existingBadge.style.height = '1.25rem';
+            
+            hamburgerBtn.style.position = 'relative';
+            hamburgerBtn.style.overflow = 'visible';
+            hamburgerBtn.appendChild(existingBadge);
+        }
+        existingBadge.textContent = count;
+    } else if (existingBadge) {
+        existingBadge.remove();
+    }
+};
+
+const bootChatNotifier = () => {
+    if (!isPanelPath() || window.App?.chatNotifierBooted) {
         return;
     }
 
     if (typeof window.Echo === 'undefined') {
-        window.setTimeout(bootAdminSupportNotifier, 500);
+        window.setTimeout(bootChatNotifier, 500);
         return;
     }
 
-    window.App.adminSupportNotifierBooted = true;
+    if (!window.App?.authUserId) {
+        window.setTimeout(bootChatNotifier, 500);
+        return;
+    }
 
-    const adminChannel = window.Echo.private('support.admin');
+    window.App.chatNotifierBooted = true;
 
-    adminChannel.listen('.SupportMessageSent', (event) => {
-        notifyAdminAboutSupport({
-            title: 'New support message',
-            body: getSupportMessageBody(event),
-            ticketId: event.support_ticket_id,
+    window.Echo.private(`App.Models.User.${window.App.authUserId}`)
+        .listen('.ChatNotificationSent', (event) => {
+            if (typeof window.Livewire !== 'undefined') {
+                window.Livewire.dispatch('refresh-sidebar');
+            }
+
+            const data = getChatNotificationData(event);
+
+            if (!data) {
+                return;
+            }
+
+            notifyAboutChat({
+                title: event.title ?? data.title ?? 'New chat message',
+                body: event.body ? getSupportMessageBody({ ...data, body: event.body }) : getSupportMessageBody(data),
+                conversationId: data.conversation_id,
+            });
+        })
+        .notification((event) => {
+            const data = getChatNotificationData(event);
+
+            if (!data) {
+                return;
+            }
+
+            notifyAboutChat({
+                title: event.title ?? data.title ?? 'New chat message',
+                body: getSupportMessageBody(data),
+                conversationId: data.conversation_id,
+            });
         });
-    });
-
-    adminChannel.listen('.NewSupportTicket', (event) => {
-        notifyAdminAboutSupport({
-            title: 'New support ticket',
-            body: `${event.user_name ?? 'Customer'} started a support chat`,
-            ticketId: event.id,
-        });
-    });
 };
 
 document.addEventListener('DOMContentLoaded', () => {
-    bootAdminSupportNotifier();
+    bootChatNotifier();
+
+    window.setTimeout(updateHamburgerBadge, 100);
 
     const toast = document.getElementById('app-toast');
 
@@ -237,4 +328,12 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         });
     }
+});
+
+document.addEventListener('livewire:initialized', () => {
+    window.Livewire.hook('commit', ({ succeed }) => {
+        succeed(() => {
+            setTimeout(updateHamburgerBadge, 50);
+        });
+    });
 });

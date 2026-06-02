@@ -26,6 +26,7 @@ class OrderPayRequest extends FormRequest
     {
         return [
             'wallet_id' => ['required', 'integer', 'exists:wallets,id'],
+            'pin' => ['required', 'string'],
         ];
     }
 }

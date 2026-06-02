@@ -9,6 +9,10 @@
     @endphp
 
     <script>
+        window.App = window.App || {};
+        window.App.authUserId = @json(Auth::id());
+    </script>
+    <script>
         // Sync database theme to localStorage on load
         (function () {
             const theme = @js($theme);

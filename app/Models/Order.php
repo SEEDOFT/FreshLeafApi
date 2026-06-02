@@ -98,7 +98,10 @@ use function substr;
     'delivery_fee',
     'tax_amount',
     'total_amount',
-    'notes',
+    'is_vendor_paid',
+    'vendor_payout_transaction_id',
+    'delivery_proof_photo',
+    'consumer_confirmed_date',
 ])]
 #[UseFactory(OrderFactory::class)]
 class Order extends Model

@@ -8,8 +8,10 @@ use App\Filament\Admin\Clusters\Settings\Pages\AdminProfile;
 use App\Filament\Admin\Clusters\Settings\Pages\ApplicationSettings;
 use App\Filament\Admin\Pages\Auth\Login;
 use App\Filament\Admin\Pages\Dashboard;
+use App\Filament\Admin\Widgets\AdminExchangeRates;
+use App\Filament\Admin\Widgets\AdminFinancialOverview;
+use App\Filament\Admin\Widgets\AdminPlatformActivity;
 use App\Filament\Admin\Widgets\AdminRevenueChart;
-use App\Filament\Admin\Widgets\AdminStatsOverview;
 use App\Filament\ThemeColors;
 use App\Filament\Widgets\CustomAccountWidget;
 use App\Http\Middleware\SetLocaleFromAcceptLanguage;
@@ -51,7 +53,7 @@ class AdminPanelProvider extends PanelProvider
             ->viteTheme('resources/css/filament/admin/theme.css')
             ->maxContentWidth(Width::Full)
             ->defaultThemeMode(ThemeMode::System)
-            ->sidebarCollapsibleOnDesktop()
+            ->sidebarFullyCollapsibleOnDesktop()
             ->userMenuItems([
                 'my-account' => Action::make('my-account')
                     ->label(fn (): string => __('admin.navigation.my_profile'))
@@ -97,7 +99,9 @@ class AdminPanelProvider extends PanelProvider
             ])
             ->discoverWidgets(in: app_path('Filament/Admin/Widgets'), for: 'App\Filament\Admin\Widgets')
             ->widgets(widgets: [
-                AdminStatsOverview::class,
+                AdminFinancialOverview::class,
+                AdminPlatformActivity::class,
+                AdminExchangeRates::class,
                 AdminRevenueChart::class,
                 CustomAccountWidget::class,
             ])

@@ -2,7 +2,7 @@
     x-on:message-sent.window="resetComposer($refs.supportComposerTextarea); setTimeout(() => scrollToBottom(), 50); if (isPhone) { closeDrawer(); }"
     x-on:message-received.window="isUserTyping = false; setTimeout(() => scrollToBottom(), 50)"
     x-on:user-typing.window="isUserTyping = true; clearTimeout(this.typingTimeout); this.typingTimeout = setTimeout(() => { isUserTyping = false; }, 3000); setTimeout(() => scrollToBottom(), 50)"
-    x-on:conversation-selected.window="isUserTyping = false; setTimeout(() => scrollToBottom(), 50); listenToConversation($wire.activeConversationId)"
+    x-on:conversation-selected.window="isUserTyping = false; setTimeout(() => scrollToBottom(), 50); history.replaceState(null, '', `${window.location.pathname}?activeConversationId=${$wire.activeConversationId}`); listenToConversation($wire.activeConversationId)"
     x-bind:class="{ 'is-history-hidden': !$wire.showHistory }"
     x-bind:data-drawer-open="drawerOpen"
 >
@@ -12,16 +12,75 @@
 
     <aside class="fl-support-sidebar">
         <div class="fl-support-sidebar-header">
-            <h3 class="fl-support-sidebar-title">{{ __('admin.chat.active_conversations', [], 'en') }}</h3>
+            <div class="flex items-center justify-between gap-3">
+                <h3 class="fl-support-sidebar-title">{{ __('admin.chat.active_conversations', [], 'en') }}</h3>
+                @if($this->canCreateSupportTicket())
+                    <button type="button" wire:click="createSupportTicket"
+                        class="px-3 py-1.5 bg-transparent border border-[#3f3f46] hover:bg-[#27272a] text-white rounded-lg text-[13px] font-medium transition-all duration-200">
+                        <span class="flex items-center gap-1.5">
+                            <x-filament::icon icon="heroicon-o-plus" class="w-4 h-4" />
+                            {{ __('admin.chat.new_ticket', [], 'en') }}
+                        </span>
+                    </button>
+                @endif
+            </div>
         </div>
+
+        <div class="flex border-b border-[#27272a] px-4 py-2 gap-1 bg-[#18181b] overflow-x-auto">
+            <button wire:click="$set('conversationFilter', 'all')"
+                class="fl-filter-btn {{ $conversationFilter === 'all' ? 'fl-filter-btn--active' : 'fl-filter-btn--inactive' }}">
+                {{ __('admin.chat.filter_all', [], 'en') }}
+            </button>
+            <button wire:click="$set('conversationFilter', 'support_open')"
+                class="fl-filter-btn {{ $conversationFilter === 'support_open' ? 'fl-filter-btn--active' : 'fl-filter-btn--inactive' }}">
+                {{ __('admin.chat.filter_support_open', [], 'en') }}
+            </button>
+            <button wire:click="$set('conversationFilter', 'support_resolved')"
+                class="fl-filter-btn {{ $conversationFilter === 'support_resolved' ? 'fl-filter-btn--active' : 'fl-filter-btn--inactive' }}">
+                {{ __('admin.chat.filter_support_resolved', [], 'en') }}
+            </button>
+            <button wire:click="$set('conversationFilter', 'direct')"
+                class="fl-filter-btn {{ $conversationFilter === 'direct' ? 'fl-filter-btn--active' : 'fl-filter-btn--inactive' }}">
+                {{ __('admin.chat.filter_direct', [], 'en') }}
+            </button>
+        </div>
+
+        @if(in_array(auth()->user()?->user_type_id, [\App\Models\UserType::ADMIN_ID, \App\Models\UserType::VENDOR_ID], true))
+            <div class="flex border-b border-[#27272a] px-4 py-2 gap-1 bg-[#18181b]">
+                <button wire:click="$set('activeTab', 'all')"
+                    class="fl-filter-btn {{ $activeTab === 'all' ? 'fl-filter-btn--active' : 'fl-filter-btn--inactive' }}">
+                    All
+                </button>
+                @if(auth()->user()?->user_type_id === \App\Models\UserType::VENDOR_ID)
+                    <button wire:click="$set('activeTab', 'admins')"
+                        class="fl-filter-btn {{ $activeTab === 'admins' ? 'fl-filter-btn--active' : 'fl-filter-btn--inactive' }}">
+                        Admins
+                    </button>
+                @endif
+                <button wire:click="$set('activeTab', 'consumers')"
+                    class="fl-filter-btn {{ $activeTab === 'consumers' ? 'fl-filter-btn--active' : 'fl-filter-btn--inactive' }}">
+                    Consumers
+                </button>
+                @if(auth()->user()?->user_type_id === \App\Models\UserType::ADMIN_ID)
+                    <button wire:click="$set('activeTab', 'vendors')"
+                        class="fl-filter-btn {{ $activeTab === 'vendors' ? 'fl-filter-btn--active' : 'fl-filter-btn--inactive' }}">
+                        Vendors
+                    </button>
+                @endif
+            </div>
+        @endif
 
         <div class="fl-support-ticket-list">
             @forelse($this->getConversations() as $conversation)
-                @php 
-                    $latestMessage = $conversation->messages->first(); 
+                @php
+                    $latestMessage = $conversation->messages->first();
                     $otherParticipant = $conversation->participants->where('user_id', '!=', auth()->id())->first();
                     $title = $otherParticipant ? $otherParticipant->user->fullName : __('admin.chat.unknown_user', [], 'en');
-                    if ($conversation->type === 'support') {
+                    $userType = $otherParticipant?->user?->user_type_id;
+                    $isSupport = (int) $conversation->conversation_type_id === \App\Models\ConversationType::SUPPORT_ID;
+                    $isResolved = (int) $conversation->conversation_status_id === \App\Models\ConversationStatus::CLOSED_ID;
+                    $unreadCount = (int) ($conversation->unread_messages_count ?? 0);
+                    if ($isSupport) {
                         $title = __('admin.chat.support', [], 'en') . ' - ' . $title;
                     }
                 @endphp
@@ -29,8 +88,33 @@
                     class="fl-support-ticket-item {{ $activeConversationId === $conversation->id ? 'fl-support-ticket-item--active' : '' }}"
                     x-on:click="if (isPhone) { closeDrawer(); }">
                     <div class="flex justify-between items-start mb-1">
-                        <span class="fl-support-ticket-user">{{ $title }}</span>
-                        <span class="fl-support-ticket-date">{{ $conversation->updated_at->diffForHumans(short: true) }}</span>
+                        <div class="flex items-center gap-1.5 flex-wrap">
+                            <span class="fl-support-ticket-user">{{ $title }}</span>
+                            @if($isSupport)
+                                <span class="fl-badge {{ $isResolved ? 'fl-badge--resolved' : 'fl-badge--open' }}">
+                                    {{ $isResolved ? __('admin.chat.resolved', [], 'en') : __('admin.chat.open', [], 'en') }}
+                                </span>
+                            @else
+                                <span class="fl-badge fl-badge--direct">
+                                    {{ __('admin.chat.direct', [], 'en') }}
+                                </span>
+                            @endif
+                            @if(auth()->user()?->user_type_id === \App\Models\UserType::ADMIN_ID && $userType)
+                                @if($userType === \App\Models\UserType::VENDOR_ID)
+                                    <span class="fl-badge fl-badge--vendor">Vendor</span>
+                                @elseif($userType === \App\Models\UserType::CONSUMER_ID)
+                                    <span class="fl-badge fl-badge--consumer">Consumer</span>
+                                @endif
+                            @endif
+                        </div>
+                        <div class="flex items-center gap-2">
+                            @if($unreadCount > 0)
+                                <span class="fl-unread-badge">
+                                    {{ $unreadCount > 99 ? '99+' : $unreadCount }}
+                                </span>
+                            @endif
+                            <span class="fl-support-ticket-date">{{ $conversation->updated_at->diffForHumans(short: true) }}</span>
+                        </div>
                     </div>
                     <p class="fl-support-ticket-excerpt">
                         {{ $latestMessage?->content ?: ($latestMessage?->file_path ? __('admin.chat.file_attached', [], 'en') : __('admin.chat.no_messages_yet', [], 'en')) }}
@@ -44,88 +128,199 @@
 
     <main class="fl-support-main">
         @if($activeConversationId)
-            @php 
-                $activeConversation = \App\Models\Conversation::find($activeConversationId); 
+            @php
+                $activeConversation = \App\Models\Conversation::with(['participants.user'])->find($activeConversationId);
                 $otherParticipant = $activeConversation->participants->where('user_id', '!=', auth()->id())->first();
                 $title = $otherParticipant ? $otherParticipant->user->fullName : __('admin.chat.unknown_user', [], 'en');
-                if ($activeConversation->type === 'support') {
+                $isSupport = (int) $activeConversation->conversation_type_id === \App\Models\ConversationType::SUPPORT_ID;
+                $isResolved = (int) $activeConversation->conversation_status_id === \App\Models\ConversationStatus::CLOSED_ID;
+                if ($isSupport) {
                     $title = __('admin.chat.support', [], 'en') . ' - ' . $title;
                 }
             @endphp
-            <header class="fl-support-header">
-                <div class="fl-support-header-user">
-                    <button type="button" class="md:hidden" x-on:click="toggleDrawer()">
+            <header class="border-b border-[#27272a] px-6 py-4 flex items-center justify-between bg-[#18181b]">
+                <div class="flex items-center gap-3">
+                    <button type="button" class="md:hidden text-gray-400 hover:text-white" x-on:click="toggleDrawer()">
                         <x-filament::icon icon="heroicon-o-bars-3" class="h-5 w-5" />
                     </button>
-                    <button type="button" class="hidden md:block" x-on:click="toggleDrawer()">
-                        <x-filament::icon icon="heroicon-o-bars-3-bottom-left" class="h-5 w-5" />
-                    </button>
-                    <div class="fl-support-header-avatar">
+                    <div class="h-10 w-10 rounded-full bg-[#dcfce7] flex items-center justify-center text-[#16a34a] font-bold text-sm">
                         @if($otherParticipant)
                             {{ mb_substr($otherParticipant->user->first_name, 0, 1) }}{{ mb_substr($otherParticipant->user->last_name, 0, 1) }}
                         @else
                             ?
                         @endif
                     </div>
-                    <div>
-                        <h2 class="fl-support-header-name">{{ $title }}</h2>
-                        <p class="fl-support-header-status">{{ __('admin.chat.last_active', [], 'en') }}: {{ $activeConversation->updated_at->diffForHumans() }}</p>
+                    <div class="flex flex-col">
+                        <div class="flex items-center gap-2">
+                            <h2 class="text-base font-bold text-white leading-tight">{{ $title }}</h2>
+                            @if($isSupport)
+                                <span class="fl-badge {{ $isResolved ? 'fl-badge--resolved' : 'fl-badge--open' }}">
+                                    {{ $isResolved ? __('admin.chat.resolved', [], 'en') : __('admin.chat.open', [], 'en') }}
+                                </span>
+                            @else
+                                <span class="fl-badge fl-badge--direct">
+                                    {{ __('admin.chat.direct', [], 'en') }}
+                                </span>
+                            @endif
+                            @if(auth()->user()?->user_type_id === \App\Models\UserType::ADMIN_ID && $otherParticipant?->user?->user_type_id)
+                                @if($otherParticipant->user->user_type_id === \App\Models\UserType::VENDOR_ID)
+                                    <span class="fl-badge fl-badge--vendor">Vendor</span>
+                                @elseif($otherParticipant->user->user_type_id === \App\Models\UserType::CONSUMER_ID)
+                                    <span class="fl-badge fl-badge--consumer">Consumer</span>
+                                @endif
+                            @endif
+                        </div>
+                        <p class="text-[11px] text-gray-400 mt-0.5">{{ __('admin.chat.last_active', [], 'en') }}: {{ $activeConversation->updated_at->diffForHumans() }}</p>
                     </div>
                 </div>
 
-                <x-filament::button color="success" size="sm" icon="heroicon-o-check-circle"
-                    wire:click="resolveConversation({{ $activeConversationId }})" wire:confirm="{{ __('admin.chat.confirm_resolve', [], 'en') }}">
-                    {{ __('admin.chat.resolve', [], 'en') }}
-                </x-filament::button>
+                @if($this->canResolveActiveConversation())
+                    <x-filament::button color="success" size="sm" icon="heroicon-o-check-circle"
+                        wire:click="resolveConversation({{ $activeConversationId }})" wire:confirm="{{ __('admin.chat.confirm_resolve', [], 'en') }}">
+                        {{ __('admin.chat.resolve', [], 'en') }}
+                    </x-filament::button>
+                @endif
             </header>
 
             <div class="fl-support-thread" id="support-thread">
                 @foreach($this->getActiveMessages() as $msg)
-                    <div class="fl-support-message-row {{ $msg->sender_id === auth()->id() ? 'fl-support-message-row--admin' : '' }}">
-                        <div class="fl-support-message-content">
-                            <div class="fl-support-message-info">
-                                <span class="fl-support-message-author">
-                                    {{ $msg->sender_id === auth()->id() ? __('admin.chat.you', [], 'en') : $msg->sender->fullName }}
-                                </span>
-                                <span class="fl-support-message-time">{{ $msg->created_at->format('H:i') }}</span>
+                    @if($msg->sender_id === auth()->id())
+                        {{-- Admin (You) message, aligned right --}}
+                        <div class="flex flex-col items-end gap-1 mb-6">
+                            <div class="flex items-center justify-end gap-2 mb-1 w-full pr-12">
+                                <span class="text-[10px] text-gray-500">{{ $msg->created_at->format('H:i') }}</span>
+                                <span class="text-[10px] font-bold text-gray-400 uppercase">{{ __('admin.chat.you', [], 'en') }}</span>
+                                <div class="w-7 h-7 rounded-full bg-[#27272a] border border-[#3f3f46] flex items-center justify-center text-[10px] font-bold text-gray-300">
+                                    {{ substr(auth()->user()?->name ?? 'U', 0, 2) }}
+                                </div>
                             </div>
-                            <div class="fl-chat-bubble {{ $msg->sender_id === auth()->id() ? 'fl-chat-bubble--admin' : 'fl-chat-bubble--user' }}">
+                            <div class="w-fit bg-[#16a34a] text-white px-5 py-3 rounded-xl rounded-tr-sm max-w-[75%] mr-[3.25rem] text-[15px] font-medium leading-relaxed break-words shadow-sm">
                                 @if($msg->file_path)
-                                    @if(preg_match('/\.(jpg|jpeg|png)$/i', $msg->file_path))
-                                        <a href="{{ Storage::url($msg->file_path) }}" target="_blank">
-                                            <img src="{{ Storage::url($msg->file_path) }}" class="rounded-lg mb-2 max-w-full h-auto max-h-48 object-cover border border-black/10 dark:border-white/10" alt="Attachment">
-                                        </a>
+                                    @if(preg_match('/\.(jpg|jpeg|png|gif|webp)$/i', $msg->file_path))
+                                        <div x-data="{ isZoomed: false }">
+                                            <img src="{{ Storage::url($msg->file_path) }}" 
+                                                 x-on:click="isZoomed = true"
+                                                 class="fl-chat-image-attachment" 
+                                                 alt="Attachment">
+                                            
+                                            <template x-teleport="body">
+                                                <div x-show="isZoomed" 
+                                                     style="display: none;"
+                                                     x-transition:enter="transition ease-out duration-300"
+                                                     x-transition:enter-start="opacity-0"
+                                                     x-transition:enter-end="opacity-100"
+                                                     x-transition:leave="transition ease-in duration-200"
+                                                     x-transition:leave-start="opacity-100"
+                                                     x-transition:leave-end="opacity-0"
+                                                     class="fl-chat-lightbox-overlay"
+                                                     x-on:click="isZoomed = false"
+                                                     x-on:keydown.escape.window="isZoomed = false">
+                                                    
+                                                    <img src="{{ Storage::url($msg->file_path) }}" 
+                                                         class="fl-chat-lightbox-image" 
+                                                         x-on:click.stop="isZoomed = false"
+                                                         alt="Attachment Zoomed">
+                                                    
+                                                    <button type="button" 
+                                                            class="fl-chat-lightbox-close" 
+                                                            x-on:click="isZoomed = false">
+                                                        <x-filament::icon icon="heroicon-o-x-mark" class="w-6 h-6" />
+                                                    </button>
+                                                </div>
+                                            </template>
+                                        </div>
                                     @else
-                                    <a href="{{ Storage::url($msg->file_path) }}" target="_blank" class="fl-chat-attachment">
-                                            <x-filament::icon icon="heroicon-o-document" class="fl-chat-attachment__icon" />
-                                            <span class="fl-chat-attachment__text">{{ __('admin.chat.download_attachment', [], 'en') }}</span>
+                                        <a href="{{ Storage::url($msg->file_path) }}" target="_blank" class="flex items-center gap-2 p-2 mb-2 rounded bg-black/10 hover:bg-black/20 transition-colors text-white">
+                                            <x-filament::icon icon="heroicon-o-document" class="w-5 h-5 opacity-70" />
+                                            <span>{{ __('admin.chat.download_attachment', [], 'en') }}</span>
                                         </a>
                                     @endif
                                 @endif
                                 @if($msg->content)
-                                    <p class="text-sm leading-relaxed">{{ $msg->content }}</p>
+                                    <p>{{ $msg->content }}</p>
                                 @endif
                             </div>
                         </div>
-                    </div>
+                    @else
+                        {{-- User (Other) message, aligned left --}}
+                        <div class="flex items-start gap-3 mb-6">
+                            <div class="w-8 h-8 rounded-full bg-[#dcfce7] flex items-center justify-center text-[#16a34a] font-bold text-xs flex-shrink-0 mt-1">
+                                {{ mb_substr($msg->sender->first_name ?? 'U', 0, 1) }}{{ mb_substr($msg->sender->last_name ?? '', 0, 1) }}
+                            </div>
+                            <div class="flex flex-col gap-1 w-full items-start">
+                                <div class="flex items-center gap-2">
+                                    <span class="text-[10px] font-bold text-gray-400 uppercase tracking-wider">{{ $msg->sender->fullName }}</span>
+                                    <span class="text-[10px] text-gray-500">{{ $msg->created_at->format('H:i') }}</span>
+                                </div>
+                                <div class="w-fit bg-[#27272a] text-white px-5 py-4 rounded-xl rounded-tl-sm max-w-[85%] text-[15px] leading-relaxed shadow-sm border border-[#3f3f46] break-words">
+                                    @if($msg->file_path)
+                                        @if(preg_match('/\.(jpg|jpeg|png|gif|webp)$/i', $msg->file_path))
+                                            <div x-data="{ isZoomed: false }">
+                                                <img src="{{ Storage::url($msg->file_path) }}" 
+                                                     x-on:click="isZoomed = true"
+                                                     class="fl-chat-image-attachment" 
+                                                     alt="Attachment">
+                                                
+                                                <template x-teleport="body">
+                                                    <div x-show="isZoomed" 
+                                                         style="display: none;"
+                                                         x-transition:enter="transition ease-out duration-300"
+                                                         x-transition:enter-start="opacity-0"
+                                                         x-transition:enter-end="opacity-100"
+                                                         x-transition:leave="transition ease-in duration-200"
+                                                         x-transition:leave-start="opacity-100"
+                                                         x-transition:leave-end="opacity-0"
+                                                         class="fl-chat-lightbox-overlay"
+                                                         x-on:click="isZoomed = false"
+                                                         x-on:keydown.escape.window="isZoomed = false">
+                                                        
+                                                        <img src="{{ Storage::url($msg->file_path) }}" 
+                                                             class="fl-chat-lightbox-image" 
+                                                             x-on:click.stop="isZoomed = false"
+                                                             alt="Attachment Zoomed">
+                                                        
+                                                        <button type="button" 
+                                                                class="fl-chat-lightbox-close" 
+                                                                x-on:click="isZoomed = false">
+                                                            <x-filament::icon icon="heroicon-o-x-mark" class="w-6 h-6" />
+                                                        </button>
+                                                    </div>
+                                                </template>
+                                            </div>
+                                        @else
+                                            <a href="{{ Storage::url($msg->file_path) }}" target="_blank" class="flex items-center gap-2 p-2 mb-2 rounded bg-white/5 hover:bg-white/10 transition-colors text-white">
+                                                <x-filament::icon icon="heroicon-o-document" class="w-5 h-5 opacity-70" />
+                                                <span>{{ __('admin.chat.download_attachment', [], 'en') }}</span>
+                                            </a>
+                                        @endif
+                                    @endif
+                                    @if($msg->content)
+                                        <p>{{ $msg->content }}</p>
+                                    @endif
+                                </div>
+                            </div>
+                        </div>
+                    @endif
                 @endforeach
 
-                <div x-show="isUserTyping" style="display: none;" class="fl-support-message-row">
-                    <div class="fl-support-message-content">
-                        <div class="fl-support-message-info">
-                            <span class="fl-support-message-author">{{ $title }}</span>
-                        </div>
-                        <div class="fl-chat-bubble fl-chat-bubble--user">
+                <div x-show="isUserTyping" style="display: none;" class="flex items-start gap-3 mb-6">
+                    <div class="w-8 h-8 rounded-full bg-[#dcfce7] flex items-center justify-center text-[#16a34a] font-bold text-xs flex-shrink-0 mt-1 animate-pulse">
+                        {{ mb_substr($otherParticipant?->user?->first_name ?? 'U', 0, 1) }}{{ mb_substr($otherParticipant?->user?->last_name ?? '', 0, 1) }}
+                    </div>
+                    <div class="flex flex-col gap-1 w-full items-start">
+                        <span class="text-[10px] font-bold text-gray-400 uppercase tracking-wider">{{ $title }}</span>
+                        <div class="w-fit bg-[#27272a] text-white px-5 py-3 rounded-xl rounded-tl-sm max-w-[75%] text-[15px] border border-[#3f3f46]">
                             <div class="flex items-center gap-1.5 h-5">
-                                <span class="w-1.5 h-1.5 bg-gray-400 dark:bg-gray-500 rounded-full animate-bounce"></span>
-                                <span class="w-1.5 h-1.5 bg-gray-400 dark:bg-gray-500 rounded-full animate-bounce" style="animation-delay: 0.2s"></span>
-                                <span class="w-1.5 h-1.5 bg-gray-400 dark:bg-gray-500 rounded-full animate-bounce" style="animation-delay: 0.4s"></span>
+                                <span class="fl-typing-dot"></span>
+                                <span class="fl-typing-dot" style="animation-delay: 0.2s"></span>
+                                <span class="fl-typing-dot" style="animation-delay: 0.4s"></span>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
 
+            @if($this->canSendInActiveConversation())
             <footer class="fl-support-footer">
                 @if ($file)
                     <div class="fl-chat-attachment-preview">
@@ -162,14 +357,21 @@
                             x-on:keydown.enter="if (!$event.shiftKey) { $event.preventDefault(); submitComposer($el, @js((bool) $file)); }"
                             x-bind:style="{ height: composerTextareaHeight, overflowY: composerTextareaOverflowY }"
                             placeholder="{{ __('admin.chat.type_reply', [], 'en') }}"
-                            class="fl-support-composer-textarea" rows="1"
+                            class="flex-1 bg-transparent border-none focus:ring-0 text-white text-[14px] resize-none px-3 py-2 outline-none" rows="1"
                             autofocus></textarea>
                     </div>
-                    <button type="submit" class="fl-support-send-btn" wire:loading.attr="disabled" wire:target="sendMessage, file">
+                    <button type="submit" class="w-10 h-10 self-end mb-0.5 mr-0.5 flex items-center justify-center bg-[#27272a] hover:bg-[#3f3f46] text-white rounded-lg transition-colors flex-shrink-0 disabled:opacity-50 disabled:grayscale" wire:loading.attr="disabled" wire:target="sendMessage, file">
                         <x-filament::icon icon="heroicon-o-paper-airplane" class="h-5 w-5" />
                     </button>
                 </form>
             </footer>
+            @else
+                <footer class="fl-support-footer">
+                    <div class="max-w-4xl mx-auto rounded-xl border border-gray-200 dark:border-white/10 bg-gray-50 dark:bg-white/5 px-4 py-3 text-sm text-gray-600 dark:text-gray-300">
+                        {{ __('admin.chat.resolved_read_only', [], 'en') }}
+                    </div>
+                </footer>
+            @endif
         @else
             <div class="fl-support-empty-state">
                 <header class="fl-support-header absolute top-0 left-0 right-0 border-b-0 bg-transparent">
@@ -185,6 +387,12 @@
                 </div>
                 <h3 class="fl-support-empty-title">{{ __('admin.chat.no_conversation_selected_title', [], 'en') }}</h3>
                 <p class="fl-support-empty-desc">{{ __('admin.chat.no_conversation_selected_desc', [], 'en') }}</p>
+                @if($this->canCreateSupportTicket())
+                    <button type="button" wire:click="createSupportTicket"
+                        class="fl-cta-btn fl-cta-btn--lg">
+                        {{ __('admin.chat.new_ticket', [], 'en') }}
+                    </button>
+                @endif
             </div>
         @endif
     </main>

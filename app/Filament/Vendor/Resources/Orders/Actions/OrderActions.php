@@ -116,10 +116,19 @@ class OrderActions
             ->label(__('admin.resources.order.actions.deliver'))
             ->icon(Heroicon::OutlinedCheckBadge)
             ->color('success')
-            ->requiresConfirmation()
+            ->form([
+                FileUpload::make('delivery_proof_photo')
+                    ->label(__('admin.resources.order.delivery_proof_photo', [], 'en') ?? 'Delivery Proof Photo')
+                    ->image()
+                    ->required()
+                    ->directory('delivery-proofs'),
+            ])
             ->visible(fn (Order $record) => $record->order_status_id === OrderStatus::OUT_FOR_DELIVERY_ID)
-            ->action(function (Order $record): void {
-                $record->update(['order_status_id' => OrderStatus::DELIVERED_ID]);
+            ->action(function (Order $record, array $data): void {
+                $record->update([
+                    'order_status_id' => OrderStatus::DELIVERED_ID,
+                    'delivery_proof_photo' => $data['delivery_proof_photo'],
+                ]);
 
                 // Automatically complete COD payments on delivery
                 $isCod = $record->payments()

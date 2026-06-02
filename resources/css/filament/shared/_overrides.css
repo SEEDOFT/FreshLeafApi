@@ -1,3 +1,7 @@
+/* ═══════════════════════════════════════════════
+   Auth page overrides
+   ═══════════════════════════════════════════════ */
+
 [data-auth-page="freshleaf-admin"] .fi-fo-field-wrp {
     margin: 0;
 }
@@ -73,6 +77,10 @@
     transform: translateY(0);
 }
 
+/* ═══════════════════════════════════════════════
+   Global layout overrides
+   ═══════════════════════════════════════════════ */
+
 /* Make sections stretch to fill the full height of their grid cell */
 .fi-sc-component > .fi-sc-section {
     height: 100%;
@@ -87,4 +95,14 @@
 .fi-ta-header-cell-label,
 .fi-in-entry-wrp-label-text {
     font-weight: 700 !important;
+}
+
+/* Suppress Filament's sidebar collapse button (we handle it via the header) */
+.fi-sidebar-header .fi-sidebar-header-btn-close {
+    opacity: 0.6 !important;
+}
+
+/* Remove extra spacing from the sidebar nav top */
+.fi-sidebar-nav {
+    padding-top: 0 !important;
 }

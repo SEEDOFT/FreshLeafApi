@@ -82,6 +82,7 @@ return [
         'updated' => 'Address updated successfully',
         'replaced' => 'Address replaced successfully',
         'deleted' => 'Address deleted successfully',
+        'set_default' => 'Default address set successfully',
         'not_found' => 'Address not found',
     ],
 
@@ -144,6 +145,17 @@ return [
         'unread_retrieved' => 'Unread count retrieved',
         'no_unread' => 'No unread messages',
         'unauthorized_access' => 'Unauthorized access to ticket history',
+    ],
+
+    'chat' => [
+        'conversations_retrieved' => 'Conversations retrieved successfully',
+        'conversation_retrieved' => 'Conversation retrieved successfully',
+        'cannot_chat_with_self' => 'You cannot chat with yourself',
+        'unread_retrieved' => 'Unread count retrieved',
+        'typing' => 'Typing indicator sent',
+        'messages_retrieved' => 'Messages retrieved successfully',
+        'message_sent' => 'Message sent successfully',
+        'conversation_resolved' => 'This support ticket is resolved. Open a new ticket to continue chatting with support.',
     ],
 
     /*

@@ -1,7 +1,7 @@
 export default () => ({
     isUserTyping: false,
     typingTimeout: null,
-    currentTicketId: null,
+    currentConversationId: null,
     pollInterval: null,
     drawerOpen: false,
     isPhone: false,
@@ -14,6 +14,8 @@ export default () => ({
     init() {
         this.initDrawer();
         this.scrollToBottom();
+        window.App = window.App ?? {};
+        window.App.activeSupportConversationId = this.$wire.activeConversationId;
         this.initEcho();
         this.startPolling();
     },
@@ -117,36 +119,23 @@ export default () => ({
             return;
         }
 
-        const adminChannel = window.Echo.private('support.admin');
-        adminChannel.listen('.NewSupportTicket', () => {
-            this.$wire.$refresh();
-        });
-        adminChannel.listen('.SupportMessageSent', () => {
-            this.$wire.$refresh();
-        });
-        adminChannel.listen('.SupportTyping', (e) => {
-            if (e.sender_type === 'user') {
-                this.isUserTyping = true;
-                clearTimeout(this.typingTimeout);
-                this.typingTimeout = setTimeout(() => {
-                    this.isUserTyping = false;
-                }, 3000);
-                setTimeout(() => this.scrollToBottom(), 50);
-            }
-        });
-
-        this.listenToTicket(this.$wire.activeTicketId);
+        this.listenToConversation(this.$wire.activeConversationId);
     },
 
-    listenToTicket(ticketId) {
-        if (!ticketId) return;
-        if (this.currentTicketId) {
-            window.Echo.leave('support.ticket.' + this.currentTicketId);
+    listenToConversation(conversationId) {
+        if (!conversationId || typeof window.Echo === 'undefined') return;
+        window.App = window.App ?? {};
+        window.App.activeSupportConversationId = conversationId;
+        if (this.currentConversationId) {
+            window.Echo.leave('chat.conversation.' + this.currentConversationId);
         }
-        this.currentTicketId = ticketId;
-        const ticketChannel = window.Echo.private('support.ticket.' + ticketId);
-        ticketChannel.listen('.SupportMessageSent', (e) => {
+        this.currentConversationId = conversationId;
+        const conversationChannel = window.Echo.private('chat.conversation.' + conversationId);
+        conversationChannel.listen('.ChatMessageSent', (e) => {
             this.$wire.handleIncomingMessage(e);
+        });
+        conversationChannel.listen('.ChatTyping', (e) => {
+            this.$wire.handleTypingEvent(e);
         });
     },
 

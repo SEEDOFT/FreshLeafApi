@@ -46,7 +46,7 @@ class ExchangeRateHistory extends Model
     protected function casts(): array
     {
         return [
-            'rate' => 'decimal:4',
+            'rate' => 'decimal:8',
         ];
     }
 

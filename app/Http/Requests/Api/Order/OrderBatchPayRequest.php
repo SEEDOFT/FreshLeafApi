@@ -28,6 +28,7 @@ class OrderBatchPayRequest extends FormRequest
             'order_ids' => ['required', 'array', 'min:1'],
             'order_ids.*' => ['required', 'integer'],
             'wallet_id' => ['required', 'integer'],
+            'pin' => ['required', 'string'],
         ];
     }
 }

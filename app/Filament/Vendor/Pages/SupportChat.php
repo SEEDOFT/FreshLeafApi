@@ -57,4 +57,10 @@ class SupportChat extends Page
 
         return $unreadCount > 0 ? (string) $unreadCount : null;
     }
+
+    #[Override]
+    public static function getNavigationBadgeColor(): string|array|null
+    {
+        return 'danger';
+    }
 }

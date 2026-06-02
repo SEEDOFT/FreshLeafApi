@@ -9,7 +9,19 @@ use Illuminate\Database\Eloquent\Attributes\Table;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Carbon;
 
+/**
+ * @property int $id
+ * @property int $conversation_id
+ * @property int $sender_id
+ * @property string $content
+ * @property string|null $file_path
+ * @property bool $is_read
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ * @property Carbon|null $deleted_at
+ */
 #[Table('messages', key: 'id', keyType: 'int')]
 #[Fillable(['conversation_id', 'sender_id', 'content', 'file_path', 'is_read'])]
 class Message extends Model

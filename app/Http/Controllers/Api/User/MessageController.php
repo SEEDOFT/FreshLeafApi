@@ -4,13 +4,19 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\Api\User;
 
+use App\Constants\StorageDirectory;
 use App\Events\ChatMessageSent;
 use App\Http\Controllers\Controller;
+use App\Http\Resources\Chat\MessageResource;
 use App\Models\Conversation;
+use App\Models\ConversationStatus;
+use App\Models\ConversationType;
 use App\Models\Message;
 use App\Notifications\NewChatMessage;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Notification;
 
 class MessageController extends Controller
 {
@@ -22,16 +28,20 @@ class MessageController extends Controller
         $user = $this->authenticatedUser($request);
 
         $conversation = Conversation::where('id', $conversationId)
-            ->whereHas('participants', function ($query) use ($user) {
-                $query->where('user_id', $user->id);
-            })
-            ->firstOrFail();
+            ->whereHas('participants', static fn (Builder $query) => $query->where('user_id', $user->id))
+            ->first();
+
+        if (! $conversation) {
+            abort(404, __('api.chat.conversation_not_found'));
+        }
 
         // Mark unread messages from others as read
         $conversation->messages()
             ->where('sender_id', '!=', $user->id)
             ->where('is_read', false)
-            ->update(['is_read' => true]);
+            ->update([
+                'is_read' => true,
+            ]);
 
         $messages = $conversation->messages()
             ->with('sender')
@@ -39,7 +49,7 @@ class MessageController extends Controller
             ->get();
 
         return static::successResponse(
-            $messages,
+            MessageResource::collection($messages),
             __('api.chat.messages_retrieved')
         );
     }
@@ -57,14 +67,23 @@ class MessageController extends Controller
         ]);
 
         $conversation = Conversation::where('id', $conversationId)
-            ->whereHas('participants', function ($query) use ($user) {
-                $query->where('user_id', $user->id);
-            })
-            ->firstOrFail();
+            ->whereHas('participants', static fn (Builder $query) => $query->where('user_id', $user->id))
+            ->first();
+
+        if (! $conversation) {
+            abort(404, __('api.chat.conversation_not_found'));
+        }
+
+        if (
+            (int) $conversation->conversation_type_id === ConversationType::SUPPORT_ID &&
+            (int) $conversation->conversation_status_id === ConversationStatus::CLOSED_ID
+        ) {
+            abort(422, __('api.chat.conversation_resolved'));
+        }
 
         $filePath = null;
         if ($request->hasFile('attachment')) {
-            $filePath = $request->file('attachment')->store('chat/files', 'public');
+            $filePath = $request->file('attachment')->store(StorageDirectory::CHAT_ATTACHMENTS, 'public');
         }
 
         $message = Message::create([
@@ -78,17 +97,19 @@ class MessageController extends Controller
 
         broadcast(new ChatMessageSent($message))->toOthers();
 
-        $otherParticipants = $conversation->participants()->where('user_id', '!=', $user->id)->with('user')->get();
-        foreach ($otherParticipants as $participant) {
-            if ($participant->user) {
-                $participant->user->notify(new NewChatMessage($message));
-            }
-        }
+        $recipients = $conversation->participants()
+            ->where('user_id', '!=', $user->id)
+            ->with('user')
+            ->get()
+            ->pluck('user')
+            ->filter();
+
+        Notification::sendNow($recipients, new NewChatMessage($message));
 
         $message->load('sender');
 
         return static::successResponse(
-            $message,
+            new MessageResource($message),
             __('api.chat.message_sent')
         );
     }

@@ -76,5 +76,11 @@ class AiAssistant extends Page
     }
 
     #[Override]
+    public static function getNavigationBadgeColor(): string|array|null
+    {
+        return 'danger';
+    }
+
+    #[Override]
     protected string $view = 'filament.pages.shared.ai-assistant';
 }

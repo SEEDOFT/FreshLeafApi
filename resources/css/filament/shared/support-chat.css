@@ -1,25 +1,38 @@
 .fl-support-container {
-    @apply flex h-[calc(100vh-14rem)] overflow-hidden bg-white dark:bg-gray-900 rounded-3xl border border-gray-200 dark:border-white/5 transition-[grid-template-columns] duration-300;
-    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.05);
+    display: flex !important;
+    flex-direction: row !important;
+    height: calc(100vh - 8rem) !important;
+    min-height: 500px;
+    overflow: hidden;
+    background: transparent;
+    border-radius: 1rem;
+    margin-top: 1rem;
 }
 
 .dark .fl-support-container {
-    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
+    background: transparent;
 }
 
-@media (min-width: 768px) {
+@media (min-width: 1024px) {
     .fl-support-container.is-history-hidden .fl-support-sidebar {
-        @apply hidden;
+        display: none;
     }
 }
 
 /* Sidebar */
 .fl-support-sidebar {
-    @apply w-80 flex-shrink-0 border-r border-gray-200 dark:border-white/5 flex flex-col bg-gray-50/30 dark:bg-zinc-900/50;
+    width: 320px;
+    flex-shrink: 0;
+    border-right: 1px solid #27272a;
+    display: flex;
+    flex-direction: column;
+    background: #18181b;
 }
 
 .fl-support-sidebar-header {
-    @apply p-6 border-b border-gray-200 dark:border-white/5 bg-white/50 dark:bg-zinc-900/50;
+    padding: 1.5rem;
+    border-bottom: 1px solid #27272a;
+    background: #18181b;
 }
 
 .fl-support-sidebar-title {
@@ -31,32 +44,57 @@
 }
 
 .fl-support-ticket-item {
-    @apply w-full text-left p-5 hover:bg-gray-100 dark:hover:bg-white/5 transition-all duration-200 border-b border-gray-100 dark:border-white/5;
+    @apply w-full text-left p-5 hover:bg-[#27272a] transition-all duration-200 border-b border-[#27272a] border-l-[3px] border-l-transparent;
 }
 
 .fl-support-ticket-item--active {
-    @apply bg-emerald-50 dark:bg-emerald-500/10 border-l-4 border-l-emerald-500;
+    @apply bg-[#eefdf4] border-l-[#16a34a];
 }
 
 .fl-support-ticket-user {
-    @apply font-bold text-gray-900 dark:text-white;
+    @apply font-bold text-[#e4e4e7];
+}
+
+.fl-support-ticket-item--active .fl-support-ticket-user {
+    @apply text-[#16a34a];
 }
 
 .fl-support-ticket-date {
-    @apply text-[10px] text-gray-500;
+    @apply text-[10px] text-[#a1a1aa];
+}
+
+.fl-support-ticket-item--active .fl-support-ticket-date,
+.fl-support-ticket-item--active .fl-support-ticket-excerpt {
+    @apply text-[#15803d];
 }
 
 .fl-support-ticket-excerpt {
-    @apply text-xs text-gray-500 truncate mt-1;
+    @apply text-xs text-[#a1a1aa] truncate mt-1;
 }
 
-/* Main Chat */
+/* Main Content */
 .fl-support-main {
-    @apply flex-1 flex flex-col min-w-0 bg-white dark:bg-gray-950 relative;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    background: transparent;
 }
 
-.fl-support-header {
-    @apply p-5 border-b border-gray-200 dark:border-white/5 flex justify-between items-center bg-white dark:bg-gray-900/50 backdrop-blur-md z-10;
+.dark .fl-support-main {
+    background: transparent;
+}
+
+.fl-support-empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    width: 100%;
+    opacity: 0.5;
+    position: relative;
+    padding: 2rem;
 }
 
 .fl-support-header-user {
@@ -64,15 +102,15 @@
 }
 
 .fl-support-header-name {
-    @apply font-bold text-gray-900 dark:text-white;
+    @apply font-bold text-white;
 }
 
 .fl-support-header-status {
-    @apply text-xs text-gray-500;
+    @apply text-xs text-gray-400;
 }
 
 .fl-support-thread {
-    @apply flex-1 overflow-y-auto p-8 space-y-8 bg-gray-50/50 dark:bg-gray-950;
+    @apply flex-1 overflow-y-auto p-8 space-y-8 bg-[#18181b];
 }
 
 .fl-support-message-row {
@@ -96,23 +134,23 @@
 }
 
 .fl-support-message-author {
-    @apply text-[10px] font-bold uppercase tracking-widest opacity-50;
+    @apply text-[10px] font-bold uppercase tracking-widest text-gray-400;
 }
 
 .fl-support-message-time {
-    @apply text-[10px] opacity-30;
+    @apply text-[10px] text-gray-500;
 }
 
 .fl-chat-bubble {
-    @apply p-5 rounded-3xl shadow-sm text-sm leading-relaxed;
+    @apply px-5 py-3 rounded-xl text-[15px] leading-relaxed shadow-sm;
 }
 
 .fl-chat-bubble--admin {
-    @apply bg-emerald-600 text-white rounded-tr-none shadow-lg shadow-emerald-500/20;
+    @apply bg-[#16a34a] text-white rounded-tr-sm;
 }
 
 .fl-chat-bubble--user {
-    @apply bg-white dark:bg-zinc-800 text-gray-900 dark:text-gray-100 rounded-tl-none border border-gray-200 dark:border-white/10;
+    @apply bg-[#27272a] text-white rounded-tl-sm;
 }
 
 .fl-chat-attachment {
@@ -121,6 +159,22 @@
 
 .fl-chat-attachment__icon {
     @apply w-5 h-5 opacity-70;
+}
+
+.fl-chat-image-attachment {
+    @apply rounded-lg mb-2 max-w-full h-auto max-h-48 object-cover border border-black/10 dark:border-white/10 cursor-pointer hover:opacity-90 transition-opacity;
+}
+
+.fl-chat-lightbox-overlay {
+    @apply fixed inset-0 z-[9999] flex items-center justify-center bg-gray-900/90 backdrop-blur-sm p-4 md:p-10;
+}
+
+.fl-chat-lightbox-image {
+    @apply max-w-full max-h-full rounded-xl object-contain shadow-2xl ring-1 ring-white/10;
+}
+
+.fl-chat-lightbox-close {
+    @apply absolute top-4 right-4 p-2.5 text-white/70 hover:text-white bg-black/40 hover:bg-black/60 rounded-full transition-colors backdrop-blur-md;
 }
 
 .fl-support-sidebar-empty {
@@ -132,7 +186,7 @@
 }
 
 .fl-chat-attachment-preview {
-    @apply mb-3 p-3 bg-gray-100 dark:bg-white/10 rounded-lg flex justify-between items-center text-sm border border-gray-200 dark:border-white/5;
+    @apply mb-3 p-3 bg-[#27272a] rounded-lg flex justify-between items-center text-sm border border-[#3f3f46] text-white;
 }
 
 .fl-chat-attachment-name {
@@ -145,15 +199,15 @@
 
 /* Footer / Composer */
 .fl-support-footer {
-    @apply shrink-0 p-5 border-t border-gray-200 dark:border-white/5;
+    @apply shrink-0 p-5 border-t border-[#27272a];
 }
 
 .fl-support-composer {
-    @apply min-h-[3.75rem] max-w-4xl mx-auto flex items-center gap-3 bg-gray-50 dark:bg-white/5 p-2 rounded-2xl border border-gray-200/50 dark:border-white/5;
+    @apply min-h-[3.75rem] max-w-4xl mx-auto flex items-end gap-3 bg-[#18181b] p-2 rounded-xl border border-[#3f3f46] focus-within:border-[#52525b] transition-colors;
 }
 
 .fl-support-composer-file-label {
-    @apply relative self-center;
+    @apply relative self-center mb-1;
 }
 
 .fl-support-composer-input-wrap {
@@ -161,40 +215,295 @@
 }
 
 .fl-support-composer-textarea {
-    @apply w-full bg-transparent border-none focus:ring-0 py-2.5 px-3 text-sm resize-none max-h-48 leading-normal dark:text-white placeholder-gray-400;
+    @apply w-full bg-transparent border-none focus:ring-0 py-2.5 px-3 text-[14px] resize-none max-h-48 leading-normal text-white placeholder-gray-400 outline-none;
 }
 
 .fl-support-send-btn {
-    @apply w-11 h-11 self-center flex items-center justify-center bg-primary-600 hover:bg-primary-700 text-white rounded-xl transition-all duration-200 flex-shrink-0 disabled:opacity-50 disabled:grayscale;
+    @apply w-10 h-10 self-end mb-0.5 mr-0.5 flex items-center justify-center bg-[#27272a] hover:bg-[#3f3f46] text-white rounded-lg transition-colors flex-shrink-0 disabled:opacity-50 disabled:grayscale;
 }
 
 .fl-support-empty-state {
-    @apply flex-1 flex flex-col items-center justify-center text-gray-500 dark:text-gray-400 p-12 relative;
+    @apply flex-1 flex flex-col items-center justify-center bg-[#18181b] p-12 relative text-[#a1a1aa];
 }
 
 .fl-support-empty-icon-wrapper {
-    @apply p-6 bg-gray-100 dark:bg-white/5 rounded-full mb-4;
+    @apply p-6 bg-[#27272a] text-[#16a34a] rounded-full mb-4;
 }
 
 .fl-support-empty-title {
-    @apply font-bold text-lg mb-1 dark:text-white;
+    @apply font-bold text-lg mb-1 text-white;
 }
 
 .fl-support-empty-desc {
-    @apply text-sm text-center max-w-xs opacity-70;
+    @apply text-sm text-center max-w-xs text-gray-400;
 }
 
-/* Mobile Responsive */
-@media (max-width: 767px) {
+/* ── Filter / Tab Buttons ── */
+.fl-filter-btn {
+    @apply px-2.5 py-1 rounded-md text-xs font-medium whitespace-nowrap transition-all duration-200;
+}
+
+.fl-filter-btn--active {
+    @apply bg-[#16a34a] text-white shadow-sm;
+}
+
+.fl-filter-btn--inactive {
+    @apply text-[#a1a1aa] hover:text-[#e4e4e7] hover:bg-[#27272a];
+}
+
+/* ── Status / Type Badges ── */
+.fl-badge {
+    @apply px-1.5 py-0.5 rounded text-[10px] font-semibold;
+}
+
+.fl-badge--open {
+    @apply bg-emerald-100 text-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-400;
+}
+
+.fl-badge--resolved {
+    @apply bg-gray-200 text-gray-700 dark:bg-white/10 dark:text-gray-300;
+}
+
+.fl-badge--direct {
+    @apply bg-indigo-100 text-indigo-800 dark:bg-indigo-900/30 dark:text-indigo-400;
+}
+
+.fl-badge--vendor {
+    @apply bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-400;
+}
+
+.fl-badge--consumer {
+    @apply bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400;
+}
+
+/* ── Primary CTA Button ── */
+.fl-cta-btn {
+    @apply bg-[#16a34a] text-white hover:bg-[#15803d] transition-colors font-semibold;
+}
+
+.fl-cta-btn--sm {
+    @apply px-2.5 py-1 rounded-md text-xs;
+}
+
+.fl-cta-btn--lg {
+    @apply px-4 py-2 rounded-lg text-sm;
+}
+
+/* ── Unread Badge ── */
+.fl-unread-badge {
+    @apply inline-flex min-w-5 h-5 items-center justify-center rounded-full bg-danger-600 px-1.5 text-[10px] font-bold text-white;
+}
+
+/* ── Typing Indicator ── */
+.fl-typing-dot {
+    @apply w-1.5 h-1.5 bg-gray-400 dark:bg-gray-500 rounded-full animate-bounce;
+}
+
+/* ── Image Scroll (info-list component) ── */
+.fl-image-scroll {
+    @apply flex gap-3 overflow-x-auto py-2;
+    scrollbar-width: thin;
+}
+
+.fl-image-scroll__img {
+    @apply h-40 w-40 flex-shrink-0 cursor-pointer rounded-xl object-cover ring-1 ring-gray-950/5 transition duration-150 hover:ring-primary-500 hover:shadow-lg dark:ring-white/10 dark:hover:ring-primary-400;
+}
+
+/* Responsive breakpoints: default = tablet+/desktop ; md = 768-1023 ; sm = < 768 */
+
+/* Tablet: drawer sidebar, compact spacing */
+@media (max-width: 1023px) {
     .fl-support-container {
-        @apply block h-[calc(100vh-10rem)];
+        @apply block;
+        height: calc(100vh - 7rem);
+    }
+
+    .fl-support-main {
+        @apply h-full;
     }
 
     .fl-support-sidebar {
-        @apply fixed left-0 top-0 bottom-0 w-72 z-50 transform -translate-x-full transition-transform duration-300 border-none bg-white dark:bg-zinc-900 shadow-2xl;
+        @apply fixed left-0 top-0 bottom-0 z-50 transform -translate-x-full transition-transform duration-300 border-none bg-white dark:bg-zinc-900 shadow-2xl;
+        width: min(320px, 85vw);
     }
 
     .fl-support-container[data-drawer-open="true"] .fl-support-sidebar {
         @apply translate-x-0;
+    }
+
+    .fl-support-sidebar-header {
+        @apply p-4;
+    }
+
+    .fl-support-ticket-item {
+        @apply p-3;
+    }
+
+    .fl-support-header {
+        @apply p-3 gap-2;
+    }
+
+    .fl-support-header-user {
+        @apply gap-2;
+        min-width: 0;
+    }
+
+    .fl-support-header-name {
+        @apply truncate;
+        max-width: 180px;
+    }
+
+    .fl-support-header .fl-badge {
+        @apply hidden;
+    }
+
+    .fl-support-header .fl-support-header-user .fl-badge:first-of-type {
+        @apply inline-flex;
+    }
+
+    .fl-support-thread {
+        @apply p-4;
+    }
+
+    .fl-support-message-row {
+        @apply mb-3;
+    }
+
+    .fl-support-message-content {
+        max-width: 85%;
+    }
+
+    .fl-support-footer {
+        @apply p-3;
+    }
+
+    .fl-support-composer {
+        @apply gap-2 p-1.5;
+    }
+
+    .fl-support-composer-textarea {
+        @apply px-2 py-2;
+    }
+
+    .fl-support-empty-state {
+        @apply p-6;
+    }
+
+    .fl-support-empty-icon-wrapper {
+        @apply p-4 mb-3;
+    }
+
+    .fl-chat-bubble--admin,
+    .fl-chat-bubble--user {
+        @apply text-sm;
+    }
+}
+
+/* Phone: minimal padding, tighter spacing */
+@media (max-width: 767px) {
+    .fl-support-sidebar {
+        width: min(300px, 90vw);
+    }
+
+    .fl-support-header {
+        @apply px-2 py-2.5;
+    }
+
+    .fl-support-header-name {
+        max-width: 120px;
+        @apply text-sm;
+    }
+
+    .fl-support-header-status {
+        @apply text-[10px];
+    }
+
+    .fl-support-header .fl-support-header-user .fl-badge {
+        @apply hidden;
+    }
+
+    .fl-support-thread {
+        @apply p-3;
+    }
+
+    .fl-support-message-content {
+        max-width: 90%;
+    }
+
+    .fl-chat-bubble {
+        @apply rounded-2xl;
+    }
+
+    .fl-chat-bubble--admin {
+        @apply rounded-tr-none;
+    }
+
+    .fl-chat-bubble--user {
+        @apply rounded-tl-none;
+    }
+
+    .fl-support-ticket-item {
+        @apply px-3 py-2.5;
+    }
+
+    .fl-support-ticket-user {
+        @apply text-xs;
+    }
+
+    .fl-support-ticket-date {
+        @apply text-[8px];
+    }
+
+    .fl-support-sidebar-empty {
+        @apply p-4 text-xs;
+    }
+
+    .fl-support-composer {
+        @apply gap-1.5 p-1.5 min-h-[3rem];
+    }
+
+    .fl-support-composer-textarea {
+        @apply px-1.5 py-1.5 text-xs;
+        max-height: 5rem;
+    }
+
+    .fl-support-composer-file-label label {
+        @apply p-1.5;
+    }
+
+    .fl-support-composer-file-label svg {
+        @apply w-5 h-5;
+    }
+
+    .fl-support-send-btn {
+        @apply w-10 h-10;
+    }
+
+    .fl-support-footer .max-w-4xl {
+        @apply text-xs px-3 py-2;
+    }
+
+    .fl-filter-btn {
+        @apply px-2 py-1 text-[10px];
+    }
+
+    .fl-badge {
+        @apply text-[8px] px-1 py-0.5;
+    }
+
+    .fl-unread-badge {
+        @apply min-w-4 h-4 text-[8px] px-1;
+    }
+
+    .fl-support-header-avatar {
+        @apply w-8 h-8 text-[10px];
+    }
+
+    .fl-chat-image-attachment {
+        @apply max-h-32;
+    }
+
+    .fl-chat-attachment-preview {
+        @apply p-2 mb-2 text-xs;
     }
 }

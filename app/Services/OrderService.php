@@ -35,19 +35,24 @@ class OrderService
                     abort(403, __('api.order.wallet_unauthorized'));
                 }
 
-                $grandTotal = '0.00';
+                $grandTotalWalletCurrency = '0.00';
                 foreach ($orders as $order) {
                     if ($order->payment_status_id === PaymentStatus::COMPLETED_ID) {
                         abort(422, __('api.order.already_paid'));
                     }
-                    $grandTotal = MoneyService::add($grandTotal, (string) $order->total_amount);
+                    
+                    $orderAmountInWalletCurrency = $order->currency_id === $wallet->currency_id 
+                        ? (string) $order->total_amount 
+                        : MoneyService::convert((string) $order->total_amount, $order->currency_id, $wallet->currency_id);
+                        
+                    $grandTotalWalletCurrency = MoneyService::add($grandTotalWalletCurrency, $orderAmountInWalletCurrency);
                 }
 
-                if (MoneyService::compare((string) $wallet->balance, $grandTotal) < 0) {
+                if (MoneyService::compare((string) $wallet->balance, $grandTotalWalletCurrency) < 0) {
                     abort(422, __('api.order.insufficient_balance'));
                 }
 
-                $newBalance = MoneyService::sub((string) $wallet->balance, $grandTotal);
+                $newBalance = MoneyService::sub((string) $wallet->balance, $grandTotalWalletCurrency);
 
                 // Deduct from wallet
                 $wallet->update(['balance' => $newBalance]);
@@ -57,7 +62,7 @@ class OrderService
                     'currency_id' => $wallet->currency_id,
                     'wallet_transaction_type_id' => WalletTransactionType::PAYMENT_ID,
                     'wallet_transaction_status_id' => WalletTransactionStatus::COMPLETED_ID,
-                    'amount' => $grandTotal,
+                    'amount' => $grandTotalWalletCurrency,
                     'reference_id' => 0,
                     'reference_type' => 'App\\Models\\Order', // generic
                     'description' => 'Payment for '.$orders->count().' orders',

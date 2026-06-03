@@ -9,11 +9,14 @@ use Illuminate\Database\Eloquent\Attributes\Table;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\App;
 
 /**
  * @property int $id
  * @property string $name_en
  * @property string $name_km
+ * @property-read string $name
+ * @property-read string|null $translated_name
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  * @property Carbon|null $deleted_at
@@ -35,4 +38,14 @@ class PayoutMethod extends Model
     public const int CASH_ID = 3;
 
     public const string CASH = 'cash';
+
+    public function getNameAttribute(): string
+    {
+        return $this->name_en;
+    }
+
+    public function getTranslatedNameAttribute(): ?string
+    {
+        return $this->{'name_'.App::getLocale()};
+    }
 }

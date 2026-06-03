@@ -10,6 +10,7 @@
 @import '../shared/_auth.css';
 @import '../shared/_file-upload.css';
 @import './_overrides.css';
+@import '../shared/_wallets.css';
 
 @source '../../../../app/Filament/**/*';
 @source '../../../../app/Livewire/**/*';

@@ -71,6 +71,18 @@ class PaymentMethodType extends Model
         ];
     }
 
+    public static function codeById(int $id): ?string
+    {
+        return match ($id) {
+            self::WALLET_ID => self::WALLET,
+            self::CREDIT_DEBIT_ID => self::CREDIT_DEBIT,
+            self::ABA_ID => self::ABA,
+            self::ACLEDA_ID => self::ACLEDA,
+            self::COD_ID => self::COD,
+            default => null,
+        };
+    }
+
     /**
      * Get the translated name attribute.
      */

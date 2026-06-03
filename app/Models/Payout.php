@@ -13,14 +13,16 @@ use Illuminate\Support\Carbon;
 
 /**
  * @property int $id
- * @property int $vendor_user_id
- * @property int $payout_status_id
+ * @property int $vendor_id
+ * @property int $currency_id
+ * @property int $status_id
  * @property int $payout_method_id
- * @property float $amount
+ * @property string $amount
+ * @property string|null $payout_number
+ * @property string|null $notes
  * @property string|null $transaction_reference
  * @property Carbon|null $processed_at
  * @property int|null $processed_by_admin_id
- * @property string|null $admin_notes
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  * @property-read User $vendor
@@ -31,24 +33,27 @@ use Illuminate\Support\Carbon;
  */
 #[Table('payouts', key: 'id')]
 #[Fillable([
-    'vendor_user_id',
-    'payout_status_id',
+    'vendor_id',
+    'currency_id',
     'payout_method_id',
     'amount',
-    'transaction_reference',
+    'status_id',
+    'notes',
+    'payout_number',
     'processed_at',
     'processed_by_admin_id',
-    'admin_notes',
+    'transaction_reference',
 ])]
 class Payout extends Model
 {
     use SoftDeletes;
 
-    /**
-     * {@inheritDoc}
-     *
-     * @return array<string, string>
-     */
+    public const int STATUS_PENDING = 1;
+
+    public const int STATUS_PAID = 2;
+
+    public const int STATUS_FAILED = 3;
+
     protected function casts(): array
     {
         return [
@@ -63,7 +68,7 @@ class Payout extends Model
      */
     public function vendor(): BelongsTo
     {
-        return $this->belongsTo(User::class, 'vendor_user_id', 'id')
+        return $this->belongsTo(User::class, 'vendor_id', 'id')
             ->where('users.user_type_id', UserType::VENDOR_ID);
     }
 
@@ -72,7 +77,7 @@ class Payout extends Model
      */
     public function status(): BelongsTo
     {
-        return $this->belongsTo(PayoutStatus::class, 'payout_status_id', 'id');
+        return $this->belongsTo(PayoutStatus::class, 'status_id', 'id');
     }
 
     /**

@@ -148,6 +148,15 @@ return [
         'reference' => 'Reference',
         'paid_on' => 'Paid On',
     ],
+    'wallet' => [
+        'request_withdrawal' => 'Request Withdrawal',
+        'withdrawal_amount' => 'Withdrawal Amount',
+        'payout_method' => 'Payout Method',
+        'withdrawal_requested' => 'Withdrawal request submitted successfully.',
+        'withdrawal_description' => 'Withdrawal request #:number',
+        'insufficient_balance' => 'Insufficient wallet balance.',
+        'invalid_amount' => 'Invalid withdrawal amount.',
+    ],
     'user' => [
         'phone' => 'Phone Number',
     ],

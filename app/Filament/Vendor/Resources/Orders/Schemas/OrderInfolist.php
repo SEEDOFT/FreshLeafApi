@@ -134,7 +134,7 @@ class OrderInfolist
                         TextEntry::make('paymentStatus.translated_name')
                             ->label(__('admin.resources.order.payment_status'))
                             ->badge()
-                            ->color(fn (Order $record): string => match ($record->paymentStatus?->id) {
+                            ->color(fn (Order $record): string => match ($record->paymentStatus->id) {
                                 PaymentStatus::PENDING_ID => 'info',
                                 PaymentStatus::COMPLETED_ID => 'success',
                                 PaymentStatus::FAILED_ID => 'danger',

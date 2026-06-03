@@ -44,9 +44,7 @@ class PaymentMethodTypeSeeder extends Seeder
                 ],
             ];
 
-            foreach ($types as $type) {
-                PaymentMethodType::create($type);
-            }
+            PaymentMethodType::insertOrIgnore($types);
         });
     }
 }

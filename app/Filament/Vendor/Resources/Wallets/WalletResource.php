@@ -5,15 +5,10 @@ declare(strict_types=1);
 namespace App\Filament\Vendor\Resources\Wallets;
 
 use App\Filament\Vendor\Resources\Wallets\Pages\ListWallets;
-use App\Filament\Vendor\Resources\Wallets\Pages\ViewWallet;
-use App\Filament\Vendor\Resources\Wallets\Schemas\WalletInfolist;
-use App\Filament\Vendor\Resources\Wallets\Tables\WalletsTable;
 use App\Models\Wallet;
 use BackedEnum;
 use Filament\Resources\Resource;
-use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
-use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Auth;
 use Override;
@@ -45,23 +40,10 @@ class WalletResource extends Resource
     }
 
     #[Override]
-    public static function infolist(Schema $schema): Schema
-    {
-        return WalletInfolist::configure($schema);
-    }
-
-    #[Override]
-    public static function table(Table $table): Table
-    {
-        return WalletsTable::configure($table);
-    }
-
-    #[Override]
     public static function getEloquentQuery(): Builder
     {
         return parent::getEloquentQuery()
             ->where('user_id', Auth::id());
-
     }
 
     #[Override]
@@ -69,7 +51,6 @@ class WalletResource extends Resource
     {
         return [
             'index' => ListWallets::route('/'),
-            'view' => ViewWallet::route('/{record}'),
         ];
     }
 

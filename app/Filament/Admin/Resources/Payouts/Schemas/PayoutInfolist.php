@@ -34,10 +34,10 @@ class PayoutInfolist
                             ->label(__('admin.resources.payout.processed_at'))
                             ->dateTime('h:i A, d M Y')
                             ->placeholder('-'),
-                        TextEntry::make('processedBy.name')
+                        TextEntry::make('processor.name')
                             ->label(__('admin.resources.payout.processed_by'))
                             ->placeholder('-'),
-                        TextEntry::make('admin_notes')
+                        TextEntry::make('notes')
                             ->label(__('admin.resources.payout.admin_notes'))
                             ->placeholder('-')
                             ->columnSpanFull(),

@@ -242,16 +242,16 @@ class CartService
 
                     $typeId = $validatedData['payment_method_type_id'];
 
+                    $isCod = $typeId === PaymentMethodType::COD_ID;
+                    $isWallet = $typeId === PaymentMethodType::WALLET_ID;
+
                     $paymentMethod = $user->paymentMethods()
                         ->where('payment_method_type_id', $typeId)
                         ->first();
 
-                    if (! $paymentMethod) {
+                    if (! $paymentMethod && ! $isCod && ! $isWallet) {
                         abort(422, __('api.cart.invalid_payment_method'));
                     }
-
-                    $isCod = $typeId === PaymentMethodType::COD_ID;
-                    $isWallet = $typeId === PaymentMethodType::WALLET_ID;
                     $paymentCurrencyId = $validatedData['payment_currency_id'] ?? Currency::USD_ID;
 
                     $initialOrderStatus = $isCod
@@ -369,7 +369,7 @@ class CartService
                             'status_id' => $initialPaymentStatus,
                             'currency_id' => $paymentCurrencyId,
                             'exchange_rate_history_id' => $exchangeRateHistory?->id,
-                            'payment_method_id' => $paymentMethod->id,
+                            'payment_method_id' => $paymentMethod?->id,
                             'amount' => $paymentAmount,
                         ]);
 

@@ -27,6 +27,7 @@ class PaymentMethodTypeResource extends JsonResource
 
         return [
             'id' => $this->id,
+            'code' => PaymentMethodType::codeById($this->id),
             'name' => $locale === 'km' ? $this->name_km : $this->name_en,
             'created_at' => $this->created_at?->toIso8601String(),
             'updated_at' => $this->updated_at?->toIso8601String(),

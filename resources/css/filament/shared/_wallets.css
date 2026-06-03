@@ -1,0 +1,127 @@
+/* ═══════════════════════════════════════════════
+   Wallet List Pages — Shared Styles
+   ═══════════════════════════════════════════════ */
+
+/* --- Layout --- */
+
+.fl-wallets {
+    @apply space-y-6;
+}
+
+.fl-wallets--compact {
+    @apply space-y-8;
+}
+
+.fl-wallets__grid {
+    @apply grid grid-cols-1 gap-6;
+}
+
+.fl-wallets__grid--two {
+    @apply lg:grid-cols-2;
+}
+
+/* --- Wallet Details Card --- */
+
+.fl-wallet-card {
+    @apply space-y-6;
+}
+
+.fl-wallet-card--compact {
+    @apply space-y-4;
+}
+
+.fl-wallet-details {
+    @apply grid grid-cols-2 gap-4;
+}
+
+.fl-wallet-details--compact {
+    @apply gap-3;
+}
+
+.fl-wallet-details--row {
+    @apply flex flex-row items-start gap-6;
+}
+
+.fl-wallet-details .fl-label {
+    @apply text-sm text-gray-500 dark:text-gray-400;
+}
+
+.fl-balance-wrap {
+    @apply col-span-2;
+}
+
+.fl-balance-amount {
+    @apply text-2xl font-bold tracking-tight;
+}
+
+.fl-balance-amount--sm {
+    @apply text-xl;
+}
+
+.fl-meta {
+    @apply font-medium;
+}
+
+.fl-meta--sm {
+    @apply text-sm;
+}
+
+/* --- Transaction Table --- */
+
+.fl-tx-table-wrap {
+    @apply overflow-x-auto;
+}
+
+.fl-tx-table-wrap--compact {
+    @apply -mx-2;
+}
+
+.fl-tx-table {
+    @apply w-full text-sm;
+}
+
+.fl-tx-table--sm {
+    @apply text-xs;
+}
+
+.fl-tx-table th,
+.fl-tx-table td {
+    @apply py-2 px-3;
+}
+
+.fl-tx-table--sm th,
+.fl-tx-table--sm td {
+    @apply py-1.5 px-2;
+}
+
+.fl-tx-table th {
+    @apply border-b border-gray-200 dark:border-gray-700 font-medium text-gray-500 dark:text-gray-400 text-left;
+}
+
+.fl-tx-table td {
+    @apply border-b border-gray-100 dark:border-gray-800;
+}
+
+.fl-tx-table tr:hover td {
+    @apply bg-gray-50 dark:bg-gray-800/50;
+}
+
+.fl-tx-col-amount {
+    @apply text-left font-mono font-medium;
+}
+
+.fl-tx-col-desc {
+    @apply text-left w-[200px] text-wrap;
+}
+
+.fl-tx-col-type {
+    @apply text-left;
+}
+
+.fl-tx-col-status {
+    @apply text-left;
+}
+
+.fl-tx-col-date {
+    @apply whitespace-nowrap;
+}

@@ -13,13 +13,9 @@ use App\Models\VendorInventory;
 use App\Models\VendorInventoryStatus;
 use BackedEnum;
 use Filament\Actions\Action;
-use Filament\Infolists\Components\ImageEntry;
-use Filament\Infolists\Components\KeyValueEntry;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Notifications\Notification;
 use Filament\Pages\Page;
-use Filament\Schemas\Components\Section;
-use Filament\Schemas\Schema;
 use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\Layout\Stack;
 use Filament\Tables\Columns\TextColumn;
@@ -94,43 +90,42 @@ class ProductCatalog extends Page implements HasTable
                     ->icon('heroicon-o-eye')
                     ->color('info')
                     ->modalSubmitAction(false)
-                    ->infolist(fn (Schema $infolist): Schema => $infolist
-                        ->schema([
-                            Section::make(__('shared.product.general_info'))
-                                ->columns(2)
-                                ->schema([
-                                    ImageEntry::make('image_url')
-                                        ->label(__('shared.product.image'))
-                                        ->columnSpanFull()
-                                        ->circular(),
-                                    TextEntry::make('name_en')
-                                        ->placeholder($notProvided)
-                                        ->label(__('shared.product.name_en')),
-                                    TextEntry::make('name_km')
-                                        ->placeholder($notProvided)
-                                        ->label(__('shared.product.name_km')),
-                                    TextEntry::make('productCategory.translated_name')
-                                        ->placeholder($notProvided)
-                                        ->label(__('shared.product.system_category'))
-                                        ->badge()
-                                        ->color('info'),
-                                    TextEntry::make('defaultUnit.translated_name')
-                                        ->placeholder($notProvided)
-                                        ->label(__('shared.product.default_unit')),
-                                    TextEntry::make('description_en')
-                                        ->placeholder($notProvided)
-                                        ->label(__('shared.product.description_en'))
-                                        ->columnSpanFull(),
-                                    TextEntry::make('description_km')
-                                        ->placeholder($notProvided)
-                                        ->label(__('shared.product.description_km'))
-                                        ->columnSpanFull(),
-                                    KeyValueEntry::make('nutrition_data')
-                                        ->label(__('shared.product.nutrition_data'))
-                                        ->columnSpanFull()
-                                        ->visible(fn ($record) => ! empty($record->nutrition_data)),
-                                ]),
-                        ])),
+                    ->infolist([
+                        TextEntry::make('image_url')
+                            ->label(__('shared.product.image'))
+                            ->columnSpanFull(),
+                        TextEntry::make('name_en')
+                            ->placeholder($notProvided)
+                            ->label(__('shared.product.name_en')),
+                        TextEntry::make('name_km')
+                            ->placeholder($notProvided)
+                            ->label(__('shared.product.name_km')),
+                        TextEntry::make('productCategory.translated_name')
+                            ->placeholder($notProvided)
+                            ->label(__('shared.product.system_category'))
+                            ->badge()
+                            ->color('info'),
+                        TextEntry::make('defaultUnit.translated_name')
+                            ->placeholder($notProvided)
+                            ->label(__('shared.product.default_unit')),
+                        TextEntry::make('description_en')
+                            ->placeholder($notProvided)
+                            ->label(__('shared.product.description_en'))
+                            ->columnSpanFull(),
+                        TextEntry::make('description_km')
+                            ->placeholder($notProvided)
+                            ->label(__('shared.product.description_km'))
+                            ->columnSpanFull(),
+                        TextEntry::make('nutrition_data')
+                            ->label(__('shared.product.nutrition_data'))
+                            ->columnSpanFull()
+                            ->visible(fn ($record) => ! empty($record->nutrition_data))
+                            ->formatStateUsing(fn ($state): string => is_array($state)
+                                ? collect($state)
+                                    ->map(fn ($value, $key): string => is_array($value) ? "$key: ".json_encode($value) : "$key: $value")
+                                    ->implode("\n")
+                                : (string) $state),
+                    ]),
                 Action::make('addToStore')
                     ->label(__('shared.product.add_to_store'))
                     ->icon('heroicon-o-plus')

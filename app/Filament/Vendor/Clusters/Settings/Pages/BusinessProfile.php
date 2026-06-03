@@ -32,7 +32,10 @@ class BusinessProfile extends Page
     protected static ?string $slug = 'business';
 
     #[Override]
-    protected static ?string $navigationLabel = 'vendor.settings.business_profile.label';
+    public static function getNavigationLabel(): string
+    {
+        return __('vendor.settings.business_profile.label');
+    }
 
     #[Override]
     protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-building-office-2';

@@ -17,14 +17,14 @@ class PayoutForm
     {
         return $schema
             ->components([
-                Select::make('vendor_user_id')
+                Select::make('vendor_id')
                     ->label(__('admin.resources.payout.vendor'))
                     ->relationship('vendor', 'first_name', fn ($query) => $query->where('user_type_id', UserType::VENDOR))
                     ->getOptionLabelFromRecordUsing(fn ($record) => "{$record->first_name} {$record->last_name} ({$record->vendorProfile?->business_name})")
                     ->searchable()
                     ->required(fn (string $operation): bool => $operation === 'create')->dehydrated(fn (mixed $state): bool => filled($state)),
 
-                Select::make('payout_status_id')
+                Select::make('status_id')
                     ->label(__('admin.resources.payout.status'))
                     ->relationship('status', 'name')
                     ->required(fn (string $operation): bool => $operation === 'create')->dehydrated(fn (mixed $state): bool => filled($state)),
@@ -47,7 +47,7 @@ class PayoutForm
                 DateTimePicker::make('processed_at')
                     ->label(__('admin.resources.payout.processed_date')),
 
-                Textarea::make('admin_notes')
+                Textarea::make('notes')
                     ->label(__('admin.resources.payout.admin_notes'))
                     ->columnSpanFull(),
             ]);

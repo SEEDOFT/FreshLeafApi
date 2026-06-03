@@ -56,7 +56,7 @@ class WalletTransactionService
             // Auto-fill currency_id from the wallet if not explicitly provided
             if (! isset($data['currency_id']) && isset($data['wallet_id'])) {
                 $wallet = Wallet::find($data['wallet_id']);
-                if ($wallet) {
+                if ($wallet instanceof Wallet) {
                     $data['currency_id'] = $wallet->currency_id;
                 }
             }

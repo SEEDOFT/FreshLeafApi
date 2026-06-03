@@ -29,9 +29,7 @@ use Illuminate\Support\Facades\App;
 class WalletTransactionType extends Model
 {
     /** @use HasFactory<WalletTransactionTypeFactory> */
-    use HasFactory;
-
-    use SoftDeletes;
+    use HasFactory, SoftDeletes;
 
     public const int DEPOSIT_ID = 1;
 

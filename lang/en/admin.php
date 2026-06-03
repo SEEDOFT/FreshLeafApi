@@ -155,6 +155,11 @@ return [
             'details' => 'Payout Details',
             'reference' => 'Reference',
             'paid_on' => 'Paid On',
+            'payout_number' => 'Payout #',
+            'approve' => 'Approve',
+            'reject' => 'Reject',
+            'approved_success' => 'Payout approved successfully.',
+            'rejected_success' => 'Payout rejected successfully.',
         ],
         'user' => [
             'label' => 'User',
@@ -237,6 +242,11 @@ return [
             'user' => 'User',
             'currency' => 'Currency',
             'balance' => 'Balance',
+            'no_transactions' => 'No transactions yet.',
+            'filter_all' => 'All Wallets',
+            'filter_admin' => 'Admin',
+            'filter_vendor' => 'Vendor',
+            'filter_consumer' => 'Consumer',
         ],
         'wallet_transaction' => [
             'label' => 'Wallet Transaction',

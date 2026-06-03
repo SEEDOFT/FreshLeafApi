@@ -31,6 +31,8 @@ class DatabaseSeeder extends Seeder
             PaymentMethodStatusSeeder::class,
             PaymentMethodTypeSeeder::class,
             PayoutStatusSeeder::class,
+            PayoutMethodSeeder::class,
+            WalletTransactionTypeSeeder::class,
             WalletTransactionStatusSeeder::class,
 
             // Product & Inventory

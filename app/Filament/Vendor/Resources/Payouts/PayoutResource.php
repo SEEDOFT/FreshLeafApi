@@ -40,7 +40,7 @@ class PayoutResource extends Resource
     public static function getEloquentQuery(): Builder
     {
         return parent::getEloquentQuery()
-            ->where('vendor_user_id', auth()->id());
+            ->where('vendor_id', auth()->id());
     }
 
     #[Override]

@@ -32,7 +32,7 @@ class PayoutInfolist
                             ->label(__('shared.payout.processed_at'))
                             ->dateTime('h:i A, d M Y')
                             ->placeholder('-'),
-                        TextEntry::make('admin_notes')
+                        TextEntry::make('notes')
                             ->label(__('shared.payout.admin_notes'))
                             ->placeholder('-')
                             ->columnSpanFull(),

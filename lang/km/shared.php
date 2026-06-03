@@ -148,6 +148,15 @@ return [
         'reference' => 'លេខយោង',
         'paid_on' => 'បានបង់នៅ',
     ],
+    'wallet' => [
+        'request_withdrawal' => 'ស្នើសុំដកប្រាក់',
+        'withdrawal_amount' => 'ចំនួនទឹកប្រាក់ដក',
+        'payout_method' => 'វិធីសាស្ត្រទូទាត់',
+        'withdrawal_requested' => 'ការស្នើសុំដកប្រាក់ត្រូវបានដាក់ស្នើដោយជោគជ័យ។',
+        'withdrawal_description' => 'ការស្នើសុំដកប្រាក់លេខ #:number',
+        'insufficient_balance' => 'សមតុល្យកាបូបមិនគ្រប់គ្រាន់។',
+        'invalid_amount' => 'ចំនួនទឹកប្រាក់ដកមិនត្រឹមត្រូវ។',
+    ],
     'user' => [
         'phone' => 'លេខទូរស័ព្ទ',
     ],

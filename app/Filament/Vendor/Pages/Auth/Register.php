@@ -353,7 +353,7 @@ class Register extends BaseRegister
                 'last_name' => $userData['last_name'],
                 'email' => $userData['email'] ?? null,
                 'phone_number' => $userData['phone_number'],
-                'image' => 'user.png',
+                'image' => StorageDirectory::USERS.'/'.User::DEFAULT_PROFILE,
                 'password' => Hash::make($userData['password']),
                 'user_type_id' => $userData['user_type_id'],
                 'user_status_id' => $userData['user_status_id'],

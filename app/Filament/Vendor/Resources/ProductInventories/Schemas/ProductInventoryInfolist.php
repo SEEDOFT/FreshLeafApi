@@ -74,7 +74,7 @@ class ProductInventoryInfolist
                         TextEntry::make('harvest_date')
                             ->placeholder($notProvided)
                             ->label(__('shared.product.harvest_date'))
-                            ->dateTime('d M Y, h:i A'),
+                            ->dateTime('h:i A, d M Y'),
                         TextEntry::make('shelf_life_days')
                             ->placeholder($notProvided)
                             ->label(__('shared.product.shelf_life'))

@@ -86,7 +86,7 @@ class OrdersTable
                     ->sortable(),
                 TextColumn::make('created_at')
                     ->label(__('admin.resources.created_at'))
-                    ->dateTime()
+                    ->dateTime('h:i A, d M Y')
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
             ])

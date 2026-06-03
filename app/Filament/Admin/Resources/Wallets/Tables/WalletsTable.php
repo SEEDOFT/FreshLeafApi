@@ -76,7 +76,7 @@ class WalletsTable
 
                     ->label(__('admin.resources.updated_at'))
                     ->placeholder($notProvided)
-                    ->dateTime()
+                    ->dateTime('h:i A, d M Y')
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
             ])

@@ -139,7 +139,7 @@ class ManageCommissionFee extends Page implements HasForms, HasTable
                     ->wrap(),
                 TextColumn::make('created_at')
                     ->label(__('admin.commission_fee.updated_at_column'))
-                    ->dateTime('d M Y, h:i A')
+                    ->dateTime('h:i A, d M Y')
                     ->sortable(),
             ])
             ->defaultSort('created_at', 'desc');

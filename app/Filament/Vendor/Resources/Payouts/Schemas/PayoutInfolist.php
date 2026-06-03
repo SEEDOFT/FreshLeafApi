@@ -30,7 +30,7 @@ class PayoutInfolist
                             ->placeholder('-'),
                         TextEntry::make('processed_at')
                             ->label(__('shared.payout.processed_at'))
-                            ->dateTime()
+                            ->dateTime('h:i A, d M Y')
                             ->placeholder('-'),
                         TextEntry::make('admin_notes')
                             ->label(__('shared.payout.admin_notes'))
@@ -43,10 +43,10 @@ class PayoutInfolist
                     ->schema([
                         TextEntry::make('created_at')
                             ->label(__('shared.created_at'))
-                            ->dateTime(),
+                            ->dateTime('h:i A, d M Y'),
                         TextEntry::make('updated_at')
                             ->label(__('shared.updated_at'))
-                            ->dateTime(),
+                            ->dateTime('h:i A, d M Y'),
                     ]),
             ]);
     }

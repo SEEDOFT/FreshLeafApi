@@ -62,7 +62,7 @@ class VendorInventoryInfolist
                             ->label(__('admin.resources.product.farm_location')),
                         TextEntry::make('harvest_date')
                             ->label(__('admin.resources.product.harvest_date'))
-                            ->dateTime('d M Y, h:i A'),
+                            ->dateTime('h:i A, d M Y'),
                         TextEntry::make('shelf_life_days')
                             ->label(__('admin.resources.product.shelf_life'))
                             ->suffix(' '.__('admin.resources.product.days')),

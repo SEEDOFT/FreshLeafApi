@@ -35,11 +35,11 @@ class UnitsTable
                     ->sortable(),
                 TextColumn::make('created_at')
                     ->label(__('admin.resources.created_at'))
-                    ->dateTime('d M Y, h:i A')
+                    ->dateTime('h:i A, d M Y')
                     ->sortable(),
                 TextColumn::make('updated_at')
                     ->label(__('admin.resources.updated_at'))
-                    ->dateTime('d M Y, h:i A')
+                    ->dateTime('h:i A, d M Y')
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
             ])

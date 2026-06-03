@@ -100,7 +100,7 @@ class TransactionsRelationManager extends RelationManager
                 TextColumn::make('transaction_date')
                     ->label(__('admin.resources.wallet_transaction.transaction_date'))
                     ->placeholder($notProvided)
-                    ->dateTime('d M Y, h:i A')
+                    ->dateTime('h:i A, d M Y')
                     ->sortable(),
             ])
             ->filters([

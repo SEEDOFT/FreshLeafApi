@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Filament\Vendor\Resources\Orders\Actions;
 
+use App\Constants\StorageDirectory;
 use App\Models\Order;
 use App\Models\OrderStatus;
 use App\Models\PaymentMethodType;
@@ -15,6 +16,7 @@ use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Notifications\Notification;
 use Filament\Support\Icons\Heroicon;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Carbon;
 
 class OrderActions
@@ -82,7 +84,7 @@ class OrderActions
                     ->label(__('admin.resources.order.proof_of_preparation'))
                     ->image()
                     ->required()
-                    ->directory('order-proofs'),
+                    ->directory(StorageDirectory::ORDER_PROOFS),
                 TextInput::make('delivery_company_name')
                     ->label(__('admin.resources.order.delivery_company_name'))
                     ->required(),
@@ -118,10 +120,10 @@ class OrderActions
             ->color('success')
             ->form([
                 FileUpload::make('delivery_proof_photo')
-                    ->label(__('admin.resources.order.delivery_proof_photo', [], 'en') ?? 'Delivery Proof Photo')
+                    ->label(__('admin.resources.order.delivery_proof_photo'))
                     ->image()
                     ->required()
-                    ->directory('delivery-proofs'),
+                    ->directory(StorageDirectory::DELIVERY_PROOFS),
             ])
             ->visible(fn (Order $record) => $record->order_status_id === OrderStatus::OUT_FOR_DELIVERY_ID)
             ->action(function (Order $record, array $data): void {
@@ -134,10 +136,12 @@ class OrderActions
                 $isCod = $record->payments()
                     ->whereHas(
                         'paymentMethod',
-                        static fn ($q) => $q->where(
-                            'payment_method_type_id',
-                            PaymentMethodType::COD_ID,
-                        ),
+                        static function (Builder $query): void {
+                            $query->where(
+                                'payment_method_type_id',
+                                PaymentMethodType::COD_ID,
+                            );
+                        },
                     )
                     ->exists();
 
@@ -176,10 +180,9 @@ class OrderActions
             ->icon(Heroicon::OutlinedXCircle)
             ->color('danger')
             ->requiresConfirmation()
-            ->visible(fn (Order $record) => in_array($record->order_status_id, [OrderStatus::PENDING_ID, OrderStatus::CONFIRMED_ID], true))
+            ->visible(fn (Order $record): bool => \in_array($record->order_status_id, [OrderStatus::PENDING_ID, OrderStatus::CONFIRMED_ID], true))
             ->action(function (Order $record): void {
                 $record->update(['order_status_id' => OrderStatus::CANCELLED_ID]);
-
                 Notification::make()
                     ->title(__('admin.resources.order.actions.cancelled_success'))
                     ->success()

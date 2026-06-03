@@ -76,4 +76,18 @@ final class StorageDirectory
      * @var string
      */
     public const string CHAT_ATTACHMENTS = 'chat_attachments';
+
+    /**
+     * The directory for storing order payment proofs.
+     *
+     * @var string
+     */
+    public const string ORDER_PROOFS = 'order-proofs';
+
+    /**
+     * The directory for storing order delivery proofs.
+     *
+     * @var string
+     */
+    public const string DELIVERY_PROOFS = 'delivery-proofs';
 }

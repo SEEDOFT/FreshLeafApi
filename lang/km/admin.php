@@ -142,6 +142,7 @@ return [
             'out_for_delivery_date' => 'ថ្ងៃចេញដឹកជញ្ជូន',
             'dispatch_info' => 'ព័ត៌មានដឹកជញ្ជូន',
             'proof_of_preparation' => 'ភស្តុតាងនៃការរៀបចំ',
+            'delivery_proof_photo' => 'រូបថតភស្តុតាងដឹកជញ្ជូន',
             'delivery_company' => 'ក្រុមហ៊ុនដឹកជញ្ជូន',
             'tracking_info' => 'ព័ត៌មានតាមដាន',
             'net_earnings' => 'ប្រាក់ចំណូលសុទ្ធ',

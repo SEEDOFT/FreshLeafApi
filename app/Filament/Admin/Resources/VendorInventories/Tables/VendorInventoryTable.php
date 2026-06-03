@@ -54,7 +54,7 @@ class VendorInventoryTable
                     ->sortable(['name_en', 'name_km']),
                 TextColumn::make('updated_at')
                     ->label(__('admin.resources.updated_at'))
-                    ->dateTime()
+                    ->dateTime('h:i A, d M Y')
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
             ])

@@ -6,12 +6,10 @@ namespace App\Filament\Vendor\Resources\Orders\Schemas;
 
 use App\Models\Currency;
 use App\Models\Order;
-use App\Models\OrderItem;
 use App\Models\OrderStatus;
 use App\Models\PaymentMethodType;
 use App\Models\PaymentStatus;
 use Filament\Infolists\Components\ImageEntry;
-use Filament\Infolists\Components\RepeatableEntry;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
@@ -156,7 +154,7 @@ class OrderInfolist
                             }),
                         TextEntry::make('payment.paid_at')
                             ->label(__('admin.resources.order.paid_at'))
-                            ->dateTime('d M Y, h:i A'),
+                            ->dateTime('h:i A, d M Y'),
                         TextEntry::make('exchange_rate_used')
                             ->label(__('admin.resources.order.exchange_rate_used'))
                             ->getStateUsing(function (Order $record): ?string {
@@ -168,10 +166,14 @@ class OrderInfolist
                                 $rateValue = (float) $history->rate;
                                 $decimals = $rateValue < 1 ? 8 : 2;
                                 $rate = number_format($rateValue, $decimals);
-                                $fromCode = $history->fromCurrency?->code ?? 'USD';
-                                $toCode = $history->toCurrency?->code ?? 'KHR';
 
-                                return "{$fromCode}1 = {$rate} {$toCode}";
+                                $fromSymbol = $history->fromCurrency->id === Currency::USD_ID ? '$' : '៛';
+                                $toSymbol = $history->toCurrency->id === Currency::KHR_ID ? '៛' : '$';
+
+                                $fromAmount = $history->fromCurrency->id === Currency::KHR_ID ? "1{$fromSymbol}" : "{$fromSymbol}1";
+                                $toAmount = $history->toCurrency->id === Currency::KHR_ID ? "{$rate}{$toSymbol}" : "{$toSymbol}{$rate}";
+
+                                return "{$fromAmount} = {$toAmount}";
                             })
                             ->badge()
                             ->color('info')
@@ -215,37 +217,8 @@ class OrderInfolist
                             ->columnSpanFull(),
                     ]),
 
-                Section::make(__('admin.resources.order.order_items'))
-                    ->schema([
-                        RepeatableEntry::make('items')
-                            ->label('')
-                            ->columns(5)
-                            ->schema([
-                                TextEntry::make('product_name_snapshot')
-                                    ->label(__('admin.resources.order.product')),
-                                TextEntry::make('quantity')
-                                    ->label(__('admin.resources.order.qty'))
-                                    ->suffix(
-                                        fn ($record) => ' '
-                                            .$record->unit_snapshot
-                                    ),
-                                TextEntry::make('unit_price_snapshot')
-                                    ->label(__('admin.resources.order.unit_price'))
-                                    ->formatStateUsing(fn (OrderItem $record): string => Order::formatMoney($record->unit_price_snapshot, $record->order->currency)),
-                                TextEntry::make('subtotal')
-                                    ->label(__('admin.resources.order.subtotal'))
-                                    ->formatStateUsing(fn (OrderItem $record): string => Order::formatMoney($record->subtotal, $record->order->currency)),
-                                TextEntry::make('vendor_net_amount')
-                                    ->label(__('admin.resources.order.net'))
-                                    ->formatStateUsing(fn (OrderItem $record): string => Order::formatMoney($record->vendor_net_amount, $record->order->currency)),
-                            ]),
-                    ]),
-
                 Section::make(__('admin.resources.order.dispatch_info'))
-                    ->visible(
-                        fn (Order $record) => $record
-                            ->order_out_for_delivery_date !== null
-                    )
+                    ->columnSpanFull()
                     ->columns(2)
                     ->schema([
                         ImageEntry::make('preparation_proof_photo')
@@ -260,39 +233,39 @@ class OrderInfolist
                     ]),
 
                 Section::make(__('admin.resources.timestamps'))
-                    ->columns(3)
-                    ->collapsible()
+                    ->columnSpanFull()
+                    ->columns(2)
                     ->schema([
                         TextEntry::make('place_order_date')
                             ->label(__('admin.resources.order.place_order_date'))
-                            ->dateTime('d M Y, h:i A'),
+                            ->dateTime('h:i A, d M Y'),
                         TextEntry::make('order_pending_date')
                             ->label(__('admin.resources.order.pending_date'))
-                            ->dateTime('d M Y, h:i A'),
+                            ->dateTime('h:i A, d M Y'),
                         TextEntry::make('order_confirmed_date')
                             ->label(__('admin.resources.order.confirmed_date'))
-                            ->dateTime('d M Y, h:i A'),
+                            ->dateTime('h:i A, d M Y'),
                         TextEntry::make('order_preparing_date')
                             ->label(__('admin.resources.order.preparing_date'))
-                            ->dateTime('d M Y, h:i A'),
+                            ->dateTime('h:i A, d M Y'),
                         TextEntry::make('order_out_for_delivery_date')
                             ->label(__('admin.resources.order.out_for_delivery_date'))
-                            ->dateTime('d M Y, h:i A'),
+                            ->dateTime('h:i A, d M Y'),
                         TextEntry::make('order_delivered_date')
                             ->label(__('admin.resources.order.delivered_date'))
-                            ->dateTime('d M Y, h:i A'),
+                            ->dateTime('h:i A, d M Y'),
                         TextEntry::make('order_cancelled_date')
                             ->label(__('admin.resources.order.cancelled_date'))
-                            ->dateTime('d M Y, h:i A'),
+                            ->dateTime('h:i A, d M Y'),
                         TextEntry::make('order_awaiting_payment_date')
                             ->label(__('admin.resources.order.awaiting_payment_date'))
-                            ->dateTime('d M Y, h:i A'),
+                            ->dateTime('h:i A, d M Y'),
                         TextEntry::make('created_at')
                             ->label(__('admin.resources.created_at'))
-                            ->dateTime('d M Y, h:i A'),
+                            ->dateTime('h:i A, d M Y'),
                         TextEntry::make('updated_at')
                             ->label(__('admin.resources.updated_at'))
-                            ->dateTime('d M Y, h:i A'),
+                            ->dateTime('h:i A, d M Y'),
                     ]),
             ]);
     }

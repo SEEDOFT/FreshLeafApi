@@ -83,16 +83,16 @@ class OrdersTable
                     ->formatStateUsing(fn (Order $record): string => Order::formatMoney($record->total_amount, $record->currency)),
                 TextColumn::make('delivery_date')
                     ->label(__('shared.order.delivery_date'))
-                    ->dateTime('d M Y, h:i A')
+                    ->dateTime('h:i A, d M Y')
                     ->sortable(),
                 TextColumn::make('created_at')
                     ->label(__('shared.created_at'))
-                    ->dateTime('d M Y, h:i A')
+                    ->dateTime('h:i A, d M Y')
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('updated_at')
                     ->label(__('shared.updated_at'))
-                    ->dateTime('d M Y, h:i A')
+                    ->dateTime('h:i A, d M Y')
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
             ])

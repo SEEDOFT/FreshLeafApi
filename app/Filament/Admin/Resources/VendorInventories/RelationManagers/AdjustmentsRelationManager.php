@@ -36,7 +36,7 @@ class AdjustmentsRelationManager extends RelationManager
             ->columns([
                 TextColumn::make('created_at')
                     ->label(__('admin.resources.created_at'))
-                    ->dateTime()
+                    ->dateTime('h:i A, d M Y')
                     ->sortable(),
                 TextColumn::make('type')
                     ->label(__('admin.resources.product.adjustment_type'))
@@ -77,7 +77,7 @@ class AdjustmentsRelationManager extends RelationManager
                                 ->schema([
                                     TextEntry::make('created_at')
                                         ->label(__('admin.resources.created_at'))
-                                        ->dateTime(),
+                                        ->dateTime('h:i A, d M Y'),
                                     TextEntry::make('user.name')
                                         ->label(__('admin.resources.user.label'))
                                         ->getStateUsing(fn ($record) => "{$record->user?->first_name} {$record->user?->last_name}"),

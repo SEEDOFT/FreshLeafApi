@@ -63,7 +63,7 @@ class ProductInventoryTable
 
                 TextColumn::make('updated_at')
                     ->label(__('shared.updated_at'))
-                    ->dateTime('d M Y, h:i A')
+                    ->dateTime('h:i A, d M Y')
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
             ])

@@ -59,13 +59,13 @@ class WalletsTable
                 TextColumn::make('created_at')
                     ->label(__('admin.resources.created_at'))
                     ->placeholder($notProvided)
-                    ->dateTime()
+                    ->dateTime('h:i A, d M Y')
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('updated_at')
                     ->label(__('admin.resources.updated_at'))
                     ->placeholder($notProvided)
-                    ->dateTime()
+                    ->dateTime('h:i A, d M Y')
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
             ])

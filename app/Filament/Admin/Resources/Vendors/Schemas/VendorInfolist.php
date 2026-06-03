@@ -225,11 +225,11 @@ class VendorInfolist
                         TextEntry::make('created_at')
                             ->label(__('admin.resources.created_at'))
                             ->placeholder($notProvided)
-                            ->dateTime('d M Y, h:i A'),
+                            ->dateTime('h:i A, d M Y'),
                         TextEntry::make('updated_at')
                             ->label(__('admin.resources.updated_at'))
                             ->placeholder($notProvided)
-                            ->dateTime('d M Y, h:i A'),
+                            ->dateTime('h:i A, d M Y'),
                     ]),
             ]);
     }

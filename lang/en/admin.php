@@ -116,6 +116,7 @@ return [
             'out_for_delivery_date' => 'Out for Delivery Date',
             'dispatch_info' => 'Dispatch Information',
             'proof_of_preparation' => 'Proof of Preparation',
+            'delivery_proof_photo' => 'Delivery Proof Photo',
             'delivery_company' => 'Delivery Company',
             'tracking_info' => 'Tracking Info',
             'net_earnings' => 'Net Earnings',

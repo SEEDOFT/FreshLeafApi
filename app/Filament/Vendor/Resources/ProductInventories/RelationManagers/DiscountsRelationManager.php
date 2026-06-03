@@ -57,9 +57,9 @@ class DiscountsRelationManager extends RelationManager
                 TextColumn::make('discount_percentage')
                     ->formatStateUsing(fn ($state) => (float) $state.'%'),
                 TextColumn::make('starts_at')
-                    ->dateTime(),
+                    ->dateTime('h:i A, d M Y'),
                 TextColumn::make('ends_at')
-                    ->dateTime(),
+                    ->dateTime('h:i A, d M Y'),
             ])
             ->filters([
                 TrashedFilter::make(),

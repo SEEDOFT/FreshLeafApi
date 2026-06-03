@@ -74,7 +74,7 @@ class ProductCategoriesTable
                     ->sortable(),
                 TextColumn::make('created_at')
                     ->label(__('admin.resources.product_category.created_at'))
-                    ->dateTime()
+                    ->dateTime('h:i A, d M Y')
                     ->placeholder($notProvided)
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),

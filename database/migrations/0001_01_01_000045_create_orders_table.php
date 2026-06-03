@@ -45,6 +45,10 @@ return new class extends Migration
             $table->string('delivery_company_name')->nullable();
             $table->text('delivery_tracking_info')->nullable();
             $table->text('notes')->nullable();
+            $table->boolean('is_vendor_paid')->default(false);
+            $table->unsignedBigInteger('vendor_payout_transaction_id')->nullable();
+            $table->string('delivery_proof_photo')->nullable();
+            $table->datetime('consumer_confirmed_date')->nullable();
             $table->timestamps();
             $table->softDeletes();
 

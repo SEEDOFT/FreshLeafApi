@@ -32,7 +32,7 @@ class PayoutInfolist
                             ->placeholder('-'),
                         TextEntry::make('processed_at')
                             ->label(__('admin.resources.payout.processed_at'))
-                            ->dateTime()
+                            ->dateTime('h:i A, d M Y')
                             ->placeholder('-'),
                         TextEntry::make('processedBy.name')
                             ->label(__('admin.resources.payout.processed_by'))
@@ -48,11 +48,11 @@ class PayoutInfolist
                     ->schema([
                         TextEntry::make('created_at')
                             ->label(__('admin.resources.created_at'))
-                            ->dateTime()
+                            ->dateTime('h:i A, d M Y')
                             ->placeholder('-'),
                         TextEntry::make('updated_at')
                             ->label(__('admin.resources.updated_at'))
-                            ->dateTime()
+                            ->dateTime('h:i A, d M Y')
                             ->placeholder('-'),
                     ]),
             ]);

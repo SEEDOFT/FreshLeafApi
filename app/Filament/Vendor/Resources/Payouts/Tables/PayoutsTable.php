@@ -39,7 +39,7 @@ class PayoutsTable
 
                 TextColumn::make('processed_at')
                     ->label(__('shared.payout.paid_on'))
-                    ->dateTime()
+                    ->dateTime('h:i A, d M Y')
                     ->sortable(),
             ])
             ->actions([

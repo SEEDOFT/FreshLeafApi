@@ -102,6 +102,7 @@ return [
         'discount_ends_at' => 'Discount Ends At',
         'notifications' => [
             'added_to_store' => 'Product added to your store inventory.',
+            'already_in_store' => 'This product is already in your store inventory.',
             'stock_adjusted' => 'Stock quantity adjusted successfully.',
             'discount_added' => 'Discount has been added successfully.',
         ],

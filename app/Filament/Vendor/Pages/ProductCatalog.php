@@ -92,7 +92,8 @@ class ProductCatalog extends Page implements HasTable
                 Action::make('view')
                     ->label(__('shared.product.view_detail'))
                     ->icon('heroicon-o-eye')
-                    ->color('gray')
+                    ->color('info')
+                    ->modalSubmitAction(false)
                     ->infolist(fn (Schema $infolist): Schema => $infolist
                         ->schema([
                             Section::make(__('shared.product.general_info'))
@@ -134,7 +135,17 @@ class ProductCatalog extends Page implements HasTable
                     ->label(__('shared.product.add_to_store'))
                     ->icon('heroicon-o-plus')
                     ->form(AddToStoreForm::schema())
+                    ->visible(fn (Product $record): bool => ! VendorInventory::where('vendor_id', Auth::id())->where('product_id', $record->id)->exists())
                     ->action(function (Product $record, array $data): void {
+                        if (VendorInventory::where('vendor_id', Auth::id())->where('product_id', $record->id)->exists()) {
+                            Notification::make()
+                                ->danger()
+                                ->title(__('shared.product.notifications.already_in_store'))
+                                ->send();
+
+                            return;
+                        }
+
                         VendorInventory::create([
                             'vendor_id' => Auth::id(),
                             'product_id' => $record->id,

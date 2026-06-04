@@ -66,7 +66,7 @@ class VendorPayoutService
 
             // Find or create the USD wallet for the vendor (assuming USD as base for earnings)
             $wallet = Wallet::firstOrCreate(
-                ['user_id' => $vendorId, 'currency_id' => 1], // Currency::USD_ID = 1
+                ['user_id' => $vendorId, 'currency_id' => \App\Models\Currency::USD_ID],
                 ['balance' => '0.00']
             );
 

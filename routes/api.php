@@ -42,7 +42,7 @@ Route::prefix('v1')->name('v1.')->group(static function () {
         });
 
     // Signed Routes
-    Route::get('orders/{id}/invoice/download', [OrderController::class, 'downloadInvoice'])
+    Route::get('orders/{id}/invoice/download.pdf', [OrderController::class, 'downloadInvoice'])
         ->middleware('signed')
         ->name('orders.invoice.download');
 

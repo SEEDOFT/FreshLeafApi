@@ -334,7 +334,10 @@ class OrderController extends Controller
 
         return response()->streamDownload(
             fn () => print $pdfContent,
-            "invoice-{$order->order_number}.pdf"
+            "invoice-{$order->order_number}.pdf",
+            [
+                'Content-Type' => 'application/pdf',
+            ]
         );
     }
 }

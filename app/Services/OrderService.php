@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Services;
 
+use App\Models\ExchangeRate;
 use App\Models\Order;
 use App\Models\OrderStatus;
 use App\Models\PaymentStatus;
@@ -36,14 +37,14 @@ class OrderService
                 }
 
                 $grandTotalWalletCurrency = '0.00';
-                $adminWallet = \App\Models\Wallet::where('user_id', 1)->where('currency_id', $wallet->currency_id)->first();
+                $adminWallet = Wallet::where('user_id', 1)->where('currency_id', $wallet->currency_id)->first();
                 $totalProfit = '0.00';
 
                 foreach ($orders as $order) {
                     if ($order->payment_status_id === PaymentStatus::COMPLETED_ID) {
                         abort(422, __('api.order.already_paid'));
                     }
-                    
+
                     $orderAmountInWalletCurrency = '0.00';
                     $profitAmount = '0.00';
                     $exchangeRateApplied = null;
@@ -53,16 +54,16 @@ class OrderService
                     } else {
                         // Gross amount user pays
                         $orderAmountInWalletCurrency = MoneyService::convert((string) $order->total_amount, $order->currency_id, $wallet->currency_id);
-                        $exchangeRateApplied = \App\Models\ExchangeRate::getRate($order->currency_id, $wallet->currency_id);
-                        
+                        $exchangeRateApplied = ExchangeRate::getRate($order->currency_id, $wallet->currency_id);
+
                         // Base cost using inverse rate
-                        $inverseRate = \App\Models\ExchangeRate::getRate($wallet->currency_id, $order->currency_id);
+                        $inverseRate = ExchangeRate::getRate($wallet->currency_id, $order->currency_id);
                         $baseCost = MoneyService::div((string) $order->total_amount, $inverseRate);
-                        
+
                         $profitAmount = MoneyService::sub($orderAmountInWalletCurrency, $baseCost);
                         $totalProfit = MoneyService::add($totalProfit, $profitAmount);
                     }
-                    
+
                     $order->update([
                         'payment_currency_id' => $wallet->currency_id,
                         'exchange_rate_applied' => $exchangeRateApplied,
@@ -92,13 +93,13 @@ class OrderService
                     'description' => 'Payment for '.$orders->count().' orders',
                     'transaction_date' => Carbon::now(),
                 ]);
-                
+
                 // Add Profit to Admin Wallet if any
                 if (MoneyService::compare($totalProfit, '0.00') > 0 && $adminWallet) {
                     $adminWallet->update([
-                        'balance' => MoneyService::add((string) $adminWallet->balance, $totalProfit)
+                        'balance' => MoneyService::add((string) $adminWallet->balance, $totalProfit),
                     ]);
-                    
+
                     $adminWallet->transactions()->create([
                         'currency_id' => $adminWallet->currency_id,
                         'wallet_transaction_type_id' => WalletTransactionType::PAYMENT_ID, // Treat as generic payment for now
@@ -106,7 +107,7 @@ class OrderService
                         'amount' => $totalProfit,
                         'reference_id' => $transaction->id,
                         'reference_type' => 'App\\Models\\WalletTransaction',
-                        'description' => 'Exchange rate profit from user wallet transaction ' . $transaction->id,
+                        'description' => 'Exchange rate profit from user wallet transaction '.$transaction->id,
                         'transaction_date' => Carbon::now(),
                     ]);
                 }

@@ -104,6 +104,7 @@ class AdminPanelProvider extends PanelProvider
                 AdminExchangeRates::class,
                 AdminRevenueChart::class,
                 CustomAccountWidget::class,
+                \App\Filament\Admin\Widgets\PendingVendorPayouts::class,
             ])
             ->middleware(middleware: [
                 EncryptCookies::class,

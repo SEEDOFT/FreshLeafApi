@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Filament\Admin\Resources\Payouts\Tables;
 
+use App\Models\Currency;
 use App\Models\Payout;
 use App\Models\Wallet;
 use App\Models\WalletTransaction;
@@ -19,6 +20,7 @@ use Filament\Forms\Components\TextInput;
 use Filament\Notifications\Notification;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
@@ -42,7 +44,17 @@ class PayoutsTable
 
                 TextColumn::make('amount')
                     ->label(__('admin.resources.payout.amount'))
-                    ->money('USD')
+                    ->state(function (Payout $record) {
+                        if ($record->currency->id === Currency::USD_ID) {
+                            return $record->currency->symbol.' '.$record->amount;
+                        }
+
+                        if ($record->currency->id === Currency::KHR_ID) {
+                            return $record->amount.' '.$record->currency->symbol;
+                        }
+
+                        return $record->amount;
+                    })
                     ->sortable(),
 
                 TextColumn::make('status.name')
@@ -86,12 +98,27 @@ class PayoutsTable
                         Textarea::make('admin_notes')
                             ->label(__('admin.resources.payout.admin_notes')),
                     ])
-                    ->action(function (Payout $record, array $data): void {
-                        DB::transaction(function () use ($record, $data) {
+                    ->action(function (Payout $record, array $data, Action $action): void {
+                        DB::transaction(function () use ($record, $data, $action) {
+                            $wallet = Wallet::where('user_id', $record->vendor_id)
+                                ->where('currency_id', $record->currency_id)
+                                ->lockForUpdate()
+                                ->first();
+
+                            if (! $wallet || $record->amount > $wallet->balance) {
+                                Notification::make()
+                                    ->danger()
+                                    ->title(__('shared.payout.insufficient_balance') ?? 'Insufficient Balance')
+                                    ->body('The vendor does not have enough balance in their wallet to fulfill this payout. Please reject it.')
+                                    ->send();
+
+                                $action->halt();
+                            }
+
                             $record->update([
                                 'status_id' => Payout::STATUS_PAID,
                                 'processed_by_admin_id' => Auth::id(),
-                                'processed_at' => now(),
+                                'processed_at' => Carbon::now(),
                                 'transaction_reference' => $data['transaction_reference'] ?? null,
                                 'notes' => $data['admin_notes'] ?? $record->notes,
                             ]);
@@ -108,20 +135,14 @@ class PayoutsTable
                                 $walletTransaction->recordHistory();
                             }
 
-                            $wallet = Wallet::where('user_id', $record->vendor_id)
-                                ->where('currency_id', $record->currency_id)
-                                ->first();
+                            $newBalance = MoneyService::sub((string) $wallet->balance, (string) $record->amount);
+                            $wallet->update(['balance' => $newBalance]);
 
-                            if ($wallet) {
-                                $newBalance = MoneyService::sub((string) $wallet->balance, (string) $record->amount);
-                                $wallet->update(['balance' => $newBalance]);
-
-                                $wallet->histories()->create([
-                                    'user_id' => $wallet->user_id,
-                                    'currency_id' => $wallet->currency_id,
-                                    'balance' => $newBalance,
-                                ]);
-                            }
+                            $wallet->histories()->create([
+                                'user_id' => $wallet->user_id,
+                                'currency_id' => $wallet->currency_id,
+                                'balance' => $newBalance,
+                            ]);
                         });
 
                         Notification::make()
@@ -145,7 +166,7 @@ class PayoutsTable
                             $record->update([
                                 'status_id' => Payout::STATUS_FAILED,
                                 'processed_by_admin_id' => Auth::id(),
-                                'processed_at' => now(),
+                                'processed_at' => Carbon::now(),
                                 'notes' => $data['admin_notes'],
                             ]);
 

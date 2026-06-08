@@ -214,4 +214,7 @@ return [
         'authorize' => 'Authorize',
         'authorizing' => 'Authorizing...',
     ],
+    'general' => [
+        'close' => 'Close',
+    ],
 ];

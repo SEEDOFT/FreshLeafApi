@@ -214,4 +214,7 @@ return [
         'authorize' => 'អនុញ្ញាត',
         'authorizing' => 'កំពុងអនុញ្ញាត...',
     ],
+    'general' => [
+        'close' => 'បិទ',
+    ],
 ];

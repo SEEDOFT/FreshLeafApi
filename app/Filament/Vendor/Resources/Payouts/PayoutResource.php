@@ -14,6 +14,7 @@ use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Facades\Auth;
 use Override;
 
 class PayoutResource extends Resource
@@ -33,14 +34,16 @@ class PayoutResource extends Resource
     #[Override]
     public static function canCreate(): bool
     {
-        return false;
+        return true;
     }
 
     #[Override]
     public static function getEloquentQuery(): Builder
     {
         return parent::getEloquentQuery()
-            ->where('vendor_id', auth()->id());
+            ->whereHas('vendor', function (Builder $query): void {
+                $query->where('id', Auth::id());
+            });
     }
 
     #[Override]

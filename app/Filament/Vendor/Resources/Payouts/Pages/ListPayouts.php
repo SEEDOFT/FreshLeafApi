@@ -12,8 +12,8 @@ use Filament\Actions\CreateAction;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
-use Filament\Forms\Get;
 use Filament\Resources\Pages\ListRecords;
+use Filament\Schemas\Components\Utilities\Get;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
 use Override;
@@ -44,42 +44,44 @@ class ListPayouts extends ListRecords
                         ->label(__('shared.payout.amount'))
                         ->numeric()
                         ->required()
-                        ->rule(function (\Filament\Forms\Get $get) {
-                            return function (string $attribute, $value, \Closure $fail) use ($get) {
-                                $currencyId = $get('currency_id');
-                                if (! $currencyId) return;
+                        ->rules([
+                            function (\Filament\Forms\Get $get): \Closure {
+                                return function (string $attribute, $value, \Closure $fail) use ($get) {
+                                    $currencyId = $get('currency_id');
+                                    if (! $currencyId) return;
 
-                                $wallet = \App\Models\Wallet::where('user_id', \Illuminate\Support\Facades\Auth::id())
-                                    ->where('currency_id', $currencyId)
-                                    ->first();
+                                    $wallet = \App\Models\Wallet::where('user_id', \Illuminate\Support\Facades\Auth::id())
+                                        ->where('currency_id', $currencyId)
+                                        ->first();
 
-                                if (! $wallet) {
-                                    $fail(__('shared.payout.insufficient_balance') ?? 'Insufficient balance.');
-                                    return;
-                                }
+                                    if (! $wallet) {
+                                        $fail(__('shared.payout.insufficient_balance') ?? 'Insufficient balance.');
+                                        return;
+                                    }
 
-                                if ($value > $wallet->balance) {
-                                    $fail('The payout amount cannot exceed your wallet balance.');
-                                    return;
-                                }
+                                    if ($value > $wallet->balance) {
+                                        $fail('The payout amount cannot exceed your wallet balance.');
+                                        return;
+                                    }
 
-                                $pendingAmount = \App\Models\Payout::where('vendor_id', \Illuminate\Support\Facades\Auth::id())
-                                    ->where('currency_id', $currencyId)
-                                    ->where('status_id', \App\Models\Payout::STATUS_PENDING)
-                                    ->sum('amount');
+                                    $pendingAmount = \App\Models\Payout::where('vendor_id', \Illuminate\Support\Facades\Auth::id())
+                                        ->where('currency_id', $currencyId)
+                                        ->where('status_id', \App\Models\Payout::STATUS_PENDING)
+                                        ->sum('amount');
 
-                                if ($pendingAmount > 0 && $pendingAmount == $wallet->balance) {
-                                    $fail('Your entire wallet balance is currently locked in a pending payout. Please wait for it to be approved or rejected.');
-                                    return;
-                                }
+                                    if ($pendingAmount > 0 && $pendingAmount == $wallet->balance) {
+                                        $fail('Your entire wallet balance is currently locked in a pending payout. Please wait for it to be approved or rejected.');
+                                        return;
+                                    }
 
-                                $available = $wallet->balance - $pendingAmount;
+                                    $available = $wallet->balance - $pendingAmount;
 
-                                if ($value > $available) {
-                                    $fail("Insufficient available balance. You have a pending payout of {$pendingAmount}. Your available balance is {$available}.");
-                                }
-                            };
-                        }),
+                                    if ($value > $available) {
+                                        $fail("Insufficient available balance. You have a pending payout of {$pendingAmount}. Your available balance is {$available}.");
+                                    }
+                                };
+                            }
+                        ]),
                     Select::make('payout_method_id')
                         ->label(__('shared.payout.method'))
                         ->relationship('method', 'name_en')

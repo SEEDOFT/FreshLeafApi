@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Services;
 
+use App\Models\Currency;
 use App\Models\Order;
 use App\Models\OrderStatus;
 use App\Models\PaymentMethodType;
@@ -66,7 +67,7 @@ class VendorPayoutService
 
             // Find or create the USD wallet for the vendor (assuming USD as base for earnings)
             $wallet = Wallet::firstOrCreate(
-                ['user_id' => $vendorId, 'currency_id' => \App\Models\Currency::USD_ID],
+                ['user_id' => $vendorId, 'currency_id' => Currency::USD_ID],
                 ['balance' => '0.00']
             );
 
@@ -101,6 +102,43 @@ class VendorPayoutService
                 'is_vendor_paid' => true,
                 'vendor_payout_transaction_id' => $transaction->id,
             ]);
+
+            // Calculate total commission for the platform
+            $adminCommissionAmount = $order->items()->sum('commission_amount');
+
+            if ($adminCommissionAmount > 0) {
+                // Find primary admin to receive commission
+                $admin = \App\Models\User::where('user_type_id', \App\Models\UserType::ADMIN_ID)->first();
+                if ($admin) {
+                    $adminWallet = Wallet::firstOrCreate(
+                        ['user_id' => $admin->id, 'currency_id' => Currency::USD_ID],
+                        ['balance' => '0.00']
+                    );
+
+                    $newAdminBalance = MoneyService::add((string) $adminWallet->balance, (string) $adminCommissionAmount);
+                    $adminWallet->update(['balance' => $newAdminBalance]);
+
+                    $adminWallet->histories()->create([
+                        'user_id' => $adminWallet->user_id,
+                        'currency_id' => $adminWallet->currency_id,
+                        'balance' => $newAdminBalance,
+                    ]);
+
+                    $adminTransaction = WalletTransaction::create([
+                        'wallet_id' => $adminWallet->id,
+                        'currency_id' => $adminWallet->currency_id,
+                        'wallet_transaction_type_id' => WalletTransactionType::DEPOSIT_ID,
+                        'wallet_transaction_status_id' => WalletTransactionStatus::COMPLETED_ID,
+                        'amount' => $adminCommissionAmount,
+                        'reference_id' => $order->id,
+                        'reference_type' => Order::class,
+                        'description' => 'Commission for Order #'.$order->order_number,
+                        'transaction_date' => Carbon::now(),
+                    ]);
+
+                    $adminTransaction->recordHistory();
+                }
+            }
         });
 
         return true;

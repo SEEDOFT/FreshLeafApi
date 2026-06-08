@@ -52,7 +52,7 @@
                                         </thead>
                                         <tbody>
                                             @foreach($txns as $txn)
-                                                <tr>
+                                                <tr wire:click="mountAction('viewTransaction', { transaction: {{ $txn->id }} })" class="cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
                                                     <td>
                                                         <x-filament::badge>{{ $txn->type?->translated_name ?? '-' }}</x-filament::badge>
                                                     </td>

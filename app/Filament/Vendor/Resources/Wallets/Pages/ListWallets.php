@@ -10,6 +10,8 @@ use App\Models\Currency;
 use App\Models\Order;
 use App\Models\Payout;
 use App\Models\PayoutMethod;
+use App\Models\User;
+use App\Models\UserType;
 use App\Models\Wallet;
 use App\Models\WalletTransaction;
 use App\Models\WalletTransactionStatus;
@@ -20,9 +22,13 @@ use Filament\Forms\Components\TextInput;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\Page;
 use Filament\Schemas\Components\Utilities\Get;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
+use Filament\Infolists\Infolist;
+use Filament\Infolists\Components\TextEntry;
+use Filament\Infolists\Components\Section;
 use Override;
 
 class ListWallets extends Page
@@ -66,7 +72,7 @@ class ListWallets extends Page
         return [
             'userWallets' => $userWallets,
             'walletTransactions' => $walletTransactions,
-            'formatWalletBalance' => static function (float $balance, ?Currency $currency): string {
+            'formatWalletBalance' => function (float $balance, ?Currency $currency): string {
                 return Order::formatMoney($balance, $currency);
             },
         ];
@@ -141,7 +147,7 @@ class ListWallets extends Page
                     }
 
                     DB::transaction(function () use ($wallet, $amount, $data): void {
-                        $payoutNumber = 'PO-'.now()->format('Ymd').'-'.strtoupper(Str::random(6));
+                        $payoutNumber = 'PO-'.Carbon::now()->format('Ymd').'-'.strtoupper(Str::random(6));
 
                         $payout = Payout::create([
                             'vendor_id' => Auth::id(),
@@ -170,8 +176,82 @@ class ListWallets extends Page
                         ->title(__('shared.wallet.withdrawal_requested'))
                         ->send();
 
+                    $admins = User::active()
+                        ->ofType(UserType::ADMIN_ID)
+                        ->get();
+
+                    $notification = Notification::make()
+                        ->title(__('shared.wallet.withdrawal_notification_title'))
+                        ->body(__('shared.wallet.withdrawal_notification_body', [
+                            'vendor' => Auth::id(),
+                            'amount' => Order::formatMoney($amount, $wallet->currency),
+                        ]))
+                        ->icon('heroicon-o-arrow-up-tray')
+                        ->success();
+
+                    $notification->sendToDatabase($admins);
+
                     $this->redirect(PayoutResource::getUrl('index', panel: 'vendor'));
                 }),
         ];
+    }
+
+    public function viewTransactionAction(): Action
+    {
+        return Action::make('viewTransaction')
+            ->modalHeading(__('admin.resources.wallet_transaction.label') ?? 'Transaction Details')
+            ->modalSubmitAction(false)
+            ->modalCancelActionLabel(__('shared.general.close') ?? 'Close')
+            ->infolist(function (Infolist $infolist, array $arguments): Infolist {
+                $transactionId = $arguments['transaction'] ?? null;
+                $transaction = \App\Models\WalletTransaction::with(['type', 'status', 'currency', 'reference'])->find($transactionId);
+
+                return $infolist
+                    ->record($transaction)
+                    ->schema([
+                        Section::make()
+                            ->schema([
+                                TextEntry::make('amount')
+                                    ->label(__('admin.resources.wallet_transaction.amount'))
+                                    ->state(function ($record) {
+                                        return Order::formatMoney((float) $record->amount, $record->currency);
+                                    })
+                                    ->size(TextEntry\TextEntrySize::Large)
+                                    ->weight(\Filament\Support\Enums\FontWeight::Bold),
+                                TextEntry::make('type.translated_name')
+                                    ->label(__('admin.resources.wallet_transaction.type'))
+                                    ->badge()
+                                    ->color(fn ($record) => match ($record->wallet_transaction_type_id) {
+                                        \App\Models\WalletTransactionType::DEPOSIT_ID => 'success',
+                                        \App\Models\WalletTransactionType::WITHDRAWAL_ID => 'warning',
+                                        \App\Models\WalletTransactionType::PAYMENT_ID => 'danger',
+                                        \App\Models\WalletTransactionType::REFUND_ID => 'info',
+                                        default => 'gray',
+                                    }),
+                                TextEntry::make('status.translated_name')
+                                    ->label(__('admin.resources.wallet_transaction.status'))
+                                    ->badge()
+                                    ->color(fn ($record) => match ($record->wallet_transaction_status_id) {
+                                        \App\Models\WalletTransactionStatus::COMPLETED_ID => 'success',
+                                        \App\Models\WalletTransactionStatus::PENDING_ID => 'warning',
+                                        \App\Models\WalletTransactionStatus::FAILED_ID,
+                                        \App\Models\WalletTransactionStatus::CANCELLED_ID => 'danger',
+                                        default => 'gray',
+                                    }),
+                                TextEntry::make('transaction_date')
+                                    ->label(__('admin.resources.wallet_transaction.transaction_date'))
+                                    ->dateTime('h:i A, d M Y'),
+                                TextEntry::make('description')
+                                    ->label(__('admin.resources.wallet_transaction.description'))
+                                    ->columnSpanFull(),
+                                TextEntry::make('reference.order_number')
+                                    ->label(__('admin.resources.order.order_number'))
+                                    ->visible(fn ($record) => $record && $record->reference_type === \App\Models\Order::class),
+                                TextEntry::make('reference.payout_number')
+                                    ->label(__('admin.resources.payout.payout_number'))
+                                    ->visible(fn ($record) => $record && $record->reference_type === \App\Models\Payout::class),
+                            ])->columns(2),
+                    ]);
+            });
     }
 }

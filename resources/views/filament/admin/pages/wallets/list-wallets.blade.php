@@ -75,7 +75,7 @@
                                             </thead>
                                             <tbody>
                                                 @foreach ($txns as $txn)
-                                                    <tr>
+                                                    <tr wire:click="mountAction('viewTransaction', { transaction: {{ $txn->id }} })" class="cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
                                                         <td class="fl-tx-col-amount">
                                                             {{ $formatWalletBalance((float) $txn->amount, $txn->currency) }}
                                                         </td>

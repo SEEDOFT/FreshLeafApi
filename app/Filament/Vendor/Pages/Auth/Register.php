@@ -39,7 +39,6 @@ use Livewire\Attributes\Session;
 use Livewire\Component;
 use Override;
 
-use function basename;
 use function is_array;
 use function is_string;
 use function reset;
@@ -316,7 +315,7 @@ class Register extends BaseRegister
         foreach ($imageFields as $field) {
             if (isset($data[$field]) && is_array($data[$field])) {
                 $value = reset($data[$field]);
-                $data[$field] = is_string($value) ? basename($value) : null;
+                $data[$field] = is_string($value) && $value !== '' ? $value : null;
             }
         }
 

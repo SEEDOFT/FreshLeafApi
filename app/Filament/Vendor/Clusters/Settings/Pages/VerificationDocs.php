@@ -127,9 +127,13 @@ class VerificationDocs extends Page
     {
         $path = ltrim($path, '/');
 
-        return [
-            str_starts_with($path, StorageDirectory::VENDOR_VERIFICATION)
-                ? $path : StorageDirectory::VENDOR_VERIFICATION.'/'.$path,
-        ];
+        $fullPath = str_starts_with($path, StorageDirectory::VENDOR_VERIFICATION)
+            ? $path : StorageDirectory::VENDOR_VERIFICATION.'/'.$path;
+
+        if (! \Illuminate\Support\Facades\Storage::disk('local')->exists($fullPath)) {
+            return [];
+        }
+
+        return [$fullPath];
     }
 }

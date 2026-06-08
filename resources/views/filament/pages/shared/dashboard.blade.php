@@ -6,8 +6,10 @@
     <div class="fl-page-main">
         @livewire('dashboard-overview')
         
+        @if(auth()->user()->isType(\App\Models\UserType::ADMIN_ID))
         <div class="mt-8">
             @livewire(\App\Filament\Admin\Widgets\PendingVendorPayouts::class)
         </div>
+        @endif
     </div>
 </div>

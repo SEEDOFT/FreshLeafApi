@@ -5,5 +5,9 @@
     </div>
     <div class="fl-page-main">
         @livewire('dashboard-overview')
+        
+        <div class="mt-8">
+            @livewire(\App\Filament\Admin\Widgets\PendingVendorPayouts::class)
+        </div>
     </div>
 </div>

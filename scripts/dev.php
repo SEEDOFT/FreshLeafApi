@@ -14,12 +14,15 @@ const IS_LINUX = PHP_OS_FAMILY === 'Linux';
 // ---------------------------------------------------------------------------
 $host = '127.0.0.1';
 $port = '8000';
+$reverbPort = '8080';
 
 foreach ($argv as $arg) {
     if (\str_starts_with($arg, '--host=')) {
         $host = \substr($arg, 7);
     } elseif (\str_starts_with($arg, '--port=')) {
         $port = \substr($arg, 7);
+    } elseif (\str_starts_with($arg, '--reverb-port=')) {
+        $reverbPort = \substr($arg, 14);
     }
 }
 
@@ -66,7 +69,7 @@ echo "\n";
 echo "  {$blue}⬡  [server]{$reset}  →  http://{$host}:{$port}\n";
 echo "  {$purple}⬡  [queue]{$reset}   →  ai-stream, default\n";
 echo "  {$orange}⬡  [vite]{$reset}    →  npm run dev\n";
-echo "  {$green}⬡  [reverb]{$reset}  →  ws://{$host}:8080\n";
+echo "  {$green}⬡  [reverb]{$reset}  →  ws://{$host}:{$reverbPort}\n";
 echo "\n";
 
 // ---------------------------------------------------------------------------
@@ -288,7 +291,7 @@ $jobs = [
     [
         'name' => 'reverb',
         'color' => $green,
-        'command' => [PHP_BINARY, 'artisan', 'reverb:start', "--host={$host}", '--port=8080'],
+        'command' => [PHP_BINARY, 'artisan', 'reverb:start', "--host={$host}", "--port={$reverbPort}"],
     ],
 ];
 

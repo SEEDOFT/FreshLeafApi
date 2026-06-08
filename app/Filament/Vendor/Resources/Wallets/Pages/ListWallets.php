@@ -40,6 +40,21 @@ class ListWallets extends Page
     #[Override]
     protected string $view = 'filament.vendor.pages.wallets.list-wallets';
 
+    public array $transactionPages = [];
+
+    public function nextPage(int $walletId): void
+    {
+        $this->transactionPages[$walletId] = ($this->transactionPages[$walletId] ?? 1) + 1;
+    }
+
+    public function previousPage(int $walletId): void
+    {
+        $current = $this->transactionPages[$walletId] ?? 1;
+        if ($current > 1) {
+            $this->transactionPages[$walletId] = $current - 1;
+        }
+    }
+
     #[Override]
     public function getTitle(): string
     {
@@ -63,11 +78,11 @@ class ListWallets extends Page
 
         $walletTransactions = [];
         foreach ($userWallets as $wallet) {
+            $page = $this->transactionPages[$wallet->id] ?? 1;
             $walletTransactions[$wallet->id] = $wallet->transactions()
                 ->with(['type', 'status', 'currency'])
                 ->latest()
-                ->limit(20)
-                ->get();
+                ->paginate(10, ['*'], 'page', $page);
         }
 
         return [

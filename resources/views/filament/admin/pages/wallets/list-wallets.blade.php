@@ -126,6 +126,21 @@
                                                 @endforeach
                                             </tbody>
                                         </table>
+                                        @if($txns->lastPage() > 1)
+                                            <div class="flex justify-between items-center mt-4 px-4 py-3 bg-gray-50 dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 rounded-b-lg">
+                                                <x-filament::button wire:click="previousPage({{ $wallet->id }})" color="gray" size="sm" :disabled="$txns->onFirstPage()">
+                                                    &lt;
+                                                </x-filament::button>
+                                                
+                                                <span class="text-sm font-medium text-gray-500 dark:text-gray-400">
+                                                    Page {{ $txns->currentPage() }} of {{ max(1, $txns->lastPage()) }}
+                                                </span>
+                                                
+                                                <x-filament::button wire:click="nextPage({{ $wallet->id }})" color="gray" size="sm" :disabled="!$txns->hasMorePages()">
+                                                    &gt;
+                                                </x-filament::button>
+                                            </div>
+                                        @endif
                                     </div>
                                 @endif
                             </div>

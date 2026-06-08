@@ -32,6 +32,20 @@ class ListWallets extends Page
     protected string $view = 'filament.admin.pages.wallets.list-wallets';
 
     public ?int $userTypeFilter = null;
+    public array $transactionPages = [];
+
+    public function nextPage(int $walletId): void
+    {
+        $this->transactionPages[$walletId] = ($this->transactionPages[$walletId] ?? 1) + 1;
+    }
+
+    public function previousPage(int $walletId): void
+    {
+        $current = $this->transactionPages[$walletId] ?? 1;
+        if ($current > 1) {
+            $this->transactionPages[$walletId] = $current - 1;
+        }
+    }
 
     #[Override]
     public function getTitle(): string
@@ -101,11 +115,11 @@ class ListWallets extends Page
         foreach ($groupedData as $ownerKey => $group) {
             $walletTransactions = [];
             foreach ($group['wallets'] as $wallet) {
+                $page = $this->transactionPages[$wallet->id] ?? 1;
                 $walletTransactions[$wallet->id] = $wallet->transactions()
                     ->with(['type', 'status', 'currency'])
                     ->latest()
-                    ->limit(10)
-                    ->get();
+                    ->paginate(10, ['*'], 'page', $page);
             }
             $groupedData[$ownerKey]['walletTransactions'] = $walletTransactions;
         }

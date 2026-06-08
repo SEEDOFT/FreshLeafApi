@@ -27,7 +27,6 @@ class VendorsTable
 {
     public static function configure(Table $table): Table
     {
-        $notProvided = __('admin.resources.general.not_provided');
 
         return $table
             ->stackedOnMobile()
@@ -44,31 +43,29 @@ class VendorsTable
 
                     ->label(__('admin.resources.vendor.business_name'))
                     ->searchable()
-                    ->placeholder($notProvided)
+
                     ->sortable(),
                 TextColumn::make('name')
 
                     ->label(__('admin.resources.vendor.owner'))
                     ->getStateUsing(fn (User $record) => $record->fullName)
                     ->searchable(['first_name', 'last_name'])
-                    ->sortable()
-                    ->placeholder($notProvided),
+                    ->sortable(),
                 TextColumn::make('phone_number')
 
                     ->label(__('admin.resources.vendor.phone'))
-                    ->searchable()
-                    ->placeholder($notProvided),
+                    ->searchable(),
                 TextColumn::make('type.translated_name')
 
                     ->label(__('admin.resources.user.type'))
                     ->badge()
-                    ->placeholder($notProvided)
+
                     ->color('warning'),
                 TextColumn::make('status.translated_name')
 
                     ->label(__('admin.resources.user.status'))
                     ->badge()
-                    ->placeholder($notProvided)
+
                     ->color(fn (User $record): string => match ($record->status->id) {
                         UserStatus::ACTIVE_ID => 'success',
                         UserStatus::PENDING_ID => 'warning',

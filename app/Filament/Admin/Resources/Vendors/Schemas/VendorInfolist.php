@@ -21,8 +21,6 @@ class VendorInfolist
 {
     public static function configure(Schema $schema): Schema
     {
-        $notProvided = __('admin.resources.general.not_provided');
-
         return $schema
             ->components([
                 Section::make(__('admin.resources.vendor.account_info'))
@@ -34,29 +32,27 @@ class VendorInfolist
                                 ImageEntry::make('image')
                                     ->label(__('admin.profile.avatar'))
                                     ->circular()
-                                    ->imageSize(200)
-                                    ->alignCenter(),
+
+                                    ->alignCenter()
+                                    ->extraImgAttributes(fn () => [
+                                        'class' => 'cursor-zoom-in',
+                                        'x-on:click' => "\$dispatch('lightbox', { src: \$el.src })",
+                                    ]),
                             ]),
                         TextEntry::make('first_name')
-                            ->label(__('admin.profile.first_name'))
-                            ->placeholder($notProvided),
+                            ->label(__('admin.profile.first_name')),
                         TextEntry::make('last_name')
-                            ->label(__('admin.profile.last_name'))
-                            ->placeholder($notProvided),
+                            ->label(__('admin.profile.last_name')),
                         TextEntry::make('email')
-                            ->label(__('admin.profile.email'))
-                            ->placeholder($notProvided),
+                            ->label(__('admin.profile.email')),
                         TextEntry::make('phone_number')
-                            ->label(__('admin.profile.phone'))
-                            ->placeholder($notProvided),
+                            ->label(__('admin.profile.phone')),
                         TextEntry::make('type.translated_name')
                             ->label(__('admin.resources.user.type'))
-                            ->placeholder($notProvided)
                             ->badge()
                             ->color('warning'),
                         TextEntry::make('status.translated_name')
                             ->label(__('admin.resources.user.status'))
-                            ->placeholder($notProvided)
                             ->badge()
                             ->color(fn (User $record): string => match ($record->user_status_id) {
                                 UserStatus::ACTIVE_ID => 'success',
@@ -71,38 +67,32 @@ class VendorInfolist
                     ->columns(2)
                     ->schema([
                         TextEntry::make('business_name')
-                            ->label(__('admin.resources.vendor.business_name'))
-                            ->placeholder($notProvided),
+                            ->label(__('admin.resources.vendor.business_name')),
                         TextEntry::make('contact_phone')
-                            ->label(__('admin.resources.vendor.contact_phone'))
-                            ->placeholder($notProvided),
+                            ->label(__('admin.resources.vendor.contact_phone')),
                         TextEntry::make('village')
-                            ->label(__('shared.form.fields.village'))
-                            ->placeholder($notProvided),
+                            ->label(__('shared.form.fields.village')),
                         TextEntry::make('commune')
-                            ->label(__('shared.form.fields.commune'))
-                            ->placeholder($notProvided),
+                            ->label(__('shared.form.fields.commune')),
                         TextEntry::make('district')
-                            ->label(__('shared.form.fields.district'))
-                            ->placeholder($notProvided),
+                            ->label(__('shared.form.fields.district')),
                         TextEntry::make('province')
-                            ->label(__('shared.form.fields.province'))
-                            ->placeholder($notProvided),
+                            ->label(__('shared.form.fields.province')),
                         TextEntry::make('address')
                             ->label(__('admin.resources.vendor.address'))
-                            ->columnSpanFull()
-                            ->placeholder($notProvided),
+                            ->columnSpanFull(),
                         TextEntry::make('opening_time')
                             ->label(__('vendor.settings.business_profile.opening_time'))
-                            ->placeholder($notProvided)
                             ->dateTime('h:i A'),
                         TextEntry::make('closing_time')
                             ->label(__('vendor.settings.business_profile.closing_time'))
-                            ->placeholder($notProvided)
                             ->dateTime('h:i A'),
                         TextEntry::make('is_open')
                             ->label(__('vendor.settings.business_profile.is_open'))
-                            ->formatStateUsing(fn (bool $state): string => $state ? __('vendor.settings.business_profile.is_open_label') : __('vendor.settings.business_profile.is_closed_label'))
+                            ->formatStateUsing(fn (bool $state): string => $state
+                                    ? __('vendor.settings.business_profile.is_open_label')
+                                    : __('vendor.settings.business_profile.is_closed_label')
+                            )
                             ->color(fn (bool $state): string => $state ? 'success' : 'danger')
                             ->disabled(),
                         IconEntry::make('is_verified')
@@ -116,43 +106,39 @@ class VendorInfolist
                     ->schema([
                         ImageEntry::make('id_card_front')
                             ->label(__('admin.resources.vendor.id_card_front'))
-                            ->placeholder($notProvided)
                             ->getStateUsing(fn ($record) => $record->id_card_front
                                 ? route('admin.documents.show', ['path' => $record->id_card_front]) : null
                             )
                             ->disk(null)
-                            ->imageSize(200)
+
                             ->extraImgAttributes(fn () => [
                                 'class' => 'cursor-zoom-in',
                                 'x-on:click' => "\$dispatch('lightbox', { src: \$el.src })",
                             ]),
                         ImageEntry::make('id_card_back')
                             ->label(__('admin.resources.vendor.id_card_back'))
-                            ->placeholder($notProvided)
                             ->getStateUsing(fn ($record) => $record->id_card_back
                                 ? route('admin.documents.show', ['path' => $record->id_card_back]) : null
                             )
                             ->disk(null)
-                            ->imageSize(200)
+
                             ->extraImgAttributes(fn () => [
                                 'class' => 'cursor-zoom-in',
                                 'x-on:click' => "\$dispatch('lightbox', { src: \$el.src })",
                             ]),
                         ImageEntry::make('store_front_image')
                             ->label(__('admin.resources.vendor.store_photo'))
-                            ->placeholder($notProvided)
                             ->getStateUsing(fn ($record) => $record->store_front_image
                                 ? route('admin.documents.show', ['path' => $record->store_front_image]) : null
                             )
                             ->disk(null)
-                            ->imageSize(200)
+
                             ->extraImgAttributes(fn () => [
                                 'class' => 'cursor-zoom-in',
                                 'x-on:click' => "\$dispatch('lightbox', { src: \$el.src })",
                             ]),
                         TextEntry::make('organic_certificate_url')
                             ->label(__('admin.resources.vendor.organic_cert'))
-                            ->placeholder($notProvided)
                             ->url(fn (mixed $state) => $state
                                 ? route('admin.documents.show', ['path' => $state]) : null
                             )
@@ -168,26 +154,21 @@ class VendorInfolist
                             ->columnSpan(1)
                             ->schema([
                                 TextEntry::make('bank_name')
-                                    ->placeholder($notProvided)
                                     ->label(__('admin.resources.vendor.bank_name')),
                                 TextEntry::make('account_name')
-                                    ->placeholder($notProvided)
                                     ->label(__('admin.resources.vendor.account_holder')),
                                 TextEntry::make('account_number')
-                                    ->placeholder($notProvided)
                                     ->label(__('admin.resources.vendor.account_number')),
                             ]),
                         Grid::make(1)
                             ->columnSpan(1)
                             ->schema([
                                 ImageEntry::make('qr_code')
-                                    ->placeholder($notProvided)
                                     ->label(__('admin.resources.vendor.qr_code'))
                                     ->getStateUsing(fn (?PaymentMethod $record) => $record?->qr_code
                                         ? route('admin.documents.show', ['path' => $record->qr_code]) : null
                                     )
                                     ->disk(null)
-                                    ->imageSize(200)
                                     ->extraImgAttributes(fn () => [
                                         'class' => 'cursor-zoom-in',
                                         'x-on:click' => "\$dispatch('lightbox', { src: \$el.src })",
@@ -201,10 +182,8 @@ class VendorInfolist
                             ->label(__('admin.resources.vendor.wallets_info'))
                             ->schema([
                                 TextEntry::make('currency.translated_currency')
-                                    ->placeholder($notProvided)
                                     ->label(__('admin.resources.wallet.currency')),
                                 TextEntry::make('balance')
-                                    ->placeholder($notProvided)
                                     ->label(__('admin.resources.wallet.balance'))
                                     ->getStateUsing(function (Wallet $record): string {
                                         $id = $record->currency->id;
@@ -224,11 +203,9 @@ class VendorInfolist
                     ->schema([
                         TextEntry::make('created_at')
                             ->label(__('admin.resources.created_at'))
-                            ->placeholder($notProvided)
                             ->dateTime('h:i A, d M Y'),
                         TextEntry::make('updated_at')
                             ->label(__('admin.resources.updated_at'))
-                            ->placeholder($notProvided)
                             ->dateTime('h:i A, d M Y'),
                     ]),
             ]);

@@ -9,6 +9,8 @@ use App\Models\Order;
 use App\Models\OrderStatus;
 use App\Models\PaymentMethodType;
 use App\Models\PaymentStatus;
+use App\Models\User;
+use App\Models\UserType;
 use App\Models\Wallet;
 use App\Models\WalletTransaction;
 use App\Models\WalletTransactionStatus;
@@ -108,7 +110,7 @@ class VendorPayoutService
 
             if ($adminCommissionAmount > 0) {
                 // Find primary admin to receive commission
-                $admin = \App\Models\User::where('user_type_id', \App\Models\UserType::ADMIN_ID)->first();
+                $admin = User::where('user_type_id', UserType::ADMIN_ID)->first();
                 if ($admin) {
                     $adminWallet = Wallet::firstOrCreate(
                         ['user_id' => $admin->id, 'currency_id' => Currency::USD_ID],

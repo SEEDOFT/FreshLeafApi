@@ -36,6 +36,8 @@ class AiAssistantChat extends Component
 
     private const string STATUS_FAILED = 'failed';
 
+    private const string STATUS_QUEUED = 'queued';
+
     // Timeout Constants
     private const int REALTIME_FALLBACK_SECONDS = 8;
 
@@ -436,8 +438,6 @@ class AiAssistantChat extends Component
         }
 
         if ($assistantMessage->content !== '') {
-            $messageIndex = $this->findMessageIndexById((string) $assistantMessage->message_id);
-
             $this->updateOrAppendAssistantMessage(
                 messageId: (string) $assistantMessage->message_id,
                 content: (string) $assistantMessage->content,
@@ -780,6 +780,8 @@ class AiAssistantChat extends Component
             ->values()
             ->toArray();
 
+        $this->restorePendingResponseState();
+
         if ($this->messages === []) {
             $this->messages[] = [
                 'role' => 'assistant',
@@ -787,6 +789,28 @@ class AiAssistantChat extends Component
                 'status' => self::STATUS_DONE,
             ];
         }
+    }
+
+    /**
+     * Restore Pending Response State
+     */
+    private function restorePendingResponseState(): void
+    {
+        $pendingMessage = AiChatMessage::where('ai_chat_session_id', $this->activeDbSessionId)
+            ->where('role', 'assistant')
+            ->whereIn('status', [self::STATUS_QUEUED, self::STATUS_PROCESSING, 'streaming'])
+            ->latest('created_at')
+            ->first();
+
+        if (! $pendingMessage) {
+            $this->resetPendingState();
+
+            return;
+        }
+
+        $this->pendingAssistantMessageId = (string) $pendingMessage->message_id;
+        $this->pendingSinceUnix = $pendingMessage->created_at?->getTimestamp() ?? time();
+        $this->isTyping = true;
     }
 
     /**

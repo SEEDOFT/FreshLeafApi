@@ -81,7 +81,7 @@ class OrderController extends Controller
             ->find((int) $id);
 
         if (! $order) {
-            return static::notFoundResponse(__('api.general.not_found', ['model' => 'Order']));
+            abort(404, __('api.general.not_found', ['model' => 'Order']));
         }
 
         try {
@@ -127,10 +127,14 @@ class OrderController extends Controller
     /**
      * Confirm receipt of an order.
      */
-    public function confirmReceipt(string $id, Request $request, VendorPayoutService $payoutService): JsonResponse
-    {
+    public function confirmReceipt(
+        string $id,
+        Request $request,
+        VendorPayoutService $payoutService
+    ): JsonResponse {
         $user = $this->authenticatedUser($request);
-        $order = Order::where('user_id', $user->id)->find((int) $id);
+        $order = Order::where('user_id',
+            $user->id)->find((int) $id);
 
         if (! $order) {
             abort(404, __('api.general.not_found'));

@@ -54,7 +54,11 @@ class ProductInfolist
                     ->schema([
                         ImageEntry::make('image_url')
                             ->label(__('admin.resources.product.image'))
-                            ->imageSize('200'),
+
+                            ->extraImgAttributes(fn () => [
+                                'class' => 'cursor-zoom-in',
+                                'x-on:click' => "\$dispatch('lightbox', { src: \$el.src })",
+                            ]),
                     ]),
             ]);
     }

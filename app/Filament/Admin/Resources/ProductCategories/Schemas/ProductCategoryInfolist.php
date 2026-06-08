@@ -15,7 +15,6 @@ class ProductCategoryInfolist
 {
     public static function configure(Schema $schema): Schema
     {
-        $notProvided = __('admin.resources.general.not_provided');
 
         return $schema
             ->components([
@@ -31,7 +30,7 @@ class ProductCategoryInfolist
                         TextEntry::make('status.translated_name')
                             ->label(__('admin.resources.product_category.status'))
                             ->badge()
-                            ->placeholder($notProvided)
+
                             ->color(fn (ProductCategory $record): string => match ($record->product_category_status_id) {
                                 ProductCategoryStatus::ACTIVE_ID => 'success',
                                 ProductCategoryStatus::INACTIVE_ID => 'danger',
@@ -48,7 +47,11 @@ class ProductCategoryInfolist
                     ->schema([
                         ImageEntry::make('image_url')
                             ->label(__('admin.resources.product_category.image'))
-                            ->imageSize(200),
+
+                            ->extraImgAttributes(fn () => [
+                                'class' => 'cursor-zoom-in',
+                                'x-on:click' => "\$dispatch('lightbox', { src: \$el.src })",
+                            ]),
                     ]),
             ]);
     }

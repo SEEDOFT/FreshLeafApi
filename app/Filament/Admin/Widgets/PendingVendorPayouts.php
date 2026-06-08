@@ -4,7 +4,7 @@ namespace App\Filament\Admin\Widgets;
 
 use App\Filament\Admin\Resources\Payouts\PayoutResource;
 use App\Models\Payout;
-use Filament\Tables\Actions\Action;
+use Filament\Actions\Action;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Filament\Widgets\TableWidget;
@@ -37,7 +37,7 @@ class PendingVendorPayouts extends TableWidget
             ])
             ->actions([
                 Action::make('view')
-                    ->label(__('admin.resources.payout.approve')) // Using approve label since it's the main action for pending
+                    ->label(__('admin.resources.payout.approve'))
                     ->icon('heroicon-m-eye')
                     ->url(fn (Payout $record): string => PayoutResource::getUrl('view', ['record' => $record])),
             ]);

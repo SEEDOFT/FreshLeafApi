@@ -83,6 +83,8 @@ class PaymentMethod extends Model
 
     public const int COD_ID = 5;
 
+    public const int WING_ID = 6;
+
     /**
      * {@inheritDoc}
      *
@@ -113,6 +115,17 @@ class PaymentMethod extends Model
     {
         return $this->belongsTo(User::class, 'user_id', 'id')
             ->where('users.user_type_id', UserType::CONSUMER_ID);
+    }
+
+    /**
+     * Get the vendor that owns the payment method.
+     *
+     * @return BelongsTo<User, $this>
+     */
+    public function vendor(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'user_id', 'id')
+            ->where('users.user_type_id', UserType::VENDOR_ID);
     }
 
     /**

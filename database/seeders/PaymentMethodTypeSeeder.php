@@ -42,6 +42,11 @@ class PaymentMethodTypeSeeder extends Seeder
                     'name_en' => 'Cash On Delivery',
                     'name_km' => 'សាច់ប្រាក់ពេលទទួលទំនិញ',
                 ],
+                [
+                    'id' => PaymentMethodType::WING_ID,
+                    'name_en' => 'Wing Bank',
+                    'name_km' => 'ធនាគារ Wing',
+                ],
             ];
 
             PaymentMethodType::insertOrIgnore($types);

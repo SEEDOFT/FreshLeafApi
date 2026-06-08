@@ -19,16 +19,17 @@ use App\Models\WalletTransactionType;
 use Filament\Actions\Action;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
+use Filament\Infolists\Components\TextEntry;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\Page;
+use Filament\Schemas\Components\Section;
 use Filament\Schemas\Components\Utilities\Get;
+use Filament\Schemas\Schema;
+use Filament\Support\Enums\FontWeight;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
-use Filament\Infolists\Infolist;
-use Filament\Infolists\Components\TextEntry;
-use Filament\Infolists\Components\Section;
 use Override;
 
 class ListWallets extends Page
@@ -202,13 +203,15 @@ class ListWallets extends Page
             ->modalHeading(__('admin.resources.wallet_transaction.label') ?? 'Transaction Details')
             ->modalSubmitAction(false)
             ->modalCancelActionLabel(__('shared.general.close') ?? 'Close')
-            ->infolist(function (Infolist $infolist, array $arguments): Infolist {
+            ->schema(function (Schema $schema, array $arguments): Schema {
                 $transactionId = $arguments['transaction'] ?? null;
-                $transaction = \App\Models\WalletTransaction::with(['type', 'status', 'currency', 'reference'])->find($transactionId);
+                $transaction = WalletTransaction::with(['type', 'status', 'currency', 'reference'])
+                    ->where('id', $transactionId)
+                    ->first();
 
-                return $infolist
+                return $schema
                     ->record($transaction)
-                    ->schema([
+                    ->components([
                         Section::make()
                             ->schema([
                                 TextEntry::make('amount')
@@ -216,26 +219,25 @@ class ListWallets extends Page
                                     ->state(function ($record) {
                                         return Order::formatMoney((float) $record->amount, $record->currency);
                                     })
-                                    ->size(TextEntry\TextEntrySize::Large)
-                                    ->weight(\Filament\Support\Enums\FontWeight::Bold),
+                                    ->weight(FontWeight::Bold),
                                 TextEntry::make('type.translated_name')
                                     ->label(__('admin.resources.wallet_transaction.type'))
                                     ->badge()
                                     ->color(fn ($record) => match ($record->wallet_transaction_type_id) {
-                                        \App\Models\WalletTransactionType::DEPOSIT_ID => 'success',
-                                        \App\Models\WalletTransactionType::WITHDRAWAL_ID => 'warning',
-                                        \App\Models\WalletTransactionType::PAYMENT_ID => 'danger',
-                                        \App\Models\WalletTransactionType::REFUND_ID => 'info',
+                                        WalletTransactionType::DEPOSIT_ID => 'success',
+                                        WalletTransactionType::WITHDRAWAL_ID => 'warning',
+                                        WalletTransactionType::PAYMENT_ID => 'danger',
+                                        WalletTransactionType::REFUND_ID => 'info',
                                         default => 'gray',
                                     }),
                                 TextEntry::make('status.translated_name')
                                     ->label(__('admin.resources.wallet_transaction.status'))
                                     ->badge()
                                     ->color(fn ($record) => match ($record->wallet_transaction_status_id) {
-                                        \App\Models\WalletTransactionStatus::COMPLETED_ID => 'success',
-                                        \App\Models\WalletTransactionStatus::PENDING_ID => 'warning',
-                                        \App\Models\WalletTransactionStatus::FAILED_ID,
-                                        \App\Models\WalletTransactionStatus::CANCELLED_ID => 'danger',
+                                        WalletTransactionStatus::COMPLETED_ID => 'success',
+                                        WalletTransactionStatus::PENDING_ID => 'warning',
+                                        WalletTransactionStatus::FAILED_ID,
+                                        WalletTransactionStatus::CANCELLED_ID => 'danger',
                                         default => 'gray',
                                     }),
                                 TextEntry::make('transaction_date')
@@ -246,10 +248,10 @@ class ListWallets extends Page
                                     ->columnSpanFull(),
                                 TextEntry::make('reference.order_number')
                                     ->label(__('admin.resources.order.order_number'))
-                                    ->visible(fn ($record) => $record && $record->reference_type === \App\Models\Order::class),
+                                    ->visible(fn ($record) => $record && $record->reference_type === Order::class),
                                 TextEntry::make('reference.payout_number')
                                     ->label(__('admin.resources.payout.payout_number'))
-                                    ->visible(fn ($record) => $record && $record->reference_type === \App\Models\Payout::class),
+                                    ->visible(fn ($record) => $record && $record->reference_type === Payout::class),
                             ])->columns(2),
                     ]);
             });

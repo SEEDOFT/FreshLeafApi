@@ -14,6 +14,7 @@ use App\Models\Currency;
 use App\Models\ExchangeRateHistory;
 use App\Models\Order;
 use App\Models\OrderStatus;
+use App\Models\Payment;
 use App\Models\PaymentMethodType;
 use App\Models\PaymentStatus;
 use App\Models\PaymentType;
@@ -217,8 +218,10 @@ class CartService
     public function checkout(User $user, array $validatedData): Collection
     {
         try {
+            /** @var Collection<int, Order> $createdOrders */
             $createdOrders = DB::transaction(
                 function () use ($user, $validatedData) {
+                    /** @var Collection<int, Cart> $cartRows */
                     $cartRows = Cart::active()
                         ->where('user_id', $user->id)
                         ->with(self::CHECKOUT_RELATIONS)
@@ -260,16 +263,31 @@ class CartService
 
                     $initialPaymentStatus = PaymentStatus::PENDING_ID;
 
-                    $commissionFeeHistory = CommissionFeeHistory::where('commission_fee_id', CommissionFee::ID)->latest()->first();
-
-                    // If paying in a different currency, capture the exact rate used for that conversion
-                    $exchangeRateHistory = ExchangeRateHistory::query()
-                        ->where('from_currency_id', $paymentCurrencyId === Currency::KHR_ID ? Currency::USD_ID : Currency::KHR_ID)
-                        ->where('to_currency_id', $paymentCurrencyId === Currency::KHR_ID ? Currency::KHR_ID : Currency::USD_ID)
+                    $commissionFeeHistory = CommissionFeeHistory::query()
+                        ->where('commission_fee_id', CommissionFee::ID)
                         ->latest()
                         ->first();
 
-                    $vendorGroups = $cartRows->groupBy(fn ($cartRow) => $cartRow->vendorInventory->vendor_id);
+                    // If paying in a different currency, capture the exact rate used for that conversion
+                    $exchangeRateHistory = ExchangeRateHistory::query()
+                        ->where(
+                            'from_currency_id',
+                            $paymentCurrencyId === Currency::KHR_ID
+                                ? Currency::USD_ID
+                                : Currency::KHR_ID
+                        )
+                        ->where(
+                            'to_currency_id',
+                            $paymentCurrencyId === Currency::KHR_ID
+                                ? Currency::KHR_ID
+                                : Currency::USD_ID
+                        )
+                        ->latest()
+                        ->first();
+
+                    $vendorGroups = $cartRows->groupBy(
+                        fn (Cart $cartRow): int => $cartRow->vendorInventory->vendor_id
+                    );
                     $orders = new Collection;
 
                     // Calculate grand total to check wallet balance
@@ -327,7 +345,11 @@ class CartService
 
                     $grandPaymentAmount = $grandTotalUsd;
                     if ($paymentCurrencyId !== Currency::USD_ID) {
-                        $grandPaymentAmount = MoneyService::convert($grandTotalUsd, Currency::USD_ID, $paymentCurrencyId);
+                        $grandPaymentAmount = MoneyService::convert(
+                            $grandTotalUsd,
+                            Currency::USD_ID,
+                            $paymentCurrencyId
+                        );
                     }
 
                     foreach ($vendorGroups as $vendorId => $vendorCartRows) {
@@ -361,9 +383,14 @@ class CartService
 
                         $paymentAmount = $totals['total'];
                         if ($paymentCurrencyId !== Currency::USD_ID) {
-                            $paymentAmount = MoneyService::convert($paymentAmount, Currency::USD_ID, $paymentCurrencyId);
+                            $paymentAmount = MoneyService::convert(
+                                $paymentAmount,
+                                Currency::USD_ID,
+                                $paymentCurrencyId
+                            );
                         }
 
+                        /** @var Payment $payment */
                         $payment = $order->payments()->create([
                             'type_id' => PaymentType::ORDER_ID,
                             'status_id' => $initialPaymentStatus,
@@ -423,7 +450,7 @@ class CartService
                 });
 
             // Post transaction processing
-            $createdOrders->each(function ($order) {
+            $createdOrders->each(function (Order $order) {
                 $order->load(self::CHECKOUT_RETURN_RELATIONS);
 
                 if ($order->order_status_id === OrderStatus::AWAITING_PAYMENT_ID) {
@@ -431,7 +458,10 @@ class CartService
                         ->delay(Carbon::now()->addMinutes(5));
                 }
 
-                $vendor = $order->items->first()->vendorInventory->vendor;
+                $vendor = $order->items->first()?->vendorInventory?->vendor;
+                if (! $vendor) {
+                    return;
+                }
                 $url = OrderResource::getUrl('view', ['record' => $order], panel: 'vendor');
 
                 Notification::make()

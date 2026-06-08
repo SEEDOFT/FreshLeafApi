@@ -223,7 +223,11 @@ class OrderInfolist
                     ->schema([
                         ImageEntry::make('preparation_proof_photo')
                             ->label(__('admin.resources.order.proof_of_preparation'))
-                            ->columnSpanFull(),
+                            ->columnSpanFull()
+                            ->extraImgAttributes(fn () => [
+                                'class' => 'cursor-zoom-in',
+                                'x-on:click' => "\$dispatch('lightbox', { src: \$el.src })",
+                            ]),
                         TextEntry::make('delivery_company_name')
                             ->label(__('admin.resources.order.delivery_company'))
                             ->icon('heroicon-o-truck'),

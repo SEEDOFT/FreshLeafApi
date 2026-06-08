@@ -52,12 +52,15 @@ class OrderService
                     if ($order->currency_id === $wallet->currency_id) {
                         $orderAmountInWalletCurrency = (string) $order->total_amount;
                     } else {
+                        $orderCurrencyId = (int) $order->currency_id;
+                        $walletCurrencyId = (int) $wallet->currency_id;
+
                         // Gross amount user pays
-                        $orderAmountInWalletCurrency = MoneyService::convert((string) $order->total_amount, $order->currency_id, $wallet->currency_id);
-                        $exchangeRateApplied = ExchangeRate::getRate($order->currency_id, $wallet->currency_id);
+                        $orderAmountInWalletCurrency = MoneyService::convert((string) $order->total_amount, $orderCurrencyId, $walletCurrencyId);
+                        $exchangeRateApplied = ExchangeRate::getRate($orderCurrencyId, $walletCurrencyId);
 
                         // Base cost using inverse rate
-                        $inverseRate = ExchangeRate::getRate($wallet->currency_id, $order->currency_id);
+                        $inverseRate = ExchangeRate::getRate($walletCurrencyId, $orderCurrencyId);
                         $baseCost = MoneyService::div((string) $order->total_amount, $inverseRate);
 
                         $profitAmount = MoneyService::sub($orderAmountInWalletCurrency, $baseCost);

@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\Api\User;
 
-use App\Constants\StorageDirectory;
+use App\Filament\Admin\Resources\Users\UserResource;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\User\Auth\LoginRequest;
 use App\Http\Requests\User\Auth\RegisterRequest;
@@ -13,6 +13,9 @@ use App\Http\Requests\User\Auth\VerifyPasswordRequest;
 use App\Models\User;
 use App\Models\UserStatus;
 use App\Models\UserType;
+use App\Notifications\PushNotification;
+use Filament\Actions\Action;
+use Filament\Notifications\Notification;
 use Illuminate\Database\Query\Builder;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -66,7 +69,7 @@ class AuthController extends Controller
                 'last_name' => $validatedData['last_name'],
                 'email' => $validatedData['email'] ?? null,
                 'email_verified_at' => null,
-                'image' => StorageDirectory::USERS.'/'.User::DEFAULT_PROFILE,
+                'image' => User::DEFAULT_PROFILE,
                 'phone_number' => $validatedData['phone_number'],
                 'phone_number_verified_at' => null,
                 'password' => Hash::make($validatedData['password']),
@@ -87,6 +90,36 @@ class AuthController extends Controller
         });
 
         $token = $user->createToken('user_auth_token')->plainTextToken;
+
+        $user->notify(new PushNotification(
+            title: __('api.notifications.welcome_title'),
+            body: __('api.notifications.welcome_body'),
+            data: [
+                'type' => 'welcome',
+                'route' => '/dashboard',
+            ],
+        ));
+
+        $admins = User::active()
+            ->ofType(UserType::ADMIN_ID)
+            ->get();
+
+        Notification::make()
+            ->title(__('api.notifications.new_user_title'))
+            ->body(__('api.notifications.new_user_body', [
+                'name' => $user->fullName,
+                'phone' => $user->phone_number,
+            ]))
+            ->icon('heroicon-o-user-plus')
+            ->success()
+            ->actions([
+                Action::make('view')
+                    ->label(__('api.notifications.view_user'))
+                    ->url(UserResource::getUrl('view', ['record' => $user], panel: 'admin'))
+                    ->button(),
+            ])
+            ->sendToDatabase($admins)
+            ->broadcast($admins);
 
         return static::successResponse([
             'access_token' => $token,
@@ -127,7 +160,7 @@ class AuthController extends Controller
             'password' => ['required', 'string', 'min:8', 'confirmed'],
         ]);
 
-        DB::transaction(static function () use ($validatedData): void {
+        DB::transaction(function () use ($validatedData): void {
             $user = User::create([
                 'first_name' => $validatedData['first_name'],
                 'last_name' => $validatedData['last_name'],

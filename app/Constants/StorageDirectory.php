@@ -82,12 +82,12 @@ final class StorageDirectory
      *
      * @var string
      */
-    public const string ORDER_PROOFS = 'order-proofs';
+    public const string ORDER_PROOFS = 'order_proofs';
 
     /**
      * The directory for storing order delivery proofs.
      *
      * @var string
      */
-    public const string DELIVERY_PROOFS = 'delivery-proofs';
+    public const string DELIVERY_PROOFS = 'delivery_proofs';
 }

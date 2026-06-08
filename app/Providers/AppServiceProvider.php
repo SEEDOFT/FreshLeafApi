@@ -49,7 +49,7 @@ class AppServiceProvider extends ServiceProvider
             $entry->placeholder(__('admin.resources.general.not_provided'));
         });
 
-        Event::listen(NotificationFailed::class, static function (NotificationFailed $event): void {
+        Event::listen(NotificationFailed::class, function (NotificationFailed $event): void {
             if ($event->channel !== FcmChannel::class) {
                 return;
             }

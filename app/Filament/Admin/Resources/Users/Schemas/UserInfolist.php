@@ -20,7 +20,6 @@ class UserInfolist
 {
     public static function configure(Schema $schema): Schema
     {
-        $notProvided = __('admin.resources.general.not_provided');
 
         return $schema
             ->components([
@@ -33,40 +32,28 @@ class UserInfolist
                                 ImageEntry::make('image')
                                     ->label(__('admin.profile.avatar'))
                                     ->circular()
-                                    ->imageSize(200)
-                                    ->alignCenter(),
+
+                                    ->alignCenter()
+                                    ->extraImgAttributes(fn () => [
+                                        'class' => 'cursor-zoom-in',
+                                        'x-on:click' => "\$dispatch('lightbox', { src: \$el.src })",
+                                    ]),
                             ]),
-                        TextEntry::make('first_name')
-
-                            ->label(__('admin.resources.user.first_name'))
-                            ->placeholder($notProvided),
-                        TextEntry::make('last_name')
-
-                            ->label(__('admin.resources.user.last_name'))
-                            ->placeholder($notProvided),
-                        TextEntry::make('email')
-
-                            ->label(__('admin.resources.user.email'))
-                            ->placeholder($notProvided),
-                        TextEntry::make('phone_number')
-
-                            ->label(__('admin.resources.user.phone'))
-                            ->placeholder($notProvided),
-                        TextEntry::make('type.translated_name')
-
-                            ->label(__('admin.resources.user.type'))
+                        TextEntry::make('first_name')->label(__('admin.resources.user.first_name')),
+                        TextEntry::make('last_name')->label(__('admin.resources.user.last_name')),
+                        TextEntry::make('email')->label(__('admin.resources.user.email')),
+                        TextEntry::make('phone_number')->label(__('admin.resources.user.phone')),
+                        TextEntry::make('type.translated_name')->label(__('admin.resources.user.type'))
                             ->badge()
-                            ->placeholder($notProvided)
+
                             ->color(fn (User $record): string => match ($record->user_type_id) {
                                 UserType::ADMIN_ID => 'success',
                                 UserType::VENDOR_ID => 'warning',
                                 UserType::CONSUMER_ID => 'info',
                                 default => 'gray',
                             }),
-                        TextEntry::make('status.translated_name')
+                        TextEntry::make('status.translated_name')->label(__('admin.resources.user.status'))
 
-                            ->label(__('admin.resources.user.status'))
-                            ->placeholder($notProvided)
                             ->badge()
                             ->color(fn (User $record): string => match ($record->user_status_id) {
                                 UserStatus::ACTIVE_ID => 'success',
@@ -83,8 +70,7 @@ class UserInfolist
                             ->schema([
                                 TextEntry::make('currency.translated_currency')
 
-                                    ->label(__('admin.resources.wallet.currency'))
-                                    ->placeholder($notProvided),
+                                    ->label(__('admin.resources.wallet.currency')),
                                 TextEntry::make('balance')
                                     ->label(__('admin.resources.wallet.balance'))
                                     ->placeholder('0.00')
@@ -101,13 +87,9 @@ class UserInfolist
                 Section::make(__('admin.resources.user.system_info'))
                     ->columns(2)
                     ->schema([
-                        TextEntry::make('created_at')
-
-                            ->label(__('admin.resources.created_at'))
+                        TextEntry::make('created_at')->label(__('admin.resources.created_at'))
                             ->dateTime('h:i A, d M Y'),
-                        TextEntry::make('updated_at')
-
-                            ->label(__('admin.resources.updated_at'))
+                        TextEntry::make('updated_at')->label(__('admin.resources.updated_at'))
                             ->dateTime('h:i A, d M Y'),
                     ]),
             ]);

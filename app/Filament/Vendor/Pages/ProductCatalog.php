@@ -47,7 +47,6 @@ class ProductCatalog extends Page implements HasTable
 
     public function table(Table $table): Table
     {
-        $notProvided = __('admin.resources.general.not_provided');
 
         return $table
             ->query(Product::query()->where('product_status_id', ProductStatus::PUBLISHED_ID))
@@ -60,19 +59,19 @@ class ProductCatalog extends Page implements HasTable
             ->columns([
                 Stack::make([
                     ImageColumn::make('image_url')
-                        ->imageSize('200')
+
                         ->width('100%'),
                     TextColumn::make('name_en')
-                        ->placeholder($notProvided)
+
                         ->weight('bold')
                         ->size('lg')
                         ->searchable(),
                     TextColumn::make('name_km')
-                        ->placeholder($notProvided)
+
                         ->size('md')
                         ->color('gray'),
                     TextColumn::make('productCategory.translated_name')
-                        ->placeholder($notProvided)
+
                         ->badge()
                         ->color('info'),
                 ]),
@@ -94,27 +93,15 @@ class ProductCatalog extends Page implements HasTable
                         TextEntry::make('image_url')
                             ->label(__('shared.product.image'))
                             ->columnSpanFull(),
-                        TextEntry::make('name_en')
-                            ->placeholder($notProvided)
-                            ->label(__('shared.product.name_en')),
-                        TextEntry::make('name_km')
-                            ->placeholder($notProvided)
-                            ->label(__('shared.product.name_km')),
-                        TextEntry::make('productCategory.translated_name')
-                            ->placeholder($notProvided)
-                            ->label(__('shared.product.system_category'))
+                        TextEntry::make('name_en')->label(__('shared.product.name_en')),
+                        TextEntry::make('name_km')->label(__('shared.product.name_km')),
+                        TextEntry::make('productCategory.translated_name')->label(__('shared.product.system_category'))
                             ->badge()
                             ->color('info'),
-                        TextEntry::make('defaultUnit.translated_name')
-                            ->placeholder($notProvided)
-                            ->label(__('shared.product.default_unit')),
-                        TextEntry::make('description_en')
-                            ->placeholder($notProvided)
-                            ->label(__('shared.product.description_en'))
+                        TextEntry::make('defaultUnit.translated_name')->label(__('shared.product.default_unit')),
+                        TextEntry::make('description_en')->label(__('shared.product.description_en'))
                             ->columnSpanFull(),
-                        TextEntry::make('description_km')
-                            ->placeholder($notProvided)
-                            ->label(__('shared.product.description_km'))
+                        TextEntry::make('description_km')->label(__('shared.product.description_km'))
                             ->columnSpanFull(),
                         TextEntry::make('nutrition_data')
                             ->label(__('shared.product.nutrition_data'))

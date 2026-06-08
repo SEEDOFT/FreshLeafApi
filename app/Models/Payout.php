@@ -54,6 +54,11 @@ class Payout extends Model
 
     public const int STATUS_FAILED = 3;
 
+    /**
+     * {@inheritDoc}
+     *
+     * @return array<string, string>
+     */
     protected function casts(): array
     {
         return [
@@ -86,6 +91,16 @@ class Payout extends Model
     public function method(): BelongsTo
     {
         return $this->belongsTo(PayoutMethod::class, 'payout_method_id', 'id');
+    }
+
+    /**
+     * Get currency relationship
+     *
+     * @return BelongsTo<Currency, $this>
+     */
+    public function currency(): BelongsTo
+    {
+        return $this->belongsTo(Currency::class, 'currency_id', 'id');
     }
 
     /**

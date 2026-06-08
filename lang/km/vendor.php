@@ -19,6 +19,7 @@ return [
         ],
         'financial_details' => [
             'label' => 'ព័ត៌មានហិរញ្ញវត្ថុ',
+            'select_bank' => 'ជ្រើសរើសធនាគារ',
             'bank_name' => 'ឈ្មោះធនាគារ',
             'account_holder' => 'ឈ្មោះម្ចាស់គណនី',
             'account_number' => 'លេខគណនី',

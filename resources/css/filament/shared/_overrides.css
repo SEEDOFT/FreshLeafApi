@@ -91,9 +91,9 @@
 }
 
 /* Global Bold Labels for Forms, Tables, and Infolists */
-.fi-fo-field-wrp-label-text,
-.fi-ta-header-cell-label,
-.fi-in-entry-wrp-label-text {
+.fi-fo-field-label-content,
+.fi-ta-header-cell,
+.fi-in-entry-label {
     font-weight: 700 !important;
 }
 

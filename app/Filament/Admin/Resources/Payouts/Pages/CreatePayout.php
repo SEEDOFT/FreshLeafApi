@@ -12,4 +12,7 @@ class CreatePayout extends CreateRecord
 {
     #[Override]
     protected static string $resource = PayoutResource::class;
+
+    #[Override]
+    protected static bool $canCreateAnother = false;
 }

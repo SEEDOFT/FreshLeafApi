@@ -45,32 +45,37 @@ class ListPayouts extends ListRecords
                         ->numeric()
                         ->required()
                         ->rules([
-                            function (\Filament\Forms\Get $get): \Closure {
+                            function (Get $get): \Closure {
                                 return function (string $attribute, $value, \Closure $fail) use ($get) {
                                     $currencyId = $get('currency_id');
-                                    if (! $currencyId) return;
+                                    if (! $currencyId) {
+                                        return;
+                                    }
 
-                                    $wallet = \App\Models\Wallet::where('user_id', \Illuminate\Support\Facades\Auth::id())
+                                    $wallet = Wallet::where('user_id', Auth::id())
                                         ->where('currency_id', $currencyId)
                                         ->first();
 
                                     if (! $wallet) {
                                         $fail(__('shared.payout.insufficient_balance') ?? 'Insufficient balance.');
+
                                         return;
                                     }
 
                                     if ($value > $wallet->balance) {
                                         $fail('The payout amount cannot exceed your wallet balance.');
+
                                         return;
                                     }
 
-                                    $pendingAmount = \App\Models\Payout::where('vendor_id', \Illuminate\Support\Facades\Auth::id())
+                                    $pendingAmount = Payout::where('vendor_id', Auth::id())
                                         ->where('currency_id', $currencyId)
-                                        ->where('status_id', \App\Models\Payout::STATUS_PENDING)
+                                        ->where('status_id', Payout::STATUS_PENDING)
                                         ->sum('amount');
 
                                     if ($pendingAmount > 0 && $pendingAmount == $wallet->balance) {
                                         $fail('Your entire wallet balance is currently locked in a pending payout. Please wait for it to be approved or rejected.');
+
                                         return;
                                     }
 
@@ -80,7 +85,7 @@ class ListPayouts extends ListRecords
                                         $fail("Insufficient available balance. You have a pending payout of {$pendingAmount}. Your available balance is {$available}.");
                                     }
                                 };
-                            }
+                            },
                         ]),
                     Select::make('payout_method_id')
                         ->label(__('shared.payout.method'))
@@ -101,16 +106,19 @@ class ListPayouts extends ListRecords
                         ->where('currency_id', $record->currency_id)
                         ->first();
 
-                    WalletTransaction::create([
-                        'wallet_id' => $wallet->id,
-                        'currency_id' => $record->currency_id,
-                        'wallet_transaction_type_id' => 2, // Withdrawal
-                        'wallet_transaction_status_id' => 1, // Pending
-                        'amount' => $record->amount,
-                        'reference_id' => $record->id,
-                        'reference_type' => Payout::class,
-                        'description' => __('shared.payout.withdrawal_description', ['number' => $record->payout_number]),
-                    ]);
+                    if ($wallet) {
+                        WalletTransaction::create([
+                            'wallet_id' => $wallet->id,
+                            'currency_id' => $record->currency_id,
+                            'wallet_transaction_type_id' => 2, // Withdrawal
+                            'wallet_transaction_status_id' => 1, // Pending
+                            'amount' => $record->amount,
+                            'reference_id' => $record->id,
+                            'reference_type' => Payout::class,
+                            'description' => __('shared.wallet.withdrawal_description', ['number' => $record->payout_number]),
+                            'transaction_date' => now(),
+                        ])->recordHistory();
+                    }
                 }),
         ];
     }

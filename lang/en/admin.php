@@ -160,6 +160,8 @@ return [
             'reject' => 'Reject',
             'approved_success' => 'Payout approved successfully.',
             'rejected_success' => 'Payout rejected successfully.',
+            'vendor_financial_details' => 'Vendor Financial Details',
+            'vendor_bank_qr_code' => 'Bank QR Code',
         ],
         'user' => [
             'label' => 'User',

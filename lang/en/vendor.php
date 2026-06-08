@@ -19,6 +19,7 @@ return [
         ],
         'financial_details' => [
             'label' => 'Financial Details',
+            'select_bank' => 'Select a bank',
             'bank_name' => 'Bank Name',
             'account_holder' => 'Account Holder Name',
             'account_number' => 'Account Number',

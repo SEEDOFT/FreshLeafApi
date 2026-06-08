@@ -186,6 +186,8 @@ return [
             'reject' => 'បដិសេធ',
             'approved_success' => 'ការបើកប្រាក់ត្រូវបានអនុម័តដោយជោគជ័យ។',
             'rejected_success' => 'ការបើកប្រាក់ត្រូវបានបដិសេធ។',
+            'vendor_financial_details' => 'ព័ត៌មានហិរញ្ញវត្ថុអ្នកផ្គត់ផ្គង់',
+            'vendor_bank_qr_code' => 'កូដ QR ធនាគារ',
         ],
         'user' => [
             'label' => 'អ្នកប្រើប្រាស់',

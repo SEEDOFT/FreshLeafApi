@@ -48,11 +48,11 @@ class AdminFinancialOverview extends BaseWidget
         $totalCommission = (float) OrderItem::query()
             ->whereHas(
                 'order',
-                static function (Builder $query): void {
+                function (Builder $query): void {
                     $query->where('order_status_id', OrderStatus::DELIVERED_ID)
                         ->whereHas(
                             'paymentStatus',
-                            static function (Builder $query): void {
+                            function (Builder $query): void {
                                 $query->where('id', PaymentStatus::COMPLETED_ID);
                             }
                         );
@@ -62,12 +62,12 @@ class AdminFinancialOverview extends BaseWidget
         $vendorNetTotal = (float) OrderItem::query()
             ->whereHas(
                 'order',
-                static function (Builder $query): void {
+                function (Builder $query): void {
                     $query->where('order_status_id', OrderStatus::DELIVERED_ID)
                         ->where('is_vendor_paid', false)
                         ->whereHas(
                             'paymentStatus',
-                            static function (Builder $query): void {
+                            function (Builder $query): void {
                                 $query->where('id', PaymentStatus::COMPLETED_ID);
                             }
                         );
@@ -78,7 +78,7 @@ class AdminFinancialOverview extends BaseWidget
         $totalRevenue = (float) Order::query()
             ->whereHas(
                 'paymentStatus',
-                static function (Builder $query): void {
+                function (Builder $query): void {
                     $query->where('id', PaymentStatus::COMPLETED_ID);
                 }
             )

@@ -47,6 +47,8 @@ class PaymentMethodType extends Model
 
     public const int COD_ID = 5;
 
+    public const int WING_ID = 6;
+
     public const string WALLET = 'WALLET';
 
     public const string CREDIT_DEBIT = 'CREDIT_DEBIT';
@@ -56,6 +58,8 @@ class PaymentMethodType extends Model
     public const string ACLEDA = 'ACLEDA';
 
     public const string COD = 'COD';
+
+    public const string WING = 'WING';
 
     /**
      * @return list<int>

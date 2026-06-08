@@ -43,10 +43,10 @@ class SupportChat extends Page
     public static function getNavigationBadge(): ?string
     {
         $unreadCount = Message::where('is_read', false)
-            ->whereHas('conversation', static function (Builder $query): void {
+            ->whereHas('conversation', function (Builder $query): void {
                 $query->where('conversation_type_id', ConversationType::SUPPORT_ID);
             })
-            ->whereHas('sender', static function (Builder $query): void {
+            ->whereHas('sender', function (Builder $query): void {
                 $query->where('user_type_id', '!=', UserType::ADMIN_ID);
             })
             ->count();

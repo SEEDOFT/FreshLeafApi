@@ -19,6 +19,7 @@ use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 use Override;
 
 use function is_array;
@@ -219,11 +220,10 @@ class FinancialDetails extends Page
 
         // Only return the path if the file actually exists on disk,
         // otherwise return an empty array so FileUpload shows no preview.
-        if (! \Illuminate\Support\Facades\Storage::disk('local')->exists($fullPath)) {
+        if (! Storage::disk('local')->exists($fullPath)) {
             return [];
         }
 
         return [$fullPath];
     }
 }
-

@@ -21,7 +21,6 @@ class UsersTable
 {
     public static function configure(Table $table): Table
     {
-        $notProvided = __('admin.resources.general.not_provided');
 
         return $table
             ->recordClasses(fn (User $record) => match ($record->user_status_id) {
@@ -42,7 +41,7 @@ class UsersTable
                     ->getStateUsing(fn (User $record): string => $record->last_name),
                 TextColumn::make('email')
                     ->label(__('admin.resources.user.email'))
-                    ->placeholder($notProvided)
+
                     ->searchable(),
                 TextColumn::make('phone_number')
                     ->label(__('admin.resources.user.phone'))
@@ -50,7 +49,7 @@ class UsersTable
                 TextColumn::make('type.translated_name')
                     ->label(__('admin.resources.user.type'))
                     ->badge()
-                    ->placeholder($notProvided)
+
                     ->color('info'),
                 TextColumn::make('status.translated_name')
                     ->label(__('admin.resources.user.status'))
@@ -60,8 +59,7 @@ class UsersTable
                         UserStatus::PENDING_ID => 'warning',
                         UserStatus::INACTIVE_ID, UserStatus::REJECTED_ID, UserStatus::DELETED_ID => 'danger',
                         default => 'secondary',
-                    })
-                    ->placeholder($notProvided),
+                    }),
                 TextColumn::make('created_at')
                     ->label(__('admin.resources.created_at'))
                     ->dateTime('h:i A, d M Y')

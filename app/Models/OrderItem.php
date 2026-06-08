@@ -31,7 +31,7 @@ use Illuminate\Support\Carbon;
  * @property-read VendorInventory $vendorInventory
  * @property Carbon|null $deleted_at
  */
-#[Table('order_items', key: 'id')]
+#[Table('order_items', key: 'id', keyType: 'int')]
 #[Fillable([
     'order_id',
     'vendor_inventory_id',
@@ -49,11 +49,11 @@ class OrderItem extends Model
     use HasFactory, SoftDeletes;
 
     /**
-     * The "booted" method of the model.
+     * {@inheritDoc}
      */
     protected static function booted(): void
     {
-        static::saving(static function (OrderItem $item): void {
+        static::saving(function (OrderItem $item): void {
             if ($item->order_id && $item->order && $item->order->commissionFeeHistory) {
                 $rate = MoneyService::money($item->order->commissionFeeHistory->rate);
             } else {

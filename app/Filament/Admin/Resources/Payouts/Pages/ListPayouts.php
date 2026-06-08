@@ -11,6 +11,7 @@ use Override;
 
 class ListPayouts extends ListRecords
 {
+    #[Override]
     protected static string $resource = PayoutResource::class;
 
     #[Override]

@@ -11,6 +11,7 @@ use Override;
 
 class ViewPayout extends ViewRecord
 {
+    #[Override]
     protected static string $resource = PayoutResource::class;
 
     #[Override]

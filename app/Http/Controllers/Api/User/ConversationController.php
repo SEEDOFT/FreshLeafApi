@@ -29,7 +29,6 @@ class ConversationController extends Controller
     public function index(Request $request): JsonResponse
     {
         $user = $this->authenticatedUser($request);
-
         $validatedData = $request->validate([
             'type' => ['nullable', 'string', 'in:direct,support'],
             'participant_type' => ['nullable', 'string', 'in:vendor,admin,consumer'],
@@ -39,7 +38,7 @@ class ConversationController extends Controller
         ]);
 
         $query = Conversation::query()
-            ->whereHas('participants', static function (Builder $query) use ($user) {
+            ->whereHas('participants', function (Builder $query) use ($user): void {
                 $query->where('user_id', $user->id);
             })
             ->with(['participants.user.vendorProfile'])
@@ -47,7 +46,7 @@ class ConversationController extends Controller
                 $query->latest()->limit(1);
             }])
             ->withCount([
-                'messages as unread_messages_count' => static function (Builder $query) use ($user): void {
+                'messages as unread_messages_count' => function (Builder $query) use ($user): void {
                     $query->where('sender_id', '!=', $user->id)
                         ->where('is_read', false);
                 },
@@ -74,7 +73,7 @@ class ConversationController extends Controller
 
             $query->whereHas(
                 'participants.user',
-                static function (Builder $query) use ($user, $participantTypeId): void {
+                function (Builder $query) use ($user, $participantTypeId): void {
                     $query->where('users.id', '!=', $user->id)
                         ->where('users.user_type_id', $participantTypeId);
                 }
@@ -87,15 +86,15 @@ class ConversationController extends Controller
             if ($search !== '') {
                 $query->whereHas(
                     'participants.user',
-                    static function (Builder $query) use ($user, $search): void {
+                    function (Builder $query) use ($user, $search): void {
                         $query->where('users.id', '!=', $user->id)
-                            ->where(static function (Builder $query) use ($search): void {
+                            ->where(function (Builder $query) use ($search): void {
                                 $query->where('users.first_name', 'like', '%'.$search.'%')
                                     ->orWhere('users.last_name', 'like', '%'.$search.'%')
                                     ->orWhere('users.email', 'like', '%'.$search.'%')
                                     ->orWhereHas(
                                         'vendorProfile',
-                                        static function (Builder $query) use ($search): void {
+                                        function (Builder $query) use ($search): void {
                                             $query->where('business_name', 'like', '%'.$search.'%');
                                         }
                                     );
@@ -119,7 +118,6 @@ class ConversationController extends Controller
     public function store(Request $request): JsonResponse
     {
         $user = $this->authenticatedUser($request);
-
         $validatedData = $request->validate([
             'type' => ['required', 'string', 'in:direct,support'],
             'user_id' => ['required_if:type,direct', 'nullable', 'integer', 'exists:users,id'],
@@ -134,7 +132,7 @@ class ConversationController extends Controller
                 ->where('conversation_status_id', ConversationStatus::OPEN_ID)
                 ->whereHas(
                     'participants',
-                    static function (Builder $query) use ($user): void {
+                    function (Builder $query) use ($user): void {
                         $query->where('user_id', $user->id);
                     }
                 )
@@ -181,13 +179,13 @@ class ConversationController extends Controller
             $conversation = Conversation::where('conversation_type_id', ConversationType::DIRECT_ID)
                 ->whereHas(
                     'participants',
-                    static function (Builder $query) use ($user): void {
+                    function (Builder $query) use ($user): void {
                         $query->where('user_id', $user->id);
                     }
                 )
                 ->whereHas(
                     'participants',
-                    static function (Builder $query) use ($targetUserId): void {
+                    function (Builder $query) use ($targetUserId): void {
                         $query->where('user_id', $targetUserId);
                     }
                 )
@@ -238,10 +236,9 @@ class ConversationController extends Controller
     public function show(Request $request, int $id): JsonResponse
     {
         $user = $this->authenticatedUser($request);
-
         $conversation = Conversation::query()
             ->with(['participants.user.vendorProfile'])
-            ->with(['messages' => static function (Relation $query): void {
+            ->with(['messages' => function (Relation $query): void {
                 $query->latest()->limit(1);
             }])
             ->withCount([
@@ -272,11 +269,10 @@ class ConversationController extends Controller
     public function getUnreadCount(Request $request): JsonResponse
     {
         $user = $this->authenticatedUser($request);
-
         $count = Message::query()
             ->whereHas(
                 'conversation.participants',
-                static function (Builder $query) use ($user): void {
+                function (Builder $query) use ($user): void {
                     $query->where('user_id', $user->id);
                 }
             )
@@ -295,7 +291,6 @@ class ConversationController extends Controller
     public function sendTyping(Request $request): JsonResponse
     {
         $user = $this->authenticatedUser($request);
-
         $validatedData = $request->validate([
             'conversation_id' => ['required', 'exists:conversations,id'],
         ]);
@@ -304,7 +299,7 @@ class ConversationController extends Controller
             ->where('id', $validatedData['conversation_id'])
             ->whereHas(
                 'participants',
-                static function (Builder $query) use ($user) {
+                function (Builder $query) use ($user): void {
                     $query->where('user_id', $user->id);
                 }
             )

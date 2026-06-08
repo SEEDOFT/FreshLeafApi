@@ -20,7 +20,6 @@ class ProductCategoriesTable
 {
     public static function configure(Table $table): Table
     {
-        $notProvided = __('admin.resources.general.not_provided');
 
         return $table
             ->stackedOnMobile()
@@ -31,24 +30,24 @@ class ProductCategoriesTable
                     ->circular(),
                 TextColumn::make('name_en')
                     ->label(__('admin.resources.product_category.name_en'))
-                    ->placeholder($notProvided)
+
                     ->searchable()
                     ->sortable(),
                 TextColumn::make('name_km')
                     ->label(__('admin.resources.product_category.name_km'))
-                    ->placeholder($notProvided)
+
                     ->searchable()
                     ->sortable(),
                 TextColumn::make('slug')
                     ->label(__('admin.resources.product_category.slug'))
-                    ->placeholder($notProvided)
+
                     ->searchable()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('status.translated_name')
                     ->label(__('admin.resources.product_category.status'))
                     ->badge()
-                    ->placeholder($notProvided)
+
                     ->color(fn (ProductCategory $record): string => match ($record->product_category_status_id) {
                         ProductCategoryStatus::ACTIVE_ID => 'success',
                         ProductCategoryStatus::INACTIVE_ID => 'danger',
@@ -70,12 +69,12 @@ class ProductCategoriesTable
                 TextColumn::make('products_count')
                     ->label(__('admin.resources.product_category.products_count'))
                     ->counts('products')
-                    ->placeholder($notProvided)
+
                     ->sortable(),
                 TextColumn::make('created_at')
                     ->label(__('admin.resources.product_category.created_at'))
                     ->dateTime('h:i A, d M Y')
-                    ->placeholder($notProvided)
+
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
             ])

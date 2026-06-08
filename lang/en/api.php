@@ -131,6 +131,11 @@ return [
         'new_support_ticket_title' => 'New Support Ticket',
         'new_support_ticket_body' => 'User :name has started a new support chat.',
         'new_support_message_title' => 'New Support Message',
+        'new_user_title' => 'New User Registered',
+        'new_user_body' => ':name (:phone) has just registered a new account.',
+        'view_user' => 'View User',
+        'welcome_title' => 'Welcome to FreshLeaf!',
+        'welcome_body' => 'Thank you for joining FreshLeaf. Start exploring fresh products and enjoy your shopping experience!',
     ],
 
     'support_chat' => [

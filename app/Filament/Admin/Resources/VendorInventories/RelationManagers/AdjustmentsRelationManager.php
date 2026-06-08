@@ -92,7 +92,11 @@ class AdjustmentsRelationManager extends RelationManager
                                         ->columnSpanFull(),
                                     ImageEntry::make('proof_image_path')
                                         ->label(__('admin.resources.product.proof_photo'))
-                                        ->columnSpanFull(),
+                                        ->columnSpanFull()
+                                        ->extraImgAttributes(fn () => [
+                                            'class' => 'cursor-zoom-in',
+                                            'x-on:click' => "\$dispatch('lightbox', { src: \$el.src })",
+                                        ]),
                                 ]),
                         ])),
             ])

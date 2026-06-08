@@ -14,6 +14,10 @@ export default () => ({
         this.$watch('$wire.pendingAssistantMessageId', value => {
             value ? this.startPolling() : this.stopPolling();
         });
+
+        if (this.$wire.pendingAssistantMessageId) {
+            this.startPolling();
+        }
     },
 
     syncViewportState(event) {

@@ -12,7 +12,6 @@ use App\Filament\Admin\Widgets\AdminExchangeRates;
 use App\Filament\Admin\Widgets\AdminFinancialOverview;
 use App\Filament\Admin\Widgets\AdminPlatformActivity;
 use App\Filament\Admin\Widgets\AdminRevenueChart;
-use App\Filament\Admin\Widgets\PendingVendorPayouts;
 use App\Filament\ThemeColors;
 use App\Filament\Widgets\CustomAccountWidget;
 use App\Http\Middleware\SetLocaleFromAcceptLanguage;

@@ -12,6 +12,7 @@ use Filament\Pages\Page;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 use Override;
 
 use function is_string;
@@ -130,7 +131,7 @@ class VerificationDocs extends Page
         $fullPath = str_starts_with($path, StorageDirectory::VENDOR_VERIFICATION)
             ? $path : StorageDirectory::VENDOR_VERIFICATION.'/'.$path;
 
-        if (! \Illuminate\Support\Facades\Storage::disk('local')->exists($fullPath)) {
+        if (! Storage::disk('local')->exists($fullPath)) {
             return [];
         }
 

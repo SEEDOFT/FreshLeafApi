@@ -44,13 +44,13 @@ class PayoutsTable
 
                 TextColumn::make('amount')
                     ->label(__('admin.resources.payout.amount'))
-                    ->state(function (Payout $record) {
-                        if ($record->currency->id === Currency::USD_ID) {
+                    ->formatStateUsing(function (Payout $record) {
+                        if ($record->currency?->id === Currency::USD_ID) {
                             return $record->currency->symbol.' '.$record->amount;
                         }
 
-                        if ($record->currency->id === Currency::KHR_ID) {
-                            return $record->amount.' '.$record->currency->symbol;
+                        if ($record->currency?->id === Currency::KHR_ID) {
+                            return $record->amount.$record->currency->symbol;
                         }
 
                         return $record->amount;
@@ -135,14 +135,20 @@ class PayoutsTable
                                 $walletTransaction->recordHistory();
                             }
 
-                            $newBalance = MoneyService::sub((string) $wallet->balance, (string) $record->amount);
-                            $wallet->update(['balance' => $newBalance]);
+                            $vendorWallet = Wallet::where('user_id', $record->vendor_id)
+                                ->where('currency_id', $record->currency_id)
+                                ->first();
 
-                            $wallet->histories()->create([
-                                'user_id' => $wallet->user_id,
-                                'currency_id' => $wallet->currency_id,
-                                'balance' => $newBalance,
-                            ]);
+                            if ($vendorWallet) {
+                                $newBalance = MoneyService::sub((string) $vendorWallet->balance, (string) $record->amount);
+                                $vendorWallet->update(['balance' => $newBalance]);
+
+                                $vendorWallet->histories()->create([
+                                    'user_id' => $vendorWallet->user_id,
+                                    'currency_id' => $vendorWallet->currency_id,
+                                    'balance' => $newBalance,
+                                ]);
+                            }
                         });
 
                         Notification::make()

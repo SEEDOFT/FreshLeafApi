@@ -149,6 +149,13 @@ class PayoutsTable
                             ->success()
                             ->title(__('admin.resources.payout.approved_success'))
                             ->send();
+
+                        Notification::make()
+                            ->success()
+                            ->title('Payout Approved')
+                            ->body('Your payout request #'.$record->payout_number.' for '.$record->amount.' has been approved.')
+                            ->sendToDatabase($record->vendor)
+                            ->broadcast($record->vendor);
                     }),
                 Action::make('reject')
                     ->label(__('admin.resources.payout.reject'))
@@ -187,6 +194,13 @@ class PayoutsTable
                             ->danger()
                             ->title(__('admin.resources.payout.rejected_success'))
                             ->send();
+
+                        Notification::make()
+                            ->danger()
+                            ->title('Payout Rejected')
+                            ->body('Your payout request #'.$record->payout_number.' has been rejected. Reason: '.$data['admin_notes'])
+                            ->sendToDatabase($record->vendor)
+                            ->broadcast($record->vendor);
                     }),
                 ViewAction::make(),
                 EditAction::make(),

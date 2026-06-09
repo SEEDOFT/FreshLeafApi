@@ -62,12 +62,14 @@ $blue = $useAnsi ? "\033[38;2;147;197;253m" : '';
 $purple = $useAnsi ? "\033[38;2;196;181;253m" : '';
 $orange = $useAnsi ? "\033[38;2;253;186;116m" : '';
 $green = $useAnsi ? "\033[38;2;74;222;128m" : '';
+$pink = $useAnsi ? "\033[38;2;244;114;182m" : '';
 
 echo "\n";
 echo "{$bold}Starting development services...{$reset}\n";
 echo "\n";
 echo "  {$blue}⬡  [server]{$reset}  →  http://{$host}:{$port}\n";
 echo "  {$purple}⬡  [queue]{$reset}   →  ai-stream, default\n";
+echo "  {$pink}⬡  [schedule]{$reset}→  schedule:work\n";
 echo "  {$orange}⬡  [vite]{$reset}    →  npm run dev\n";
 echo "  {$green}⬡  [reverb]{$reset}  →  ws://{$host}:{$reverbPort}\n";
 echo "\n";
@@ -282,6 +284,11 @@ $jobs = [
         'name' => 'queue',
         'color' => $purple,
         'command' => [PHP_BINARY, 'artisan', 'queue:work', '--queue=ai-stream,default', '--tries=3', '--timeout=120'],
+    ],
+    [
+        'name' => 'schedule',
+        'color' => $pink,
+        'command' => [PHP_BINARY, 'artisan', 'schedule:work'],
     ],
     [
         'name' => 'vite',

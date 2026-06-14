@@ -167,6 +167,8 @@ return [
         'invalid_amount' => 'Invalid withdrawal amount.',
     ],
     'user' => [
+        'full_name' => 'Full Name',
+        'email' => 'Email',
         'phone' => 'Phone Number',
     ],
     'form' => [
@@ -213,6 +215,21 @@ return [
         'cancel' => 'Cancel',
         'authorize' => 'Authorize',
         'authorizing' => 'Authorizing...',
+    ],
+    'rating' => [
+        'label' => 'Rating',
+        'plural_label' => 'Ratings',
+        'user' => 'User',
+        'product' => 'Product',
+        'rating' => 'Rating',
+        'review' => 'Review',
+        'order_item' => 'Order Item',
+        'order_number' => 'Order Number',
+        'created_at' => 'Rated At',
+        'user_info' => 'User Information',
+        'product_info' => 'Product Information',
+        'rating_info' => 'Rating Information',
+        'system_info' => 'System Information',
     ],
     'general' => [
         'close' => 'Close',

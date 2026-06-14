@@ -35,6 +35,7 @@ class VendorProfileController extends Controller
         'currency',
         'vendor.vendorProfile',
         'status',
+        'ratings',
     ];
 
     /**

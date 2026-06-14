@@ -28,18 +28,21 @@ class WalletTransactionForm
                             ->dehydrated(fn (mixed $state): bool => filled($state)),
                         Select::make('currency_id')
                             ->label(__('admin.resources.order.currency'))
-                            ->relationship('currency', 'name')
+                            ->relationship('currency', 'name_en')
+                            ->getOptionLabelFromRecordUsing(fn ($record) => $record->translated_name ?? $record->name_en)
                             ->searchable()
                             ->required(fn (string $operation): bool => $operation === 'create')
                             ->dehydrated(fn (mixed $state): bool => filled($state)),
                         Select::make('wallet_transaction_type_id')
                             ->label(__('admin.resources.wallet_transaction.type'))
-                            ->relationship('type', 'name')
+                            ->relationship('type', 'name_en')
+                            ->getOptionLabelFromRecordUsing(fn ($record) => $record->translated_name)
                             ->required(fn (string $operation): bool => $operation === 'create')
                             ->dehydrated(fn (mixed $state): bool => filled($state)),
                         Select::make('wallet_transaction_status_id')
                             ->label(__('admin.resources.wallet_transaction.status'))
-                            ->relationship('status', 'name')
+                            ->relationship('status', 'name_en')
+                            ->getOptionLabelFromRecordUsing(fn ($record) => $record->translated_name)
                             ->required(fn (string $operation): bool => $operation === 'create')
                             ->dehydrated(fn (mixed $state): bool => filled($state)),
                         TextInput::make('amount')

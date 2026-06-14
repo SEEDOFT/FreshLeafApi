@@ -37,6 +37,7 @@ class OrderItemResource extends JsonResource
             'subtotal_display' => MoneyService::displayTotalsFromUsd($this->subtotal),
             'created_at' => $this->created_at?->toIso8601String(),
             'updated_at' => $this->updated_at?->toIso8601String(),
+            'has_rated' => $this->relationLoaded('rating') && $this->rating !== null,
             'vendor_inventory' => new VendorInventoryResource($this->whenLoaded('vendorInventory')),
         ];
     }

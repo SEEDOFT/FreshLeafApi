@@ -30,7 +30,9 @@ class MessageResource extends JsonResource
             'sender_id' => $this->sender_id,
             'content' => $this->content,
             'file_path' => $this->file_path,
-            'file_url' => $this->file_path ? Storage::disk('public')->url($this->file_path) : null,
+            'file_url' => $this->file_path && Storage::disk('public')->exists($this->file_path)
+                ? Storage::disk('public')->url($this->file_path)
+                : null,
             'is_read' => $this->is_read,
             'sender' => new UserResource($this->whenLoaded('sender')),
             'created_at' => $this->created_at,

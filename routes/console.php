@@ -12,3 +12,4 @@ Artisan::command('inspire', function () {
 use Illuminate\Support\Facades\Schedule;
 
 Schedule::command('payouts:process')->daily();
+Schedule::command('app:check-expiring-inventory')->daily();

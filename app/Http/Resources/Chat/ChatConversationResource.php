@@ -72,6 +72,7 @@ class ChatConversationResource extends JsonResource
             'image' => $user->image ? Storage::url($user->image) : null,
             'business_name' => $vendorProfile?->business_name,
             'store_front_image' => $vendorProfile?->store_front_image
+                && Storage::disk('public')->exists($vendorProfile->store_front_image)
                 ? Storage::disk('public')->url($vendorProfile->store_front_image)
                 : null,
             'is_verified' => (bool) ($vendorProfile?->is_verified),

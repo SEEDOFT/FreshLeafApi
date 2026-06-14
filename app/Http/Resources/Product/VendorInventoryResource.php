@@ -54,11 +54,21 @@ class VendorInventoryResource extends JsonResource
             'farm_location' => $this->farm_location,
             'province_of_origin' => $this->province_of_origin,
             'certification_type' => $this->certification_type,
+            'average_rating' => $this->whenLoaded(
+                'ratings',
+                fn () => round((float) $this->ratings->avg('rating'), 1),
+                0.0,
+            ),
+            'ratings_count' => $this->whenLoaded('ratings', fn () => $this->ratings->count(), 0),
             'currency' => new CurrencyResource($this->whenLoaded('currency')),
             'packaging_type' => new TypeResource($this->whenLoaded('packagingType')),
             'shelf_life_days' => $this->shelf_life_days,
             'batch_images' => is_array($this->batch_images)
-                ? array_map(fn (string $image): string => Storage::disk('public')->url($image), $this->batch_images)
+                ? array_values(array_filter(
+                    array_map(fn (string $image): ?string => Storage::disk('public')->exists($image)
+                        ? Storage::disk('public')->url($image)
+                        : null, $this->batch_images),
+                ))
                 : [],
             'status' => new StatusResource($this->whenLoaded('status')),
             'unit' => $this->whenLoaded(
@@ -83,6 +93,7 @@ class VendorInventoryResource extends JsonResource
                     'business_name' => $this->vendor->vendorProfile->business_name ?? null,
                     'shop_description' => $this->vendor->vendorProfile->shop_description ?? null,
                     'store_front_image' => $this->vendor->vendorProfile->store_front_image
+                        && Storage::disk('public')->exists($this->vendor->vendorProfile->store_front_image)
                         ? Storage::disk('public')->url($this->vendor->vendorProfile->store_front_image)
                         : null,
                     'province' => $this->vendor->vendorProfile->province ?? null,

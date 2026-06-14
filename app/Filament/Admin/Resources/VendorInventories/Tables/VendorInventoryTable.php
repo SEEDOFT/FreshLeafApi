@@ -8,6 +8,7 @@ use App\Models\VendorInventory;
 use App\Models\VendorInventoryStatus;
 use Filament\Actions\Action;
 use Filament\Actions\ViewAction;
+use Filament\Notifications\Notification;
 use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
@@ -83,6 +84,13 @@ class VendorInventoryTable
                         $record->update([
                             'inventory_status_id' => VendorInventoryStatus::AVAILABLE_ID,
                         ]);
+
+                        Notification::make()
+                            ->title('Inventory Approved')
+                            ->body('Your inventory for '.$record->product->name_en.' has been approved.')
+                            ->success()
+                            ->sendToDatabase($record->vendor)
+                            ->broadcast($record->vendor);
                     })
                     ->requiresConfirmation()
                     ->modalHeading(__('admin.resources.vendor_inventory.approve_heading'))

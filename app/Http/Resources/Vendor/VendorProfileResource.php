@@ -42,6 +42,7 @@ class VendorProfileResource extends JsonResource
             'is_verified' => (bool) $profile->is_verified,
             'shop_description' => $profile->shop_description,
             'store_front_image' => $profile->store_front_image
+                && Storage::disk('public')->exists($profile->store_front_image)
                 ? Storage::disk('public')->url($profile->store_front_image)
                 : null,
             'opening_time' => $profile->opening_time,

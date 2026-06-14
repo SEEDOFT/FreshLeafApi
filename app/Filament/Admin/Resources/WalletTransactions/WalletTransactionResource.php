@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace App\Filament\Admin\Resources\WalletTransactions;
 
 use App\Filament\Admin\Resources\WalletTransactions\Pages\CreateWalletTransaction;
-use App\Filament\Admin\Resources\WalletTransactions\Pages\EditWalletTransaction;
 use App\Filament\Admin\Resources\WalletTransactions\Pages\ListWalletTransactions;
 use App\Filament\Admin\Resources\WalletTransactions\Schemas\WalletTransactionForm;
+use App\Filament\Admin\Resources\WalletTransactions\Schemas\WalletTransactionInfolist;
 use App\Filament\Admin\Resources\WalletTransactions\Tables\WalletTransactionsTable;
 use App\Models\WalletTransaction;
 use BackedEnum;
@@ -50,6 +50,12 @@ class WalletTransactionResource extends Resource
     }
 
     #[Override]
+    public static function infolist(Schema $schema): Schema
+    {
+        return WalletTransactionInfolist::configure($schema);
+    }
+
+    #[Override]
     public static function table(Table $table): Table
     {
         return WalletTransactionsTable::configure($table);
@@ -69,7 +75,6 @@ class WalletTransactionResource extends Resource
         return [
             'index' => ListWalletTransactions::route('/'),
             'create' => CreateWalletTransaction::route('/create'),
-            'edit' => EditWalletTransaction::route('/{record}/edit'),
         ];
     }
 

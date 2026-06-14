@@ -1,4 +1,4 @@
-<div data-auth-page="auth-portal" class="fl-auth-container">
+<div data-auth-page="vendor-register" class="fl-auth-container">
 
     <!-- Full-screen Background Image with Linear Fade -->
     <div class="fl-auth-bg-wrapper">
@@ -16,7 +16,7 @@
     </div>
 
     <!-- Left Side: Branding & Info (Hidden on mobile, visible on lg) -->
-    <div class="fl-auth-content-left xl:w-4/12">
+    <div class="fl-auth-content-left">
         <div class="fl-auth-logo-wrapper">
             <div class="fl-auth-logo-box">
                 <img src="{{ Storage::url('images/fresh_leaf.png') }}" class="w-16 h-16 object-contain drop-shadow-sm" alt="FreshLeaf Logo" />
@@ -53,7 +53,7 @@
             <button type="button" wire:click="switchLanguage('km')" class="px-3 py-1 rounded-full text-xs font-bold transition-all {{ app()->getLocale() === 'km' ? 'bg-primary-500 text-white shadow-md' : 'bg-gray-200 dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-700' }}">KM</button>
         </div>
 
-        <div class="fl-auth-form-wrapper !max-w-[1100px]">
+        <div class="fl-auth-form-wrapper">
 
             <!-- Branding for Mobile -->
             <div class="fl-auth-mobile-header">

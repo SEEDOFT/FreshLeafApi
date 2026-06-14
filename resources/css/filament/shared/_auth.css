@@ -278,6 +278,19 @@
     font-family: 'Noto Sans Khmer', sans-serif;
 }
 
+/* Wider layout for Vendor Registration page only */
+[data-auth-page="vendor-register"] .fl-auth-content-left {
+    @apply lg:w-[380px] p-10 xl:p-12;
+}
+
+[data-auth-page="vendor-register"] .fl-auth-content-right {
+    @apply p-6 sm:p-8 lg:p-10 xl:p-12;
+}
+
+[data-auth-page="vendor-register"] .fl-auth-form-wrapper {
+    @apply max-w-[1200px];
+}
+
 /* Wizard and Form Adjustments for Glassmorphism */
 .fi-wizard-header {
     background: transparent !important;

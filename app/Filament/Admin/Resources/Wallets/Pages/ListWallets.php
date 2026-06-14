@@ -21,6 +21,7 @@ use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 use Filament\Support\Enums\FontWeight;
 use Filament\Support\Enums\TextSize;
+use Illuminate\Database\Eloquent\Builder;
 use Override;
 
 class ListWallets extends Page
@@ -32,6 +33,8 @@ class ListWallets extends Page
     protected string $view = 'filament.admin.pages.wallets.list-wallets';
 
     public ?int $userTypeFilter = null;
+
+    /** @var array<int, int> */
     public array $transactionPages = [];
 
     public function nextPage(int $walletId): void
@@ -74,6 +77,7 @@ class ListWallets extends Page
     #[Override]
     protected function getViewData(): array
     {
+        /** @var Builder<Wallet> $walletQuery */
         $walletQuery = Wallet::with('currency')
             ->orderBy('user_id');
 
@@ -119,7 +123,7 @@ class ListWallets extends Page
                 $walletTransactions[$wallet->id] = $wallet->transactions()
                     ->with(['type', 'status', 'currency'])
                     ->latest()
-                    ->paginate(10, ['*'], 'page', $page);
+                    ->paginate(6, ['*'], 'page', $page);
             }
             $groupedData[$ownerKey]['walletTransactions'] = $walletTransactions;
         }
@@ -151,11 +155,10 @@ class ListWallets extends Page
                             ->schema([
                                 TextEntry::make('amount')
                                     ->label(__('admin.resources.wallet_transaction.amount'))
-                                    ->state(function ($record) {
-                                        return Order::formatMoney((float) $record->amount, $record->currency);
-                                    })
+                                    ->formatStateUsing(fn (WalletTransaction $record): string => Order::formatMoney($record->amount, $record->currency))
                                     ->size(TextSize::Large)
-                                    ->weight(FontWeight::Bold),
+                                    ->weight(FontWeight::Bold)
+                                    ->columnSpanFull(),
                                 TextEntry::make('type.translated_name')
                                     ->label(__('admin.resources.wallet_transaction.type'))
                                     ->badge()

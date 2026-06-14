@@ -440,7 +440,7 @@ class Register extends BaseRegister
             $notification->actions([
                 Action::make('view')
                     ->label(__('shared.auth.register.view_vendor'))
-                    ->url(VendorResource::getUrl('view', ['record' => $user]))
+                    ->url(VendorResource::getUrl('view', ['record' => $user], panel: 'admin'))
                     ->button(),
             ]);
         }

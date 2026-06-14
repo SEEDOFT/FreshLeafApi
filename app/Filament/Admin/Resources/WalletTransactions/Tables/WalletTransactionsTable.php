@@ -10,7 +10,7 @@ use App\Models\WalletTransactionStatus;
 use App\Models\WalletTransactionType;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
-use Filament\Actions\EditAction;
+use Filament\Actions\ViewAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
@@ -22,9 +22,9 @@ class WalletTransactionsTable
         return $table
             ->stackedOnMobile()
             ->columns([
-                TextColumn::make('wallet.user.name')
+                TextColumn::make('wallet.user.fullName')
                     ->label(__('admin.resources.wallet_transaction.user'))
-                    ->getStateUsing(static fn (WalletTransaction $record) => $record->wallet->user->fullName)
+                    // ->getStateUsing(fn (WalletTransaction $record) => $record->wallet->user->fullName)
                     ->searchable()
                     ->sortable(),
                 TextColumn::make('type.translated_name')
@@ -69,7 +69,7 @@ class WalletTransactionsTable
                     ),
             ])
             ->recordActions([
-                EditAction::make(),
+                ViewAction::make(),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([

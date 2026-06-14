@@ -46,6 +46,7 @@ class OrderController extends Controller
         'items.vendorInventory.unit',
         'items.vendorInventory.currency',
         'items.vendorInventory.activeDiscount',
+        'items.rating',
         'address',
     ];
 

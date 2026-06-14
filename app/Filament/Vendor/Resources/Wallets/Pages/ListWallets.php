@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Filament\Vendor\Resources\Wallets\Pages;
 
 use App\Filament\Vendor\Resources\Payouts\PayoutResource;
+use App\Filament\Vendor\Resources\Wallets\Schemas\WalletTransactionInfolist;
 use App\Filament\Vendor\Resources\Wallets\WalletResource;
 use App\Models\Currency;
 use App\Models\Order;
@@ -19,13 +20,10 @@ use App\Models\WalletTransactionType;
 use Filament\Actions\Action;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
-use Filament\Infolists\Components\TextEntry;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\Page;
-use Filament\Schemas\Components\Section;
 use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Schema;
-use Filament\Support\Enums\FontWeight;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -40,6 +38,7 @@ class ListWallets extends Page
     #[Override]
     protected string $view = 'filament.vendor.pages.wallets.list-wallets';
 
+    /** @var array<int, int> */
     public array $transactionPages = [];
 
     public function nextPage(int $walletId): void
@@ -224,51 +223,8 @@ class ListWallets extends Page
                     ->where('id', $transactionId)
                     ->first();
 
-                return $schema
-                    ->record($transaction)
-                    ->components([
-                        Section::make()
-                            ->schema([
-                                TextEntry::make('amount')
-                                    ->label(__('admin.resources.wallet_transaction.amount'))
-                                    ->state(function ($record) {
-                                        return Order::formatMoney((float) $record->amount, $record->currency);
-                                    })
-                                    ->weight(FontWeight::Bold),
-                                TextEntry::make('type.translated_name')
-                                    ->label(__('admin.resources.wallet_transaction.type'))
-                                    ->badge()
-                                    ->color(fn ($record) => match ($record->wallet_transaction_type_id) {
-                                        WalletTransactionType::DEPOSIT_ID => 'success',
-                                        WalletTransactionType::WITHDRAWAL_ID => 'warning',
-                                        WalletTransactionType::PAYMENT_ID => 'danger',
-                                        WalletTransactionType::REFUND_ID => 'info',
-                                        default => 'gray',
-                                    }),
-                                TextEntry::make('status.translated_name')
-                                    ->label(__('admin.resources.wallet_transaction.status'))
-                                    ->badge()
-                                    ->color(fn ($record) => match ($record->wallet_transaction_status_id) {
-                                        WalletTransactionStatus::COMPLETED_ID => 'success',
-                                        WalletTransactionStatus::PENDING_ID => 'warning',
-                                        WalletTransactionStatus::FAILED_ID,
-                                        WalletTransactionStatus::CANCELLED_ID => 'danger',
-                                        default => 'gray',
-                                    }),
-                                TextEntry::make('transaction_date')
-                                    ->label(__('admin.resources.wallet_transaction.transaction_date'))
-                                    ->dateTime('h:i A, d M Y'),
-                                TextEntry::make('description')
-                                    ->label(__('admin.resources.wallet_transaction.description'))
-                                    ->columnSpanFull(),
-                                TextEntry::make('reference.order_number')
-                                    ->label(__('admin.resources.order.order_number'))
-                                    ->visible(fn ($record) => $record && $record->reference_type === Order::class),
-                                TextEntry::make('reference.payout_number')
-                                    ->label(__('admin.resources.payout.payout_number'))
-                                    ->visible(fn ($record) => $record && $record->reference_type === Payout::class),
-                            ])->columns(2),
-                    ]);
+                return WalletTransactionInfolist::configure($schema)
+                    ->record($transaction);
             });
     }
 }

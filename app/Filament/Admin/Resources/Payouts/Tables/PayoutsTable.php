@@ -57,7 +57,7 @@ class PayoutsTable
                     })
                     ->sortable(),
 
-                TextColumn::make('status.name')
+                TextColumn::make('status.translated_name')
                     ->label(__('admin.resources.payout.status'))
                     ->badge()
                     ->color(fn (string $state): string => match ($state) {
@@ -67,7 +67,7 @@ class PayoutsTable
                         default => 'gray',
                     }),
 
-                TextColumn::make('method.name')
+                TextColumn::make('method.translated_name')
                     ->label(__('admin.resources.payout.method')),
 
                 TextColumn::make('processed_at')

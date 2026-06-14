@@ -72,7 +72,8 @@ class ProductInventoryResource extends Resource
     public static function getEloquentQuery(): Builder
     {
         return parent::getEloquentQuery()
-            ->where('vendor_id', Auth::id());
+            ->where('vendor_id', Auth::id())
+            ->orderBy('created_at', 'desc');
     }
 
     #[Override]

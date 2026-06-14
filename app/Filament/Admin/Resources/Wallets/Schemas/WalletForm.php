@@ -23,7 +23,7 @@ class WalletForm
                         Select::make('user_id')
                             ->label(__('admin.resources.wallet.user'))
                             ->relationship('user', 'first_name')
-                            ->getOptionLabelFromRecordUsing(fn (User $record) => "{$record->first_name} {$record->last_name}")
+                            ->getOptionLabelFromRecordUsing(fn (User $record) => $record->fullName)
                             ->searchable()
                             ->preload()
                             ->required(fn (string $operation): bool => $operation === 'create')

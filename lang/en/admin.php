@@ -15,6 +15,7 @@ return [
         'settings' => 'Settings',
         'app_control' => 'Application Control',
         'commission_fee' => 'Commission Fee',
+        'ratings' => 'Ratings',
     ],
     'settings' => [
         'app_settings' => [
@@ -354,6 +355,21 @@ return [
             'update_success' => 'Exchange rates updated successfully.',
             'update_history' => 'Update History',
             'filter_currency_pair' => 'Currency Pair',
+        ],
+        'rating' => [
+            'label' => 'Rating',
+            'plural_label' => 'Ratings',
+            'user' => 'User',
+            'product' => 'Product',
+            'rating' => 'Rating',
+            'review' => 'Review',
+            'order_item' => 'Order Item',
+            'order_code' => 'Order Code',
+            'details' => 'Rating Details',
+            'user_info' => 'User Information',
+            'product_info' => 'Product Information',
+            'rating_info' => 'Rating Information',
+            'system_info' => 'System Information',
         ],
         'general' => [
             'not_provided' => 'Not Provided',

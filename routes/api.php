@@ -18,6 +18,7 @@ use App\Http\Controllers\Api\User\PaymentMethodController;
 use App\Http\Controllers\Api\User\PaymentMethodTypeController;
 use App\Http\Controllers\Api\User\ProfileController;
 use App\Http\Controllers\Api\User\UserPinController;
+use App\Http\Controllers\Api\User\VendorInventoryRatingController;
 use App\Http\Controllers\Api\User\VendorProfileController;
 use App\Http\Controllers\Api\User\WalletController;
 use App\Http\Controllers\Api\User\WalletTransactionController;
@@ -172,6 +173,17 @@ Route::prefix('v1')->name('v1.')->group(static function () {
                 ->group(static function () {
                     Route::get('/', 'index')->name('index');
                     Route::post('toggle', 'toggle')->name('toggle');
+                });
+
+            Route::prefix('ratings')
+                ->name('ratings.')
+                ->controller(VendorInventoryRatingController::class)
+                ->group(static function () {
+                    Route::post('/', 'store')->name('store');
+                    Route::get('user', 'userRatings')->name('user');
+                    Route::get('vendor-inventory/{id}', 'forVendorInventory')
+                        ->withoutMiddleware(['auth:sanctum', 'active.user'])
+                        ->name('vendor-inventory');
                 });
 
             Route::prefix('devices')

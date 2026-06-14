@@ -28,6 +28,7 @@ class ProductController extends Controller
         'currency',
         'vendor.vendorProfile',
         'status',
+        'ratings',
     ];
 
     /**

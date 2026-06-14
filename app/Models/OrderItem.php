@@ -11,6 +11,7 @@ use Illuminate\Database\Eloquent\Attributes\Table;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Carbon;
 
@@ -30,6 +31,7 @@ use Illuminate\Support\Carbon;
  * @property-read Order $order
  * @property-read VendorInventory $vendorInventory
  * @property Carbon|null $deleted_at
+ * @property-read VendorInventoryRating|null $rating
  */
 #[Table('order_items', key: 'id', keyType: 'int')]
 #[Fillable([
@@ -100,5 +102,13 @@ class OrderItem extends Model
     public function vendorInventory(): BelongsTo
     {
         return $this->belongsTo(VendorInventory::class, 'vendor_inventory_id', 'id');
+    }
+
+    /**
+     * @return HasOne<VendorInventoryRating, $this>
+     */
+    public function rating(): HasOne
+    {
+        return $this->hasOne(VendorInventoryRating::class, 'order_item_id', 'id');
     }
 }

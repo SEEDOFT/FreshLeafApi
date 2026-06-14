@@ -41,7 +41,8 @@ class ProductInventoryTable
                 TextColumn::make('product.name_km')
                     ->label(__('shared.product.name_km'))
                     ->searchable()
-                    ->sortable(),
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
 
                 TextColumn::make('price')
                     ->label(__('shared.product.unit_price'))
@@ -54,7 +55,8 @@ class ProductInventoryTable
                     ->sortable(),
 
                 TextColumn::make('unit.translated_name')
-                    ->label(__('shared.product.unit')),
+                    ->label(__('shared.product.unit'))
+                    ->toggleable(isToggledHiddenByDefault: true),
 
                 TextColumn::make('status.translated_name')
                     ->label(__('shared.product.status'))

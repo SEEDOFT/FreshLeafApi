@@ -53,6 +53,9 @@ use Override;
  * @property-read VendorInventoryDiscount|null $activeDiscount
  * @property-read Collection<int, VendorInventoryDiscount> $discounts
  * @property-read string $discount_percentage
+ * @property-read Collection<int, VendorInventoryRating> $ratings
+ * @property-read float $average_rating
+ * @property-read int $ratings_count
  */
 #[Table('vendor_inventories', key: 'id', keyType: 'int')]
 #[Fillable([
@@ -70,6 +73,7 @@ use Override;
     'packaging_type_id',
     'shelf_life_days',
     'batch_images',
+    'expiring_alert_sent_at',
 ])]
 #[UseFactory(VendorInventoryFactory::class)]
 class VendorInventory extends Model
@@ -90,6 +94,7 @@ class VendorInventory extends Model
             'stock_quantity' => 'decimal:2',
             'harvest_date' => 'date',
             'batch_images' => 'array',
+            'expiring_alert_sent_at' => 'datetime',
         ];
     }
 
@@ -276,5 +281,23 @@ class VendorInventory extends Model
     public function histories(): HasMany
     {
         return $this->hasMany(VendorInventoryHistory::class, 'vendor_inventory_id', 'id');
+    }
+
+    /**
+     * @return HasMany<VendorInventoryRating, $this>
+     */
+    public function ratings(): HasMany
+    {
+        return $this->hasMany(VendorInventoryRating::class, 'vendor_inventory_id', 'id');
+    }
+
+    public function getAverageRatingAttribute(): float
+    {
+        return round($this->ratings->avg('rating') ?? 0.0, 1);
+    }
+
+    public function getRatingsCountAttribute(): int
+    {
+        return $this->ratings->count();
     }
 }

@@ -1,2 +1,15 @@
+# Ignore everything by default
 *
+
+# Keep the gitignore itself
 !.gitignore
+
+# Static brand assets
+!images/
+!images/**
+!product-categories/
+!product-categories/**
+!product_batches/
+!product_batches/**
+!users/
+!users/user.png

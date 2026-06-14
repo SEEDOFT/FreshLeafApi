@@ -92,7 +92,7 @@ class VendorInventoryResource extends JsonResource
                     'address' => $this->vendor->vendorProfile->address ?? null,
                     'business_name' => $this->vendor->vendorProfile->business_name ?? null,
                     'shop_description' => $this->vendor->vendorProfile->shop_description ?? null,
-                    'store_front_image' => $this->vendor->vendorProfile?->store_front_image
+                    'store_front_image' => $this->vendor->vendorProfile->store_front_image
                         && Storage::disk('local')->exists($this->vendor->vendorProfile->store_front_image)
                         ? Storage::disk('local')->url($this->vendor->vendorProfile->store_front_image)
                         : null,

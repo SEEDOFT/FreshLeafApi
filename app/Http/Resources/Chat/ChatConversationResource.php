@@ -69,11 +69,11 @@ class ChatConversationResource extends JsonResource
             'last_name' => $user->last_name,
             'full_name' => $user->fullName,
             'type' => $this->userTypeName((int) $user->user_type_id),
-            'image' => $user->image ? Storage::url($user->image) : null,
+            'image' => $user->image ? asset('storage/'.$user->image) : null,
             'business_name' => $vendorProfile?->business_name,
             'store_front_image' => $vendorProfile?->store_front_image
-                && Storage::disk('public')->exists($vendorProfile->store_front_image)
-                ? Storage::disk('public')->url($vendorProfile->store_front_image)
+                && Storage::disk('local')->exists($vendorProfile->store_front_image)
+                ? Storage::disk('local')->url($vendorProfile->store_front_image)
                 : null,
             'is_verified' => (bool) ($vendorProfile?->is_verified),
         ];

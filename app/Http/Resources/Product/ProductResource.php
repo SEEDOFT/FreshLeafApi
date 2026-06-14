@@ -40,7 +40,7 @@ class ProductResource extends JsonResource
                 ? $this->description_km
                 : $this->description_en,
             'image_url' => $this->image_url && Storage::disk('public')->exists($this->image_url)
-                ? Storage::disk('public')->url($this->image_url)
+                ? asset('storage/'.$this->image_url)
                 : null,
             'nutrition_data' => $this->nutrition_data,
             'product_category' => $this->whenLoaded(

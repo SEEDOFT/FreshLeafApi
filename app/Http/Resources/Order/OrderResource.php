@@ -57,7 +57,7 @@ class OrderResource extends JsonResource
             'payment_id' => $this->payment_id,
             'created_at' => $this->created_at?->toIso8601String(),
             'updated_at' => $this->updated_at?->toIso8601String(),
-            'preparation_proof_photo' => $this->preparation_proof_photo ? url('storage/'.$this->preparation_proof_photo) : null,
+            'preparation_proof_photo' => $this->preparation_proof_photo ? asset('storage/'.$this->preparation_proof_photo) : null,
             'delivery_company_name' => $this->delivery_company_name,
             'delivery_tracking_info' => $this->delivery_tracking_info,
 

@@ -9,7 +9,6 @@ use App\Http\Resources\Shared\TypeResource;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
-use Illuminate\Support\Facades\Storage;
 use Override;
 
 /**
@@ -32,7 +31,7 @@ class UserResource extends JsonResource
             'full_name' => $this->fullName,
             'email' => $this->email,
             'phone_number' => $this->phone_number,
-            'image' => $this->image ? Storage::url($this->image) : null,
+            'image' => $this->image ? asset('storage/'.$this->image) : null,
             'email_verified_at' => $this->email_verified_at?->toIso8601String(),
             'locale' => $this->currentLocale,
             'theme' => $this->currentTheme,

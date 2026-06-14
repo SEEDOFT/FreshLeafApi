@@ -52,9 +52,7 @@ use Illuminate\Support\Facades\App;
 class ProductCategory extends Model
 {
     /** @use HasFactory<ProductCategoryFactory> */
-    use HasFactory;
-
-    use SoftDeletes;
+    use HasFactory, SoftDeletes;
 
     public const int LEAFY = 1;
 
@@ -106,7 +104,17 @@ class ProductCategory extends Model
      * Get the full URL for the category image.
      */
     public ?string $imageUrl {
-        get => $this->image_url ? url('storage/'.StorageDirectory::PRODUCT_CATEGORIES.'/'.$this->image_url) : null;
+        get {
+            if (! $this->image_url) {
+                return null;
+            }
+
+            if (filter_var($this->image_url, FILTER_VALIDATE_URL)) {
+                return $this->image_url;
+            }
+
+            return asset('storage/'.StorageDirectory::PRODUCT_CATEGORIES.'/'.$this->image_url);
+        }
     }
 
     /**

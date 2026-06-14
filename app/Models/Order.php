@@ -186,14 +186,7 @@ class Order extends Model
         string|int|float $amount,
         ?Currency $currency,
     ): string {
-        $formatted = number_format((float) $amount, 2);
-        if ($currency === null) {
-            return "\${$formatted}";
-        }
-
-        return $currency->id === Currency::USD_ID
-            ? "{$currency->symbol} {$formatted}"
-            : "{$formatted} {$currency->symbol}";
+        return format_currency($amount, $currency?->code ?? 'USD');
     }
 
     /**

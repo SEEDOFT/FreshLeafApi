@@ -59,7 +59,7 @@ class ProductCatalog extends Page implements HasTable
             ->columns([
                 Stack::make([
                     ImageColumn::make('image_url')
-
+                        ->getStateUsing(fn ($record) => resolve_image_url($record->image_url))
                         ->width('100%'),
                     TextColumn::make('name_en')
 

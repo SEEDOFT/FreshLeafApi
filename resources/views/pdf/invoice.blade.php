@@ -1,126 +1,124 @@
 <!DOCTYPE html>
-<html>
-
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
 <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>Invoice / វិក្កយបត្រ - {{ $order->order_number }}</title>
+    <meta charset="utf-8">
+    <title>Invoice #{{ $order->order_number }}</title>
     <style>
-        {!! file_get_contents(resource_path('css/pdf/invoice.css')) !!}
+        body { font-family: 'Khmer OS Battambang', sans-serif; font-size: 12px; }
+        .invoice-box { max-width: 800px; margin: auto; padding: 30px; border: 1px solid #eee; }
+        .invoice-box table { width: 100%; line-height: inherit; text-align: left; }
+        .invoice-box table td { padding: 5px; vertical-align: top; }
+        .invoice-box table tr td:nth-child(2) { text-align: right; }
+        .invoice-box table tr.top table td { padding-bottom: 20px; }
+        .invoice-box table tr.information table td { padding-bottom: 40px; }
+        .invoice-box table tr.heading td { background: #eee; border-bottom: 1px solid #ddd; fontWeight: bold; }
+        .invoice-box table tr.details td { padding-bottom: 20px; }
+        .invoice-box table tr.item td { border-bottom: 1px solid #eee; }
+        .invoice-box table tr.item.last td { border-bottom: none; }
+        .invoice-box table tr.total td:nth-child(2) { border-top: 2px solid #eee; fontWeight: bold; }
+        .text-right { text-align: right; }
     </style>
 </head>
-
 <body>
-
-    <table class="header">
-        <tr>
-            <td>
-                <div class="title">INVOICE / វិក្កយបត្រ</div>
-                <div class="subtitle">#{{ $order->order_number }}</div>
-                <div>Date / កាលបរិច្ឆេទ:
-                    {{ $order->place_order_date?->format('d/m/Y h:i A') ?? $order->created_at->format('d/m/Y h:i A') }}
-                </div>
-            </td>
-            <td class="company-info">
-                <img src="{{ public_path('images/logo.png') }}" class="logo" alt="FreshLeaf Organics Logo">
-                <div class="company-name">FreshLeaf Organics</div>
-                Online Marketplace<br>
-                Phnom Penh, Cambodia<br>
-                Email: support@freshleaf.com
-            </td>
-        </tr>
-    </table>
-
-    <table class="details-container">
-        <tr>
-            <td>
-                <div class="section-title">Customer / អតិថិជន</div>
-                <strong>{{ $order->user->fullName }}</strong><br>
-                {{ $order->address->phone }}<br>
-                {{ $order->address->address_line_1 }}<br>
-                @if($order->address->address_line_2)
-                    {{ $order->address->address_line_2 }}<br>
-                @endif
-                {{ $order->address->city }}, {{ $order->address->province }}
-            </td>
-            <td>
-                <div class="section-title">Vendor / អ្នកលក់</div>
-                <strong>{{ $order->vendor->fullName ?? 'N/A' }}</strong><br>
-                Order Type / ប្រភេទការបញ្ជាទិញ: {{ $order->type->name }}<br>
-                Payment / ការបង់ប្រាក់: {{ $order->paymentStatus->name }}<br>
-                Currency / រូបិយប័ណ្ណ: {{ $order->currency?->name ?? 'USD' }}
-            </td>
-        </tr>
-    </table>
-
-    <table class="items-table">
-        <thead>
-            <tr>
-                <th>Item / មុខទំនិញ</th>
-                <th>Qty / ចំនួន</th>
-                <th class="text-right">Price / តម្លៃ</th>
-                <th class="text-right">Amount / សរុប</th>
+    <div class="invoice-box">
+        <table cellpadding="0" cellspacing="0">
+            <tr class="top">
+                <td colspan="4">
+                    <table>
+                        <tr>
+                            <td class="title">
+                                <h2>FreshLeaf Organics</h2>
+                            </td>
+                            <td>
+                                Invoice #: {{ $order->order_number }}<br>
+                                Created: {{ $order->created_at->format('M d, Y') }}<br>
+                            </td>
+                        </tr>
+                    </table>
+                </td>
             </tr>
-        </thead>
-        <tbody>
+
+            <tr class="information">
+                <td colspan="4">
+                    <table>
+                        <tr>
+                            <td>
+                                <strong>Vendor:</strong><br>
+                                {{ $order->vendor?->business_name }}<br>
+                                {{ $order->vendor?->address }}
+                            </td>
+                            <td>
+                                <strong>Customer:</strong><br>
+                                {{ $order->delivery_contact_name }}<br>
+                                {{ $order->delivery_contact_phone }}<br>
+                                {{ $order->delivery_address }}
+                            </td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+
+            <tr class="heading">
+                <td>Item</td>
+                <td class="text-right">Price</td>
+                <td class="text-right">Qty</td>
+                <td class="text-right">Subtotal</td>
+            </tr>
+
             @foreach($order->items as $item)
-                <tr>
-                    <td>{{ $item->product_name_snapshot }}</td>
-                    <td>{{ $item->quantity }} {{ $item->unit_snapshot }}</td>
-                    <td class="text-right">${{ number_format($item->unit_price_snapshot, 2) }}</td>
-                    <td class="text-right">${{ number_format($item->subtotal, 2) }}</td>
+                <tr class="item">
+                    <td>{{ $item->product?->name_en }}</td>
+                    <td class="text-right">{{ format_currency($item->unit_price_snapshot) }}</td>
+                    <td class="text-right">{{ $item->qty }}</td>
+                    <td class="text-right">{{ format_currency($item->subtotal) }}</td>
                 </tr>
             @endforeach
-        </tbody>
-    </table>
 
-    <table class="totals-table">
-        <tr>
-            <td>Subtotal / សរុបរង:</td>
-            <td class="text-right">${{ number_format($order->subtotal, 2) }}</td>
-        </tr>
-        @if($order->discount_amount > 0)
-            <tr>
-                <td>Discount / បញ្ចុះតម្លៃ:</td>
-                <td class="text-right">-${{ number_format($order->discount_amount, 2) }}</td>
-            </tr>
-        @endif
-        @if($order->delivery_fee > 0)
-            <tr>
-                <td>Delivery Fee / ថ្លៃដឹកជញ្ជូន:</td>
-                <td class="text-right">${{ number_format($order->delivery_fee, 2) }}</td>
-            </tr>
-        @endif
-        @if($order->tax_amount > 0)
-            <tr>
-                <td>Tax / ពន្ធ:</td>
-                <td class="text-right">${{ number_format($order->tax_amount, 2) }}</td>
-            </tr>
-        @endif
-        <tr class="total-row">
-            <td>Total / សរុប:</td>
-            <td class="text-right">${{ number_format($order->total_amount, 2) }}</td>
-        </tr>
-        @if($order->payment && $order->currency && $order->currency->id !== \App\Models\Currency::USD_ID)
-            <tr>
-                <td class="currency-note">
-                    Paid in {{ $order->currency->name }} / បានបង់ជា {{ $order->currency->name }}:<br>
-                    (Rate: $1 = {{ number_format($order->exchangeRateHistory?->rate ?? 4000) }}
-                    {{ $order->currency->symbol }})
-                </td>
-                <td class="text-right currency-amount">
-                    <strong>{{ number_format($order->payment->amount, 0) }} {{ $order->currency->symbol }}</strong>
+            <tr class="total">
+                <td colspan="3"></td>
+                <td class="text-right">
+                   Subtotal: {{ format_currency($order->subtotal) }}
                 </td>
             </tr>
-        @endif
-    </table>
+            @if($order->discount_amount > 0)
+            <tr>
+                <td colspan="3"></td>
+                <td class="text-right">
+                   Discount: -{{ format_currency($order->discount_amount) }}
+                </td>
+            </tr>
+            @endif
+            <tr>
+                <td colspan="3"></td>
+                <td class="text-right">
+                   Delivery: {{ format_currency($order->delivery_fee) }}
+                </td>
+            </tr>
+            <tr>
+                <td colspan="3"></td>
+                <td class="text-right">
+                   Tax: {{ format_currency($order->tax_amount) }}
+                </td>
+            </tr>
+            <tr class="total">
+                <td colspan="3"></td>
+                <td class="text-right">
+                   <strong>Total: {{ format_currency($order->total_amount) }}</strong>
+                </td>
+            </tr>
 
-    <div class="clearfix"></div>
-
-    <div class="footer">
-        Thank you for shopping with FreshLeaf! / សូមអរគុណសម្រាប់ការជាវជាមួយ FreshLeaf!<br>
-        If you have any questions concerning this invoice, please contact support.
+            @if($order->currency?->code === 'KHR')
+                <tr>
+                    <td colspan="4" class="text-right" style="padding-top: 10px;">
+                        <small>
+                            (Rate: $1 = {{ format_number($order->exchangeRateHistory?->rate ?? 4000) }} KHR)
+                        </small>
+                        <br>
+                        <strong>Paid: {{ format_currency($order->payment->amount, 'KHR', 0) }}</strong>
+                    </td>
+                </tr>
+            @endif
+        </table>
     </div>
-
 </body>
-
 </html>

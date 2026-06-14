@@ -47,9 +47,7 @@
                     <x-filament::icon icon="heroicon-o-bars-3" class="h-5 w-5" />
                 </button>
                 <div class="flex items-center gap-3">
-                    <div class="h-10 w-10 rounded-full bg-emerald-100 dark:bg-[#dcfce7] flex items-center justify-center text-emerald-600 dark:text-[#16a34a]">
-                        <x-filament::icon icon="heroicon-o-sparkles" class="h-5 w-5" />
-                    </div>
+                    <x-avatar icon="heroicon-o-sparkles" size="md" />
                     <div class="flex flex-col">
                         <h2 class="text-base font-bold text-gray-900 dark:text-white leading-tight">FreshLeaf Assistant</h2>
                         <p class="text-[11px] text-gray-500 dark:text-gray-400 mt-0.5">Powered by AI · Your operations, simplified</p>
@@ -69,9 +67,7 @@
                     <div class="flex flex-col items-end gap-1 mb-6">
                         <div class="flex items-center justify-end gap-2 mb-1 w-full pr-12">
                             <span class="text-[10px] font-bold text-gray-500 dark:text-gray-400 uppercase">You</span>
-                            <div class="w-7 h-7 rounded-full bg-gray-200 dark:bg-[#27272a] border border-gray-300 dark:border-[#3f3f46] flex items-center justify-center text-[10px] font-bold text-gray-600 dark:text-gray-300">
-                                {{ substr(auth()->user()?->name ?? 'U', 0, 2) }}
-                            </div>
+                            <x-avatar :src="auth()->user()?->getFilamentAvatarUrl()" :name="auth()->user()?->fullName" size="xs" />
                         </div>
                         <div class="bg-emerald-600 dark:bg-[#16a34a] text-white px-5 py-3 rounded-xl rounded-tr-sm max-w-[75%] mr-[3.25rem] text-[15px] font-medium leading-relaxed shadow-sm">
                             <p>{{ $messageItem['content'] }}</p>
@@ -83,9 +79,7 @@
                         ($messageItem['status'] ?? 'done') === 'failed'
                       )
                         <div class="flex items-start gap-3 mb-6">
-                            <div class="w-8 h-8 rounded-full bg-emerald-100 dark:bg-[#dcfce7] flex items-center justify-center text-emerald-600 dark:text-[#16a34a] flex-shrink-0 mt-1">
-                                <x-filament::icon icon="heroicon-o-sparkles" class="h-4 w-4" />
-                            </div>
+                            <x-avatar icon="heroicon-o-sparkles" size="sm" class="flex-shrink-0 mt-1" />
                             <div class="flex flex-col gap-1 w-full">
                                 <span class="text-[10px] font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">FreshLeaf Assistant</span>
                                 <div class="bg-white dark:bg-[#27272a] text-gray-800 dark:text-white px-5 py-4 rounded-xl rounded-tl-sm max-w-[85%] text-[15px] leading-relaxed shadow-sm border border-gray-200 dark:border-transparent">
@@ -101,9 +95,7 @@
 
             @if($isTyping)
                 <div class="flex items-start gap-3 mb-6">
-                    <div class="w-8 h-8 rounded-full bg-emerald-100 dark:bg-[#dcfce7] flex items-center justify-center text-emerald-600 dark:text-[#16a34a] flex-shrink-0 mt-1 animate-pulse">
-                        <x-filament::icon icon="heroicon-o-sparkles" class="h-4 w-4" />
-                    </div>
+                    <x-avatar icon="heroicon-o-sparkles" size="sm" class="flex-shrink-0 mt-1 animate-pulse" />
                     <div class="flex flex-col gap-1 w-full">
                         <span class="text-[10px] font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">FreshLeaf Assistant</span>
                         <div class="bg-white dark:bg-[#27272a] text-gray-800 dark:text-white px-5 py-3 rounded-xl rounded-tl-sm max-w-[75%] text-[15px] flex items-center gap-2 border border-gray-200 dark:border-transparent shadow-sm">

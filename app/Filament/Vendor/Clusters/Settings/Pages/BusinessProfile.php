@@ -4,11 +4,13 @@ declare(strict_types=1);
 
 namespace App\Filament\Vendor\Clusters\Settings\Pages;
 
+use App\Constants\StorageDirectory;
 use App\Filament\Forms\Components\PhoneNumberInput;
 use App\Filament\Vendor\Clusters\Settings;
 use App\Models\User;
 use BackedEnum;
 use Filament\Actions\Action;
+use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\TimePicker;
@@ -19,9 +21,13 @@ use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 use Override;
 
 use function filled;
+use function is_string;
+use function ltrim;
+use function str_starts_with;
 
 class BusinessProfile extends Page
 {
@@ -52,10 +58,15 @@ class BusinessProfile extends Page
     {
         $user = Auth::user();
 
-        $data = $user instanceof User && $user->vendorProfile
-            ? $user->vendorProfile->toArray() : [];
+        if ($user instanceof User && $user->vendorProfile) {
+            $data = $user->vendorProfile->toArray();
 
-        $this->getSchema('form')?->fill($data);
+            if (isset($data['store_front_image']) && is_string($data['store_front_image'])) {
+                $data['store_front_image'] = $this->getFileUploadState($data['store_front_image']);
+            }
+
+            $this->getSchema('form')?->fill($data);
+        }
     }
 
     public function form(Schema $schema): Schema
@@ -117,6 +128,18 @@ class BusinessProfile extends Page
                                     ->inline(false),
                             ]),
                     ]),
+
+                Section::make(__('admin.resources.vendor.store_photo'))
+                    ->schema([
+                        FileUpload::make('store_front_image')
+                            ->label(__('admin.resources.vendor.store_photo'))
+                            ->image()
+                            ->imageEditor()
+                            ->maxSize(6144)
+                            ->disk('public')
+                            ->directory(StorageDirectory::SHOPS)
+                            ->dehydrated(fn (mixed $state): bool => filled($state)),
+                    ]),
             ])
             ->statePath('data');
     }
@@ -131,12 +154,50 @@ class BusinessProfile extends Page
         }
 
         $state = $form->getState();
+
+        if (isset($state['store_front_image']) && is_array($state['store_front_image'])) {
+            $state['store_front_image'] = collect($state['store_front_image'])->first();
+        }
+
         $user->vendorProfile()->update($state);
 
         Notification::make()
             ->title(__('vendor.settings.business_profile.success_notification'))
             ->success()
             ->send();
+    }
+
+    /**
+     * Resolve a stored filename into the full path the FileUpload
+     * component expects for displaying existing files.
+     *
+     * @return array<string>
+     */
+    private function getFileUploadState(string $path): array
+    {
+        $path = ltrim($path, '/');
+
+        // Check if path already contains the directory
+        if (str_starts_with($path, StorageDirectory::SHOPS)) {
+            $fullPath = $path;
+        } elseif (str_starts_with($path, StorageDirectory::VENDOR_VERIFICATION)) {
+            // Support legacy path if migrating
+            $fullPath = $path;
+        } else {
+            $fullPath = StorageDirectory::SHOPS.'/'.$path;
+        }
+
+        // Try public disk first (our new target)
+        if (Storage::disk('public')->exists($fullPath)) {
+            return [$fullPath];
+        }
+
+        // Fallback to local disk for legacy files
+        if (Storage::disk('local')->exists($fullPath)) {
+            return [$fullPath];
+        }
+
+        return [];
     }
 
     /**

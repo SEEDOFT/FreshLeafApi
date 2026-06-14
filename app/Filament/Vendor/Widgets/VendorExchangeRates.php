@@ -45,12 +45,12 @@ class VendorExchangeRates extends BaseWidget
         $khrToUsd = (float) ExchangeRate::getRate(Currency::KHR_ID, Currency::USD_ID);
 
         return [
-            Stat::make(__('shared.widgets.usd_to_khr_label'), number_format($usdToKhr, 0).' KHR')
-                ->description('1 USD')
+            Stat::make(__('shared.widgets.usd_to_khr_label'), __('shared.widgets.usd_to_khr', ['rate' => format_number($usdToKhr, 0)]))
+                ->description(__('shared.widgets.usd_to_khr_desc'))
                 ->descriptionIcon('heroicon-m-arrow-trending-up')
                 ->color('warning'),
-            Stat::make(__('shared.widgets.khr_to_usd_label'), number_format($khrToUsd, 4).' USD')
-                ->description('1 KHR')
+            Stat::make(__('shared.widgets.khr_to_usd_label'), __('shared.widgets.khr_to_usd', ['rate' => format_number($khrToUsd, 4)]))
+                ->description(__('shared.widgets.khr_to_usd_desc'))
                 ->descriptionIcon('heroicon-m-arrow-trending-down')
                 ->color('info'),
         ];

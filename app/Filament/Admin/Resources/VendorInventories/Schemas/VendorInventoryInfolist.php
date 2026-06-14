@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Filament\Admin\Resources\VendorInventories\Schemas;
 
 use App\Models\VendorInventory;
+use Filament\Infolists\Components\ImageEntry;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Infolists\Components\ViewEntry;
 use Filament\Schemas\Components\Section;
@@ -19,6 +20,11 @@ class VendorInventoryInfolist
                 Section::make(__('admin.resources.vendor_inventory.vendor'))
                     ->columns(2)
                     ->schema([
+                        ImageEntry::make('vendor.vendorProfile.store_front_image')
+                            ->label(__('admin.resources.vendor.store_photo'))
+                            ->getStateUsing(fn (VendorInventory $record) => resolve_image_url($record->vendor->vendorProfile?->store_front_image))
+                            ->circular()
+                            ->columnSpanFull(),
                         TextEntry::make('first_name')
                             ->label(__('admin.resources.user.first_name'))
                             ->getStateUsing(fn (VendorInventory $record): string => $record->vendor->first_name),

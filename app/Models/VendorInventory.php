@@ -223,11 +223,11 @@ class VendorInventory extends Model
         return $this->hasOne(VendorInventoryDiscount::class, 'vendor_inventory_id', 'id')
             ->where(function (Builder $query) {
                 $query->whereNull('starts_at')
-                    ->orWhere('starts_at', '<=', Carbon::now()->format('Y-m-d H:i:s'));
+                    ->orWhere('starts_at', '<=', now());
             })
             ->where(function (Builder $query) {
                 $query->whereNull('ends_at')
-                    ->orWhere('ends_at', '>=', Carbon::now()->format('Y-m-d H:i:s'));
+                    ->orWhere('ends_at', '>=', now());
             })
             ->latest('id');
     }

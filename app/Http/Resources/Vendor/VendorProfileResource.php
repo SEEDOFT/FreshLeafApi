@@ -8,7 +8,6 @@ use App\Models\User;
 use App\Models\VendorProfile;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
-use Illuminate\Support\Facades\Storage;
 use Override;
 
 /**
@@ -41,10 +40,7 @@ class VendorProfileResource extends JsonResource
             'address' => $profile->address,
             'is_verified' => (bool) $profile->is_verified,
             'shop_description' => $profile->shop_description,
-            'store_front_image' => $profile->store_front_image
-                && Storage::disk('local')->exists($profile->store_front_image)
-                ? Storage::disk('local')->url($profile->store_front_image)
-                : null,
+            'store_front_image' => resolve_image_url($profile->store_front_image),
             'opening_time' => $profile->opening_time,
             'closing_time' => $profile->closing_time,
             'is_open' => (bool) $profile->is_open,

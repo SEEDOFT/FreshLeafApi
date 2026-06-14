@@ -27,7 +27,7 @@ class ProductsTable
             ->columns([
                 ImageColumn::make('image_url')
                     ->label(__('admin.resources.product.image'))
-                    ->disk('public')
+                    ->getStateUsing(fn ($record) => resolve_image_url($record->image_url))
                     ->circular(),
                 TextColumn::make('name_km')
                     ->label(__('admin.resources.product.name_km'))

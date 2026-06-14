@@ -32,7 +32,7 @@ class ViewVendorInventory extends ViewRecord
                     ]);
 
                     Notification::make()
-                        ->title('Inventory Approved')
+                        ->title(__('admin.resources.vendor_inventory.notifications.approved'))
                         ->body('Your inventory for '.$record->product->name_en.' has been approved.')
                         ->success()
                         ->sendToDatabase($record->vendor)

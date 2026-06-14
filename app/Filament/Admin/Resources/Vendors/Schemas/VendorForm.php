@@ -201,9 +201,8 @@ class VendorForm
                             ->image()
                             ->imageEditor()
                             ->maxSize(6144)
-                            ->disk('local')
-                            ->directory(StorageDirectory::VENDOR_VERIFICATION)
-                            ->required(fn (string $operation): bool => $operation === 'create')
+                            ->disk('public')
+                            ->directory(StorageDirectory::SHOPS)
                             ->dehydrated(fn (mixed $state): bool => filled($state)),
                         FileUpload::make('organic_certificate_url')
                             ->label(__('admin.resources.vendor.organic_cert'))
@@ -249,9 +248,9 @@ class VendorForm
                             ->label(__('admin.resources.vendor.qr_code'))
                             ->image()
                             ->maxSize(6144)
-                            ->disk('local')
+                            ->disk('public')
+                            ->directory(StorageDirectory::SHOPS)
                             ->required(fn (string $operation): bool => $operation === 'create')
-                            ->directory(StorageDirectory::VENDOR_VERIFICATION)
                             ->dehydrated(fn (mixed $state): bool => filled($state)),
                         Hidden::make('bank_name')
                             ->dehydrated(fn (mixed $state): bool => filled($state)),

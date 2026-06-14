@@ -31,7 +31,7 @@ class UserResource extends JsonResource
             'full_name' => $this->fullName,
             'email' => $this->email,
             'phone_number' => $this->phone_number,
-            'image' => $this->image ? asset('storage/'.$this->image) : null,
+            'image' => resolve_image_url($this->image),
             'email_verified_at' => $this->email_verified_at?->toIso8601String(),
             'locale' => $this->currentLocale,
             'theme' => $this->currentTheme,

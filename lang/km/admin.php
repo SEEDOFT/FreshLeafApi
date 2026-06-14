@@ -71,6 +71,10 @@ return [
             'approve_heading' => 'អនុម័តសារពើភ័ណ្ឌ',
             'approve_description' => 'តើអ្នកប្រាកដថាចង់អនុម័តសារពើភ័ណ្ឌនេះ ហើយធ្វើឱ្យវាអាចប្រើបាននៅក្នុងហាង?',
             'approve_submit' => 'អនុម័ត',
+            'notifications' => [
+                'approved' => 'បញ្ជីទំនិញត្រូវបានអនុម័ត',
+                'approved_body' => 'បញ្ជីទំនិញរបស់អ្នកសម្រាប់ :product ត្រូវបានអនុម័ត។',
+            ],
         ],
         'exchange_rate' => [
             'label' => 'អត្រាប្តូរប្រាក់',
@@ -164,6 +168,11 @@ return [
                 'cancelled_success' => 'ការបញ្ជាទិញត្រូវបានបោះបង់។',
                 'out_for_delivery' => 'ចេញដឹកជញ្ជូន',
                 'out_for_delivery_success' => 'ការបញ្ជាទិញត្រូវបានសម្គាល់ថាចេញដឹកជញ្ជូន',
+                'release_vendor_funds' => 'បញ្ចេញប្រាក់ឱ្យអ្នកលក់',
+            ],
+            'notifications' => [
+                'funds_released_success' => 'បញ្ចេញប្រាក់ជូនអ្នកលក់បានជោគជ័យ។',
+                'funds_released_failed' => 'បរាជ័យក្នុងការបញ្ចេញប្រាក់។',
             ],
         ],
         'payout' => [
@@ -178,7 +187,7 @@ return [
             'processed_date' => 'ថ្ងៃដំណើរការ',
             'processed_at' => 'បានដំណើរការនៅ',
             'processed_by' => 'ដំណើរការដោយ',
-            'admin_notes' => 'កំណត់សម្គាល់ Admin',
+            'admin_notes' => 'កំណត់សម្ពាល់ Admin',
             'details' => 'ព័ត៌មានលម្អិតការបើកប្រាក់',
             'reference' => 'លេខយោង',
             'paid_on' => 'បានបង់នៅ',
@@ -187,6 +196,12 @@ return [
             'reject' => 'បដិសេធ',
             'approved_success' => 'ការបើកប្រាក់ត្រូវបានអនុម័តដោយជោគជ័យ។',
             'rejected_success' => 'ការបើកប្រាក់ត្រូវបានបដិសេធ។',
+            'notifications' => [
+                'approved_title' => 'ការបើកប្រាក់ត្រូវបានអនុម័ត',
+                'approved_body' => 'សំណើបើកប្រាក់របស់អ្នកលេខ #:number ចំនួន :amount ត្រូវបានអនុម័ត។',
+                'rejected_title' => 'ការបើកប្រាក់ត្រូវបានបដិសេធ',
+                'rejected_body' => 'សំណើបើកប្រាក់របស់អ្នកលេខ #:number ត្រូវបានបដិសេធ។ មូលហេតុ៖ :reason',
+            ],
             'vendor_financial_details' => 'ព័ត៌មានហិរញ្ញវត្ថុអ្នកផ្គត់ផ្គង់',
             'vendor_bank_qr_code' => 'កូដ QR ធនាគារ',
         ],
@@ -245,7 +260,7 @@ return [
             'view_submission' => 'មើលការដាក់ស្នើ',
             'approve' => 'អនុម័ត',
             'reject' => 'បដិសេធ',
-            'approval_note' => 'កំណត់សម្គាល់ការអនុម័ត',
+            'approval_note' => 'កំណត់សម្ពាល់ការអនុម័ត',
             'rejection_reason' => 'មូលហេតុនៃការបដិសេធ',
             'status' => 'ស្ថានភាព',
             'identity_verification' => 'ការបញ្ជាក់អត្តសញ្ញាណ',

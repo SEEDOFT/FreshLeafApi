@@ -21,13 +21,31 @@ class VendorInventoryTable
         return $table
             ->recordAction('view')
             ->stackedOnMobile()
+            ->modifyQueryUsing(fn ($query) => $query
+                ->withExists('activeDiscount')
+                ->orderByRaw('inventory_status_id = ? DESC', [VendorInventoryStatus::PENDING_REVIEW_ID])
+                ->orderBy('active_discount_exists', 'desc')
+                ->latest()
+            )
+            ->recordClasses(function (VendorInventory $record): ?string {
+                $classes = [];
+                if ((int) $record->inventory_status_id === VendorInventoryStatus::PENDING_REVIEW_ID) {
+                    $classes[] = '!bg-danger-500/10';
+                }
+                if ($record->discount_percentage > 0) {
+                    $classes[] = 'border-s-4 border-s-success-600 dark:border-s-success-400';
+                }
+
+                return ! empty($classes) ? implode(' ', $classes) : null;
+            })
             ->columns([
                 TextColumn::make('vendor.name')
                     ->label(__('admin.resources.vendor_inventory.vendor'))
                     ->getStateUsing(fn (VendorInventory $record) => $record->vendor->fullName)
                     ->searchable(['first_name', 'last_name']),
                 ImageColumn::make('product.image_url')
-                    ->label(__('admin.resources.product.image')),
+                    ->label(__('admin.resources.product.image'))
+                    ->getStateUsing(fn ($record) => resolve_image_url($record->product->image_url)),
                 TextColumn::make('product.name_en')
                     ->label(__('admin.resources.product.name_en'))
                     ->searchable()
@@ -38,7 +56,21 @@ class VendorInventoryTable
                     ->sortable(),
                 TextColumn::make('price')
                     ->label(__('admin.resources.product.unit_price'))
-                    ->money(fn (VendorInventory $record) => $record->currency->code)
+                    ->formatStateUsing(fn (VendorInventory $record): string => format_currency(
+                        $record->price,
+                        $record->currency->code
+                    ))
+                    ->description(function (VendorInventory $record): ?string {
+                        if ($record->discount_percentage > 0) {
+                            return __('shared.product.discount_label', [
+                                'percentage' => format_number($record->discount_percentage, 0),
+                                'price' => format_currency($record->discounted_price, $record->currency->code),
+                            ]);
+                        }
+
+                        return null;
+                    })
+                    ->color(fn (VendorInventory $record) => $record->discount_percentage > 0 ? 'success' : null)
                     ->sortable(),
                 TextColumn::make('stock_quantity')
                     ->label(__('admin.resources.product.stock'))
@@ -86,8 +118,10 @@ class VendorInventoryTable
                         ]);
 
                         Notification::make()
-                            ->title('Inventory Approved')
-                            ->body('Your inventory for '.$record->product->name_en.' has been approved.')
+                            ->title(__('admin.resources.vendor_inventory.notifications.approved'))
+                            ->body(__('admin.resources.vendor_inventory.notifications.approved_body', [
+                                'product' => translate($record->product->name_en, $record->product->name_km),
+                            ]))
                             ->success()
                             ->sendToDatabase($record->vendor)
                             ->broadcast($record->vendor);

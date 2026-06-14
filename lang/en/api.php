@@ -18,6 +18,9 @@ return [
         'password_updated' => 'Password updated',
         'tokens_revoked' => 'Tokens revoked',
         'register_success' => 'User registered successfully',
+        'admin_register_success' => 'Admin registered successfully',
+        'invalid_bootstrap_key' => 'Invalid bootstrap key',
+        'admin_registration_disabled' => 'Admin registration is disabled',
     ],
 
     /*
@@ -202,6 +205,10 @@ return [
         'payment_failed' => 'Payment failed: ',
         'not_awaiting_payment' => 'Order is not awaiting payment.',
         'status_updated' => 'updated',
+        'notes' => [
+            'external_payment_completed' => 'External payment completed successfully.',
+            'external_payment_simulated' => 'External payment simulated as completed.',
+        ],
     ],
 
     /*

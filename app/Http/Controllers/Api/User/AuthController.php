@@ -132,6 +132,18 @@ class AuthController extends Controller
      */
     public function registerForAdmin(Request $request): JsonResponse
     {
+        $expectedKey = config('auth.admin_registration_key');
+
+        if (! $expectedKey) {
+            abort(503, __('api.auth.admin_registration_disabled'));
+        }
+
+        $providedKey = $request->header('X-Admin-Registration-Key');
+
+        if (! hash_equals($expectedKey, (string) $providedKey)) {
+            abort(403, __('api.auth.invalid_bootstrap_key'));
+        }
+
         $validatedData = $request->validate([
             'first_name' => ['required', 'string', 'max:255'],
             'last_name' => ['required', 'string', 'max:255'],
@@ -160,7 +172,8 @@ class AuthController extends Controller
             'password' => ['required', 'string', 'min:8', 'confirmed'],
         ]);
 
-        DB::transaction(function () use ($validatedData): void {
+        /** @var User $user */
+        $user = DB::transaction(function () use ($validatedData): User {
             $user = User::create([
                 'first_name' => $validatedData['first_name'],
                 'last_name' => $validatedData['last_name'],
@@ -180,9 +193,17 @@ class AuthController extends Controller
             ]);
 
             $user->ensureDefaultWallets();
+
+            return $user;
         });
 
-        return static::successResponse(message: __('api.auth.register_success'), code: 201);
+        $token = $user->createToken('admin_auth_token')->plainTextToken;
+
+        return static::successResponse([
+            'admin_id' => $user->id,
+            'access_token' => $token,
+            'token_type' => 'Bearer',
+        ], __('api.auth.admin_register_success'), 201);
     }
 
     /**

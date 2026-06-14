@@ -87,16 +87,16 @@ class AdminFinancialOverview extends BaseWidget
         $commission = CommissionFee::latest()->first();
 
         return [
-            Stat::make('Total platform commission', '$'.number_format($totalCommission, 2))
+            Stat::make('Total platform commission', format_currency($totalCommission))
                 ->description('Total fees earned from vendor sales')
                 ->descriptionIcon('heroicon-o-receipt-refund')
                 ->color('success'),
-            Stat::make('Pending vendor payouts', '$'.number_format($vendorNetTotal, 2))
+            Stat::make('Pending vendor payouts', format_currency($vendorNetTotal))
                 ->description('Awaiting disbursement')
                 ->descriptionIcon('heroicon-o-clock')
                 ->color('warning')
                 ->extraAttributes(['is_badge' => true]),
-            Stat::make('Total revenue', '$'.number_format($totalRevenue, 2))
+            Stat::make('Total revenue', format_currency($totalRevenue))
                 ->description('From paid orders')
                 ->descriptionIcon('heroicon-o-arrow-trending-up')
                 ->color('info'),

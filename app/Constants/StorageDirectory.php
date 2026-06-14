@@ -36,6 +36,13 @@ final class StorageDirectory
     public const string VENDOR_VERIFICATION = 'vendor_verifications';
 
     /**
+     * The directory for storing public shop/store assets (banners, QR codes).
+     *
+     * @var string
+     */
+    public const string SHOPS = 'shops';
+
+    /**
      * The directory for storing support message files.
      *
      * @var string

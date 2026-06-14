@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Filament\Vendor\Resources\Payouts\Tables;
 
-use App\Models\Currency;
 use App\Models\Payout;
 use Filament\Actions\ViewAction;
 use Filament\Tables\Columns\TextColumn;
@@ -18,17 +17,10 @@ class PayoutsTable
             ->columns([
                 TextColumn::make('amount')
                     ->label(__('shared.payout.amount'))
-                    ->formatStateUsing(function (Payout $record) {
-                        if ($record->currency?->id === Currency::USD_ID) {
-                            return '$ '.$record->amount;
-                        }
-
-                        if ($record->currency?->id === Currency::KHR_ID) {
-                            return $record->amount.'៛';
-                        }
-
-                        return $record->amount;
-                    })
+                    ->formatStateUsing(fn (Payout $record): string => format_currency(
+                        $record->amount,
+                        $record->currency->code
+                    ))
                     ->sortable(),
 
                 TextColumn::make('status.name')

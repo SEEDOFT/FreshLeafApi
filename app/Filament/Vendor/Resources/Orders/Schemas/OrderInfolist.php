@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Filament\Vendor\Resources\Orders\Schemas;
 
-use App\Models\Currency;
 use App\Models\Order;
 use App\Models\OrderStatus;
 use App\Models\PaymentMethodType;
@@ -117,15 +116,10 @@ class OrderInfolist
                                     return '—';
                                 }
 
-                                $amount = number_format(
-                                    (float) $payment->amount,
-                                    2,
+                                return format_currency(
+                                    $payment->amount,
+                                    $payment->currency->code
                                 );
-                                $symbol = $payment->currency->symbol ?? '$';
-
-                                return $payment->currency?->id === Currency::KHR_ID
-                                    ? "$amount $symbol"
-                                    : "$symbol $amount";
                             }),
                         TextEntry::make('payment.currency.translated_currency')
                             ->label(__('admin.resources.order.payment_currency'))
@@ -165,13 +159,8 @@ class OrderInfolist
 
                                 $rateValue = (float) $history->rate;
                                 $decimals = $rateValue < 1 ? 8 : 2;
-                                $rate = number_format($rateValue, $decimals);
-
-                                $fromSymbol = $history->fromCurrency->id === Currency::USD_ID ? '$' : '៛';
-                                $toSymbol = $history->toCurrency->id === Currency::KHR_ID ? '៛' : '$';
-
-                                $fromAmount = $history->fromCurrency->id === Currency::KHR_ID ? "1{$fromSymbol}" : "{$fromSymbol}1";
-                                $toAmount = $history->toCurrency->id === Currency::KHR_ID ? "{$rate}{$toSymbol}" : "{$toSymbol}{$rate}";
+                                $fromAmount = format_currency(1, $history->fromCurrency->code, 0);
+                                $toAmount = format_currency($rateValue, $history->toCurrency->code, $decimals);
 
                                 return "{$fromAmount} = {$toAmount}";
                             })
@@ -223,6 +212,7 @@ class OrderInfolist
                     ->schema([
                         ImageEntry::make('preparation_proof_photo')
                             ->label(__('admin.resources.order.proof_of_preparation'))
+                            ->getStateUsing(fn ($record) => resolve_image_url($record->preparation_proof_photo))
                             ->columnSpanFull()
                             ->extraImgAttributes(fn () => [
                                 'class' => 'cursor-zoom-in',

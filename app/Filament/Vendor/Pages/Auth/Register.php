@@ -196,8 +196,8 @@ class Register extends BaseRegister
                     FileUpload::make('store_front_image')
                         ->label(__('shared.auth.register.store_photo'))
                         ->image()
-                        ->disk('local')
-                        ->directory(StorageDirectory::VENDOR_VERIFICATION)
+                        ->disk('public')
+                        ->directory(StorageDirectory::SHOPS)
                         ->required(),
                     FileUpload::make('organic_certificate_url')
                         ->label(__('shared.auth.register.organic_cert'))
@@ -243,8 +243,8 @@ class Register extends BaseRegister
                 FileUpload::make('qr_code')
                     ->label(__('shared.auth.register.qr_code'))
                     ->image()
-                    ->disk('local')
-                    ->directory(StorageDirectory::VENDOR_VERIFICATION)
+                    ->disk('public')
+                    ->directory(StorageDirectory::SHOPS)
                     ->required(),
             ]);
     }

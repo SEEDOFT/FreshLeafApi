@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Filament\Admin\Resources\Vendors\Schemas;
 
-use App\Models\Currency;
 use App\Models\PaymentMethod;
 use App\Models\User;
 use App\Models\UserStatus;
@@ -31,6 +30,7 @@ class VendorInfolist
                             ->schema([
                                 ImageEntry::make('image')
                                     ->label(__('admin.profile.avatar'))
+                                    ->getStateUsing(fn ($record) => resolve_image_url($record->image))
                                     ->circular()
 
                                     ->alignCenter()
@@ -128,9 +128,7 @@ class VendorInfolist
                             ]),
                         ImageEntry::make('store_front_image')
                             ->label(__('admin.resources.vendor.store_photo'))
-                            ->getStateUsing(fn ($record) => $record->store_front_image
-                                ? route('admin.documents.show', ['path' => $record->store_front_image]) : null
-                            )
+                            ->getStateUsing(fn ($record) => resolve_image_url($record->store_front_image))
                             ->disk(null)
 
                             ->extraImgAttributes(fn () => [
@@ -165,9 +163,7 @@ class VendorInfolist
                             ->schema([
                                 ImageEntry::make('qr_code')
                                     ->label(__('admin.resources.vendor.qr_code'))
-                                    ->getStateUsing(fn (?PaymentMethod $record) => $record?->qr_code
-                                        ? route('admin.documents.show', ['path' => $record->qr_code]) : null
-                                    )
+                                    ->getStateUsing(fn (?PaymentMethod $record) => resolve_image_url($record?->qr_code))
                                     ->disk(null)
                                     ->extraImgAttributes(fn () => [
                                         'class' => 'cursor-zoom-in',
@@ -185,15 +181,10 @@ class VendorInfolist
                                     ->label(__('admin.resources.wallet.currency')),
                                 TextEntry::make('balance')
                                     ->label(__('admin.resources.wallet.balance'))
-                                    ->getStateUsing(function (Wallet $record): string {
-                                        $id = $record->currency->id;
-                                        $symbol = $record->currency->symbol ?? '';
-                                        $balance = number_format((float) $record->balance, 2);
-
-                                        return $id === Currency::USD_ID
-                                            ? "{$symbol} {$balance}"
-                                            : "{$balance} {$symbol}";
-                                    }),
+                                    ->getStateUsing(fn (Wallet $record): string => format_currency(
+                                        $record->balance,
+                                        $record->currency->code
+                                    )),
                             ])
                             ->columns(2),
                     ]),

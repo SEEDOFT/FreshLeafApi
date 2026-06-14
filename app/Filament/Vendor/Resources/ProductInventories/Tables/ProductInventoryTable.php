@@ -28,10 +28,17 @@ class ProductInventoryTable
     {
         return $table
             ->recordAction('view')
+            ->modifyQueryUsing(fn ($query) => $query
+                ->withExists('activeDiscount')
+                ->orderBy('active_discount_exists', 'desc')
+                ->latest()
+            )
+            ->recordClasses(fn (VendorInventory $record) => $record->discount_percentage > 0 ? 'border-s-4 border-s-success-600 dark:border-s-success-400' : null)
             ->stackedOnMobile()
             ->columns([
                 ImageColumn::make('product.image_url')
-                    ->label(__('shared.product.image')),
+                    ->label(__('shared.product.image'))
+                    ->getStateUsing(fn ($record) => resolve_image_url($record->product->image_url)),
 
                 TextColumn::make('product.name_en')
                     ->label(__('shared.product.name_en'))
@@ -46,7 +53,21 @@ class ProductInventoryTable
 
                 TextColumn::make('price')
                     ->label(__('shared.product.unit_price'))
-                    ->money(fn (VendorInventory $record) => $record->currency->code)
+                    ->formatStateUsing(fn (VendorInventory $record): string => format_currency(
+                        $record->price,
+                        $record->currency->code
+                    ))
+                    ->description(function (VendorInventory $record): ?string {
+                        if ($record->discount_percentage > 0) {
+                            return __('shared.product.discount_label', [
+                                'percentage' => format_number($record->discount_percentage, 0),
+                                'price' => format_currency($record->discounted_price, $record->currency->code),
+                            ]);
+                        }
+
+                        return null;
+                    })
+                    ->color(fn (VendorInventory $record) => $record->discount_percentage > 0 ? 'success' : null)
                     ->sortable(),
 
                 TextColumn::make('stock_quantity')

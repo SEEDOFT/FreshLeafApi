@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Filament\Admin\Resources\Payouts\Schemas;
 
-use App\Models\Currency;
 use App\Models\Payout;
 use Filament\Infolists\Components\ImageEntry;
 use Filament\Infolists\Components\TextEntry;
@@ -32,17 +31,10 @@ class PayoutInfolist
                             ->label(__('admin.resources.payout.method')),
                         TextEntry::make('amount')
                             ->label(__('admin.resources.payout.amount'))
-                            ->state(function (Payout $record) {
-                                if ($record->currency?->id === Currency::USD_ID) {
-                                    return $record->currency->symbol.' '.$record->amount;
-                                }
-
-                                if ($record->currency?->id === Currency::KHR_ID) {
-                                    return $record->amount.$record->currency->symbol;
-                                }
-
-                                return $record->amount;
-                            }),
+                            ->state(fn (Payout $record): string => format_currency(
+                                $record->amount,
+                                $record->currency->code
+                            )),
                         TextEntry::make('transaction_reference')
                             ->label(__('admin.resources.payout.transaction_ref')),
                         TextEntry::make('processed_at')

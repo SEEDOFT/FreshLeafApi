@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 use App\Models\Setting;
 use Filament\Forms\Components\Select;
+use Illuminate\Support\Facades\Storage;
 use Rinvex\Country\Country;
 
 if (! function_exists('app_setting')) {
@@ -171,5 +172,68 @@ if (! function_exists('translate')) {
     function translate(?string $valueEn, ?string $valueKm): ?string
     {
         return request()->header('Accept-Language') === 'km' ? $valueKm : $valueEn;
+    }
+}
+
+if (! function_exists('format_currency')) {
+    /**
+     * Format currency
+     */
+    function format_currency(mixed $amount, string $currency = 'USD', ?int $precision = null): string
+    {
+        $isKhr = $currency === 'KHR';
+        $symbol = $isKhr ? '៛' : '$';
+
+        if ($precision === null) {
+            $precision = $isKhr ? 0 : 2;
+        }
+
+        $formatted = number_format((float) $amount, $precision);
+
+        if ($isKhr) {
+            return "{$formatted} {$symbol}";
+        }
+
+        return "{$symbol}{$formatted}";
+    }
+}
+
+if (! function_exists('format_number')) {
+    /**
+     * Format number
+     */
+    function format_number(mixed $amount, int $precision = 0): string
+    {
+        return number_format((float) $amount, $precision);
+    }
+}
+
+if (! function_exists('resolve_image_url')) {
+    /**
+     * Resolve image URL from path.
+     * Checks public directory first, then public storage disk.
+     */
+    function resolve_image_url(?string $path): ?string
+    {
+        if (! $path) {
+            return null;
+        }
+
+        // Check if it's already a full URL
+        if (filter_var($path, FILTER_VALIDATE_URL)) {
+            return $path;
+        }
+
+        // Check in public directory (e.g. images/products/...)
+        if (file_exists(public_path($path))) {
+            return asset($path);
+        }
+
+        // Check in public storage disk (storage/app/public/...)
+        if (Storage::disk('public')->exists($path)) {
+            return asset('storage/'.$path);
+        }
+
+        return null;
     }
 }

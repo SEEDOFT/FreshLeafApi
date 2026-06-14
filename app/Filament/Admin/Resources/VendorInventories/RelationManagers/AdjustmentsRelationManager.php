@@ -54,6 +54,7 @@ class AdjustmentsRelationManager extends RelationManager
                     ->color(fn ($state) => $state > 0 ? 'success' : 'danger'),
                 ImageColumn::make('proof_image_path')
                     ->label(__('admin.resources.product.proof'))
+                    ->getStateUsing(fn ($record) => resolve_image_url($record->proof_image_path))
                     ->circular(),
                 TextColumn::make('user.name')
                     ->label(__('admin.resources.user.label'))
@@ -92,6 +93,7 @@ class AdjustmentsRelationManager extends RelationManager
                                         ->columnSpanFull(),
                                     ImageEntry::make('proof_image_path')
                                         ->label(__('admin.resources.product.proof_photo'))
+                                        ->getStateUsing(fn ($record) => resolve_image_url($record->proof_image_path))
                                         ->columnSpanFull()
                                         ->extraImgAttributes(fn () => [
                                             'class' => 'cursor-zoom-in',

@@ -26,7 +26,7 @@ class ProductCategoriesTable
             ->columns([
                 ImageColumn::make('image_url')
                     ->label(__('admin.resources.product_category.image'))
-                    ->disk('public')
+                    ->getStateUsing(fn ($record) => resolve_image_url($record->image_url))
                     ->circular(),
                 TextColumn::make('name_en')
                     ->label(__('admin.resources.product_category.name_en'))

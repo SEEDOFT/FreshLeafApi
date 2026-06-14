@@ -192,7 +192,11 @@ return [
         'insufficient_balance' => 'សមតុល្យកាបូបលុយមិនគ្រប់គ្រាន់។',
         'payment_failed' => 'ការទូទាត់បានបរាជ័យ: ',
         'not_awaiting_payment' => 'ការបញ្ជាទិញមិនស្ថិតក្នុងស្ថានភាពរង់ចាំការបង់ប្រាក់ទេ។',
-        'status_updated' => 'បានធ្វើបច្ចុប្បន្នភាព',
+        'status_updated' => 'ត្រូវបានធ្វើបច្ចុប្បន្នភាព',
+        'notes' => [
+            'external_payment_completed' => 'ការទូទាត់ខាងក្រៅបានបញ្ចប់ដោយជោគជ័យ។',
+            'external_payment_simulated' => 'ការទូទាត់ខាងក្រៅត្រូវបានសាកល្បងថាបានបញ្ចប់។',
+        ],
     ],
 
     'ai_chat' => [

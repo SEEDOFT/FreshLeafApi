@@ -15,7 +15,6 @@ use App\Services\MoneyService;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Facades\App;
-use Illuminate\Support\Facades\Storage;
 use Override;
 
 use function array_map;
@@ -65,9 +64,7 @@ class VendorInventoryResource extends JsonResource
             'shelf_life_days' => $this->shelf_life_days,
             'batch_images' => is_array($this->batch_images)
                 ? array_values(array_filter(
-                    array_map(fn (string $image): ?string => Storage::disk('public')->exists($image)
-                        ? asset('storage/'.$image)
-                        : null, $this->batch_images),
+                    array_map(fn (string $image): ?string => resolve_image_url($image), $this->batch_images),
                 ))
                 : [],
             'status' => new StatusResource($this->whenLoaded('status')),
@@ -92,10 +89,7 @@ class VendorInventoryResource extends JsonResource
                     'address' => $this->vendor->vendorProfile->address ?? null,
                     'business_name' => $this->vendor->vendorProfile->business_name ?? null,
                     'shop_description' => $this->vendor->vendorProfile->shop_description ?? null,
-                    'store_front_image' => $this->vendor->vendorProfile->store_front_image
-                        && Storage::disk('local')->exists($this->vendor->vendorProfile->store_front_image)
-                        ? Storage::disk('local')->url($this->vendor->vendorProfile->store_front_image)
-                        : null,
+                    'store_front_image' => resolve_image_url($this->vendor->vendorProfile->store_front_image),
                     'province' => $this->vendor->vendorProfile->province ?? null,
                     'opening_time' => $this->vendor->vendorProfile->opening_time ?? null,
                     'closing_time' => $this->vendor->vendorProfile->closing_time ?? null,

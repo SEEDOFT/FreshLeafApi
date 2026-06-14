@@ -10,7 +10,6 @@ use App\Models\OrderStatus;
 use App\Models\PaymentMethodType;
 use App\Models\PaymentStatus;
 use App\Services\InvoicePdfService;
-use App\Services\VendorPayoutService;
 use Filament\Actions\Action;
 use Filament\Actions\EditAction;
 use Filament\Notifications\Notification;
@@ -50,7 +49,7 @@ class ViewOrder extends ViewRecord
                     );
                 }),
             Action::make('release_vendor_funds')
-                ->label('Release Vendor Funds')
+                ->label(__('admin.resources.order.actions.release_vendor_funds'))
                 ->icon('heroicon-o-currency-dollar')
                 ->color('success')
                 ->requiresConfirmation()
@@ -66,22 +65,22 @@ class ViewOrder extends ViewRecord
                     }
 
                     $isCod = $record->payments()
-                        ->whereHas(
-                            'paymentMethod',
-                            fn ($q) => $q->where('payment_method_type_id', PaymentMethodType::COD_ID)
-                        )->exists();
+                        ->where('payment_method_type_id', PaymentMethodType::COD_ID)
+                        ->exists();
 
                     return ! $isCod;
                 })
-                ->action(function (Order $record, VendorPayoutService $payoutService) {
-                    if ($payoutService->payoutOrder($record)) {
+                ->action(function (Order $record) {
+                    try {
+                        $record->update(['is_vendor_paid' => true]);
+
                         Notification::make()
-                            ->title('Funds released to vendor successfully.')
+                            ->title(__('admin.resources.order.notifications.funds_released_success'))
                             ->success()
                             ->send();
-                    } else {
+                    } catch (\Exception $e) {
                         Notification::make()
-                            ->title('Failed to release funds.')
+                            ->title(__('admin.resources.order.notifications.funds_released_failed'))
                             ->danger()
                             ->send();
                     }

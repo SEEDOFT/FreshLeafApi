@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Filament\Admin\Resources\Users\Schemas;
 
-use App\Models\Currency;
 use App\Models\User;
 use App\Models\UserStatus;
 use App\Models\UserType;
@@ -31,6 +30,7 @@ class UserInfolist
                             ->schema([
                                 ImageEntry::make('image')
                                     ->label(__('admin.profile.avatar'))
+                                    ->getStateUsing(fn ($record) => resolve_image_url($record->image))
                                     ->circular()
 
                                     ->alignCenter()
@@ -62,6 +62,25 @@ class UserInfolist
                                 default => 'gray',
                             }),
                     ]),
+                Section::make(__('admin.resources.vendor.business_profile'))
+                    ->relationship('vendorProfile')
+                    ->visible(fn (User $record) => $record->user_type_id === UserType::VENDOR_ID)
+                    ->columns(2)
+                    ->schema([
+                        ImageEntry::make('store_front_image')
+                            ->label(__('admin.resources.vendor.store_photo'))
+                            ->getStateUsing(fn ($record) => resolve_image_url($record->store_front_image))
+                            ->circular()
+                            ->disk(null)
+                            ->columnSpanFull(),
+                        TextEntry::make('business_name')
+                            ->label(__('admin.resources.vendor.business_name')),
+                        TextEntry::make('contact_phone')
+                            ->label(__('admin.resources.vendor.contact_phone')),
+                        TextEntry::make('address')
+                            ->label(__('admin.resources.vendor.address'))
+                            ->columnSpanFull(),
+                    ]),
                 Section::make(__('admin.resources.user.wallets_info'))
                     ->schema([
                         RepeatableEntry::make('wallets')
@@ -74,14 +93,10 @@ class UserInfolist
                                 TextEntry::make('balance')
                                     ->label(__('admin.resources.wallet.balance'))
                                     ->placeholder('0.00')
-                                    ->getStateUsing(function (Wallet $record): string {
-                                        $balance = number_format((float) $record->balance, 2);
-                                        $symbol = $record->currency->symbol;
-
-                                        return $record->currency->id === Currency::USD_ID
-                                            ? "$symbol $balance"
-                                            : "$balance $symbol";
-                                    }),
+                                    ->getStateUsing(fn (Wallet $record): string => format_currency(
+                                        $record->balance,
+                                        $record->currency->code
+                                    )),
                             ]),
                     ]),
                 Section::make(__('admin.resources.user.system_info'))

@@ -77,6 +77,45 @@ class ProductController extends Controller
                         }
                     );
                 })
+            // Filter by Home Tabs
+            ->when($request->input('filter'), function (Builder $query, string $filter) {
+                match ($filter) {
+                    'picked' => $query->whereDate('harvest_date', now()->toDateString()),
+                    'top_rated' => $query->withAvg('ratings', 'rating')->orderByDesc('ratings_avg_rating'),
+                    'new' => $query->orderByDesc('id'),
+                    default => $query->orderByDesc('id'),
+                };
+            }, function (Builder $query) {
+                $query->orderByDesc('id');
+            })
+            ->paginate($request->integer('per_page', 15));
+
+        return static::successResponse(
+            VendorInventoryResource::collection($listings),
+            __('api.product.retrieved')
+        );
+    }
+
+    /**
+     * Display product listings by product slug.
+     */
+    public function bySlug(string $slug, Request $request): JsonResponse
+    {
+        $product = Product::where('slug', $slug)->first();
+
+        if (! $product) {
+            return static::notFoundResponse(__('api.product.not_found'));
+        }
+
+        $listings = VendorInventory::active()
+            ->where('product_id', $product->id)
+            ->whereHas(
+                'product',
+                static fn (Builder $query) => $query->where(
+                    'product_status_id', ProductStatus::PUBLISHED_ID
+                )
+            )
+            ->with(self::RELATIONSHIPS)
             ->orderByDesc('id')
             ->paginate($request->integer('per_page', 15));
 

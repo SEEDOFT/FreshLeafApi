@@ -74,51 +74,54 @@
             @forelse($this->getConversations() as $conversation)
                 @php
                     $latestMessage = $conversation->messages->first();
-                    $otherParticipant = $conversation->participants->where('user_id', '!=', auth()->id())->first();
-                    $title = $otherParticipant ? $otherParticipant->user->fullName : __('admin.chat.unknown_user', [], 'en');
-                    $userType = $otherParticipant?->user?->user_type_id;
+                    $otherUser = $conversation->getOtherParticipant();
+                    $title = $conversation->getDisplayTitle();
                     $isSupport = (int) $conversation->conversation_type_id === \App\Models\ConversationType::SUPPORT_ID;
                     $isResolved = (int) $conversation->conversation_status_id === \App\Models\ConversationStatus::CLOSED_ID;
                     $unreadCount = (int) ($conversation->unread_messages_count ?? 0);
-                    if ($isSupport) {
-                        $title = __('admin.chat.support', [], 'en') . ' - ' . $title;
-                    }
                 @endphp
                 <button wire:click="selectConversation({{ $conversation->id }})"
                     class="fl-support-ticket-item {{ $activeConversationId === $conversation->id ? 'fl-support-ticket-item--active' : '' }}"
                     x-on:click="if (isPhone) { closeDrawer(); }">
-                    <div class="flex justify-between items-start mb-1">
-                        <div class="flex items-center gap-1.5 flex-wrap">
-                            <span class="fl-support-ticket-user">{{ $title }}</span>
-                            @if($isSupport)
-                                <span class="fl-badge {{ $isResolved ? 'fl-badge--resolved' : 'fl-badge--open' }}">
-                                    {{ $isResolved ? __('admin.chat.resolved', [], 'en') : __('admin.chat.open', [], 'en') }}
-                                </span>
-                            @else
-                                <span class="fl-badge fl-badge--direct">
-                                    {{ __('admin.chat.direct', [], 'en') }}
-                                </span>
+                    <div class="flex items-start gap-3">
+                        <x-avatar :src="$otherUser?->getFilamentAvatarUrl()" :name="$otherUser?->fullName" size="sm" class="mt-0.5" />
+                        <div class="flex-1 min-w-0">
+                            <div class="flex justify-between items-start mb-1">
+                                <div class="flex items-center gap-1.5 flex-wrap">
+                                    <span class="fl-support-ticket-user truncate">{{ $title }}</span>
+                                    @if($isSupport)
+                                        <span class="fl-badge {{ $isResolved ? 'fl-badge--resolved' : 'fl-badge--open' }}">
+                                            {{ $isResolved ? __('admin.chat.resolved', [], 'en') : __('admin.chat.open', [], 'en') }}
+                                        </span>
+                                    @else
+                                        <span class="fl-badge fl-badge--direct">
+                                            {{ __('admin.chat.direct', [], 'en') }}
+                                        </span>
+                                    @endif
+                                </div>
+                                <div class="flex items-center gap-2 flex-shrink-0">
+                                    @if($unreadCount > 0)
+                                        <span class="fl-unread-badge">
+                                            {{ $unreadCount > 99 ? '99+' : $unreadCount }}
+                                        </span>
+                                    @endif
+                                    <span class="fl-support-ticket-date">{{ $conversation->updated_at->diffForHumans(short: true) }}</span>
+                                </div>
+                            </div>
+                            <p class="fl-support-ticket-excerpt line-clamp-1">
+                                {{ $latestMessage?->content ?: ($latestMessage?->file_path ? __('admin.chat.file_attached', [], 'en') : __('admin.chat.no_messages_yet', [], 'en')) }}
+                            </p>
+                            @if(auth()->user()?->user_type_id === \App\Models\UserType::ADMIN_ID && $otherUser?->user_type_id)
+                                <div class="flex gap-1 mt-1">
+                                    @if($otherUser->user_type_id === \App\Models\UserType::VENDOR_ID)
+                                        <span class="fl-badge fl-badge--vendor">Vendor</span>
+                                    @elseif($otherUser->user_type_id === \App\Models\UserType::CONSUMER_ID)
+                                        <span class="fl-badge fl-badge--consumer">Consumer</span>
+                                    @endif
+                                </div>
                             @endif
-                            @if(auth()->user()?->user_type_id === \App\Models\UserType::ADMIN_ID && $userType)
-                                @if($userType === \App\Models\UserType::VENDOR_ID)
-                                    <span class="fl-badge fl-badge--vendor">Vendor</span>
-                                @elseif($userType === \App\Models\UserType::CONSUMER_ID)
-                                    <span class="fl-badge fl-badge--consumer">Consumer</span>
-                                @endif
-                            @endif
-                        </div>
-                        <div class="flex items-center gap-2">
-                            @if($unreadCount > 0)
-                                <span class="fl-unread-badge">
-                                    {{ $unreadCount > 99 ? '99+' : $unreadCount }}
-                                </span>
-                            @endif
-                            <span class="fl-support-ticket-date">{{ $conversation->updated_at->diffForHumans(short: true) }}</span>
                         </div>
                     </div>
-                    <p class="fl-support-ticket-excerpt">
-                        {{ $latestMessage?->content ?: ($latestMessage?->file_path ? __('admin.chat.file_attached', [], 'en') : __('admin.chat.no_messages_yet', [], 'en')) }}
-                    </p>
                 </button>
             @empty
                 <div class="fl-support-sidebar-empty">{{ __('admin.chat.no_conversations', [], 'en') }}</div>
@@ -130,26 +133,17 @@
         @if($activeConversationId)
             @php
                 $activeConversation = \App\Models\Conversation::with(['participants.user'])->find($activeConversationId);
-                $otherParticipant = $activeConversation->participants->where('user_id', '!=', auth()->id())->first();
-                $title = $otherParticipant ? $otherParticipant->user->fullName : __('admin.chat.unknown_user', [], 'en');
+                $otherUser = $activeConversation->getOtherParticipant();
+                $title = $activeConversation->getDisplayTitle();
                 $isSupport = (int) $activeConversation->conversation_type_id === \App\Models\ConversationType::SUPPORT_ID;
                 $isResolved = (int) $activeConversation->conversation_status_id === \App\Models\ConversationStatus::CLOSED_ID;
-                if ($isSupport) {
-                    $title = __('admin.chat.support', [], 'en') . ' - ' . $title;
-                }
             @endphp
             <header class="border-b border-gray-200 dark:border-[#27272a] px-6 py-4 flex items-center justify-between bg-white dark:bg-[#18181b]">
                 <div class="flex items-center gap-3">
                     <button type="button" class="md:hidden p-2 -ml-2 rounded-lg text-gray-500 hover:text-gray-900 hover:bg-gray-100 dark:text-gray-400 dark:hover:text-white dark:hover:bg-white/10 transition-colors" x-on:click="toggleDrawer()">
                         <x-filament::icon icon="heroicon-o-bars-3" class="h-6 w-6" />
                     </button>
-                    <div class="h-10 w-10 rounded-full bg-emerald-100 dark:bg-[#dcfce7] flex items-center justify-center text-emerald-600 dark:text-[#16a34a] font-bold text-sm">
-                        @if($otherParticipant)
-                            {{ mb_substr($otherParticipant->user->first_name, 0, 1) }}{{ mb_substr($otherParticipant->user->last_name, 0, 1) }}
-                        @else
-                            ?
-                        @endif
-                    </div>
+                    <x-avatar :src="$otherUser?->getFilamentAvatarUrl()" :name="$otherUser?->fullName" size="md" />
                     <div class="flex flex-col">
                         <div class="flex items-center gap-2">
                             <h2 class="text-base font-bold text-gray-900 dark:text-white leading-tight">{{ $title }}</h2>
@@ -162,10 +156,10 @@
                                     {{ __('admin.chat.direct', [], 'en') }}
                                 </span>
                             @endif
-                            @if(auth()->user()?->user_type_id === \App\Models\UserType::ADMIN_ID && $otherParticipant?->user?->user_type_id)
-                                @if($otherParticipant->user->user_type_id === \App\Models\UserType::VENDOR_ID)
+                            @if(auth()->user()?->user_type_id === \App\Models\UserType::ADMIN_ID && $otherUser?->user_type_id)
+                                @if($otherUser->user_type_id === \App\Models\UserType::VENDOR_ID)
                                     <span class="fl-badge fl-badge--vendor">Vendor</span>
-                                @elseif($otherParticipant->user->user_type_id === \App\Models\UserType::CONSUMER_ID)
+                                @elseif($otherUser->user_type_id === \App\Models\UserType::CONSUMER_ID)
                                     <span class="fl-badge fl-badge--consumer">Consumer</span>
                                 @endif
                             @endif
@@ -190,9 +184,7 @@
                             <div class="flex items-center justify-end gap-2 mb-1 w-full pr-12">
                                 <span class="text-[10px] text-gray-500">{{ $msg->created_at->format('H:i') }}</span>
                                 <span class="text-[10px] font-bold text-gray-500 dark:text-gray-400 uppercase">{{ __('admin.chat.you', [], 'en') }}</span>
-                                <div class="w-7 h-7 rounded-full bg-gray-200 dark:bg-[#27272a] border border-gray-300 dark:border-[#3f3f46] flex items-center justify-center text-[10px] font-bold text-gray-600 dark:text-gray-300">
-                                    {{ substr(auth()->user()?->name ?? 'U', 0, 2) }}
-                                </div>
+                                <x-avatar :src="auth()->user()?->getFilamentAvatarUrl()" :name="auth()->user()?->fullName" size="xs" />
                             </div>
                             <div class="w-fit bg-emerald-600 dark:bg-[#16a34a] text-white px-5 py-3 rounded-xl rounded-tr-sm max-w-[75%] mr-[3.25rem] text-[15px] font-medium leading-relaxed break-words shadow-sm">
                                 @if($msg->file_path)
@@ -244,9 +236,7 @@
                     @else
                         {{-- User (Other) message, aligned left --}}
                         <div class="flex items-start gap-3 mb-6">
-                            <div class="w-8 h-8 rounded-full bg-emerald-100 dark:bg-[#dcfce7] flex items-center justify-center text-emerald-600 dark:text-[#16a34a] font-bold text-xs flex-shrink-0 mt-1">
-                                {{ mb_substr($msg->sender->first_name ?? 'U', 0, 1) }}{{ mb_substr($msg->sender->last_name ?? '', 0, 1) }}
-                            </div>
+                            <x-avatar :src="$msg->sender->getFilamentAvatarUrl()" :name="$msg->sender->fullName" size="sm" class="flex-shrink-0 mt-1" />
                             <div class="flex flex-col gap-1 w-full items-start">
                                 <div class="flex items-center gap-2">
                                     <span class="text-[10px] font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">{{ $msg->sender->fullName }}</span>
@@ -304,9 +294,7 @@
                 @endforeach
 
                 <div x-show="isUserTyping" style="display: none;" class="flex items-start gap-3 mb-6">
-                    <div class="w-8 h-8 rounded-full bg-emerald-100 dark:bg-[#dcfce7] flex items-center justify-center text-emerald-600 dark:text-[#16a34a] font-bold text-xs flex-shrink-0 mt-1 animate-pulse">
-                        {{ mb_substr($otherParticipant?->user?->first_name ?? 'U', 0, 1) }}{{ mb_substr($otherParticipant?->user?->last_name ?? '', 0, 1) }}
-                    </div>
+                    <x-avatar :src="$otherUser?->getFilamentAvatarUrl()" :name="$otherUser?->fullName" size="sm" class="flex-shrink-0 mt-1 animate-pulse" />
                     <div class="flex flex-col gap-1 w-full items-start">
                         <span class="text-[10px] font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">{{ $title }}</span>
                         <div class="w-fit bg-white dark:bg-[#27272a] text-gray-800 dark:text-white px-5 py-3 rounded-xl rounded-tl-sm max-w-[75%] text-[15px] border border-gray-200 dark:border-[#3f3f46] shadow-sm">

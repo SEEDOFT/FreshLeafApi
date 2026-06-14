@@ -12,7 +12,6 @@ use App\Models\ProductStatus;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Facades\App;
-use Illuminate\Support\Facades\Storage;
 use Override;
 
 /**
@@ -39,9 +38,7 @@ class ProductResource extends JsonResource
             'description' => $locale === 'km'
                 ? $this->description_km
                 : $this->description_en,
-            'image_url' => $this->image_url && Storage::disk('public')->exists($this->image_url)
-                ? asset('storage/'.$this->image_url)
-                : null,
+            'image_url' => resolve_image_url($this->image_url),
             'nutrition_data' => $this->nutrition_data,
             'product_category' => $this->whenLoaded(
                 'productCategory',

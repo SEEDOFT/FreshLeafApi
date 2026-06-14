@@ -47,7 +47,7 @@ class ProductCategoryInfolist
                     ->schema([
                         ImageEntry::make('image_url')
                             ->label(__('admin.resources.product_category.image'))
-
+                            ->getStateUsing(fn ($record) => resolve_image_url($record->image_url))
                             ->extraImgAttributes(fn () => [
                                 'class' => 'cursor-zoom-in',
                                 'x-on:click' => "\$dispatch('lightbox', { src: \$el.src })",

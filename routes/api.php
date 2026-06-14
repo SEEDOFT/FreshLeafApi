@@ -158,6 +158,7 @@ Route::prefix('v1')->name('v1.')->group(static function () {
                 ->controller(OrderController::class)
                 ->group(static function () {
                     Route::post('batch-pay', 'batchPay')->name('batchPay');
+                    Route::get('counts', 'counts')->name('counts');
                     Route::get('/', 'index')->name('index');
                     Route::get('{id}', 'show')->name('show');
                     Route::post('{id}/pay', 'pay')->name('pay');
@@ -298,6 +299,7 @@ Route::prefix('v1')->name('v1.')->group(static function () {
         ->controller(ProductController::class)
         ->group(static function () {
             Route::get('/', 'index')->name('index');
+            Route::get('by-slug/{slug}', 'bySlug')->name('by-slug');
             Route::get('{id}', 'show')->name('show');
         });
 

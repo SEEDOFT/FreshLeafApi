@@ -41,7 +41,7 @@ class WalletApiTest extends TestCase
             ->assertOk()
             ->assertJsonPath('status.success', true)
             ->assertJsonPath('status.message', 'Wallets retrieved successfully')
-            ->assertJsonPath('data.0.currency.code', Currency::USD);
+            ->assertJsonPath('data.data.0.currency.code', Currency::USD);
     }
 
     public function test_user_cannot_view_other_user_wallet(): void
@@ -84,11 +84,11 @@ class WalletApiTest extends TestCase
             ->assertOk()
             ->assertJsonPath('status.success', true)
             ->assertJsonPath('status.message', 'Wallet history retrieved successfully')
-            ->assertJsonPath('data.0.currency.code', Currency::USD)
-            ->assertJsonPath('data.0.currency_id', $usdId)
-            ->assertJsonPath('data.0.wallet_id', $wallet->id)
-            ->assertJsonPath('data.0.user_id', $user->id)
-            ->assertJsonPath('data.0.balance', '25.5000');
+            ->assertJsonPath('data.data.0.currency.code', Currency::USD)
+            ->assertJsonPath('data.data.0.currency_id', $usdId)
+            ->assertJsonPath('data.data.0.wallet_id', $wallet->id)
+            ->assertJsonPath('data.data.0.user_id', $user->id)
+            ->assertJsonPath('data.data.0.balance', '25.5000');
     }
 
     public function test_vendor_can_view_wallet_history(): void
@@ -116,9 +116,9 @@ class WalletApiTest extends TestCase
             ->assertOk()
             ->assertJsonPath('status.success', true)
             ->assertJsonPath('status.message', 'Wallet history retrieved successfully')
-            ->assertJsonPath('data.0.currency.code', Currency::USD)
-            ->assertJsonPath('data.0.currency_id', $usdId)
-            ->assertJsonPath('data.0.balance', '7.0000');
+            ->assertJsonPath('data.data.0.currency.code', Currency::USD)
+            ->assertJsonPath('data.data.0.currency_id', $usdId)
+            ->assertJsonPath('data.data.0.balance', '7.0000');
     }
 
     public function test_admin_can_list_own_wallets(): void
@@ -173,9 +173,9 @@ class WalletApiTest extends TestCase
             ->assertOk()
             ->assertJsonPath('status.success', true)
             ->assertJsonPath('status.message', 'Wallet history retrieved successfully')
-            ->assertJsonPath('data.0.currency.code', Currency::USD)
-            ->assertJsonPath('data.0.currency_id', $usdId)
-            ->assertJsonPath('data.0.balance', '3.5000');
+            ->assertJsonPath('data.data.0.currency.code', Currency::USD)
+            ->assertJsonPath('data.data.0.currency_id', $usdId)
+            ->assertJsonPath('data.data.0.balance', '3.5000');
     }
 
     public function test_admin_cannot_view_other_user_wallet(): void

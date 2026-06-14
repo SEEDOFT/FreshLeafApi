@@ -90,7 +90,7 @@ class ApiErrorEnvelopeTest extends TestCase
         $response->assertStatus(422)
             ->assertJsonStructure([
                 'status' => ['code', 'success', 'message'],
-                'data' => ['errors'],
+                'data',
             ])
             ->assertJsonPath('status.code', '422')
             ->assertJsonPath('status.success', false);

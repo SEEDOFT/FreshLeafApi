@@ -54,7 +54,35 @@ class Conversation extends Model
     }
 
     /**
+     * Get the other participant in the conversation.
+     */
+    public function getOtherParticipant(?int $userId = null): ?User
+    {
+        $userId ??= auth()->id();
+
+        return $this->participants()
+            ->where('user_id', '!=', $userId)
+            ->first()
+            ?->user;
+    }
+
+    /**
+     * Get the display title for the conversation.
+     */
+    public function getDisplayTitle(?int $userId = null): string
+    {
+        if ((int) $this->conversation_type_id === ConversationType::SUPPORT_ID) {
+            $other = $this->getOtherParticipant($userId);
+
+            return __('admin.chat.support', [], 'en').' - '.($other?->fullName ?? __('admin.chat.unknown_user', [], 'en'));
+        }
+
+        return $this->getOtherParticipant($userId)?->fullName ?? __('admin.chat.unknown_user', [], 'en');
+    }
+
+    /**
      * Get the messages
+...
      *
      * @return HasMany<Message, $this>
      */

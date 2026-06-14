@@ -138,6 +138,11 @@ return [
                 'cancelled_success' => 'Order has been cancelled.',
                 'out_for_delivery' => 'Out for Delivery',
                 'out_for_delivery_success' => 'Order marked as Out for Delivery',
+                'release_vendor_funds' => 'Release Vendor Funds',
+            ],
+            'notifications' => [
+                'funds_released_success' => 'Funds released to vendor successfully.',
+                'funds_released_failed' => 'Failed to release funds.',
             ],
         ],
         'payout' => [
@@ -161,6 +166,12 @@ return [
             'reject' => 'Reject',
             'approved_success' => 'Payout approved successfully.',
             'rejected_success' => 'Payout rejected successfully.',
+            'notifications' => [
+                'approved_title' => 'Payout Approved',
+                'approved_body' => 'Your payout request #:number for :amount has been approved.',
+                'rejected_title' => 'Payout Rejected',
+                'rejected_body' => 'Your payout request #:number has been rejected. Reason: :reason',
+            ],
             'vendor_financial_details' => 'Vendor Financial Details',
             'vendor_bank_qr_code' => 'Bank QR Code',
         ],
@@ -338,6 +349,10 @@ return [
             'approve_heading' => 'Approve Inventory',
             'approve_description' => 'Are you sure you want to approve this inventory and make it available in the store?',
             'approve_submit' => 'Approve',
+            'notifications' => [
+                'approved' => 'Inventory Approved',
+                'approved_body' => 'Your inventory for :product has been approved.',
+            ],
         ],
         'exchange_rate' => [
             'label' => 'Exchange Rate',

@@ -165,9 +165,9 @@ class DashboardOverview extends Component
                 'icon' => 'heroicon-o-building-storefront',
                 'iconClass' => 'green',
                 'description' => $pendingVendors > 0
-                    ? '<svg class="inline-block h-3 w-3 fill-green-500" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/></svg> '.$pendingVendors.' '.__('admin.resources.vendor.pending_approval')
+                    ? $pendingVendors.' '.__('admin.resources.vendor.pending_approval')
                     : '',
-                'subClass' => $pendingVendors > 0 ? 'pos' : '',
+                'badgeClass' => $pendingVendors > 0 ? 'pending-badge' : null,
             ],
             [
                 'label' => __('admin.widgets.products_listed'),

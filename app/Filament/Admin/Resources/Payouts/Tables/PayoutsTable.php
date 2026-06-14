@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Filament\Admin\Resources\Payouts\Tables;
 
-use App\Models\Currency;
 use App\Models\Payout;
 use App\Models\Wallet;
 use App\Models\WalletTransaction;
@@ -44,17 +43,10 @@ class PayoutsTable
 
                 TextColumn::make('amount')
                     ->label(__('admin.resources.payout.amount'))
-                    ->formatStateUsing(function (Payout $record) {
-                        if ($record->currency?->id === Currency::USD_ID) {
-                            return $record->currency->symbol.' '.$record->amount;
-                        }
-
-                        if ($record->currency?->id === Currency::KHR_ID) {
-                            return $record->amount.$record->currency->symbol;
-                        }
-
-                        return $record->amount;
-                    })
+                    ->formatStateUsing(fn (Payout $record): string => format_currency(
+                        $record->amount,
+                        $record->currency->code
+                    ))
                     ->sortable(),
 
                 TextColumn::make('status.translated_name')
@@ -158,8 +150,11 @@ class PayoutsTable
 
                         Notification::make()
                             ->success()
-                            ->title('Payout Approved')
-                            ->body('Your payout request #'.$record->payout_number.' for '.$record->amount.' has been approved.')
+                            ->title(__('admin.resources.payout.notifications.approved_title'))
+                            ->body(__('admin.resources.payout.notifications.approved_body', [
+                                'number' => $record->payout_number,
+                                'amount' => format_currency($record->amount, $record->currency->code),
+                            ]))
                             ->sendToDatabase($record->vendor)
                             ->broadcast($record->vendor);
                     }),
@@ -203,8 +198,11 @@ class PayoutsTable
 
                         Notification::make()
                             ->danger()
-                            ->title('Payout Rejected')
-                            ->body('Your payout request #'.$record->payout_number.' has been rejected. Reason: '.$data['admin_notes'])
+                            ->title(__('admin.resources.payout.notifications.rejected_title'))
+                            ->body(__('admin.resources.payout.notifications.rejected_body', [
+                                'number' => $record->payout_number,
+                                'reason' => $data['admin_notes'],
+                            ]))
                             ->sendToDatabase($record->vendor)
                             ->broadcast($record->vendor);
                     }),

@@ -51,6 +51,27 @@ class OrderController extends Controller
     ];
 
     /**
+     * Get order status counts for the authenticated user.
+     */
+    public function counts(Request $request): JsonResponse
+    {
+        $user = $this->authenticatedUser($request);
+        $counts = Order::where('user_id', $user->id)
+            ->select('order_status_id', \DB::raw('count(*) as total'))
+            ->groupBy('order_status_id')
+            ->pluck('total', 'order_status_id');
+
+        try {
+            return static::successResponse(
+                $counts->toArray(),
+                __('api.order.counts_retrieved', ['default' => 'Order counts retrieved'])
+            );
+        } catch (RuntimeException) {
+            abort(422, __('api.general.error'));
+        }
+    }
+
+    /**
      * Display a listing of the user's orders.
      */
     public function index(Request $request): JsonResponse
@@ -269,7 +290,7 @@ class OrderController extends Controller
 
             $order->histories()->create([
                 'order_status_id' => OrderStatus::PENDING_ID,
-                'notes' => 'External payment completed successfully.',
+                'notes' => __('api.order.notes.external_payment_completed'),
             ]);
 
             foreach ($order->payments as $payment) {
@@ -277,7 +298,7 @@ class OrderController extends Controller
                     $payment->update(['status_id' => PaymentStatus::COMPLETED_ID]);
                     $payment->histories()->create([
                         'payment_status_id' => PaymentStatus::COMPLETED_ID,
-                        'notes' => 'External payment simulated as completed.',
+                        'notes' => __('api.order.notes.external_payment_simulated'),
                     ]);
                 }
             }

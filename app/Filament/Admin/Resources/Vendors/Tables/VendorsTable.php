@@ -16,6 +16,7 @@ use Filament\Actions\RestoreBulkAction;
 use Filament\Actions\ViewAction;
 use Filament\Forms\Components\Textarea;
 use Filament\Tables\Columns\IconColumn;
+use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Filters\TrashedFilter;
@@ -39,6 +40,11 @@ class VendorsTable
                 default => null,
             })
             ->columns([
+                ImageColumn::make('vendorProfile.store_front_image')
+                    ->label(__('admin.resources.vendor.store_photo'))
+                    ->getStateUsing(fn (User $record) => resolve_image_url($record->vendorProfile?->store_front_image))
+                    ->circular()
+                    ->disk(null),
                 TextColumn::make('vendorProfile.business_name')
 
                     ->label(__('admin.resources.vendor.business_name'))

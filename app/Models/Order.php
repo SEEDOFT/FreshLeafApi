@@ -177,6 +177,7 @@ class Order extends Model
             'order_delivered_date' => 'datetime',
             'order_cancelled_date' => 'datetime',
             'order_awaiting_payment_date' => 'datetime',
+            'consumer_confirmed_date' => 'datetime',
         ];
     }
 

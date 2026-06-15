@@ -40,16 +40,25 @@ Route::get('/livewire-debug', function (\Illuminate\Http\Request $request) {
         now()->addMinutes(30)
     );
 
+    // Simulate validation
+    $validateRequest = \Illuminate\Http\Request::create($url, 'POST');
+    $validateUrl = $validateRequest->url();
+    $validateOriginal = rtrim($validateUrl.'?'.\Illuminate\Support\Arr::query(
+        \Illuminate\Support\Arr::except($validateRequest->query(), ['signature'])
+    ), '?');
+    $expectedSignature = hash_hmac('sha256', $validateOriginal, config('app.key'));
+
     return [
         'generated_url' => $url,
+        'validate_url_used' => $validateUrl,
+        'validate_original_string_used' => $validateOriginal,
+        'validate_expected_signature' => $expectedSignature,
+        'validate_actual_signature' => $validateRequest->query('signature'),
+        'match' => hash_equals($expectedSignature, (string) $validateRequest->query('signature', '')),
+        
         'request_url' => $request->url(),
+        'request_query' => $request->query(),
         'request_scheme' => $request->getScheme(),
         'request_host' => $request->getHost(),
-        'request_port' => $request->getPort(),
-        'trusted_proxies' => $request->getTrustedProxies(),
-        'client_ips' => $request->getClientIps(),
-        'x_forwarded_host' => $request->header('x-forwarded-host'),
-        'x_forwarded_proto' => $request->header('x-forwarded-proto'),
-        'host_header' => $request->header('host'),
     ];
 });

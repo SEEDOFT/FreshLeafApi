@@ -53,7 +53,7 @@
                         if (!window.location.pathname.includes('/vendor/orders')) {
                             new FilamentNotification()
                                 .title(@json(__('api.notifications.new_order_title')))
-                                .body(@json(__('api.notifications.new_order_alert_template')).` #${event.orderNumber}`)
+                                .body(`${@json(__('api.notifications.new_order_alert_template'))} #${event.orderNumber}`)
                                 .warning()
                                 .send();
                         }

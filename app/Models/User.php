@@ -85,9 +85,9 @@ class User extends Authenticatable implements FilamentUser, HasAvatar, HasName
     public const string DEFAULT_PROFILE = StorageDirectory::USERS.'/'.'user.png';
 
     #[Override]
-    public function getFilamentAvatarUrl(): string
+    public function getFilamentAvatarUrl(): ?string
     {
-        return Storage::url($this->image);
+        return resolve_image_url($this->image) ?? resolve_image_url(self::DEFAULT_PROFILE);
     }
 
     /**

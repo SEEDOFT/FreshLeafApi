@@ -9,30 +9,22 @@ use App\Models\OrderStatus;
 use App\Notifications\Order\OrderStatusUpdatedNotification;
 use App\Notifications\Vendor\NewOrderAlertNotification;
 use App\Services\OrderService;
+use Illuminate\Console\Attributes\Description;
+use Illuminate\Console\Attributes\Signature;
 use Illuminate\Console\Command;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Carbon;
 
+#[Signature('app:monitor-pending-orders')]
+#[Description('Monitor pending orders and auto-cancel if not accepted within 5 minutes, also notify vendor every minute.')]
 class MonitorPendingOrders extends Command
 {
-    /**
-     * The name and signature of the console command.
-     *
-     * @var string
-     */
-    protected $signature = 'app:monitor-pending-orders';
-
-    /**
-     * The console command description.
-     *
-     * @var string
-     */
-    protected $description = 'Monitor pending orders and auto-cancel if not accepted within 5 minutes, also notify vendor every minute.';
-
     /**
      * Execute the console command.
      */
     public function handle(OrderService $orderService)
     {
+        /** @var Collection<int, Order> $pendingOrders */
         $pendingOrders = Order::with(['vendor', 'user', 'payments.paymentMethod', 'histories'])
             ->where('order_status_id', OrderStatus::PENDING_ID)
             ->whereNotNull('order_pending_date')

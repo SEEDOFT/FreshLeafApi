@@ -10,6 +10,7 @@ use App\Services\VendorPayoutService;
 use Illuminate\Console\Attributes\Description;
 use Illuminate\Console\Attributes\Signature;
 use Illuminate\Console\Command;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 
@@ -22,6 +23,7 @@ class AutoConfirmReceipts extends Command
      */
     public function handle(VendorPayoutService $payoutService)
     {
+        /** @var Collection<int, Order> $orders */
         $orders = Order::where('order_status_id', OrderStatus::DELIVERED_ID)
             ->whereNull('consumer_confirmed_date')
             ->where('order_delivered_date', '<=', Carbon::now()->subMinutes(15))

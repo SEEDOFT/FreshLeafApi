@@ -10,7 +10,10 @@ use App\Services\VendorPayoutService;
 use Illuminate\Console\Attributes\Description;
 use Illuminate\Console\Attributes\Signature;
 use Illuminate\Console\Command;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Carbon;
+use Throwable;
 
 #[Signature('payouts:process')]
 #[Description('Process vendor payouts for delivered orders')]
@@ -26,9 +29,10 @@ class ProcessVendorPayouts extends Command
         // 1 day ago
         $cutoffDate = Carbon::now()->subDay();
 
+        /** @var Collection<int, Order> $eligibleOrders */
         $eligibleOrders = Order::where('order_status_id', OrderStatus::DELIVERED_ID)
             ->where('is_vendor_paid', false)
-            ->where(function ($query) use ($cutoffDate) {
+            ->where(function (Builder $query) use ($cutoffDate): void {
                 $query->whereNotNull('consumer_confirmed_date')
                     ->orWhere('order_delivered_date', '<=', $cutoffDate);
             })
@@ -44,7 +48,7 @@ class ProcessVendorPayouts extends Command
                     $successCount++;
                     $this->line("Processed payout for Order #{$order->order_number}");
                 }
-            } catch (\Throwable $e) {
+            } catch (Throwable $e) {
                 $this->error("Failed to process payout for Order #{$order->order_number}: ".$e->getMessage());
             }
         }

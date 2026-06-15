@@ -52,10 +52,7 @@ class ProductCategoryForm
                                             ->unique(ignoreRecord: true),
                                         Select::make('product_category_status_id')
                                             ->label(__('admin.resources.product_category.status'))
-                                            ->options(
-                                                ProductCategoryStatus::all()
-                                                    ->pluck('translated_name', 'id')
-                                            )
+                                            ->options(fn () => ProductCategoryStatus::all()->pluck('translated_name', 'id'))
                                             ->required()
                                             ->default(ProductCategoryStatus::ACTIVE_ID),
                                         Textarea::make('description_en')

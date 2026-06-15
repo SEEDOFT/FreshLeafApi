@@ -67,7 +67,18 @@ class PaymentStatus extends Model
      */
     public function getTranslatedNameAttribute(): ?string
     {
-        return $this->{'name_'.App::currentLocale()};
+        return $this->{'name_'.App::getLocale()};
+    }
+
+    public function getColor(): string
+    {
+        return match ($this->id) {
+            self::PENDING_ID => 'info',
+            self::COMPLETED_ID => 'success',
+            self::FAILED_ID => 'danger',
+            self::REFUNDED_ID => 'warning',
+            default => 'gray',
+        };
     }
 
     /**

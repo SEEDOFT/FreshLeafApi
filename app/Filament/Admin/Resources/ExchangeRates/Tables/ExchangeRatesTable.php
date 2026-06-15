@@ -14,6 +14,7 @@ class ExchangeRatesTable
     public static function configure(Table $table): Table
     {
         return $table
+            ->recordClasses(fn () => 'bg-gray-50 dark:bg-gray-900/50 border-l-4 border-gray-400')
             ->columns([
                 TextColumn::make('fromCurrency.translated_currency')
                     ->label(__('admin.resources.exchange_rate.base_currency'))
@@ -38,10 +39,7 @@ class ExchangeRatesTable
             ->filters([
                 SelectFilter::make('from_currency_id')
                     ->label(__('admin.resources.exchange_rate.filter_currency_pair'))
-                    ->options(
-                        Currency::all()
-                            ->pluck('translated_currency', 'id')
-                    ),
+                    ->options(fn () => Currency::all()->pluck('translated_currency', 'id')),
             ])
             ->recordActions([])
             ->toolbarActions([]);

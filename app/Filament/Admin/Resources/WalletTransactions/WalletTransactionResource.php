@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Filament\Admin\Resources\WalletTransactions;
 
-use App\Filament\Admin\Resources\WalletTransactions\Pages\CreateWalletTransaction;
 use App\Filament\Admin\Resources\WalletTransactions\Pages\ListWalletTransactions;
 use App\Filament\Admin\Resources\WalletTransactions\Schemas\WalletTransactionForm;
 use App\Filament\Admin\Resources\WalletTransactions\Schemas\WalletTransactionInfolist;
@@ -62,6 +61,12 @@ class WalletTransactionResource extends Resource
     }
 
     #[Override]
+    public static function canCreate(): bool
+    {
+        return false;
+    }
+
+    #[Override]
     public static function getRelations(): array
     {
         return [
@@ -74,15 +79,6 @@ class WalletTransactionResource extends Resource
     {
         return [
             'index' => ListWalletTransactions::route('/'),
-            'create' => CreateWalletTransaction::route('/create'),
         ];
-    }
-
-    #[Override]
-    public static function getNavigationBadge(): ?string
-    {
-        $count = static::getEloquentQuery()->count();
-
-        return $count > 0 ? (string) $count : null;
     }
 }

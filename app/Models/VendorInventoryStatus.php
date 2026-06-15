@@ -48,6 +48,17 @@ class VendorInventoryStatus extends Model
         return $this->{'name_'.App::getLocale()};
     }
 
+    public function getColor(): string
+    {
+        return match ($this->id) {
+            self::AVAILABLE_ID => 'success',
+            self::OUT_OF_STOCK_ID => 'danger',
+            self::HIDDEN_ID => 'gray',
+            self::PENDING_REVIEW_ID => 'warning',
+            default => 'gray',
+        };
+    }
+
     /**
      * Get the inventories that belong to this status.
      *

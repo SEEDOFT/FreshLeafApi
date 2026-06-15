@@ -57,6 +57,16 @@ class ProductStatus extends Model
         return $this->{'name_'.App::getLocale()};
     }
 
+    public function getColor(): string
+    {
+        return match ($this->id) {
+            self::PUBLISHED_ID => 'success',
+            self::DRAFT_ID => 'warning',
+            self::ARCHIVED_ID => 'danger',
+            default => 'gray',
+        };
+    }
+
     /**
      * Get the products for the product status.
      *

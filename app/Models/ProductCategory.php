@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Models;
 
-use App\Constants\StorageDirectory;
 use Database\Factories\ProductCategoryFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Scope;
@@ -104,17 +103,7 @@ class ProductCategory extends Model
      * Get the full URL for the category image.
      */
     public ?string $imageUrl {
-        get {
-            if (! $this->image_url) {
-                return null;
-            }
-
-            if (filter_var($this->image_url, FILTER_VALIDATE_URL)) {
-                return $this->image_url;
-            }
-
-            return asset('storage/'.StorageDirectory::PRODUCT_CATEGORIES.'/'.$this->image_url);
-        }
+        get => resolve_image_url($this->image_url);
     }
 
     /**

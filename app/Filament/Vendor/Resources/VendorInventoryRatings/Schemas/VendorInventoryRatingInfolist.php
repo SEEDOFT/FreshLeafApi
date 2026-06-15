@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Filament\Vendor\Resources\VendorInventoryRatings\Schemas;
 
+use App\Filament\Vendor\Resources\ProductInventories\ProductInventoryResource;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
@@ -39,20 +40,26 @@ class VendorInventoryRatingInfolist
                         TextEntry::make('review')
                             ->label(__('shared.rating.review'))
                             ->columnSpanFull(),
+                        TextEntry::make('orderItem.order.order_number')
+                            ->label(__('shared.order.order_number')),
+                        TextEntry::make('orderItem.id')
+                            ->label(__('shared.rating.order_item') ?? 'Order Item ID'),
                     ]),
 
                 Section::make(__('shared.rating.product_info'))
                     ->columns(2)
                     ->schema([
                         TextEntry::make('vendorInventory.product.name_en')
-                            ->label(__('shared.product.name_en')),
+                            ->label(__('shared.product.name_en'))
+                            ->url(fn ($record) => ProductInventoryResource::getUrl('view', ['record' => $record->vendor_inventory_id]))
+                            ->color('primary'),
                         TextEntry::make('vendorInventory.product.name_km')
                             ->label(__('shared.product.name_km')),
                         TextEntry::make('vendorInventory.unit.translated_name')
                             ->label(__('shared.product.unit')),
                         TextEntry::make('vendorInventory.price')
                             ->label(__('shared.product.unit_price'))
-                            ->money(fn ($record) => $record->vendorInventory->currency->code),
+                            ->formatStateUsing(fn ($record) => format_currency($record->vendorInventory->price, $record->vendorInventory->currency->code)),
                     ]),
 
                 Section::make(__('shared.rating.system_info'))

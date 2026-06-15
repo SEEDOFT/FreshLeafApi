@@ -133,7 +133,7 @@ class ListWallets extends Page
                             }),
                         Select::make('payout_method_id')
                             ->label(__('shared.wallet.payout_method'))
-                            ->options(PayoutMethod::all()->pluck('translated_name', 'id'))
+                            ->options(fn () => PayoutMethod::all()->pluck('translated_name', 'id'))
                             ->default(PayoutMethod::BANK_TRANSFER_ID)
                             ->required(),
                     ];

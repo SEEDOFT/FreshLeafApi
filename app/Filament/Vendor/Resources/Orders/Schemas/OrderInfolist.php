@@ -5,9 +5,6 @@ declare(strict_types=1);
 namespace App\Filament\Vendor\Resources\Orders\Schemas;
 
 use App\Models\Order;
-use App\Models\OrderStatus;
-use App\Models\PaymentMethodType;
-use App\Models\PaymentStatus;
 use Filament\Infolists\Components\ImageEntry;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Schemas\Components\Section;
@@ -30,16 +27,7 @@ class OrderInfolist
                         TextEntry::make('status.translated_name')
                             ->label(__('admin.resources.order.status'))
                             ->badge()
-                            ->color(fn (Order $record): string => match ($record->status->id) {
-                                OrderStatus::PENDING_ID => 'gray',
-                                OrderStatus::CONFIRMED_ID => 'info',
-                                OrderStatus::PREPARING_ID => 'warning',
-                                OrderStatus::OUT_FOR_DELIVERY_ID => 'fuchsia',
-                                OrderStatus::DELIVERED_ID => 'success',
-                                OrderStatus::CANCELLED_ID => 'danger',
-                                OrderStatus::AWAITING_PAYMENT_ID => 'warning',
-                                default => 'primary',
-                            }),
+                            ->color(fn (Order $record): string => $record->status?->getColor() ?? 'primary'),
                         TextEntry::make('type.translated_name')
                             ->label(__('admin.resources.order.order_type'))
                             ->badge()
@@ -128,24 +116,11 @@ class OrderInfolist
                         TextEntry::make('paymentStatus.translated_name')
                             ->label(__('admin.resources.order.payment_status'))
                             ->badge()
-                            ->color(fn (Order $record): string => match ($record->paymentStatus->id) {
-                                PaymentStatus::PENDING_ID => 'info',
-                                PaymentStatus::COMPLETED_ID => 'success',
-                                PaymentStatus::FAILED_ID => 'danger',
-                                PaymentStatus::REFUNDED_ID => 'warning',
-                                default => 'gray',
-                            }),
+                            ->color(fn (Order $record): string => $record->paymentStatus?->getColor() ?? 'gray'),
                         TextEntry::make('payment.paymentMethod.type.translated_name')
                             ->label(__('admin.resources.order.payment_method'))
                             ->badge()
-                            ->color(fn (Order $record): string => match ($record->payment?->paymentMethod?->payment_method_type_id) {
-                                PaymentMethodType::WALLET_ID => 'primary',
-                                PaymentMethodType::CREDIT_DEBIT_ID => 'info',
-                                PaymentMethodType::ABA_ID => 'success',
-                                PaymentMethodType::ACLEDA_ID => 'warning',
-                                PaymentMethodType::COD_ID => 'gray',
-                                default => 'gray',
-                            }),
+                            ->color(fn (Order $record): string => $record->payment?->paymentMethod?->type?->getColor() ?? 'gray'),
                         TextEntry::make('payment.paid_at')
                             ->label(__('admin.resources.order.paid_at'))
                             ->dateTime('h:i A, d M Y'),

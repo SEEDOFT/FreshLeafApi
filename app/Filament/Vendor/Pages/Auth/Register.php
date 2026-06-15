@@ -202,6 +202,7 @@ class Register extends BaseRegister
                     FileUpload::make('organic_certificate_url')
                         ->label(__('shared.auth.register.organic_cert'))
                         ->disk('local')
+                        ->required()
                         ->directory(StorageDirectory::VENDOR_VERIFICATION),
                 ]),
             ]);
@@ -216,13 +217,15 @@ class Register extends BaseRegister
                 Grid::make(3)->schema([
                     Select::make('payment_method_type_id')
                         ->label(__('shared.auth.register.bank_name'))
-                        ->options(
+                        ->options(fn () =>
                             PaymentMethodType::whereIn('id', [
                                 PaymentMethodType::ABA_ID,
                                 PaymentMethodType::ACLEDA_ID,
-                            ])->pluck('name_en', 'id')
+                            ])->pluck('translated_name', 'id')
                         )
                         ->required()
+                        ->disabled()
+                        ->default(PaymentMethodType::ABA_ID)
                         ->live()
                         ->afterStateUpdated(function (Set $set, ?string $state): void {
                             if ($state) {

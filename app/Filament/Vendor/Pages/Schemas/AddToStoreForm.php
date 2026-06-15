@@ -37,7 +37,7 @@ class AddToStoreForm
                 ->required(),
             Select::make('unit_id')
                 ->label(__('shared.product.unit'))
-                ->options(Unit::all()->pluck('translated_name', 'id'))
+                ->options(fn () => Unit::all()->pluck('translated_name', 'id'))
                 ->required(),
             TextInput::make('province_of_origin')
                 ->label(__('shared.product.province_of_origin')),
@@ -53,7 +53,7 @@ class AddToStoreForm
                 ->suffix(' '.__('shared.product.days')),
             Select::make('packaging_type_id')
                 ->label(__('shared.product.packaging_type'))
-                ->options(PackagingType::all()->pluck('translated_name', 'id')),
+                ->options(fn () => PackagingType::all()->pluck('translated_name', 'id')),
             FileUpload::make('batch_images')
                 ->label(__('shared.product.visuals'))
                 ->multiple()

@@ -29,9 +29,19 @@ class VendorInventoryTable
             )
             ->recordClasses(function (VendorInventory $record): ?string {
                 $classes = [];
-                if ((int) $record->inventory_status_id === VendorInventoryStatus::PENDING_REVIEW_ID) {
-                    $classes[] = '!bg-danger-500/10';
+
+                $statusColor = match ((int) $record->inventory_status_id) {
+                    VendorInventoryStatus::AVAILABLE_ID => 'bg-green-50 dark:bg-green-900/50 border-l-4 border-green-400',
+                    VendorInventoryStatus::OUT_OF_STOCK_ID => 'bg-red-50 dark:bg-red-900/50 border-l-4 border-red-400',
+                    VendorInventoryStatus::PENDING_REVIEW_ID => 'bg-yellow-50 dark:bg-yellow-900/50 border-l-4 border-yellow-400',
+                    VendorInventoryStatus::HIDDEN_ID => 'bg-gray-50 dark:bg-gray-900/50 border-l-4 border-gray-400',
+                    default => '',
+                };
+
+                if ($statusColor !== '') {
+                    $classes[] = $statusColor;
                 }
+
                 if ($record->discount_percentage > 0) {
                     $classes[] = 'border-s-4 border-s-success-600 dark:border-s-success-400';
                 }
@@ -100,10 +110,7 @@ class VendorInventoryTable
                     ->relationship('product.productCategory', 'name_en'),
                 SelectFilter::make('inventory_status_id')
                     ->label(__('admin.resources.product.status'))
-                    ->options(
-                        VendorInventoryStatus::all()
-                            ->pluck('translated_name', 'id')
-                    ),
+                    ->options(fn () => VendorInventoryStatus::all()->pluck('translated_name', 'id')),
             ])
             ->actions([
                 ViewAction::make(),

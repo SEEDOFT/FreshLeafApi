@@ -16,6 +16,7 @@ class UnitsTable
     {
         return $table
             ->stackedOnMobile()
+            ->recordClasses(fn () => 'bg-gray-50 dark:bg-gray-900/50 border-l-4 border-gray-400')
             ->columns([
                 TextColumn::make('name_km')
                     ->label(__('admin.resources.unit.name_km'))

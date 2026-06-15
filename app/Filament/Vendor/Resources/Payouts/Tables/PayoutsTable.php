@@ -14,6 +14,13 @@ class PayoutsTable
     public static function configure(Table $table): Table
     {
         return $table
+            ->recordAction('view')
+            ->recordClasses(fn (Payout $record) => match ($record->status_id) {
+                Payout::STATUS_PENDING => 'bg-yellow-50 dark:bg-yellow-900/50 border-l-4 border-yellow-400',
+                Payout::STATUS_PAID => 'bg-green-50 dark:bg-green-900/50 border-l-4 border-green-400',
+                Payout::STATUS_FAILED => 'bg-red-50 dark:bg-red-900/50 border-l-4 border-red-400',
+                default => null,
+            })
             ->columns([
                 TextColumn::make('amount')
                     ->label(__('shared.payout.amount'))
@@ -26,13 +33,7 @@ class PayoutsTable
                 TextColumn::make('status.name')
                     ->label(__('shared.payout.status'))
                     ->badge()
-                    ->color(fn (string $state): string => match ($state) {
-                        'Pending' => 'warning',
-                        'Processing' => 'info',
-                        'Completed' => 'success',
-                        'Failed' => 'danger',
-                        default => 'gray',
-                    }),
+                    ->color(fn (Payout $record): string => $record->status?->getColor() ?? 'gray'),
 
                 TextColumn::make('method.name')
                     ->label(__('shared.payout.method')),

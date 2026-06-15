@@ -7,8 +7,6 @@ namespace App\Filament\Vendor\Resources\Wallets\Schemas;
 use App\Models\Order;
 use App\Models\Payout;
 use App\Models\WalletTransaction;
-use App\Models\WalletTransactionStatus;
-use App\Models\WalletTransactionType;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
@@ -32,23 +30,11 @@ class WalletTransactionInfolist
                         TextEntry::make('type.translated_name')
                             ->label(__('admin.resources.wallet_transaction.type'))
                             ->badge()
-                            ->color(fn (WalletTransaction $record) => match ($record->wallet_transaction_type_id) {
-                                WalletTransactionType::DEPOSIT_ID => 'success',
-                                WalletTransactionType::WITHDRAWAL_ID => 'warning',
-                                WalletTransactionType::PAYMENT_ID => 'danger',
-                                WalletTransactionType::REFUND_ID => 'info',
-                                default => 'gray',
-                            }),
+                            ->color(fn (WalletTransaction $record) => $record->type?->getColor() ?? 'gray'),
                         TextEntry::make('status.translated_name')
                             ->label(__('admin.resources.wallet_transaction.status'))
                             ->badge()
-                            ->color(fn (WalletTransaction $record) => match ($record->wallet_transaction_status_id) {
-                                WalletTransactionStatus::COMPLETED_ID => 'success',
-                                WalletTransactionStatus::PENDING_ID => 'warning',
-                                WalletTransactionStatus::FAILED_ID,
-                                WalletTransactionStatus::CANCELLED_ID => 'danger',
-                                default => 'gray',
-                            }),
+                            ->color(fn (WalletTransaction $record) => $record->status?->getColor() ?? 'gray'),
                         TextEntry::make('transaction_date')
                             ->label(__('admin.resources.wallet_transaction.transaction_date'))
                             ->dateTime('h:i A, d M Y'),
@@ -61,7 +47,7 @@ class WalletTransactionInfolist
                         TextEntry::make('reference.payout_number')
                             ->label(__('admin.resources.payout.payout_number'))
                             ->visible(fn (WalletTransaction $record) => $record->reference_type === Payout::class),
-                    ])->columns(2),
+                    ])->columns(2)->columnSpanFull(),
             ]);
     }
 }

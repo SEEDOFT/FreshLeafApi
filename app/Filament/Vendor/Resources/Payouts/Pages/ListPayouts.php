@@ -5,9 +5,13 @@ declare(strict_types=1);
 namespace App\Filament\Vendor\Resources\Payouts\Pages;
 
 use App\Filament\Vendor\Resources\Payouts\PayoutResource;
+use App\Models\PaymentMethodType;
 use App\Models\Payout;
 use App\Models\Wallet;
 use App\Models\WalletTransaction;
+use App\Models\WalletTransactionStatus;
+use App\Models\WalletTransactionType;
+use Closure;
 use Filament\Actions\CreateAction;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
@@ -45,8 +49,8 @@ class ListPayouts extends ListRecords
                         ->numeric()
                         ->required()
                         ->rules([
-                            function (Get $get): \Closure {
-                                return function (string $attribute, $value, \Closure $fail) use ($get) {
+                            function (Get $get): Closure {
+                                return function (string $attribute, $value, Closure $fail) use ($get) {
                                     $currencyId = $get('currency_id');
                                     if (! $currencyId) {
                                         return;
@@ -90,6 +94,8 @@ class ListPayouts extends ListRecords
                     Select::make('payout_method_id')
                         ->label(__('shared.payout.method'))
                         ->relationship('method', 'name_en')
+                        ->default(PaymentMethodType::ABA_ID)
+                        ->disabled()
                         ->required(),
                     Textarea::make('notes')
                         ->label(__('shared.payout.notes')),
@@ -110,8 +116,8 @@ class ListPayouts extends ListRecords
                         WalletTransaction::create([
                             'wallet_id' => $wallet->id,
                             'currency_id' => $record->currency_id,
-                            'wallet_transaction_type_id' => 2, // Withdrawal
-                            'wallet_transaction_status_id' => 1, // Pending
+                            'wallet_transaction_type_id' => WalletTransactionType::WITHDRAWAL_ID,
+                            'wallet_transaction_status_id' => WalletTransactionStatus::PENDING_ID,
                             'amount' => $record->amount,
                             'reference_id' => $record->id,
                             'reference_type' => Payout::class,

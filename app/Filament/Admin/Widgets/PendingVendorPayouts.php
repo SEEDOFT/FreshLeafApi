@@ -18,6 +18,12 @@ class PendingVendorPayouts extends TableWidget
         return $table
             ->heading(__('admin.resources.payout.plural_label'))
             ->query(fn () => Payout::query()->where('status_id', Payout::STATUS_PENDING)->latest())
+            ->recordClasses(fn (Payout $record) => match ($record->status_id) {
+                Payout::STATUS_PENDING => 'bg-yellow-50 dark:bg-yellow-900/50 border-l-4 border-yellow-400',
+                Payout::STATUS_PAID => 'bg-green-50 dark:bg-green-900/50 border-l-4 border-green-400',
+                Payout::STATUS_FAILED => 'bg-red-50 dark:bg-red-900/50 border-l-4 border-red-400',
+                default => null,
+            })
             ->columns([
                 TextColumn::make('vendor.vendorProfile.business_name')
                     ->label(__('admin.resources.payout.business')),

@@ -278,6 +278,16 @@ class User extends Authenticatable implements FilamentUser, HasAvatar, HasName
     }
 
     /**
+     * Get the orders for the vendor.
+     *
+     * @return HasMany<Order, $this>
+     */
+    public function vendorOrders(): HasMany
+    {
+        return $this->hasMany(Order::class, 'vendor_id', 'id');
+    }
+
+    /**
      * The channels the user receives notification broadcasts on.
      */
     public function receivesBroadcastNotificationsOn(): string

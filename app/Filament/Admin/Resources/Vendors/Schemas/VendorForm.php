@@ -114,21 +114,14 @@ class VendorForm
                             ->revealable(),
                         Select::make('user_type_id')
                             ->label(__('admin.resources.user.type'))
-                            ->options(
-                                UserType::all()
-                                    ->pluck('translated_name', 'id')
-                            )
+                            ->options(fn () => UserType::all()->pluck('translated_name', 'id'))
                             ->required(fn (string $operation): bool => $operation === 'create')
                             ->default(UserType::VENDOR_ID)
                             ->disabled()
                             ->dehydrated(fn (mixed $state): bool => filled($state)),
                         Select::make('user_status_id')
                             ->label(__('admin.resources.user.status'))
-                            ->options(
-                                UserStatus::where('id', '!=', UserStatus::DELETED_ID)
-                                    ->get()
-                                    ->pluck('translated_name', 'id')
-                            )
+                            ->options(fn () => UserStatus::where('id', '!=', UserStatus::DELETED_ID)->get()->pluck('translated_name', 'id'))
                             ->default(UserStatus::ACTIVE_ID)
                             ->required(fn (string $operation): bool => $operation === 'create')
                             ->dehydrated(fn (mixed $state): bool => filled($state)),
@@ -218,11 +211,11 @@ class VendorForm
                         Grid::make(3)->schema([
                             Select::make('payment_method_type_id')
                                 ->label(__('admin.resources.vendor.bank_name'))
-                                ->options(
+                                ->options(fn () =>
                                     PaymentMethodType::whereIn('id', [
                                         PaymentMethodType::ABA_ID,
                                         PaymentMethodType::ACLEDA_ID,
-                                    ])->pluck('name_en', 'id')
+                                    ])->pluck('translated_name', 'id')
                                 )
                                 ->required(fn (string $operation): bool => $operation === 'create')
                                 ->live()

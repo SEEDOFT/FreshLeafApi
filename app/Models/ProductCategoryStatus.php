@@ -44,6 +44,15 @@ class ProductCategoryStatus extends Model
         return $this->{'name_'.App::getLocale()};
     }
 
+    public function getColor(): string
+    {
+        return match ($this->id) {
+            self::ACTIVE_ID => 'success',
+            self::INACTIVE_ID => 'danger',
+            default => 'gray',
+        };
+    }
+
     /**
      * Get the categories for the status.
      *

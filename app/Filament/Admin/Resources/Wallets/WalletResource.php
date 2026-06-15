@@ -8,12 +8,18 @@ use App\Filament\Admin\Resources\Wallets\Pages\CreateWallet;
 use App\Filament\Admin\Resources\Wallets\Pages\EditWallet;
 use App\Filament\Admin\Resources\Wallets\Pages\ListWallets;
 use App\Filament\Admin\Resources\Wallets\Schemas\WalletForm;
+use App\Models\Order;
 use App\Models\UserType;
 use App\Models\Wallet;
 use BackedEnum;
+use Filament\Actions\EditAction;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Filters\SelectFilter;
+use Filament\Tables\Grouping\Group;
+use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Override;
 
@@ -49,6 +55,69 @@ class WalletResource extends Resource
         return WalletForm::configure($schema);
     }
 
+    public static function table(Table $table): Table
+    {
+        return $table
+            ->columns([
+                TextColumn::make('user.first_name')
+                    ->label(__('admin.resources.wallet.user'))
+                    ->formatStateUsing(fn ($state, Wallet $record) => $record->user?->fullName ?? '-')
+                    ->searchable(['first_name', 'last_name'])
+                    ->sortable(),
+
+                TextColumn::make('user.type.translated_name')
+                    ->label(__('admin.resources.user.type') ?? 'User Type')
+                    ->badge()
+                    ->color(fn ($state, Wallet $record) => $record->user?->type?->getColor() ?? 'gray'),
+
+                TextColumn::make('user.status.translated_name')
+                    ->label(__('admin.resources.user.status') ?? 'Status')
+                    ->badge()
+                    ->color(fn ($state, Wallet $record) => $record->user?->status?->getColor() ?? 'gray'),
+
+                TextColumn::make('currency.code')
+                    ->label(__('admin.resources.wallet.currency'))
+                    ->badge()
+                    ->sortable(),
+
+                TextColumn::make('balance')
+                    ->label(__('admin.resources.wallet.balance'))
+                    ->formatStateUsing(fn ($state, Wallet $record) => Order::formatMoney((float) $state, $record->currency))
+                    ->sortable(),
+
+                TextColumn::make('updated_at')
+                    ->label(__('admin.resources.updated_at'))
+                    ->dateTime('h:i A, d M Y')
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+            ])
+            ->defaultGroup(
+                Group::make('user_id')
+                    ->label('User')
+                    ->getTitleFromRecordUsing(fn (Wallet $record): string => $record->user?->fullName ?? 'Unknown')
+            )
+            ->filters([
+                SelectFilter::make('user_type_id')
+                    ->label('User Type')
+                    ->options([
+                        UserType::ADMIN_ID => __('admin.resources.wallet.filter_admin'),
+                        UserType::VENDOR_ID => __('admin.resources.wallet.filter_vendor'),
+                        UserType::CONSUMER_ID => __('admin.resources.wallet.filter_consumer'),
+                    ])
+                    ->query(function (Builder $query, array $data): Builder {
+                        if (empty($data['value'])) {
+                            return $query;
+                        }
+
+                        return $query->whereHas('user', fn ($q) => $q->where('user_type_id', $data['value']));
+                    }),
+            ])
+            ->actions([
+                EditAction::make()
+                    ->label('View Details'),
+            ]);
+    }
+
     #[Override]
     public static function getEloquentQuery(): Builder
     {
@@ -78,13 +147,5 @@ class WalletResource extends Resource
             'create' => CreateWallet::route('/create'),
             'edit' => EditWallet::route('/{record}/edit'),
         ];
-    }
-
-    #[Override]
-    public static function getNavigationBadge(): ?string
-    {
-        $count = static::getEloquentQuery()->count();
-
-        return $count > 0 ? (string) $count : null;
     }
 }

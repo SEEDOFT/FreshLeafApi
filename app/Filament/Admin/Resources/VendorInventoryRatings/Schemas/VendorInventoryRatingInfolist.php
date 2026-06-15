@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Filament\Admin\Resources\VendorInventoryRatings\Schemas;
 
+use App\Filament\Admin\Resources\VendorInventories\VendorInventoryResource;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
@@ -30,12 +31,16 @@ class VendorInventoryRatingInfolist
                     ->columns(2)
                     ->schema([
                         TextEntry::make('vendorInventory.product.name_en')
-                            ->label(__('admin.resources.product.name_en')),
+                            ->label(__('admin.resources.product.name_en'))
+                            ->url(fn ($record) => VendorInventoryResource::getUrl('view', ['record' => $record->vendor_inventory_id]))
+                            ->color('primary'),
+                        TextEntry::make('vendorInventory.product.name_km')
+                            ->label(__('admin.resources.product.name_km') ?? 'Product Name (KM)'),
                         TextEntry::make('vendorInventory.unit.translated_name')
                             ->label(__('admin.resources.product.unit')),
                         TextEntry::make('vendorInventory.price')
                             ->label(__('admin.resources.product.unit_price'))
-                            ->money(fn ($record) => $record->vendorInventory->currency->code),
+                            ->formatStateUsing(fn ($record) => format_currency($record->vendorInventory->price, $record->vendorInventory->currency->code)),
                     ]),
 
                 Section::make(__('admin.resources.rating.rating_info'))

@@ -6,26 +6,16 @@ namespace App\Console\Commands;
 
 use App\Models\VendorInventory;
 use App\Notifications\InventoryExpiringNotification;
+use Illuminate\Console\Attributes\Description;
+use Illuminate\Console\Attributes\Signature;
 use Illuminate\Console\Command;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Carbon;
 
+#[Signature('app:check-expiring-inventory')]
+#[Description('Check for vendor inventory that is close to expiration and send alerts')]
 class CheckExpiringInventory extends Command
 {
-    /**
-     * The name and signature of the console command.
-     *
-     * @var string
-     */
-    protected $signature = 'app:check-expiring-inventory';
-
-    /**
-     * The console command description.
-     *
-     * @var string
-     */
-    protected $description = 'Check for vendor inventory that is close to expiration and send alerts';
-
     /**
      * Execute the console command.
      */

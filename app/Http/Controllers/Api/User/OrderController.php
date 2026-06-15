@@ -26,7 +26,6 @@ use Symfony\Component\HttpFoundation\StreamedResponse;
 
 use function abort;
 use function count;
-use function in_array;
 
 class OrderController extends Controller
 {
@@ -162,13 +161,7 @@ class OrderController extends Controller
             abort(404, __('api.general.not_found'));
         }
 
-        if (
-            ! in_array(
-                $order->order_status_id,
-                [OrderStatus::DELIVERED_ID, OrderStatus::PREPARING_ID, OrderStatus::OUT_FOR_DELIVERY_ID],
-                true
-            )
-        ) {
+        if ($order->order_status_id !== OrderStatus::DELIVERED_ID) {
             abort(422, __('api.order.cannot_confirm_receipt'));
         }
 

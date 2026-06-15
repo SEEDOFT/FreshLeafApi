@@ -30,10 +30,7 @@ class WalletForm
                             ->dehydrated(fn (mixed $state): bool => filled($state)),
                         Select::make('currency_id')
                             ->label(__('admin.resources.wallet.currency'))
-                            ->options(
-                                Currency::all()
-                                    ->pluck('translated_currency', 'id')
-                            )
+                            ->options(fn () => Currency::all()->pluck('translated_currency', 'id'))
                             ->required(fn (string $operation): bool => $operation === 'create')
                             ->dehydrated(fn (mixed $state): bool => filled($state)),
                         TextInput::make('balance')

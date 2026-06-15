@@ -6,7 +6,6 @@ namespace App\Filament\Admin\Resources\Vendors\Schemas;
 
 use App\Models\PaymentMethod;
 use App\Models\User;
-use App\Models\UserStatus;
 use App\Models\Wallet;
 use Filament\Infolists\Components\IconEntry;
 use Filament\Infolists\Components\ImageEntry;
@@ -50,16 +49,11 @@ class VendorInfolist
                         TextEntry::make('type.translated_name')
                             ->label(__('admin.resources.user.type'))
                             ->badge()
-                            ->color('warning'),
+                            ->color(fn (User $record): string => $record->type?->getColor() ?? 'gray'),
                         TextEntry::make('status.translated_name')
                             ->label(__('admin.resources.user.status'))
                             ->badge()
-                            ->color(fn (User $record): string => match ($record->user_status_id) {
-                                UserStatus::ACTIVE_ID => 'success',
-                                UserStatus::PENDING_ID => 'warning',
-                                UserStatus::INACTIVE_ID, UserStatus::REJECTED_ID, UserStatus::DELETED_ID => 'danger',
-                                default => 'gray',
-                            }),
+                            ->color(fn (User $record): string => $record->status?->getColor() ?? 'gray'),
                     ]),
 
                 Section::make(__('admin.resources.vendor.profile_info'))

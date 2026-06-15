@@ -7,25 +7,15 @@ namespace App\Console\Commands;
 use App\Models\Order;
 use App\Models\OrderStatus;
 use App\Services\VendorPayoutService;
+use Illuminate\Console\Attributes\Description;
+use Illuminate\Console\Attributes\Signature;
 use Illuminate\Console\Command;
 use Illuminate\Support\Carbon;
 
+#[Signature('payouts:process')]
+#[Description('Process vendor payouts for delivered orders')]
 class ProcessVendorPayouts extends Command
 {
-    /**
-     * The name and signature of the console command.
-     *
-     * @var string
-     */
-    protected $signature = 'payouts:process';
-
-    /**
-     * The console command description.
-     *
-     * @var string
-     */
-    protected $description = 'Process vendor payouts for delivered orders';
-
     /**
      * Execute the console command.
      */

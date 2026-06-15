@@ -162,6 +162,7 @@ return [
             'reference' => 'Reference',
             'paid_on' => 'Paid On',
             'payout_number' => 'Payout #',
+            'pending_amount' => 'Pending Payout Amount',
             'approve' => 'Approve',
             'reject' => 'Reject',
             'approved_success' => 'Payout approved successfully.',

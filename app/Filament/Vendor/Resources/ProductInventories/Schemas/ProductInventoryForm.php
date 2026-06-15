@@ -56,10 +56,7 @@ class ProductInventoryForm
                             ->columnSpanFull(),
                         Select::make('product_id')
                             ->label(__('shared.product.label'))
-                            ->options(
-                                Product::get()
-                                    ->pluck('translated_name', 'id')
-                            )
+                            ->options(fn () => Product::get()->pluck('translated_name', 'id'))
                             ->disabled()
                             ->dehydrated(fn (mixed $state): bool => filled($state))
                             ->required()
@@ -72,9 +69,7 @@ class ProductInventoryForm
                             ->required(),
                         Select::make('currency_id')
                             ->label(__('shared.product.currency'))
-                            ->options(Currency::all()
-                                ->pluck('translated_currency', 'id')
-                            )
+                            ->options(fn () => Currency::all()->pluck('translated_currency', 'id'))
                             ->disabled()
                             ->dehydrated(fn (mixed $state): bool => filled($state))
                             ->required(),
@@ -84,17 +79,11 @@ class ProductInventoryForm
                             ->required(),
                         Select::make('unit_id')
                             ->label(__('shared.product.unit'))
-                            ->options(
-                                Unit::all()
-                                    ->pluck('translated_name', 'id')
-                            )
+                            ->options(fn () => Unit::all()->pluck('translated_name', 'id'))
                             ->required(),
                         Select::make('inventory_status_id')
                             ->label(__('shared.product.status'))
-                            ->options(
-                                VendorInventoryStatus::all()
-                                    ->pluck('translated_name', 'id')
-                            )
+                            ->options(fn () => VendorInventoryStatus::all()->pluck('translated_name', 'id'))
                             ->required(),
                     ]),
                 Section::make(__('shared.product.organic_traceability'))
@@ -119,7 +108,7 @@ class ProductInventoryForm
                             ->required(),
                         Select::make('packaging_type_id')
                             ->label(__('shared.product.packaging_type'))
-                            ->options(PackagingType::all()->pluck('translated_name', 'id'))
+                            ->options(fn () => PackagingType::all()->pluck('translated_name', 'id'))
                             ->required(),
                     ]),
                 Section::make(__('shared.product.visuals'))

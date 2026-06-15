@@ -58,6 +58,16 @@ class WalletTransactionStatus extends Model
         return $this->{'name_'.App::getLocale()};
     }
 
+    public function getColor(): string
+    {
+        return match ($this->id) {
+            self::COMPLETED_ID => 'success',
+            self::PENDING_ID => 'warning',
+            self::FAILED_ID, self::CANCELLED_ID => 'danger',
+            default => 'gray',
+        };
+    }
+
     /**
      * Get status code.
      */

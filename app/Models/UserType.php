@@ -59,4 +59,14 @@ class UserType extends Model
     {
         return $this->{'name_'.App::currentLocale()};
     }
+
+    public function getColor(): string
+    {
+        return match ($this->id) {
+            self::ADMIN_ID => 'danger',
+            self::VENDOR_ID => 'warning',
+            self::CONSUMER_ID => 'success',
+            default => 'gray',
+        };
+    }
 }

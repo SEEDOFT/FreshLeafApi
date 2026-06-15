@@ -99,11 +99,10 @@ class Product extends Model
     }
 
     /**
-     * Get the translated description of the product.
+     * Get the full URL for the product image.
      */
-    public function getTranslatedDescriptionAttribute(): ?string
-    {
-        return $this->{'description_'.App::getLocale()};
+    public ?string $imageUrl {
+        get => resolve_image_url($this->image_url);
     }
 
     /**

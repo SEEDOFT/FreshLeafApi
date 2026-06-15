@@ -1,25 +1,35 @@
 <x-filament-panels::page>
-    <div class="fl-wallets fl-wallets--compact">
-        <div class="flex flex-wrap items-center gap-2 mb-4">
-            <span
-                class="text-sm font-medium text-gray-500 dark:text-gray-400">{{ __('admin.resources.wallet.user') }}:</span>
-            @foreach ($this->getUserTypeFilterOptions() as $value => $label)
-                @php $active = $this->userTypeFilter === null && $value === 0 || $this->userTypeFilter === $value && $value !== 0; @endphp
-                <button wire:click="filterByUserType({{ $value }})"
-                    class="px-3 py-1.5 text-sm rounded-lg border transition-colors duration-150
-                        @if ($active) bg-primary-500 text-white border-primary-500
-                        @else
-                            bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700 @endif
-                    ">
-                    {{ $label }}
-                </button>
-            @endforeach
+    @if (! $selectedUserId)
+        <div wire:key="wallets-table-view" class="mb-8">
+            {{ $this->table }}
         </div>
+    @else
+        <div wire:key="wallets-detail-view" class="mb-4">
+            <x-filament::button wire:click="clearSelectedUser" color="gray" icon="heroicon-m-arrow-left">
+                Back to Users
+            </x-filament::button>
+        </div>
+        <div class="fl-wallets fl-wallets--compact">
+
         @if (empty($groupedData))
             <x-filament::empty-state :heading="__('admin.resources.wallet.label')" :description="__('admin.resources.general.not_provided')" />
         @else
             @foreach ($groupedData as $group)
-                <x-filament::section :heading="$group['owner']->fullName">
+                <x-filament::section>
+                    <x-slot name="heading">
+                        <div class="flex items-center gap-2">
+                            <span>{{ $group['owner']->fullName }}</span>
+                            <x-filament::badge :color="$group['user_type_color']" size="sm">
+                                {{ $group['user_type_label'] }}
+                            </x-filament::badge>
+                            @if ($group['is_authenticated'])
+                                <x-filament::badge color="primary" size="sm" icon="heroicon-m-user">
+                                    {{ __('admin.chat.you') }}
+                                </x-filament::badge>
+                            @endif
+                        </div>
+                    </x-slot>
+
                     <div class="fl-wallets__grid fl-wallets__grid--two">
                         @foreach ($group['wallets'] as $wallet)
                             <div class="fl-wallet-card fl-wallet-card--compact">
@@ -128,7 +138,7 @@
                                         </table>
                                         @if($txns->lastPage() > 1)
                                             <div class="flex justify-between items-center mt-4 px-4 py-3 bg-gray-50 dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 rounded-b-lg">
-                                                <x-filament::button wire:click="previousPage({{ $wallet->id }})" color="gray" size="sm" :disabled="$txns->onFirstPage()">
+                                                <x-filament::button wire:click="previousTransactionPage({{ $wallet->id }})" color="gray" size="sm" :disabled="$txns->onFirstPage()">
                                                     &lt;
                                                 </x-filament::button>
                                                 
@@ -136,7 +146,7 @@
                                                     Page {{ $txns->currentPage() }} of {{ max(1, $txns->lastPage()) }}
                                                 </span>
                                                 
-                                                <x-filament::button wire:click="nextPage({{ $wallet->id }})" color="gray" size="sm" :disabled="!$txns->hasMorePages()">
+                                                <x-filament::button wire:click="nextTransactionPage({{ $wallet->id }})" color="gray" size="sm" :disabled="!$txns->hasMorePages()">
                                                     &gt;
                                                 </x-filament::button>
                                             </div>
@@ -150,4 +160,5 @@
             @endforeach
         @endif
     </div>
+    @endif
 </x-filament-panels::page>

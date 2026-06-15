@@ -49,17 +49,11 @@ class UsersTable
                 TextColumn::make('type.translated_name')
                     ->label(__('admin.resources.user.type'))
                     ->badge()
-
-                    ->color('info'),
+                    ->color(fn (User $record): string => $record->type?->getColor() ?? 'gray'),
                 TextColumn::make('status.translated_name')
                     ->label(__('admin.resources.user.status'))
                     ->badge()
-                    ->color(fn (User $record): string => match ($record->status->id) {
-                        UserStatus::ACTIVE_ID => 'success',
-                        UserStatus::PENDING_ID => 'warning',
-                        UserStatus::INACTIVE_ID, UserStatus::REJECTED_ID, UserStatus::DELETED_ID => 'danger',
-                        default => 'secondary',
-                    }),
+                    ->color(fn (User $record): string => $record->status?->getColor() ?? 'gray'),
                 TextColumn::make('created_at')
                     ->label(__('admin.resources.created_at'))
                     ->dateTime('h:i A, d M Y')
@@ -69,10 +63,7 @@ class UsersTable
             ->filters([
                 SelectFilter::make('user_status_id')
                     ->label(__('admin.resources.user.account_status'))
-                    ->options(
-                        UserStatus::all()
-                            ->pluck('translated_name', 'id')
-                    ),
+                    ->options(fn () => UserStatus::all()->pluck('translated_name', 'id')),
                 TrashedFilter::make(),
             ])
             ->actions([

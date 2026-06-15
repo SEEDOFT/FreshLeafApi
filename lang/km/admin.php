@@ -192,6 +192,7 @@ return [
             'reference' => 'លេខយោង',
             'paid_on' => 'បានបង់នៅ',
             'payout_number' => 'លេខបើកប្រាក់',
+            'pending_amount' => 'ចំនួនទឹកប្រាក់ដែលនៅជំពាក់',
             'approve' => 'អនុម័ត',
             'reject' => 'បដិសេធ',
             'approved_success' => 'ការបើកប្រាក់ត្រូវបានអនុម័តដោយជោគជ័យ។',

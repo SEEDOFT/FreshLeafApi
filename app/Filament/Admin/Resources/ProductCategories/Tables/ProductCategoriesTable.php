@@ -23,6 +23,11 @@ class ProductCategoriesTable
 
         return $table
             ->stackedOnMobile()
+            ->recordClasses(fn (ProductCategory $record) => match ($record->product_category_status_id) {
+                ProductCategoryStatus::ACTIVE_ID => 'bg-green-50 dark:bg-green-900/50 border-l-4 border-green-400',
+                ProductCategoryStatus::INACTIVE_ID => 'bg-red-50 dark:bg-red-900/50 border-l-4 border-red-400',
+                default => null,
+            })
             ->columns([
                 ImageColumn::make('image_url')
                     ->label(__('admin.resources.product_category.image'))
@@ -44,16 +49,11 @@ class ProductCategoriesTable
                     ->searchable()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
-                TextColumn::make('status.translated_name')
+                TextColumn::make('status.id')
                     ->label(__('admin.resources.product_category.status'))
                     ->badge()
-
-                    ->color(fn (ProductCategory $record): string => match ($record->product_category_status_id) {
-                        ProductCategoryStatus::ACTIVE_ID => 'success',
-                        ProductCategoryStatus::INACTIVE_ID => 'danger',
-                        default => 'gray',
-                    })
-                    ->sortable(query: static function (Builder $query, string $direction): Builder {
+                    ->color(fn (ProductCategory $record): string => $record->status?->getColor() ?? 'gray')
+                    ->sortable(query: function (Builder $query, string $direction): Builder {
                         $locale = App::getLocale();
 
                         return $query->orderBy(

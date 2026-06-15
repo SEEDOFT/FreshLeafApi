@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Filament\Admin\Resources\ProductCategories\Schemas;
 
 use App\Models\ProductCategory;
-use App\Models\ProductCategoryStatus;
 use Filament\Infolists\Components\ImageEntry;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Schemas\Components\Section;
@@ -31,11 +30,7 @@ class ProductCategoryInfolist
                             ->label(__('admin.resources.product_category.status'))
                             ->badge()
 
-                            ->color(fn (ProductCategory $record): string => match ($record->product_category_status_id) {
-                                ProductCategoryStatus::ACTIVE_ID => 'success',
-                                ProductCategoryStatus::INACTIVE_ID => 'danger',
-                                default => 'gray',
-                            }),
+                            ->color(fn (ProductCategory $record): string => $record->status?->getColor() ?? 'gray'),
                         TextEntry::make('description_en')
                             ->label(__('admin.resources.product_category.description_en'))
                             ->columnSpanFull(),

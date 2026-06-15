@@ -95,6 +95,17 @@ class PaymentMethodType extends Model
         return $this->{'name_'.App::getLocale()};
     }
 
+    public function getColor(): string
+    {
+        return match ($this->id) {
+            self::WALLET_ID => 'primary',
+            self::CREDIT_DEBIT_ID => 'info',
+            self::ABA_ID, self::ACLEDA_ID, self::WING_ID => 'success',
+            self::COD_ID => 'warning',
+            default => 'gray',
+        };
+    }
+
     /**
      * Get the payment methods for the type.
      *

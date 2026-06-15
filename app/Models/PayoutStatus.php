@@ -42,4 +42,14 @@ class PayoutStatus extends Model
     {
         return $this->{'name_'.App::getLocale()};
     }
+
+    public function getColor(): string
+    {
+        return match ($this->id) {
+            self::PENDING_ID => 'warning',
+            self::PAID_ID => 'success',
+            self::FAILED_ID => 'danger',
+            default => 'gray',
+        };
+    }
 }

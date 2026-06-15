@@ -99,6 +99,18 @@ class VendorInventory extends Model
     }
 
     /**
+     * Get the full URLs for the batch images.
+     *
+     * @return array<string>
+     */
+    public public(set) array $batchImageUrls {
+        get => array_map(
+            static fn (string $path) => resolve_image_url($path) ?? '',
+            $this->batch_images ?? []
+        );
+    }
+
+    /**
      * Get the discounted price based on the current price and active discount percentage.
      */
     public function getDiscountedPriceAttribute(): string

@@ -79,9 +79,7 @@ class ProductCatalog extends Page implements HasTable
             ->filters([
                 SelectFilter::make('product_category_id')
                     ->label(__('shared.product.system_category'))
-                    ->options(
-                        ProductCategory::all()->pluck('translated_name', 'id')
-                    ),
+                    ->options(fn () => ProductCategory::all()->pluck('translated_name', 'id')),
             ])
             ->actions([
                 Action::make('view')

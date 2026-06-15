@@ -62,22 +62,13 @@ class VendorsTable
                     ->label(__('admin.resources.vendor.phone'))
                     ->searchable(),
                 TextColumn::make('type.translated_name')
-
                     ->label(__('admin.resources.user.type'))
                     ->badge()
-
-                    ->color('warning'),
+                    ->color(fn (User $record): string => $record->type?->getColor() ?? 'gray'),
                 TextColumn::make('status.translated_name')
-
                     ->label(__('admin.resources.user.status'))
                     ->badge()
-
-                    ->color(fn (User $record): string => match ($record->status->id) {
-                        UserStatus::ACTIVE_ID => 'success',
-                        UserStatus::PENDING_ID => 'warning',
-                        UserStatus::INACTIVE_ID, UserStatus::DELETED_ID, UserStatus::REJECTED_ID => 'danger',
-                        default => 'secondary',
-                    }),
+                    ->color(fn (User $record): string => $record->status?->getColor() ?? 'gray'),
                 IconColumn::make('vendorProfile.is_verified')
                     ->label(__('admin.resources.vendor.verified'))
                     ->boolean()
@@ -92,16 +83,10 @@ class VendorsTable
             ->filters([
                 SelectFilter::make('user_status_id')
                     ->label(__('admin.resources.vendor.status'))
-                    ->options(
-                        UserStatus::all()
-                            ->pluck('translated_name', 'id')
-                    ),
+                    ->options(fn () => UserStatus::all()->pluck('translated_name', 'id')),
                 SelectFilter::make('user_type_id')
                     ->label(__('admin.resources.user.account_type'))
-                    ->options(
-                        UserType::all()
-                            ->pluck('translated_name', 'id')
-                    ),
+                    ->options(fn () => UserType::all()->pluck('translated_name', 'id')),
                 TrashedFilter::make(),
             ])
             ->actions([

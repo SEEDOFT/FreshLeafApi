@@ -55,6 +55,17 @@ class WalletTransactionType extends Model
         return $this->{'name_'.App::getLocale()};
     }
 
+    public function getColor(): string
+    {
+        return match ($this->id) {
+            self::DEPOSIT_ID => 'success',
+            self::WITHDRAWAL_ID => 'warning',
+            self::PAYMENT_ID => 'primary',
+            self::REFUND_ID => 'danger',
+            default => 'gray',
+        };
+    }
+
     /**
      * Get the transactions for this type.
      *

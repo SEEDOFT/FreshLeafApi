@@ -41,7 +41,7 @@ class PayoutResource extends Resource
     public static function getEloquentQuery(): Builder
     {
         return parent::getEloquentQuery()
-            ->whereHas('vendor', function (Builder $query): void {
+            ->whereHas('vendor', static function (Builder $query): void {
                 $query->where('id', Auth::id());
             });
     }
@@ -65,13 +65,5 @@ class PayoutResource extends Resource
             'index' => ListPayouts::route('/'),
             'view' => ViewPayout::route('/{record}'),
         ];
-    }
-
-    #[Override]
-    public static function getNavigationBadge(): ?string
-    {
-        $count = static::getEloquentQuery()->count();
-
-        return $count > 0 ? (string) $count : null;
     }
 }

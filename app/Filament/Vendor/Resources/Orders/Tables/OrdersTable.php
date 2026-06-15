@@ -46,15 +46,7 @@ class OrdersTable
                 TextColumn::make('status.translated_name')
                     ->label(__('admin.resources.order.status'))
                     ->badge()
-                    ->color(fn (Order $record): string => match ($record->status->id) {
-                        OrderStatus::PENDING_ID => 'gray',
-                        OrderStatus::CONFIRMED_ID => 'info',
-                        OrderStatus::PREPARING_ID => 'warning',
-                        OrderStatus::OUT_FOR_DELIVERY_ID => 'fuchsia',
-                        OrderStatus::DELIVERED_ID => 'success',
-                        OrderStatus::CANCELLED_ID => 'danger',
-                        default => 'primary',
-                    })
+                    ->color(fn (Order $record): string => $record->status?->getColor() ?? 'primary')
                     ->sortable(query: fn (Builder $query, string $direction) => $query->orderBy(
                         OrderStatus::select('name_'.App::getLocale())
                             ->whereColumn('order_statuses.id', 'orders.order_status_id')
@@ -64,13 +56,7 @@ class OrdersTable
                 TextColumn::make('paymentStatus.translated_name')
                     ->label(__('admin.resources.order.payment_status'))
                     ->badge()
-                    ->color(fn (Order $record): string => match ($record->paymentStatus->id) {
-                        PaymentStatus::PENDING_ID => 'info',
-                        PaymentStatus::COMPLETED_ID => 'success',
-                        PaymentStatus::FAILED_ID => 'danger',
-                        PaymentStatus::REFUNDED_ID => 'warning',
-                        default => 'gray',
-                    })
+                    ->color(fn (Order $record): string => $record->paymentStatus?->getColor() ?? 'gray')
                     ->sortable(query: fn (Builder $query, string $direction) => $query->orderBy(
                         PaymentStatus::select('name_'.App::getLocale())
                             ->whereColumn('payment_statuses.id', 'orders.payment_status_id')
@@ -99,18 +85,12 @@ class OrdersTable
             ->filters([
                 SelectFilter::make('order_status_id')
                     ->label(__('shared.order.status'))
-                    ->options(
-                        OrderStatus::all()
-                            ->pluck('translated_name', 'id')
-                    )
+                    ->options(fn () => OrderStatus::all()->pluck('translated_name', 'id'))
                     ->searchable()
                     ->preload(),
                 SelectFilter::make('payment_status_id')
                     ->label(__('shared.order.payment_status'))
-                    ->options(
-                        PaymentStatus::all()
-                            ->pluck('translated_name', 'id')
-                    )
+                    ->options(fn () => PaymentStatus::all()->pluck('translated_name', 'id'))
                     ->searchable()
                     ->preload(),
             ])

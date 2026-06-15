@@ -55,10 +55,17 @@
                 </div>
             </div>
 
-            <div class="flex items-center gap-2 bg-[#dcfce7] rounded-full px-3 py-1">
-                <span class="w-2 h-2 rounded-full bg-[#16a34a]"></span>
-                <span class="text-[11px] font-bold text-[#16a34a] tracking-wide">Online</span>
-            </div>
+            @if($isAiServiceAvailable)
+                <div class="flex items-center gap-2 bg-[#dcfce7] rounded-full px-3 py-1">
+                    <span class="w-2 h-2 rounded-full bg-[#16a34a]"></span>
+                    <span class="text-[11px] font-bold text-[#16a34a] tracking-wide">Online</span>
+                </div>
+            @else
+                <div class="flex items-center gap-2 bg-red-100 rounded-full px-3 py-1">
+                    <span class="w-2 h-2 rounded-full bg-red-600"></span>
+                    <span class="text-[11px] font-bold text-red-600 tracking-wide">Offline</span>
+                </div>
+            @endif
         </header>
 
         <div class="ai-chat-thread" id="ai-thread-scroll">
@@ -136,11 +143,12 @@
                     x-on:input="resizeTextarea($el)"
                     x-bind:style="{ height: composerTextareaHeight, overflowY: composerTextareaOverflowY }"
                     placeholder="{{ $isAiServiceAvailable ? 'Ask anything about your operations...' : __('admin.ai.service_unavailable') }}"
-                    class="flex-1 bg-transparent border-none focus:ring-0 text-gray-900 dark:text-white text-[14px] resize-none px-3 py-2 outline-none"
+                    class="flex-1 bg-transparent border-none focus:ring-0 text-gray-900 dark:text-white text-[14px] resize-none px-3 py-2 outline-none disabled:opacity-50 disabled:cursor-not-allowed"
                     rows="1"
+                    {{ !$isAiServiceAvailable ? 'disabled' : '' }}
                 ></textarea>
 
-                <button type="submit" class="w-10 h-10 flex items-center justify-center rounded-lg bg-gray-100 dark:bg-[#27272a] text-gray-600 dark:text-white hover:bg-gray-200 dark:hover:bg-[#3f3f46] transition-colors mb-0.5 mr-0.5">
+                <button type="submit" {{ !$isAiServiceAvailable ? 'disabled' : '' }} class="w-10 h-10 flex items-center justify-center rounded-lg bg-gray-100 dark:bg-[#27272a] text-gray-600 dark:text-white hover:bg-gray-200 dark:hover:bg-[#3f3f46] transition-colors mb-0.5 mr-0.5 disabled:opacity-50 disabled:cursor-not-allowed">
                     <x-filament::icon icon="heroicon-o-arrow-up" class="h-5 w-5" />
                 </button>
             </form>

@@ -33,7 +33,21 @@ class ProductInventoryTable
                 ->orderBy('active_discount_exists', 'desc')
                 ->latest()
             )
-            ->recordClasses(fn (VendorInventory $record) => $record->discount_percentage > 0 ? 'border-s-4 border-s-success-600 dark:border-s-success-400' : null)
+            ->recordClasses(function (VendorInventory $record) {
+                $statusColor = match ($record->inventory_status_id) {
+                    VendorInventoryStatus::AVAILABLE_ID => 'bg-green-50 dark:bg-green-900/50 border-l-4 border-green-400',
+                    VendorInventoryStatus::OUT_OF_STOCK_ID => 'bg-red-50 dark:bg-red-900/50 border-l-4 border-red-400',
+                    VendorInventoryStatus::PENDING_REVIEW_ID => 'bg-yellow-50 dark:bg-yellow-900/50 border-l-4 border-yellow-400',
+                    VendorInventoryStatus::HIDDEN_ID => 'bg-gray-50 dark:bg-gray-900/50 border-l-4 border-gray-400',
+                    default => '',
+                };
+
+                if ($record->discount_percentage > 0) {
+                    return $statusColor.' border-s-4 border-s-success-600 dark:border-s-success-400';
+                }
+
+                return $statusColor;
+            })
             ->stackedOnMobile()
             ->columns([
                 ImageColumn::make('product.image_url')
@@ -93,10 +107,7 @@ class ProductInventoryTable
             ->filters([
                 SelectFilter::make('product_category_id')
                     ->label(__('shared.product.system_category'))
-                    ->options(
-                        ProductCategory::all()
-                            ->pluck('translated_name', 'id')
-                    ),
+                    ->options(fn () => ProductCategory::all()->pluck('translated_name', 'id')),
             ])
             ->actions([
                 ViewAction::make(),

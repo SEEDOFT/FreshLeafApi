@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Filament\Admin\Resources\Products\Tables;
 
+use App\Models\Product;
 use App\Models\ProductCategory;
 use App\Models\ProductStatus;
 use Filament\Actions\BulkActionGroup;
@@ -24,6 +25,12 @@ class ProductsTable
     {
         return $table
             ->stackedOnMobile()
+            ->recordClasses(fn (Product $record) => match ($record->product_status_id) {
+                ProductStatus::DRAFT_ID => 'bg-yellow-50 dark:bg-yellow-900/50 border-l-4 border-yellow-400',
+                ProductStatus::PUBLISHED_ID => 'bg-green-50 dark:bg-green-900/50 border-l-4 border-green-400',
+                ProductStatus::ARCHIVED_ID => 'bg-red-50 dark:bg-red-900/50 border-l-4 border-red-400',
+                default => null,
+            })
             ->columns([
                 ImageColumn::make('image_url')
                     ->label(__('admin.resources.product.image'))
@@ -53,16 +60,10 @@ class ProductsTable
             ->filters([
                 SelectFilter::make('product_category_id')
                     ->label(__('admin.resources.product.system_category'))
-                    ->options(
-                        ProductCategory::all()
-                            ->pluck('translated_name', 'id')
-                    ),
+                    ->options(fn () => ProductCategory::all()->pluck('translated_name', 'id')),
                 SelectFilter::make('product_status_id')
                     ->label(__('admin.resources.product.status'))
-                    ->options(
-                        ProductStatus::all()
-                            ->pluck('translated_name', 'id')
-                    ),
+                    ->options(fn () => ProductStatus::all()->pluck('translated_name', 'id')),
                 TrashedFilter::make(),
             ])
             ->recordActions([

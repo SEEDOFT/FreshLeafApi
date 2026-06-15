@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Filament\Admin\Resources\Users\Schemas;
 
 use App\Models\User;
-use App\Models\UserStatus;
 use App\Models\UserType;
 use App\Models\Wallet;
 use Filament\Infolists\Components\ImageEntry;
@@ -39,28 +38,22 @@ class UserInfolist
                                         'x-on:click' => "\$dispatch('lightbox', { src: \$el.src })",
                                     ]),
                             ]),
-                        TextEntry::make('first_name')->label(__('admin.resources.user.first_name')),
-                        TextEntry::make('last_name')->label(__('admin.resources.user.last_name')),
-                        TextEntry::make('email')->label(__('admin.resources.user.email')),
-                        TextEntry::make('phone_number')->label(__('admin.resources.user.phone')),
-                        TextEntry::make('type.translated_name')->label(__('admin.resources.user.type'))
+                        TextEntry::make('first_name')
+                            ->label(__('admin.resources.user.first_name')),
+                        TextEntry::make('last_name')
+                            ->label(__('admin.resources.user.last_name')),
+                        TextEntry::make('email')
+                            ->label(__('admin.resources.user.email')),
+                        TextEntry::make('phone_number')
+                            ->label(__('admin.resources.user.phone')),
+                        TextEntry::make('type.translated_name')
+                            ->label(__('admin.resources.user.type'))
                             ->badge()
-
-                            ->color(fn (User $record): string => match ($record->user_type_id) {
-                                UserType::ADMIN_ID => 'success',
-                                UserType::VENDOR_ID => 'warning',
-                                UserType::CONSUMER_ID => 'info',
-                                default => 'gray',
-                            }),
-                        TextEntry::make('status.translated_name')->label(__('admin.resources.user.status'))
-
+                            ->color(fn (User $record): string => $record->type?->getColor() ?? 'gray'),
+                        TextEntry::make('status.translated_name')
+                            ->label(__('admin.resources.user.status'))
                             ->badge()
-                            ->color(fn (User $record): string => match ($record->user_status_id) {
-                                UserStatus::ACTIVE_ID => 'success',
-                                UserStatus::PENDING_ID => 'warning',
-                                UserStatus::INACTIVE_ID, UserStatus::DELETED_ID => 'danger',
-                                default => 'gray',
-                            }),
+                            ->color(fn (User $record): string => $record->status?->getColor() ?? 'gray'),
                     ]),
                 Section::make(__('admin.resources.vendor.business_profile'))
                     ->relationship('vendorProfile')

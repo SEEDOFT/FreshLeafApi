@@ -78,18 +78,12 @@ class ProductForm
                             ->schema([
                                 Select::make('product_category_id')
                                     ->label(__('admin.resources.product.system_category'))
-                                    ->options(
-                                        ProductCategory::all()
-                                            ->pluck('translated_name', 'id')
-                                    )
+                                    ->options(fn () => ProductCategory::all()->pluck('translated_name', 'id'))
                                     ->required(fn (string $operation): bool => $operation === 'create')
                                     ->dehydrated(fn (mixed $state): bool => filled($state)),
                                 Select::make('product_status_id')
                                     ->label(__('admin.resources.product.status'))
-                                    ->options(
-                                        ProductStatus::all()
-                                            ->pluck('translated_name', 'id')
-                                    )
+                                    ->options(fn () => ProductStatus::all()->pluck('translated_name', 'id'))
                                     ->required(fn (string $operation): bool => $operation === 'create')
                                     ->dehydrated(fn (mixed $state): bool => filled($state)),
                             ]),

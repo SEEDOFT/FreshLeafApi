@@ -82,6 +82,20 @@ class OrderStatus extends Model
         return $this->{'name_'.App::getLocale()};
     }
 
+    public function getColor(): string
+    {
+        return match ($this->id) {
+            self::PENDING_ID => 'gray',
+            self::CONFIRMED_ID => 'info',
+            self::PREPARING_ID => 'warning',
+            self::OUT_FOR_DELIVERY_ID => 'fuchsia',
+            self::DELIVERED_ID => 'success',
+            self::CANCELLED_ID => 'danger',
+            self::AWAITING_PAYMENT_ID => 'warning',
+            default => 'primary',
+        };
+    }
+
     /**
      * Get the orders for the status.
      *

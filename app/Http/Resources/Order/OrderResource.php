@@ -53,6 +53,7 @@ class OrderResource extends JsonResource
             'order_delivered_date' => $this->order_delivered_date?->toIso8601String(),
             'order_cancelled_date' => $this->order_cancelled_date?->toIso8601String(),
             'order_awaiting_payment_date' => $this->order_awaiting_payment_date?->toIso8601String(),
+            'consumer_confirmed_date' => $this->consumer_confirmed_date?->toIso8601String(),
             'currency_id' => $this->currency_id,
             'payment_id' => $this->payment_id,
             'created_at' => $this->created_at?->toIso8601String(),

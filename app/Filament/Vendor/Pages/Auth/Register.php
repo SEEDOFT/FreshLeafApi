@@ -217,11 +217,10 @@ class Register extends BaseRegister
                 Grid::make(3)->schema([
                     Select::make('payment_method_type_id')
                         ->label(__('shared.auth.register.bank_name'))
-                        ->options(fn () =>
-                            PaymentMethodType::whereIn('id', [
-                                PaymentMethodType::ABA_ID,
-                                PaymentMethodType::ACLEDA_ID,
-                            ])->pluck('translated_name', 'id')
+                        ->options(fn () => PaymentMethodType::whereIn('id', [
+                            PaymentMethodType::ABA_ID,
+                            PaymentMethodType::ACLEDA_ID,
+                        ])->get()->pluck('translated_name', 'id')
                         )
                         ->required()
                         ->disabled()

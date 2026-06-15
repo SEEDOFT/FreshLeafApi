@@ -14,3 +14,4 @@ use Illuminate\Support\Facades\Schedule;
 Schedule::command('payouts:process')->daily();
 Schedule::command('app:check-expiring-inventory')->daily();
 Schedule::command('app:auto-confirm-receipts')->everyMinute();
+Schedule::command('app:monitor-pending-orders')->everyMinute();

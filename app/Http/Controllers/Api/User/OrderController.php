@@ -118,7 +118,7 @@ class OrderController extends Controller
     /**
      * Cancel an order.
      */
-    public function cancel(string $id, Request $request): JsonResponse
+    public function cancel(string $id, Request $request, App\Services\OrderService $orderService): JsonResponse
     {
         $user = $this->authenticatedUser($request);
         $order = Order::where('user_id', $user->id)->find((int) $id);
@@ -131,17 +131,17 @@ class OrderController extends Controller
             abort(422, __('api.order.cannot_cancel'));
         }
 
-        $order->update([
-            'order_status_id' => OrderStatus::CANCELLED_ID,
-        ]);
+        $reason = $request->input('cancellation_reason', 'Cancelled by Consumer');
 
         try {
+            $orderService->autoCancelOrder($order, $reason);
+
             return static::successResponse(
                 new OrderResource($order->fresh(self::INDEX_RELATIONS)),
                 __('api.order.cancelled')
             );
-        } catch (RuntimeException) {
-            abort(422, __('api.general.error'));
+        } catch (\Exception $e) {
+            abort(422, __('api.general.error').': '.$e->getMessage());
         }
     }
 

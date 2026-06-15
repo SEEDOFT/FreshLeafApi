@@ -9,6 +9,7 @@ use App\Models\Order;
 use App\Models\OrderStatus;
 use App\Models\PaymentMethodType;
 use App\Models\PaymentStatus;
+use App\Services\OrderService;
 use Filament\Actions\Action;
 use Filament\Actions\Action as PageAction;
 use Filament\Forms\Components\FileUpload;
@@ -179,10 +180,16 @@ class OrderActions
             ->label(__('admin.resources.order.actions.cancel'))
             ->icon(Heroicon::OutlinedXCircle)
             ->color('danger')
+            ->form([
+                Textarea::make('cancellation_reason')
+                    ->label(__('admin.resources.order.fields.cancellation_reason'))
+                    ->required()
+                    ->maxLength(255),
+            ])
             ->requiresConfirmation()
             ->visible(fn (Order $record): bool => \in_array($record->order_status_id, [OrderStatus::PENDING_ID, OrderStatus::CONFIRMED_ID], true))
-            ->action(function (Order $record): void {
-                $record->update(['order_status_id' => OrderStatus::CANCELLED_ID]);
+            ->action(function (Order $record, array $data): void {
+                app(OrderService::class)->autoCancelOrder($record, $data['cancellation_reason']);
                 Notification::make()
                     ->title(__('admin.resources.order.actions.cancelled_success'))
                     ->success()

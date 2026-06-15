@@ -119,6 +119,7 @@ class ListWallets extends Page implements HasTable
     protected function getHeaderActions(): array
     {
         return [
+            $this->viewTransactionAction()->hidden(),
             Action::make('seedSandboxWallet')
                 ->label('Seed Sandbox Wallet')
                 ->icon('heroicon-o-currency-dollar')

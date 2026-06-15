@@ -39,6 +39,21 @@ class InvoicePdfService
             'autoLangToFont' => true,
         ]);
 
+        $order->load([
+            'user',
+            'vendor.vendorProfile',
+            'address',
+            'status',
+            'type',
+            'currency',
+            'payment.paymentMethod',
+            'exchangeRateHistory',
+            'items.vendorInventory.product.productCategory',
+            'items.vendorInventory.unit',
+            'items.vendorInventory.packagingType',
+            'items.vendorInventory.activeDiscount',
+        ]);
+
         $html = view('pdf.invoice', ['order' => $order])->render();
         $mpdf->WriteHTML($html);
 

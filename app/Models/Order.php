@@ -47,6 +47,7 @@ use function substr;
  * @property Carbon|null $order_preparing_date
  * @property Carbon|null $order_delivered_date
  * @property Carbon|null $order_cancelled_date
+ * @property string|null $cancellation_reason
  * @property Carbon|null $order_awaiting_payment_date
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
@@ -85,6 +86,7 @@ use function substr;
     'order_preparing_date',
     'order_delivered_date',
     'order_cancelled_date',
+    'cancellation_reason',
     'order_awaiting_payment_date',
     'order_out_for_delivery_date',
     'preparation_proof_photo',

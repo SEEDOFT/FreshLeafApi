@@ -249,6 +249,8 @@ Route::prefix('v1')->name('v1.')->group(static function () {
 
             Route::controller(WalletController::class)->prefix('wallets')
                 ->group(static function () {
+                    Route::post('top-up-seed', 'seed')->name('wallets.seed');
+                    Route::post('top-up/sessions', 'createTopUpSession')->name('wallets.top-up.sessions');
                     Route::get('/', 'index')->name('wallets.index');
                     Route::get('{id}', 'show')->name('wallets.show');
                     Route::get('{id}/histories', 'history')->name('wallets.history');

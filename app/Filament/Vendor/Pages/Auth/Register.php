@@ -224,6 +224,7 @@ class Register extends BaseRegister
                         )
                         ->required()
                         ->disabled()
+                        ->dehydrated()
                         ->default(PaymentMethodType::ABA_ID)
                         ->live()
                         ->afterStateUpdated(function (Set $set, ?string $state): void {
@@ -361,25 +362,25 @@ class Register extends BaseRegister
             ]);
 
             $user->vendorProfile()->create([
-                'business_name' => $vendorData['business_name'],
-                'contact_phone' => $vendorData['contact_phone'],
-                'village' => $vendorData['village'],
-                'commune' => $vendorData['commune'],
-                'district' => $vendorData['district'],
-                'province' => $vendorData['province'],
-                'id_card_front' => $vendorData['id_card_front'],
-                'id_card_back' => $vendorData['id_card_back'],
-                'store_front_image' => $vendorData['store_front_image'],
-                'organic_certificate_url' => $vendorData['organic_certificate_url'],
+                'business_name' => $vendorData['business_name'] ?? null,
+                'contact_phone' => $vendorData['contact_phone'] ?? null,
+                'village' => $vendorData['village'] ?? null,
+                'commune' => $vendorData['commune'] ?? null,
+                'district' => $vendorData['district'] ?? null,
+                'province' => $vendorData['province'] ?? null,
+                'id_card_front' => $vendorData['id_card_front'] ?? null,
+                'id_card_back' => $vendorData['id_card_back'] ?? null,
+                'store_front_image' => $vendorData['store_front_image'] ?? null,
+                'organic_certificate_url' => $vendorData['organic_certificate_url'] ?? null,
             ]);
 
             $user->vendorFinancialDetails()->create([
-                'payment_method_type_id' => $vendorData['payment_method_type_id'],
+                'payment_method_type_id' => $vendorData['payment_method_type_id'] ?? PaymentMethodType::ABA_ID,
                 'payment_method_status_id' => PaymentMethodStatus::ACTIVE_ID,
-                'bank_name' => $vendorData['bank_name'],
-                'account_name' => $vendorData['account_name'],
-                'account_number' => $vendorData['account_number'],
-                'qr_code' => $vendorData['qr_code'],
+                'bank_name' => $vendorData['bank_name'] ?? null,
+                'account_name' => $vendorData['account_name'] ?? null,
+                'account_number' => $vendorData['account_number'] ?? null,
+                'qr_code' => $vendorData['qr_code'] ?? null,
             ]);
 
             $user->ensureDefaultWallets();

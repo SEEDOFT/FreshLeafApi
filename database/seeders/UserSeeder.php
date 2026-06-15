@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Database\Seeders;
 
+use App\Constants\StorageDirectory;
 use App\Models\PaymentMethodStatus;
 use App\Models\PaymentMethodType;
 use App\Models\User;
@@ -29,6 +30,7 @@ class UserSeeder extends Seeder
                     'last_name' => 'Admin',
                     'phone_number' => '+85581968185',
                     'password' => $password,
+                    'image' => StorageDirectory::USERS .'/'. 'user.png',
                     'user_type_id' => UserType::ADMIN_ID,
                     'user_status_id' => UserStatus::ACTIVE_ID,
                 ],
@@ -37,6 +39,7 @@ class UserSeeder extends Seeder
                     'last_name' => 'Vendor',
                     'phone_number' => '+85581968185',
                     'password' => $password,
+                    'image' => StorageDirectory::USERS .'/'. 'user.png',
                     'user_type_id' => UserType::VENDOR_ID,
                     'user_status_id' => UserStatus::ACTIVE_ID,
                 ],
@@ -45,6 +48,7 @@ class UserSeeder extends Seeder
                     'last_name' => 'Consumer',
                     'phone_number' => '+85581968185',
                     'password' => $password,
+                    'image' => StorageDirectory::USERS .'/'. 'user.png',
                     'user_type_id' => UserType::CONSUMER_ID,
                     'user_status_id' => UserStatus::ACTIVE_ID,
                 ],

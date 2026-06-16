@@ -37,10 +37,6 @@ class MonitorPendingOrders extends Command
                 // Auto-cancel and refund
                 $orderService->autoCancelOrder($order);
 
-                // Send notification to consumer
-                if ($order->user) {
-                    $order->user->notify(new OrderStatusUpdatedNotification($order));
-                }
 
                 // Send notification to vendor that order was cancelled
                 if ($order->vendor) {

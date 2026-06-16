@@ -157,7 +157,9 @@ class VendorInfolist
                             ->schema([
                                 ImageEntry::make('qr_code')
                                     ->label(__('admin.resources.vendor.qr_code'))
-                                    ->getStateUsing(fn (?PaymentMethod $record) => resolve_image_url($record?->qr_code))
+                                    ->getStateUsing(fn (?PaymentMethod $record) => $record?->qr_code
+                                        ? (resolve_image_url($record->qr_code) ?: route('admin.documents.show', ['path' => $record->qr_code])) : null
+                                    )
                                     ->disk(null)
                                     ->extraImgAttributes(fn () => [
                                         'class' => 'cursor-zoom-in',

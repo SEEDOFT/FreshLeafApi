@@ -246,8 +246,8 @@ class Register extends BaseRegister
                 FileUpload::make('qr_code')
                     ->label(__('shared.auth.register.qr_code'))
                     ->image()
-                    ->disk('public')
-                    ->directory(StorageDirectory::SHOPS)
+                    ->disk('local')
+                    ->directory(StorageDirectory::VENDOR_VERIFICATION)
                     ->required(),
             ]);
     }

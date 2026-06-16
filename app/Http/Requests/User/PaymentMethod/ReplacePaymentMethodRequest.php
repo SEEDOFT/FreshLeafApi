@@ -12,6 +12,20 @@ use Illuminate\Validation\Validator;
 
 class ReplacePaymentMethodRequest extends FormRequest
 {
+    protected function prepareForValidation(): void
+    {
+        $this->merge([
+            'payment_method_type_id' => $this->input(
+                'payment_method_type_id',
+                $this->input('payment_type_id')
+            ),
+            'payment_method_status_id' => $this->input(
+                'payment_method_status_id',
+                $this->input('payment_status_id')
+            ),
+        ]);
+    }
+
     /**
      * Determine if the user is authorized to make this request.
      */
@@ -28,8 +42,8 @@ class ReplacePaymentMethodRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'payment_type_id' => ['required', 'exists:payment_types,id'],
-            'payment_status_id' => ['required', 'exists:payment_statuses,id'],
+            'payment_method_type_id' => ['required', 'exists:payment_method_types,id'],
+            'payment_method_status_id' => ['required', 'exists:payment_method_statuses,id'],
             'label' => ['required', 'string', 'max:255'],
             'card_holder_name' => ['required', 'string', 'max:255'],
             'card_number' => ['required', 'string', 'min:12', 'max:19'],

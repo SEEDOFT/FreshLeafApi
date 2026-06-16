@@ -118,7 +118,7 @@ class OrderController extends Controller
     /**
      * Cancel an order.
      */
-    public function cancel(string $id, Request $request, App\Services\OrderService $orderService): JsonResponse
+    public function cancel(string $id, Request $request, OrderService $orderService): JsonResponse
     {
         $user = $this->authenticatedUser($request);
         $order = Order::where('user_id', $user->id)->find((int) $id);
@@ -161,7 +161,15 @@ class OrderController extends Controller
             abort(404, __('api.general.not_found'));
         }
 
-        if ($order->order_status_id !== OrderStatus::DELIVERED_ID) {
+        if (! in_array(
+            (int) $order->order_status_id,
+            [
+                OrderStatus::PREPARING_ID,
+                OrderStatus::OUT_FOR_DELIVERY_ID,
+                OrderStatus::DELIVERED_ID,
+            ],
+            true
+        )) {
             abort(422, __('api.order.cannot_confirm_receipt'));
         }
 

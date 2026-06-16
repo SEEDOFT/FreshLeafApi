@@ -76,7 +76,7 @@ class PaymentMethodTest extends TestCase
 
         $response->assertStatus(201)
             ->assertJsonPath('data.label', 'Personal Visa')
-            ->assertJsonPath('data.card_number', '************3456')
+            ->assertJsonPath('data.card_number', '**** **** **** 3456')
             ->assertJsonPath('data.is_default', true);
 
         $this->assertDatabaseHas('payment_methods', [
@@ -145,8 +145,8 @@ class PaymentMethodTest extends TestCase
         $paymentMethod = PaymentMethod::factory()->create(['user_id' => $this->user->id, 'label' => 'Old Label']);
 
         $data = [
-            'payment_type_id' => 1,
-            'payment_status_id' => 1,
+            'payment_method_type_id' => $this->paymentMethodType->id,
+            'payment_method_status_id' => $this->paymentMethodStatus->id,
             'label' => 'Full Replace via PUT',
             'card_holder_name' => 'Jane Doe',
             'card_number' => '9876543210987654',
@@ -181,7 +181,7 @@ class PaymentMethodTest extends TestCase
         $response->assertStatus(200);
         $this->assertDatabaseHas('payment_methods', [
             'id' => $paymentMethod->id,
-            'payment_method_status_id' => PaymentMethodStatus::DELETE,
+            'payment_method_status_id' => PaymentMethodStatus::DELETE_ID,
             'is_default' => false,
         ]);
     }

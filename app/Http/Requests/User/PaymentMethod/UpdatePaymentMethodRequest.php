@@ -12,6 +12,29 @@ use Illuminate\Validation\Validator;
 
 class UpdatePaymentMethodRequest extends FormRequest
 {
+    protected function prepareForValidation(): void
+    {
+        $normalized = [];
+
+        if ($this->has('payment_method_type_id') || $this->has('payment_type_id')) {
+            $normalized['payment_method_type_id'] = $this->input(
+                'payment_method_type_id',
+                $this->input('payment_type_id')
+            );
+        }
+
+        if ($this->has('payment_method_status_id') || $this->has('payment_status_id')) {
+            $normalized['payment_method_status_id'] = $this->input(
+                'payment_method_status_id',
+                $this->input('payment_status_id')
+            );
+        }
+
+        if ($normalized !== []) {
+            $this->merge($normalized);
+        }
+    }
+
     /**
      * Determine if the user is authorized to make this request.
      */
@@ -28,8 +51,8 @@ class UpdatePaymentMethodRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'payment_type_id' => ['sometimes', 'required', 'exists:payment_types,id'],
-            'payment_status_id' => ['sometimes', 'required', 'exists:payment_statuses,id'],
+            'payment_method_type_id' => ['sometimes', 'required', 'exists:payment_method_types,id'],
+            'payment_method_status_id' => ['sometimes', 'required', 'exists:payment_method_statuses,id'],
             'label' => ['sometimes', 'required', 'string', 'max:255'],
             'card_holder_name' => ['sometimes', 'required', 'string', 'max:255'],
             'card_number' => ['sometimes', 'required', 'string', 'min:12', 'max:19'],

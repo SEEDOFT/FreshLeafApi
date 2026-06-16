@@ -7,10 +7,13 @@ namespace App\Filament\Admin\Resources\Payouts\Schemas;
 use App\Models\OrderItem;
 use App\Models\OrderStatus;
 use App\Models\PaymentStatus;
+use App\Models\Payout;
 use App\Models\PayoutMethod;
 use App\Models\PayoutStatus;
 use App\Models\User;
 use App\Models\UserType;
+use App\Models\Wallet;
+use Closure;
 use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
@@ -99,7 +102,41 @@ class PayoutForm
                     ->numeric()
                     ->prefix('$')
                     ->required(fn (string $operation): bool => $operation === 'create')
-                    ->dehydrated(fn (mixed $state): bool => filled($state)),
+                    ->dehydrated(fn (mixed $state): bool => filled($state))
+                    ->rules([
+                        function (Get $get) {
+                            return function (string $attribute, $value, Closure $fail) use ($get) {
+                                $vendorId = $get('vendor_id');
+                                if (! $vendorId) {
+                                    return;
+                                }
+
+                                $wallet = Wallet::where('user_id', $vendorId)->first();
+                                
+                                if (! $wallet) {
+                                    $fail('Vendor does not have a wallet.');
+                                    return;
+                                }
+
+                                $pendingAmount = Payout::query()
+                                    ->where('vendor_id', $vendorId)
+                                    ->where('status_id', Payout::STATUS_PENDING)
+                                    ->sum('amount');
+
+                                if ($pendingAmount > 0 && $pendingAmount == $wallet->balance) {
+                                    $fail('Vendor entire wallet balance is currently locked in a pending payout.');
+
+                                    return;
+                                }
+
+                                $available = $wallet->balance - $pendingAmount;
+
+                                if ($value > $available) {
+                                    $fail("Insufficient available balance. Vendor has a pending payout of {$pendingAmount}. Available balance is {$available}.");
+                                }
+                            };
+                        },
+                    ]),
 
                 TextInput::make('transaction_reference')
                     ->label(__('admin.resources.payout.transaction_ref'))

@@ -7,6 +7,7 @@ namespace App\Filament\Vendor\Resources\Payouts\Pages;
 use App\Filament\Vendor\Resources\Payouts\PayoutResource;
 use App\Models\PaymentMethodType;
 use App\Models\Payout;
+use App\Models\PayoutMethod;
 use App\Models\Wallet;
 use App\Models\WalletTransaction;
 use App\Models\WalletTransactionStatus;
@@ -93,9 +94,10 @@ class ListPayouts extends ListRecords
                         ]),
                     Select::make('payout_method_id')
                         ->label(__('shared.payout.method'))
-                        ->relationship('method', 'name_en')
+                        ->options(fn () => PayoutMethod::all()->pluck('translated_name', 'id'))
                         ->default(PaymentMethodType::ABA_ID)
                         ->disabled()
+                        ->dehydrated()
                         ->required(),
                     Textarea::make('notes')
                         ->label(__('shared.payout.notes')),

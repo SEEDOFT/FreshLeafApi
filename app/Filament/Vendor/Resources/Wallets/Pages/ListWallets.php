@@ -163,13 +163,13 @@ class ListWallets extends Page
                         return;
                     }
 
-                    DB::transaction(function () use ($wallet, $amount, $data): void {
+                    DB::transaction(function () use ($wallet, $amount): void {
                         $payoutNumber = 'PO-'.Carbon::now()->format('Ymd').'-'.strtoupper(Str::random(6));
 
                         $payout = Payout::create([
                             'vendor_id' => Auth::id(),
                             'currency_id' => $wallet->currency_id,
-                            'payout_method_id' => $data['payout_method_id'],
+                            'payout_method_id' => PayoutMethod::BANK_TRANSFER_ID,
                             'amount' => $amount,
                             'status_id' => Payout::STATUS_PENDING,
                             'payout_number' => $payoutNumber,

@@ -15,6 +15,12 @@ return [
             'api_key' => env('GEMINI_API_KEY'),
             'model' => env('GEMINI_MODEL', 'gemini-2.0-flash'),
         ],
+        'zen' => [
+            'api_key' => env('ZEN_API_KEY'),
+            'base_url' => env('ZEN_BASE_URL', 'https://opencode.ai/zen/v1'),
+            'model' => env('ZEN_MODEL', 'nemotron-3-super-free'),
+            'timeout' => (int) env('ZEN_TIMEOUT', 60),
+        ],
     ],
 
     'web_search' => [

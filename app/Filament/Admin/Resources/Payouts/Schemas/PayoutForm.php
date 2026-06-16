@@ -34,14 +34,16 @@ class PayoutForm
                     ->relationship(
                         'vendor',
                         'first_name',
-                        fn (Builder $query) => $query->where('user_type_id', UserType::VENDOR_ID)
-                            ->whereHas('vendorOrders', function (Builder $query) {
-                                $query->where('order_status_id', OrderStatus::DELIVERED_ID)
-                                    ->where('is_vendor_paid', false)
-                                    ->whereHas('paymentStatus', function (Builder $query) {
-                                        $query->where('id', PaymentStatus::COMPLETED_ID);
-                                    });
-                            })
+                        fn (Builder $query, string $operation) => $operation === 'create'
+                            ? $query->where('user_type_id', UserType::VENDOR_ID)
+                                ->whereHas('vendorOrders', function (Builder $query) {
+                                    $query->where('order_status_id', OrderStatus::DELIVERED_ID)
+                                        ->where('is_vendor_paid', false)
+                                        ->whereHas('paymentStatus', function (Builder $query) {
+                                            $query->where('id', PaymentStatus::COMPLETED_ID);
+                                        });
+                                })
+                            : $query->where('user_type_id', UserType::VENDOR_ID)
                     )
                     ->getOptionLabelFromRecordUsing(
                         fn (User $record): string => "{$record->fullName} (".($record->vendorProfile->business_name ?? __('N/A')).')'
@@ -51,7 +53,7 @@ class PayoutForm
                     ->live()
                     ->required(fn (string $operation): bool => $operation === 'create')
                     ->disabled(fn (string $operation): bool => $operation !== 'create')
-                    ->dehydrated(fn (mixed $state): bool => filled($state)),
+                    ->dehydrated(fn (string $operation): bool => $operation === 'create'),
 
                 TextEntry::make('pending_payout')
                     ->label(__('admin.resources.payout.pending_amount'))
@@ -104,8 +106,8 @@ class PayoutForm
                     ->prefix('$')
                     ->required(fn (string $operation): bool => $operation === 'create')
                     ->disabled(fn (string $operation): bool => $operation !== 'create')
-                    ->dehydrated(fn (mixed $state): bool => filled($state))
-                    ->rules([
+                    ->dehydrated(fn (string $operation): bool => $operation === 'create')
+                    ->rules(fn (string $operation): array => $operation === 'create' ? [
                         function (Get $get) {
                             return function (string $attribute, $value, Closure $fail) use ($get) {
                                 $vendorId = $get('vendor_id');
@@ -138,11 +140,12 @@ class PayoutForm
                                 }
                             };
                         },
-                    ]),
+                    ] : []),
 
                 TextInput::make('transaction_reference')
                     ->label(__('admin.resources.payout.transaction_ref'))
-                    ->placeholder(__('admin.resources.payout.transaction_ref')),
+                    ->placeholder(__('admin.resources.payout.transaction_ref'))
+                    ->required(fn (Get $get): bool => $get('status_id') == Payout::STATUS_PAID),
 
                 DateTimePicker::make('processed_at')
                     ->label(__('admin.resources.payout.processed_date'))

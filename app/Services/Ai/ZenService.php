@@ -46,7 +46,9 @@ class ZenService implements AiProviderContract
     public function healthCheck(): bool
     {
         try {
-            $response = Http::timeout(5)->get($this->baseUrl.'/api/tags');
+            $response = Http::withToken($this->apiKey)
+                ->timeout(5)
+                ->get($this->baseUrl.'/models');
 
             return $response->successful();
         } catch (Exception) {

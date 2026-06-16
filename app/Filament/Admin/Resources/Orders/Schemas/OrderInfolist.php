@@ -171,6 +171,14 @@ class OrderInfolist
                                 'class' => 'cursor-zoom-in',
                                 'x-on:click' => "\$dispatch('lightbox', { src: \$el.src })",
                             ]),
+                        ImageEntry::make('delivery_proof_photo')
+                            ->label(__('admin.resources.order.delivery_proof_photo'))
+                            ->getStateUsing(fn ($record) => resolve_image_url($record->delivery_proof_photo))
+                            ->columnSpanFull()
+                            ->extraImgAttributes(fn () => [
+                                'class' => 'cursor-zoom-in',
+                                'x-on:click' => "\$dispatch('lightbox', { src: \$el.src })",
+                            ]),
                         TextEntry::make('delivery_company_name')
                             ->label(__('admin.resources.order.delivery_company'))
                             ->icon('heroicon-o-truck'),

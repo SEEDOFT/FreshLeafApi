@@ -13,6 +13,7 @@ class EditPayout extends EditRecord
     #[Override]
     protected static string $resource = PayoutResource::class;
 
+
     #[Override]
     protected function getHeaderActions(): array
     {

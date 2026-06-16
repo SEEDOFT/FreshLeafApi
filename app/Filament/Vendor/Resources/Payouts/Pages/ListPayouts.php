@@ -33,6 +33,7 @@ class ListPayouts extends ListRecords
     {
         return [
             CreateAction::make()
+                ->createAnother(false)
                 ->label(__('shared.payout.new_payout'))
                 ->form([
                     Select::make('currency_id')
@@ -95,7 +96,7 @@ class ListPayouts extends ListRecords
                     Select::make('payout_method_id')
                         ->label(__('shared.payout.method'))
                         ->options(fn () => PayoutMethod::all()->pluck('translated_name', 'id'))
-                        ->default(PaymentMethodType::ABA_ID)
+                        ->default(PayoutMethod::BANK_TRANSFER_ID)
                         ->disabled()
                         ->dehydrated()
                         ->required(),

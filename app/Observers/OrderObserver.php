@@ -102,6 +102,9 @@ class OrderObserver
                         'payment_status_id' => PaymentStatus::REFUNDED_ID,
                         'notes' => 'Refund processed due to order cancellation.',
                     ]);
+                    $order->updateQuietly([
+                        'payment_status_id' => PaymentStatus::REFUNDED_ID,
+                    ]);
 
                     if ($order->user_id && $payment->currency_id) {
                         $wallet = Wallet::where('user_id', $order->user_id)
@@ -142,6 +145,9 @@ class OrderObserver
                     $payment->histories()->create([
                         'payment_status_id' => PaymentStatus::FAILED_ID,
                         'notes' => 'Payment failed because the order was cancelled.',
+                    ]);
+                    $order->updateQuietly([
+                        'payment_status_id' => PaymentStatus::FAILED_ID,
                     ]);
                 }
             }

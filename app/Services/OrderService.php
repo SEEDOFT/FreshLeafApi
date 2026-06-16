@@ -7,12 +7,12 @@ namespace App\Services;
 use App\Models\ExchangeRate;
 use App\Models\Order;
 use App\Models\OrderStatus;
-use App\Models\PaymentMethodType;
 use App\Models\PaymentStatus;
 use App\Models\User;
 use App\Models\Wallet;
 use App\Models\WalletTransactionStatus;
 use App\Models\WalletTransactionType;
+use Exception;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
@@ -242,10 +242,12 @@ class OrderService
     /**
      * Auto-cancel an order and refund if it was paid.
      *
-     * @throws \Exception
+     * @throws Exception
      */
-    public function autoCancelOrder(Order $order, string $cancellationReason = 'Auto-cancelled due to vendor unresponsiveness.'): void
-    {
+    public function autoCancelOrder(
+        Order $order,
+        string $cancellationReason = 'Auto-cancelled due to vendor unresponsiveness.'
+    ): void {
         try {
             DB::transaction(function () use ($order, $cancellationReason) {
                 // Cancel the order
@@ -260,59 +262,8 @@ class OrderService
                     'notes' => $cancellationReason,
                 ]);
 
-                // Refund payment if completed
-                if ($order->payment_status_id === PaymentStatus::COMPLETED_ID) {
-                    $payment = $order->payments()->first();
-                    if ($payment) {
-                        $paymentMethod = $payment->paymentMethod;
-                        // If it's Wallet, refund back to wallet
-                        if ($paymentMethod && $paymentMethod->payment_method_type_id === PaymentMethodType::WALLET_ID) {
-                            $user = $order->user;
-                            $wallet = $user->wallets()->where('currency_id', $payment->currency_id)->first();
-
-                            if ($wallet) {
-                                $refundAmount = $payment->amount;
-                                $newBalance = MoneyService::add((string) $wallet->balance, (string) $refundAmount);
-
-                                $wallet->update(['balance' => $newBalance]);
-
-                                $transaction = $wallet->transactions()->create([
-                                    'currency_id' => $wallet->currency_id,
-                                    'wallet_transaction_type_id' => WalletTransactionType::REFUND_ID,
-                                    'wallet_transaction_status_id' => WalletTransactionStatus::COMPLETED_ID,
-                                    'amount' => $refundAmount,
-                                    'reference_id' => $order->id,
-                                    'reference_type' => Order::class,
-                                    'description' => 'Refund for auto-cancelled order #'.$order->id,
-                                    'transaction_date' => Carbon::now(),
-                                ]);
-
-                                $transaction->recordHistory();
-
-                                $wallet->histories()->create([
-                                    'user_id' => $user->id,
-                                    'currency_id' => $wallet->currency_id,
-                                    'balance' => $newBalance,
-                                ]);
-                            }
-                        }
-
-                        $payment->update([
-                            'status_id' => PaymentStatus::REFUNDED_ID,
-                        ]);
-
-                        $payment->histories()->create([
-                            'payment_status_id' => PaymentStatus::REFUNDED_ID,
-                            'notes' => 'Refunded due to order auto-cancellation.',
-                        ]);
-                    }
-
-                    $order->update([
-                        'payment_status_id' => PaymentStatus::REFUNDED_ID,
-                    ]);
-                }
             });
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             throw $e;
         }
     }

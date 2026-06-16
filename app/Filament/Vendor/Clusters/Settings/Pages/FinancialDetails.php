@@ -104,6 +104,7 @@ class FinancialDetails extends Page
                                         PaymentMethodType::ACLEDA_ID => PaymentMethodType::ACLEDA,
                                         PaymentMethodType::WING_ID => PaymentMethodType::WING,
                                     ])
+                                    ->disabled()
                                     ->dehydrated(),
                                 TextInput::make('account_name')
                                     ->label(__('vendor.settings.financial_details.account_holder'))

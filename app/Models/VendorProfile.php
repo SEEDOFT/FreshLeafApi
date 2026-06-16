@@ -40,7 +40,7 @@ use Illuminate\Support\Carbon;
  * @property string|null $id_card_back
  * @property string|null $store_front_image
  * @property string|null $organic_certificate_url
- * @property-read string $address
+ * @property string|null $address
  * @property-read User $user
  * @property Carbon|null $deleted_at
  */
@@ -56,6 +56,7 @@ use Illuminate\Support\Carbon;
     'commune',
     'district',
     'province',
+    'address',
     'opening_time',
     'closing_time',
     'is_open',
@@ -122,17 +123,7 @@ class VendorProfile extends Model
         get => $this->is_verified && ! $this->rejected_at;
     }
 
-    /**
-     * Get the full address of the vendor.
-     */
-    public public(set) string $address {
-        get => implode(', ', array_filter([
-            $this->village,
-            $this->commune,
-            $this->district,
-            $this->province,
-        ]));
-    }
+
 
     /**
      * Get the user that owns the vendor profile.

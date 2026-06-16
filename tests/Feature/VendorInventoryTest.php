@@ -141,6 +141,35 @@ class VendorInventoryTest extends TestCase
         $this->assertContains($activeInventory->id, $productIds);
     }
 
+    public function test_list_products_excludes_inactive_vendor_inventories(): void
+    {
+        $activeInventory = $this->createActiveInventory();
+
+        $inactiveVendor = User::factory()->create([
+            'user_type_id' => UserType::VENDOR_ID,
+            'user_status_id' => UserStatus::INACTIVE_ID,
+        ]);
+        VendorProfile::create([
+            'user_id' => $inactiveVendor->id,
+            'business_name' => 'Inactive Vendor',
+            'contact_phone' => '0123456789',
+        ]);
+        $inactiveInventory = VendorInventory::factory()->create([
+            'vendor_id' => $inactiveVendor->id,
+            'stock_quantity' => '10.00',
+            'inventory_status_id' => VendorInventoryStatus::AVAILABLE_ID,
+            'unit_id' => 1,
+        ]);
+
+        $user = $this->createAuthenticatedUser();
+        $response = $this->actingAs($user)->getJson('/api/v1/products');
+
+        $response->assertOk();
+        $productIds = collect($response->json('data.data'))->pluck('id')->all();
+        $this->assertContains($activeInventory->id, $productIds);
+        $this->assertNotContains($inactiveInventory->id, $productIds);
+    }
+
     public function test_product_detail_returns_full_info(): void
     {
         $inventory = $this->createActiveInventory();

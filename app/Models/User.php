@@ -402,6 +402,41 @@ class User extends Authenticatable implements FilamentUser, HasAvatar, HasName
         $query->withStatus(UserStatus::ACTIVE_ID);
     }
 
+    protected static function booted(): void
+    {
+        static::updating(static function (User $user) {
+            if ($user->isDirty('user_status_id') && (int) $user->user_status_id !== UserStatus::ACTIVE_ID) {
+                if ($user->isType(UserType::VENDOR_ID)) {
+                    $hasActiveOrders = Order::where('vendor_id', $user->id)
+                        ->whereNotIn('order_status_id', [
+                            OrderStatus::DELIVERED_ID,
+                            OrderStatus::CANCELLED_ID,
+                        ])
+                        ->exists();
+
+                    if ($hasActiveOrders) {
+                        throw new \Exception(__('admin.resources.vendor.deactivate_error_has_active_orders') ?? 'Cannot deactivate this vendor because they have active/pending orders.');
+                    }
+                }
+            }
+        });
+
+        static::deleting(static function (User $user) {
+            if ($user->isType(UserType::VENDOR_ID)) {
+                $hasActiveOrders = Order::where('vendor_id', $user->id)
+                    ->whereNotIn('order_status_id', [
+                        OrderStatus::DELIVERED_ID,
+                        OrderStatus::CANCELLED_ID,
+                    ])
+                    ->exists();
+
+                if ($hasActiveOrders) {
+                    throw new \Exception(__('admin.resources.vendor.deactivate_error_has_active_orders') ?? 'Cannot deactivate this vendor because they have active/pending orders.');
+                }
+            }
+        });
+    }
+
     /**
      * Determine whether the user has the given type.
      */

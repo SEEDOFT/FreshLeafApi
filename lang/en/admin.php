@@ -245,6 +245,7 @@ return [
             'location' => 'Location on Map',
             'payment_methods' => 'Payment Methods',
             'payment_method_type' => 'Payment Method Type',
+            'deactivate_error_has_active_orders' => 'Cannot deactivate this vendor because they have active/pending orders.',
             'notifications' => [
                 'approved' => 'Vendor approved successfully.',
                 'rejected' => 'Vendor rejected.',

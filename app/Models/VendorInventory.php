@@ -282,7 +282,10 @@ class VendorInventory extends Model
     #[Scope]
     protected function active(Builder $query): void
     {
-        $query->where('inventory_status_id', VendorInventoryStatus::AVAILABLE_ID);
+        $query->where('inventory_status_id', VendorInventoryStatus::AVAILABLE_ID)
+            ->whereHas('vendor', static function (Builder $q): void {
+                $q->where('user_status_id', UserStatus::ACTIVE_ID);
+            });
     }
 
     /**

@@ -5,13 +5,12 @@ declare(strict_types=1);
 namespace App\Filament\Admin\Resources\Payouts\Schemas;
 
 use App\Models\Payout;
+use App\Models\PaymentMethod;
 use Filament\Infolists\Components\ImageEntry;
 use Filament\Infolists\Components\TextEntry;
+use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
-use Illuminate\Support\Carbon;
-use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Facades\URL;
 
 class PayoutInfolist
 {
@@ -22,12 +21,15 @@ class PayoutInfolist
                 Section::make(__('admin.resources.payout.details'))
                     ->columns(2)
                     ->schema([
+                        TextEntry::make('payout_number')
+                            ->label(__('admin.resources.payout.payout_number')),
                         TextEntry::make('vendor.vendorProfile.business_name')
                             ->label(__('admin.resources.payout.business')),
-                        TextEntry::make('status.name')
+                        TextEntry::make('status.translated_name')
                             ->label(__('admin.resources.payout.status'))
-                            ->badge(),
-                        TextEntry::make('method.name')
+                            ->badge()
+                            ->color(fn (Payout $record): string => $record->status?->getColor() ?? 'gray'),
+                        TextEntry::make('method.translated_name')
                             ->label(__('admin.resources.payout.method')),
                         TextEntry::make('amount')
                             ->label(__('admin.resources.payout.amount'))
@@ -54,36 +56,32 @@ class PayoutInfolist
                     ]),
 
                 Section::make(__('admin.resources.payout.vendor_financial_details'))
+                    ->relationship('vendor.vendorFinancialDetails')
                     ->columns(2)
                     ->schema([
-                        TextEntry::make('vendor.vendorFinancialDetails.bank_name')
-                            ->label(__('admin.resources.vendor.bank_name')),
-                        TextEntry::make('vendor.vendorFinancialDetails.account_name')
-                            ->label(__('admin.resources.vendor.account_holder')),
-                        TextEntry::make('vendor.vendorFinancialDetails.account_number')
-                            ->label(__('admin.resources.vendor.account_number')),
-                        ImageEntry::make('vendor.vendorFinancialDetails.qr_code')
-                            ->label(__('shared.auth.register.qr_code'))
-                            ->getStateUsing(function (Payout $record): ?string {
-                                $qrCode = $record->vendor->vendorFinancialDetails()->value('qr_code');
-
-                                if (! $qrCode) {
-                                    return null;
-                                }
-
-                                if (! Storage::disk('local')->exists($qrCode)) {
-                                    return null;
-                                }
-
-                                return URL::temporarySignedRoute(
-                                    'private.storage',
-                                    Carbon::now()->addWeeks(3),
-                                    ['path' => $qrCode],
-                                );
-                            })
-                            ->extraImgAttributes(fn () => [
-                                'class' => 'cursor-zoom-in',
-                                'x-on:click' => "\$dispatch('lightbox', { src: \$el.src })",
+                        Grid::make(1)
+                            ->columnSpan(1)
+                            ->schema([
+                                TextEntry::make('bank_name')
+                                    ->label(__('admin.resources.vendor.bank_name')),
+                                TextEntry::make('account_name')
+                                    ->label(__('admin.resources.vendor.account_holder')),
+                                TextEntry::make('account_number')
+                                    ->label(__('admin.resources.vendor.account_number')),
+                            ]),
+                        Grid::make(1)
+                            ->columnSpan(1)
+                            ->schema([
+                                ImageEntry::make('qr_code')
+                                    ->label(__('admin.resources.vendor.qr_code'))
+                                    ->getStateUsing(fn (?PaymentMethod $record) => $record?->qr_code
+                                        ? (resolve_image_url($record->qr_code) ?: route('admin.documents.show', ['path' => $record->qr_code])) : null
+                                    )
+                                    ->disk(null)
+                                    ->extraImgAttributes(fn () => [
+                                        'class' => 'cursor-zoom-in',
+                                        'x-on:click' => "\$dispatch('lightbox', { src: \$el.src })",
+                                    ]),
                             ]),
                     ]),
             ]);

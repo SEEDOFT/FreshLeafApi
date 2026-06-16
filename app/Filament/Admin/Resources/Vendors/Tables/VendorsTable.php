@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Filament\Admin\Resources\Vendors\Tables;
 
+use App\Models\Order;
+use App\Models\OrderStatus;
 use App\Models\User;
 use App\Models\UserStatus;
 use App\Models\UserType;
@@ -154,7 +156,27 @@ class VendorsTable
             ])
             ->bulkActions([
                 BulkActionGroup::make([
-                    DeleteBulkAction::make(),
+                    DeleteBulkAction::make()
+                        ->before(function (DeleteBulkAction $action, \Illuminate\Support\Collection $records) {
+                            foreach ($records as $record) {
+                                $hasActiveOrders = Order::where('vendor_id', $record->id)
+                                    ->whereNotIn('order_status_id', [
+                                        OrderStatus::DELIVERED_ID,
+                                        OrderStatus::CANCELLED_ID,
+                                    ])
+                                    ->exists();
+
+                                if ($hasActiveOrders) {
+                                    \Filament\Notifications\Notification::make()
+                                        ->danger()
+                                        ->title(__('admin.resources.vendor.deactivate_error_has_active_orders') ?? 'Cannot deactivate this vendor because they have active/pending orders.')
+                                        ->send();
+
+                                    $action->halt();
+                                    return;
+                                }
+                            }
+                        }),
                     ForceDeleteBulkAction::make(),
                     RestoreBulkAction::make(),
                 ]),

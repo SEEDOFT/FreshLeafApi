@@ -7,6 +7,8 @@ namespace App\Filament\Admin\Resources\Vendors\Schemas;
 use App\Constants\StorageDirectory;
 use App\Filament\Forms\Components\PasswordInput;
 use App\Filament\Forms\Components\PhoneNumberInput;
+use App\Models\Order;
+use App\Models\OrderStatus;
 use App\Models\PaymentMethodStatus;
 use App\Models\PaymentMethodType;
 use App\Models\User;
@@ -121,10 +123,32 @@ class VendorForm
                             ->dehydrated(fn (mixed $state): bool => filled($state)),
                         Select::make('user_status_id')
                             ->label(__('admin.resources.user.status'))
-                            ->options(fn () => UserStatus::where('id', '!=', UserStatus::DELETED_ID)->get()->pluck('translated_name', 'id'))
+                            ->options(fn () => UserStatus::whereNotIn('id', [UserStatus::DELETED_ID, UserStatus::PENDING_ID])->get()->pluck('translated_name', 'id'))
                             ->default(UserStatus::ACTIVE_ID)
                             ->required(fn (string $operation): bool => $operation === 'create')
-                            ->dehydrated(fn (mixed $state): bool => filled($state)),
+                            ->dehydrated(fn (mixed $state): bool => filled($state))
+                            ->rules([
+                                static function (?Model $record) {
+                                    return function (string $attribute, mixed $value, Closure $fail) use ($record): void {
+                                        if (! $record) {
+                                            return;
+                                        }
+
+                                        if ((int) $value !== UserStatus::ACTIVE_ID) {
+                                            $hasActiveOrders = Order::where('vendor_id', $record->id)
+                                                ->whereNotIn('order_status_id', [
+                                                    OrderStatus::DELIVERED_ID,
+                                                    OrderStatus::CANCELLED_ID,
+                                                ])
+                                                ->exists();
+
+                                            if ($hasActiveOrders) {
+                                                $fail(__('admin.resources.vendor.deactivate_error_has_active_orders') ?? 'Cannot deactivate this vendor because they have active/pending orders.');
+                                            }
+                                        }
+                                    };
+                                },
+                            ]),
                     ]),
 
                 Section::make(__('admin.resources.vendor.business_profile'))

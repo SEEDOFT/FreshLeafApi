@@ -136,6 +136,7 @@ class ListWallets extends Page
                             ->options(fn () => PayoutMethod::all()->pluck('translated_name', 'id'))
                             ->default(PayoutMethod::BANK_TRANSFER_ID)
                             ->disabled()
+                            ->dehydrated()
                             ->required(),
                     ];
                 })

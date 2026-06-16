@@ -50,6 +50,7 @@ class PayoutForm
                     ->preload()
                     ->live()
                     ->required(fn (string $operation): bool => $operation === 'create')
+                    ->disabled(fn (string $operation): bool => $operation !== 'create')
                     ->dehydrated(fn (mixed $state): bool => filled($state)),
 
                 TextEntry::make('pending_payout')
@@ -102,6 +103,7 @@ class PayoutForm
                     ->numeric()
                     ->prefix('$')
                     ->required(fn (string $operation): bool => $operation === 'create')
+                    ->disabled(fn (string $operation): bool => $operation !== 'create')
                     ->dehydrated(fn (mixed $state): bool => filled($state))
                     ->rules([
                         function (Get $get) {
@@ -143,7 +145,8 @@ class PayoutForm
                     ->placeholder(__('admin.resources.payout.transaction_ref')),
 
                 DateTimePicker::make('processed_at')
-                    ->label(__('admin.resources.payout.processed_date')),
+                    ->label(__('admin.resources.payout.processed_date'))
+                    ->disabled(fn (string $operation): bool => $operation !== 'create'),
 
                 Textarea::make('notes')
                     ->label(__('admin.resources.payout.admin_notes'))

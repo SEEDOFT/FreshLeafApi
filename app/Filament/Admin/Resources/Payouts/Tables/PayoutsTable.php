@@ -87,7 +87,8 @@ class PayoutsTable
                     ->form([
                         TextInput::make('transaction_reference')
                             ->label(__('admin.resources.payout.transaction_ref'))
-                            ->placeholder(__('admin.resources.payout.transaction_ref')),
+                            ->placeholder(__('admin.resources.payout.transaction_ref'))
+                            ->required(),
                         Textarea::make('admin_notes')
                             ->label(__('admin.resources.payout.admin_notes')),
                     ])

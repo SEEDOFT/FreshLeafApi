@@ -56,26 +56,25 @@ class PayoutInfolist
                     ]),
 
                 Section::make(__('admin.resources.payout.vendor_financial_details'))
-                    ->relationship('vendor.vendorFinancialDetails')
                     ->columns(2)
                     ->schema([
                         Grid::make(1)
                             ->columnSpan(1)
                             ->schema([
-                                TextEntry::make('bank_name')
+                                TextEntry::make('vendor.vendorFinancialDetails.bank_name')
                                     ->label(__('admin.resources.vendor.bank_name')),
-                                TextEntry::make('account_name')
+                                TextEntry::make('vendor.vendorFinancialDetails.account_name')
                                     ->label(__('admin.resources.vendor.account_holder')),
-                                TextEntry::make('account_number')
+                                TextEntry::make('vendor.vendorFinancialDetails.account_number')
                                     ->label(__('admin.resources.vendor.account_number')),
                             ]),
                         Grid::make(1)
                             ->columnSpan(1)
                             ->schema([
-                                ImageEntry::make('qr_code')
+                                ImageEntry::make('vendor.vendorFinancialDetails.qr_code')
                                     ->label(__('admin.resources.vendor.qr_code'))
-                                    ->getStateUsing(fn (?PaymentMethod $record) => $record?->qr_code
-                                        ? (resolve_image_url($record->qr_code) ?: route('admin.documents.show', ['path' => $record->qr_code])) : null
+                                    ->getStateUsing(fn (Payout $record) => $record->vendor?->vendorFinancialDetails?->qr_code
+                                        ? (resolve_image_url($record->vendor->vendorFinancialDetails->qr_code) ?: route('admin.documents.show', ['path' => $record->vendor->vendorFinancialDetails->qr_code])) : null
                                     )
                                     ->disk(null)
                                     ->extraImgAttributes(fn () => [

@@ -25,31 +25,56 @@ The project uses a structured approach for CSS and JavaScript to ensure scalabil
 
 ## Quick Start
 
+### 1. Initial Setup
 ```bash
 # Install dependencies
 composer install
 
-# Setup environment
+# Setup environment config
 # macOS / Linux
 cp .env.example .env
 
 # Windows (PowerShell)
 copy .env.example .env
 
+# Generate application key
 php artisan key:generate
-php artisan migrate
+
+# For SQLite (default database), create the empty file if it doesn't exist:
+# macOS/Linux:
+touch database/database.sqlite
+# Windows (PowerShell):
+New-Item -ItemType File -Path database/database.sqlite -Force
+
+# Run migrations and seed the database with initial/test data
+php artisan migrate --seed
 
 # Optional: Setup Offline AI (llama.cpp)
 php ai/setup-ai.php
-
-# Start development (all services: Laravel, Queue, Vite, Reverb)
-composer run dev
-
-# IMPORTANT: If you are testing with the mobile app (Flutter),
-# you MUST bind the server to your local network IP (0.0.0.0)
-# so your emulator/phone can reach the backend.
-composer run dev -- --host=0.0.0.0 --port=8000
 ```
+
+### 2. Run the Development Services
+You can start all backend services (Laravel Server, Queue Worker, Reverb WebSocket, Vite, Scheduler) with one command.
+
+#### Option A: Local-Only Development (localhost)
+If you only need to run the web/admin views locally on the same computer:
+```bash
+composer run dev
+```
+
+#### Option B: Mobile App / Emulator Testing (Required for Flutter App)
+If you are testing with the Flutter app on an emulator or physical device, the server **must** bind to your computer's local network IP so the device can communicate with the backend.
+
+1. **Find your local IP address**:
+   - **Windows (PowerShell/CMD)**: Run `ipconfig` and copy the IPv4 Address under your active Wi-Fi or Ethernet adapter (e.g., `10.167.215.105`).
+   - **macOS/Linux (Terminal)**: Run `ifconfig` or `ip a` and locate your network IP.
+
+2. **Run the server binding to that IP**:
+   ```bash
+   composer run dev -- --host=<YOUR_LOCAL_IP> --port=8000
+   ```
+   *(Example: `composer run dev -- --host=10.167.215.105 --port=8000`)*
+
 
 ## AI Chat Flow (Flutter)
 
